@@ -13,7 +13,7 @@ export interface CertificateDocument {
   id: string;
   docType: string;
   fileName: string;
-  fileUrl: string;
+  fileUrl: string | null;
   uploadedAt: string;
   status: string;
 }
@@ -103,16 +103,21 @@ export function CertificatesSection({
                 <FileIcon className="h-[18px] w-[18px]" />
               </span>
               <div className="min-w-0">
-                <a
-                  href={d.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block truncate text-[13.5px] font-semibold text-text hover:text-primary hover:underline"
-                >
-                  {d.docType}
-                </a>
+                {d.fileUrl ? (
+                  <a
+                    href={d.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block truncate text-[13.5px] font-semibold text-text hover:text-primary hover:underline"
+                  >
+                    {d.docType}
+                  </a>
+                ) : (
+                  <p className="truncate text-[13.5px] font-semibold text-text">{d.docType}</p>
+                )}
                 <p className="truncate text-xs text-text-muted">
                   {d.fileName} · uploaded {formatDate(d.uploadedAt)}
+                  {!d.fileUrl && " · file unavailable"}
                 </p>
               </div>
             </div>
