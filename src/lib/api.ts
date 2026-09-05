@@ -96,8 +96,20 @@ export async function clearAuthCookies(cookieStore: CookieStore): Promise<void> 
 
 /**
  * Returns a currently-valid access token, transparently refreshing (and persisting
- * the new pair back to cookies) if the stored one is missing, expired, or within
+ * the new pair back to cookies, WHEN this call happens to run inside a Server Action
+ * or Route Handler) if the stored one is missing, expired, or within
  * EXPIRY_SKEW_SECONDS of expiring.
+ *
+ * getCurrentActor()/apiFetch are called from plain page/layout Server Components too
+ * (every page needs the caller's role to render its nav/actions) — and Next.js
+ * throws if `cookies().set()`/`.delete()` run outside a Server Action or Route
+ * Handler. Without the try/catch below, a page load that happens to land inside the
+ * ~30s-before-expiry refresh window (the access token is only 15 minutes, so this
+ * recurs constantly) would throw mid-render and surface as a generic "Couldn't load
+ * this page" error — not an auth problem at all, just an unpersisted cookie write.
+ * The refreshed token is still valid and used for *this* request either way; if the
+ * write couldn't land, the next Server Action or Route Handler call simply refreshes
+ * again (one extra round-trip, never a broken page).
  */
 export async function getValidAccessToken(): Promise<string> {
   const cookieStore = await cookies();
@@ -114,11 +126,21 @@ export async function getValidAccessToken(): Promise<string> {
 
   const refreshed = await refreshTokens(refreshToken);
   if (!refreshed) {
-    await clearAuthCookies(cookieStore);
+    try {
+      await clearAuthCookies(cookieStore);
+    } catch {
+      // Not writable from this render context — the stale cookies just expire
+      // naturally on their own maxAge instead of being cleared early.
+    }
     throw new AuthExpiredError();
   }
 
-  setAuthCookies(cookieStore, refreshed);
+  try {
+    setAuthCookies(cookieStore, refreshed);
+  } catch {
+    // Same "not writable here" case, but this time refresh itself succeeded — use
+    // the fresh token for this request regardless of whether the write landed.
+  }
   return refreshed.accessToken;
 }
 
@@ -155,4 +177,18 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   }
 
   return res;
+}
+
+export interface CurrentActor {
+  personId: string;
+  roles: string[];
+}
+
+/** The signed-in person's id + role codes — used to decide which actions a Finance page shows (real authorization is still enforced server-side regardless). */
+export async function getCurrentActor(): Promise<CurrentActor> {
+  const res = await apiFetch("/auth/me");
+  if (!res.ok) throw new AuthExpiredError();
+  const body = await res.json();
+  const roles = (body.data.roles as { role_code: string }[]).map((r) => r.role_code);
+  return { personId: body.data.person.id as string, roles };
 }
