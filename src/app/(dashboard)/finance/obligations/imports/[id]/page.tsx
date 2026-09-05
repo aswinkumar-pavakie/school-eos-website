@@ -3,7 +3,7 @@ import { StatusPill } from "@/components/ui/StatusPill";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { PlainButton } from "@/components/ui/Button";
 import { AuthExpiredError } from "@/lib/api";
-import { getImportJob } from "@/lib/finance-api";
+import { getImportJob, listStudentFeeAssignments } from "@/lib/finance-api";
 import { cancelImportJobAction } from "../actions";
 import { RowsForm } from "./RowsForm";
 
@@ -12,6 +12,7 @@ export default async function ImportJobDetailPage({ params }: { params: Promise<
   try {
     const job = await getImportJob(id);
     const canCancel = ["DRAFT", "VALIDATED", "VALIDATION_FAILED"].includes(job.state);
+    const assignments = canCancel ? await listStudentFeeAssignments() : [];
 
     return (
       <div className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -25,7 +26,7 @@ export default async function ImportJobDetailPage({ params }: { params: Promise<
           <StatusPill state={job.state} />
         </div>
 
-        {canCancel && <RowsForm id={id} canConfirm={job.state === "VALIDATED"} />}
+        {canCancel && <RowsForm id={id} canConfirm={job.state === "VALIDATED"} assignments={assignments} />}
 
         {job.rowErrors != null && Array.isArray(job.rowErrors) && job.rowErrors.length > 0 && (
           <section>

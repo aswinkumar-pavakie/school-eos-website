@@ -17,12 +17,12 @@ import { deleteConcessionAction } from "./actions";
 export default async function ConcessionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ studentId?: string; tab?: string }>;
+  searchParams: Promise<{ studentId?: string; tab?: string; studentSearch?: string }>;
 }) {
-  const { studentId, tab } = await searchParams;
+  const { studentId, tab, studentSearch } = await searchParams;
   const activeTab = tab === "settled" ? "settled" : "unsettled";
   try {
-    const { data: allConcessions } = await listConcessions({ pageSize: 500 });
+    const { data: allConcessions } = await listConcessions({ studentSearch: studentSearch || undefined, pageSize: 500 });
     const unsettled = allConcessions.filter((c) => c.state === "PENDING");
     const settled = allConcessions.filter((c) => c.state !== "PENDING");
     const concessions = activeTab === "unsettled" ? unsettled : settled;
@@ -37,13 +37,25 @@ export default async function ConcessionsPage({
           <CreateConcessionModal defaultStudentId={studentId} defaultOpen={!!studentId} />
         </div>
 
-        <div className="flex gap-2">
-          <Link href="/finance/concessions?tab=unsettled">
-            <PlainButton variant={activeTab === "unsettled" ? "primary" : "secondary"}>Unsettled {unsettled.length}</PlainButton>
-          </Link>
-          <Link href="/finance/concessions?tab=settled">
-            <PlainButton variant={activeTab === "settled" ? "primary" : "secondary"}>Settled {settled.length}</PlainButton>
-          </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-2">
+            <Link href={`/finance/concessions?tab=unsettled${studentSearch ? `&studentSearch=${encodeURIComponent(studentSearch)}` : ""}`}>
+              <PlainButton variant={activeTab === "unsettled" ? "primary" : "secondary"}>Unsettled {unsettled.length}</PlainButton>
+            </Link>
+            <Link href={`/finance/concessions?tab=settled${studentSearch ? `&studentSearch=${encodeURIComponent(studentSearch)}` : ""}`}>
+              <PlainButton variant={activeTab === "settled" ? "primary" : "secondary"}>Settled {settled.length}</PlainButton>
+            </Link>
+          </div>
+          <form action="/finance/concessions" className="flex items-center gap-2">
+            <input type="hidden" name="tab" value={activeTab} />
+            <input
+              name="studentSearch"
+              defaultValue={studentSearch ?? ""}
+              placeholder="Search by student name or admission no."
+              className="min-w-64 rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none focus:border-primary"
+            />
+            <PlainButton type="submit" variant="secondary">Search</PlainButton>
+          </form>
         </div>
 
         {concessions.length === 0 ? (

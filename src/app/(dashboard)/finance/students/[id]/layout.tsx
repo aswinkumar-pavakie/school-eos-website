@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 const TABS = [
   { href: "", label: "Receive Payment" },
-  { href: "/demand", label: "Demand Details" },
+  { href: "/obligations", label: "Obligation Details" },
   { href: "/history", label: "Payment History" },
   { href: "/concessions", label: "Fee Concessions" },
   { href: "/education-loan-dd", label: "Education Loan DD" },
@@ -43,7 +43,7 @@ export default async function StudentWorkspaceLayout({
 
         <div className="grid grid-cols-2 gap-4 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:grid-cols-4">
           <div>
-            <p className="text-xs font-bold tracking-wide text-text-muted uppercase">Total Demand</p>
+            <p className="text-xs font-bold tracking-wide text-text-muted uppercase">Total Obligation</p>
             <p className="mt-1 font-mono font-bold text-text">{formatMoneyDetail(student.totalDemandPaise)}</p>
           </div>
           <div>

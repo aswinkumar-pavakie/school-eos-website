@@ -5,14 +5,16 @@ import { ErrorState } from "@/components/ui/EmptyState";
 import { PlainButton } from "@/components/ui/Button";
 import { formatDate, formatMoneyDetail } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
-import { getFeeStructure } from "@/lib/finance-api";
+import { getFeeStructure, listFeeHeads } from "@/lib/finance-api";
 import { activateFeeStructureAction, deactivateFeeStructureAction, deleteFeeStructureAction } from "../actions";
 import { ApprovalStatusPanel } from "../../_shared/ApprovalStatusPanel";
+import { EditForm } from "./EditForm";
 
 export default async function FeeStructureDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const { structure, lines } = await getFeeStructure(id);
+    const feeHeads = structure.state === "DRAFT" ? await listFeeHeads() : [];
 
     return (
       <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -36,17 +38,21 @@ export default async function FeeStructureDetailPage({ params }: { params: Promi
 
         {structure.approvalRequestId && <ApprovalStatusPanel approvalRequestId={structure.approvalRequestId} />}
 
-        <section>
-          <h2 className="text-xs font-bold tracking-wide text-text-muted uppercase">Fee lines</h2>
-          <div className="mt-3 flex flex-col gap-2">
-            {lines.map((l) => (
-              <div key={l.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
-                <span className="text-text">{l.feeHeadName ?? "Fee"} · Instalment {l.instalmentNo} · due {formatDate(l.dueDate)}</span>
-                <span className="font-mono font-bold text-text">{formatMoneyDetail(l.amountPaise)}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        {structure.state === "DRAFT" ? (
+          <EditForm structure={structure} lines={lines} feeHeads={feeHeads} />
+        ) : (
+          <section>
+            <h2 className="text-xs font-bold tracking-wide text-text-muted uppercase">Fee lines</h2>
+            <div className="mt-3 flex flex-col gap-2">
+              {lines.map((l) => (
+                <div key={l.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
+                  <span className="text-text">{l.feeHeadName ?? "Fee"} · Instalment {l.instalmentNo} · due {formatDate(l.dueDate)}</span>
+                  <span className="font-mono font-bold text-text">{formatMoneyDetail(l.amountPaise)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="flex gap-3">
           {structure.state === "DRAFT" && (

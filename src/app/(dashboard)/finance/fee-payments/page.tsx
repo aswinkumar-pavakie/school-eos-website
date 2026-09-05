@@ -37,7 +37,7 @@ export default async function FeePaymentsPage({
 
         <KpiGrid>
           <KpiCard eyebrow="Records in view" value={String(meta?.total ?? students.length)} />
-          <KpiCard eyebrow="Total demand" value={formatMoneySummary(totalDemand.toString())} />
+          <KpiCard eyebrow="Total obligation" value={formatMoneySummary(totalDemand.toString())} />
           <KpiCard eyebrow="Total collected" value={formatMoneySummary(totalCollected.toString())} />
           <KpiCard eyebrow="Outstanding" value={formatMoneySummary(totalOutstanding.toString())} />
         </KpiGrid>
@@ -77,7 +77,7 @@ export default async function FeePaymentsPage({
               { header: "Admission No.", render: (s) => s.admissionNo },
               { header: "Grade / Section", render: (s) => [s.gradeName, s.sectionName].filter(Boolean).join(" / ") || "—" },
               { header: "Quota", render: (s) => s.communityCategory ?? "—" },
-              { header: "Total Demand", align: "right", render: (s) => formatMoneySummary(s.totalDemandPaise) },
+              { header: "Total Obligation", align: "right", render: (s) => formatMoneySummary(s.totalDemandPaise) },
               { header: "Paid Amount", align: "right", render: (s) => formatMoneySummary(s.paidPaise) },
               { header: "Outstanding", align: "right", render: (s) => formatMoneySummary(s.outstandingPaise) },
               { header: "Due Status", render: (s) => <StatusPill state={s.dueStatus} /> },

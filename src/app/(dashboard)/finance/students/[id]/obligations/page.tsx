@@ -7,7 +7,7 @@ import { AuthExpiredError } from "@/lib/api";
 import { listObligations } from "@/lib/finance-api";
 import { ObligationRowActions } from "../../../obligations/RowActions";
 
-export default async function StudentDemandPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function StudentObligationsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const { data: obligations } = await listObligations({ studentId: id, pageSize: 100 });
@@ -32,6 +32,6 @@ export default async function StudentDemandPage({ params }: { params: Promise<{ 
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load demand details. Nothing was submitted — try again." />;
+    return <ErrorState message="Couldn't load obligation details. Nothing was submitted — try again." />;
   }
 }

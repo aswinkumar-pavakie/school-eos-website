@@ -66,6 +66,11 @@ export async function deactivateFeeHead(id: string): Promise<FeeHead> {
   return (await parseOrThrow<ApiEnvelope<FeeHead>>(res)).data;
 }
 
+export async function updateFeeHead(id: string, input: { name?: string; code?: string; headType?: string; isRefundable?: boolean }): Promise<FeeHead> {
+  const res = await apiFetch(`/finance/fee-heads/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<FeeHead>>(res)).data;
+}
+
 export interface Grade {
   id: string;
   name: string;
@@ -225,7 +230,7 @@ export interface Obligation {
   updatedAt: string;
 }
 
-export async function listObligations(filter: { studentId?: string; state?: string; page?: number; pageSize?: number } = {}): Promise<ApiEnvelope<Obligation[]>> {
+export async function listObligations(filter: { studentId?: string; state?: string; studentSearch?: string; fromDate?: string; toDate?: string; page?: number; pageSize?: number } = {}): Promise<ApiEnvelope<Obligation[]>> {
   const qs = new URLSearchParams(Object.entries(filter).filter(([, v]) => v !== undefined) as [string, string][]);
   const res = await apiFetch(`/finance/obligations?${qs.toString()}`);
   return parseOrThrow(res);
@@ -244,6 +249,11 @@ export async function createObligation(input: { assignmentId: string; studentId:
 export async function deleteObligation(id: string): Promise<void> {
   const res = await apiFetch(`/finance/obligations/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error((await res.json().catch(() => null))?.message ?? "Delete failed");
+}
+
+export async function updateObligation(id: string, input: { amountPaise?: string; lateFeePaise?: string; dueDate?: string }): Promise<Obligation> {
+  const res = await apiFetch(`/finance/obligations/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<Obligation>>(res)).data;
 }
 
 export async function waiveObligation(id: string, reason: string): Promise<Obligation> {
@@ -435,7 +445,7 @@ export interface Concession {
   createdAt: string;
 }
 
-export async function listConcessions(filter: { studentId?: string; state?: string; page?: number; pageSize?: number } = {}): Promise<ApiEnvelope<Concession[]>> {
+export async function listConcessions(filter: { studentId?: string; state?: string; studentSearch?: string; page?: number; pageSize?: number } = {}): Promise<ApiEnvelope<Concession[]>> {
   const qs = new URLSearchParams(Object.entries(filter).filter(([, v]) => v !== undefined) as [string, string][]);
   const res = await apiFetch(`/finance/concessions?${qs.toString()}`);
   return parseOrThrow(res);
@@ -551,6 +561,21 @@ export async function listImportJobs(filter: { state?: string; page?: number; pa
   const qs = new URLSearchParams(Object.entries(filter).filter(([, v]) => v !== undefined) as [string, string][]);
   const res = await apiFetch(`/finance/obligation-imports?${qs.toString()}`);
   return parseOrThrow(res);
+}
+
+export interface StudentFeeAssignment {
+  id: string;
+  studentId: string;
+  studentDisplayName: string | null;
+  studentAdmissionNo: string | null;
+  netPaise: string;
+}
+
+/** Real dropdown data for the Bulk Import row form — no raw assignment/student UUID
+ * ever has to be typed from memory. */
+export async function listStudentFeeAssignments(): Promise<StudentFeeAssignment[]> {
+  const res = await apiFetch("/finance/obligation-imports/assignments");
+  return (await parseOrThrow<ApiEnvelope<StudentFeeAssignment[]>>(res)).data;
 }
 
 export async function getImportJob(id: string): Promise<ImportJob> {

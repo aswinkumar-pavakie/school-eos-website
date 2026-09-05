@@ -22,20 +22,24 @@ export async function createImportJobAction(_prev: FormState, formData: FormData
   redirect(`/finance/obligations/imports/${created.id}`);
 }
 
+// The Student select's own value is "assignmentId|studentId" (one assignment IS one
+// student — picking it carries both ids at once, no separate raw-id field needed).
 function parseRows(formData: FormData): ImportRow[] {
-  const assignmentIds = formData.getAll("assignmentId") as string[];
-  const studentIds = formData.getAll("studentId") as string[];
+  const assignmentAndStudent = formData.getAll("assignmentAndStudent") as string[];
   const instalments = formData.getAll("instalmentNo") as string[];
   const amounts = formData.getAll("amountRupees") as string[];
   const dueDates = formData.getAll("dueDate") as string[];
-  return assignmentIds
-    .map((assignmentId, i) => ({
-      assignmentId,
-      studentId: studentIds[i],
-      instalmentNo: Number(instalments[i] || "1"),
-      amountPaise: String(Math.round(Number(amounts[i] || "0") * 100)),
-      dueDate: dueDates[i],
-    }))
+  return assignmentAndStudent
+    .map((combined, i) => {
+      const [assignmentId, studentId] = combined.split("|");
+      return {
+        assignmentId: assignmentId ?? "",
+        studentId: studentId ?? "",
+        instalmentNo: Number(instalments[i] || "1"),
+        amountPaise: String(Math.round(Number(amounts[i] || "0") * 100)),
+        dueDate: dueDates[i],
+      };
+    })
     .filter((r) => r.assignmentId && r.studentId && r.dueDate && Number(r.amountPaise) > 0);
 }
 

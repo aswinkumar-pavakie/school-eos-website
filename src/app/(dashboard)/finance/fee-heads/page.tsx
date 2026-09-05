@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -6,11 +7,23 @@ import { PlainButton } from "@/components/ui/Button";
 import { AuthExpiredError } from "@/lib/api";
 import { listFeeHeads } from "@/lib/finance-api";
 import { CreateFeeHeadModal } from "./CreateFeeHeadModal";
+import { EditFeeHeadModal } from "./EditFeeHeadModal";
 import { activateFeeHeadAction, deactivateFeeHeadAction } from "./actions";
 
-export default async function FeeHeadsPage() {
+export default async function FeeHeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; status?: string }>;
+}) {
+  const { search, status } = await searchParams;
   try {
-    const feeHeads = await listFeeHeads();
+    const allFeeHeads = await listFeeHeads();
+    const q = search?.trim().toLowerCase();
+    const feeHeads = allFeeHeads.filter((h) => {
+      if (status && h.status !== status) return false;
+      if (q && !h.name.toLowerCase().includes(q) && !h.code.toLowerCase().includes(q)) return false;
+      return true;
+    });
 
     return (
       <div className="flex flex-col gap-6">
@@ -22,8 +35,24 @@ export default async function FeeHeadsPage() {
           <CreateFeeHeadModal />
         </div>
 
+        <form action="/finance/fee-heads" className="flex flex-wrap items-center gap-3">
+          <input
+            name="search"
+            defaultValue={search ?? ""}
+            placeholder="Search by name or code"
+            className="min-w-64 flex-1 rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none focus:border-primary"
+          />
+          <select name="status" defaultValue={status ?? ""} className="rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text">
+            <option value="">Status: All</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+          <PlainButton type="submit" variant="secondary">Filter</PlainButton>
+          <Link href="/finance/fee-heads" className="text-xs font-bold text-text-muted hover:text-text">Clear</Link>
+        </form>
+
         {feeHeads.length === 0 ? (
-          <EmptyState title="No fee structure items yet" body="Add one before creating a fee structure." />
+          <EmptyState title="No fee structure items match this filter" body="Try clearing search/status, or add one." />
         ) : (
           <DataTable
             getKey={(h) => h.id}
@@ -37,11 +66,14 @@ export default async function FeeHeadsPage() {
               {
                 header: "",
                 render: (h) => (
-                  <form action={(h.status === "ACTIVE" ? deactivateFeeHeadAction : activateFeeHeadAction).bind(null, h.id)}>
-                    <PlainButton variant="secondary" type="submit" className="px-2.5 py-1 text-xs">
-                      {h.status === "ACTIVE" ? "Deactivate" : "Activate"}
-                    </PlainButton>
-                  </form>
+                  <div className="flex justify-end gap-2">
+                    <EditFeeHeadModal feeHead={h} />
+                    <form action={(h.status === "ACTIVE" ? deactivateFeeHeadAction : activateFeeHeadAction).bind(null, h.id)}>
+                      <PlainButton variant="secondary" type="submit" className="px-2.5 py-1 text-xs">
+                        {h.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                      </PlainButton>
+                    </form>
+                  </div>
                 ),
               },
             ]}

@@ -13,7 +13,9 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BellIcon, CollapseIcon, NAV_ICONS } from "./icons";
 import { GlobalSearch } from "./GlobalSearch";
 
-const NAV_ITEMS: { href: string; label: string; icon: keyof typeof NAV_ICONS }[] = [
+export type ShellNavItem = { href: string; label: string; icon: keyof typeof NAV_ICONS };
+
+const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "dashboard" },
   { href: "/admin/students", label: "Students", icon: "students" },
   { href: "/admin/parents", label: "Parents", icon: "parents" },
@@ -39,20 +41,38 @@ interface ShellProps {
   personName: string;
   roleLabel: string;
   onSignOut: () => Promise<void>;
-  /** Real pending Admin approval requests (Requests & Approvals) -- the one
-   * honest thing the bell has to say today, not a fabricated alerts feed. */
+  /** Real pending requests for whichever inbox this role has (Admin's Requests &
+   * Approvals, Finance's own approvals engine) -- the one honest thing the bell has
+   * to say today, not a fabricated alerts feed. */
   pendingRequestsCount?: number;
+  /** Defaults to Admin's own nav so its existing usage is unaffected -- pass a
+   * different list (and href, below) for another role's module using this same shell. */
+  navItems?: ShellNavItem[];
+  /** Bell's "view all" link and GlobalSearch's result hrefs both assume /admin/requests
+   * and /admin/students-shaped routes; a role with its own equivalents overrides them
+   * here instead of inheriting Admin's (which it likely can't reach). */
+  requestsHref?: string;
+  showGlobalSearch?: boolean;
   children: ReactNode;
 }
 
-function isActive(pathname: string, href: string): boolean {
-  if (href === "/admin") return pathname === "/admin";
+function isActive(pathname: string, href: string, rootHref: string): boolean {
+  if (href === rootHref) return pathname === rootHref;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 const NOTIF_SEEN_STORAGE_KEY = "school-eos:notif-seen-count";
 
-export function Shell({ personName, roleLabel, onSignOut, pendingRequestsCount = 0, children }: ShellProps) {
+export function Shell({
+  personName,
+  roleLabel,
+  onSignOut,
+  pendingRequestsCount = 0,
+  navItems = ADMIN_NAV_ITEMS,
+  requestsHref = "/admin/requests",
+  showGlobalSearch = true,
+  children,
+}: ShellProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -123,9 +143,9 @@ export function Shell({ personName, roleLabel, onSignOut, pendingRequestsCount =
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const Icon = NAV_ICONS[item.icon];
-              const active = isActive(pathname, item.href);
+              const active = isActive(pathname, item.href, navItems[0].href);
               return (
                 <li key={item.href}>
                   <Link
@@ -150,7 +170,7 @@ export function Shell({ personName, roleLabel, onSignOut, pendingRequestsCount =
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-surface pl-5 pr-5 sm:pl-7 sm:pr-7">
           <div className="flex min-w-0 flex-1 items-center justify-end">
-            <GlobalSearch />
+            {showGlobalSearch && <GlobalSearch />}
           </div>
 
           <div className="flex shrink-0 items-center gap-3">
@@ -187,7 +207,7 @@ export function Shell({ personName, roleLabel, onSignOut, pendingRequestsCount =
                     )}
                   </div>
                   <Link
-                    href="/admin/requests"
+                    href={requestsHref}
                     onClick={() => setNotifOpen(false)}
                     className="flex items-center justify-between gap-3 rounded-[11px] px-2.5 py-2.5 text-sm text-text hover:bg-bg"
                   >

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createObligation, deleteObligation, waiveObligation } from "@/lib/finance-api";
+import { createObligation, deleteObligation, updateObligation, waiveObligation } from "@/lib/finance-api";
 
 export interface FormState {
   error?: string;
@@ -15,10 +15,12 @@ function revalidateStudentWorkspace(): void {
 
 export async function createObligationAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const amountRupees = Number(formData.get("amountRupees") || "0");
+  const [assignmentId, studentId] = String(formData.get("assignmentAndStudent") ?? "").split("|");
+  if (!assignmentId || !studentId) return { error: "Student · required" };
   try {
     await createObligation({
-      assignmentId: String(formData.get("assignmentId")),
-      studentId: String(formData.get("studentId")),
+      assignmentId,
+      studentId,
       feeHeadId: String(formData.get("feeHeadId") || "") || undefined,
       instalmentNo: Number(formData.get("instalmentNo") || "1"),
       amountPaise: String(Math.round(amountRupees * 100)),
@@ -26,6 +28,21 @@ export async function createObligationAction(_prev: FormState, formData: FormDat
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Create failed." };
+  }
+  revalidatePath("/finance/obligations");
+  revalidateStudentWorkspace();
+  return {};
+}
+
+export async function updateObligationAction(id: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  const amountRupees = String(formData.get("amountRupees") ?? "").trim();
+  try {
+    await updateObligation(id, {
+      amountPaise: amountRupees ? String(Math.round(Number(amountRupees) * 100)) : undefined,
+      dueDate: String(formData.get("dueDate") ?? "").trim() || undefined,
+    });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Update failed." };
   }
   revalidatePath("/finance/obligations");
   revalidateStudentWorkspace();

@@ -38,7 +38,7 @@ export function ReceivePaymentModal({
       <form action={formAction} className="flex flex-col gap-4">
         <p className="text-xs text-text-muted">Record a real fee payment against a student&apos;s obligation.</p>
 
-        <SelectField label="Obligation (fee demand)" name="feeDemandId" required defaultValue="">
+        <SelectField label="Obligation" name="feeDemandId" required defaultValue="">
           <option value="" disabled>Select…</option>
           {demandOptions.map((d) => <option key={d.feeDemandId} value={d.feeDemandId}>{d.label}</option>)}
         </SelectField>

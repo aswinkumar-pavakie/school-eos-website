@@ -17,7 +17,7 @@ export function AllocateForm({ paymentId }: { paymentId: string }) {
       <p className="text-xs font-bold tracking-wide text-text-muted uppercase">Allocate to obligations</p>
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="grid grid-cols-2 gap-2">
-          <TextField label="Obligation (fee demand) ID" name="feeDemandId" placeholder="uuid" />
+          <TextField label="Obligation ID" name="feeDemandId" placeholder="uuid" />
           <TextField label="Amount (₹)" name="amountRupees" type="number" min="0" step="0.01" />
         </div>
       ))}

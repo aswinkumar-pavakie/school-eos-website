@@ -3,15 +3,26 @@ import Link from "next/link";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { PlainButton } from "@/components/ui/Button";
 import { formatDate, formatMoneySummary } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
 import { listExpenseCategories, listExpenses } from "@/lib/finance-api";
 import { CreateExpenseModal } from "./CreateExpenseModal";
 import { CreateExpenseCategoryModal } from "./CreateExpenseCategoryModal";
 
-export default async function ExpensesPage() {
+const STATE_OPTIONS = ["RECORDED", "PENDING_APPROVAL", "APPROVED", "REJECTED", "PAID"];
+
+export default async function ExpensesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ state?: string; categoryId?: string }>;
+}) {
+  const { state, categoryId } = await searchParams;
   try {
-    const [{ data: expenses }, categories] = await Promise.all([listExpenses(), listExpenseCategories()]);
+    const [{ data: expenses }, categories] = await Promise.all([
+      listExpenses({ state: state || undefined, categoryId: categoryId || undefined, pageSize: 200 }),
+      listExpenseCategories(),
+    ]);
 
     return (
       <div className="flex flex-col gap-6">
@@ -26,8 +37,21 @@ export default async function ExpensesPage() {
           </div>
         </div>
 
+        <form action="/finance/expenses" className="flex flex-wrap items-center gap-3">
+          <select name="categoryId" defaultValue={categoryId ?? ""} className="rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text">
+            <option value="">Category: All</option>
+            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <select name="state" defaultValue={state ?? ""} className="rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text">
+            <option value="">Status: All</option>
+            {STATE_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <PlainButton type="submit" variant="secondary">Filter</PlainButton>
+          <Link href="/finance/expenses" className="text-xs font-bold text-text-muted hover:text-text">Clear</Link>
+        </form>
+
         {expenses.length === 0 ? (
-          <EmptyState title="No expenses yet" body="Record one to start tracking school spend." />
+          <EmptyState title="No expenses match this filter" body="Try clearing category/status, or record one." />
         ) : (
           <DataTable
             getKey={(e) => e.id}

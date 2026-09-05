@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { PlainButton, Button } from "@/components/ui/Button";
 import { SelectField, TextField } from "@/components/ui/Field";
@@ -22,7 +22,15 @@ export function CreateFeeStructureModal({
   mediums: Medium[];
 }) {
   const [state, formAction] = useActionState(createFeeStructureAction, initial);
-  const [lineCount, setLineCount] = useState(1);
+  const [lineKeys, setLineKeys] = useState<number[]>([0]);
+  const nextKey = useRef(1);
+
+  function addLine() {
+    setLineKeys((keys) => [...keys, nextKey.current++]);
+  }
+  function removeLine(key: number) {
+    setLineKeys((keys) => (keys.length > 1 ? keys.filter((k) => k !== key) : keys));
+  }
 
   return (
     <Modal title="Create fee structure" trigger={<PlainButton variant="primary">+ New fee structure</PlainButton>}>
@@ -45,17 +53,26 @@ export function CreateFeeStructureModal({
 
         <div className="flex flex-col gap-3">
           <p className="text-xs font-bold tracking-wide text-text-muted uppercase">Fee lines</p>
-          {Array.from({ length: lineCount }).map((_, i) => (
-            <div key={i} className="grid grid-cols-3 gap-2">
+          {lineKeys.map((key) => (
+            <div key={key} className="grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-2">
               <SelectField label="Fee head" name="lineFeeHeadId" required defaultValue="">
                 <option value="" disabled>Select…</option>
                 {feeHeads.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
               </SelectField>
               <TextField label="Amount (₹)" name="lineAmountRupees" type="number" min="0" step="0.01" required />
               <TextField label="Due date" name="lineDueDate" type="date" required />
+              <button
+                type="button"
+                onClick={() => removeLine(key)}
+                disabled={lineKeys.length === 1}
+                aria-label="Remove this fee line"
+                className="rounded-[var(--radius-input)] border border-border px-3 py-2.5 text-sm font-bold text-critical-text hover:bg-critical-bg disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                ✕
+              </button>
             </div>
           ))}
-          <button type="button" onClick={() => setLineCount((n) => n + 1)} className="self-start text-xs font-bold text-primary hover:underline">
+          <button type="button" onClick={addLine} className="self-start text-xs font-bold text-primary hover:underline">
             + Add another line
           </button>
         </div>

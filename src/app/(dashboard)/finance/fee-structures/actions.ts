@@ -7,6 +7,7 @@ import {
   createFeeStructure,
   deactivateFeeStructure,
   deleteFeeStructure,
+  updateFeeStructure,
   type FeeStructureLineInput,
 } from "@/lib/finance-api";
 
@@ -46,6 +47,21 @@ export async function createFeeStructureAction(_prev: FormState, formData: FormD
   }
   revalidatePath("/finance/fee-structures");
   redirect(`/finance/fee-structures/${created.id}`);
+}
+
+export async function updateFeeStructureAction(id: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  const lines = parseLines(formData);
+  if (lines.length === 0) return { error: "Add at least one fee line" };
+  try {
+    await updateFeeStructure(id, {
+      category: String(formData.get("category") || "") || undefined,
+      lines,
+    });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Update failed." };
+  }
+  revalidatePath(`/finance/fee-structures/${id}`);
+  return {};
 }
 
 export async function deleteFeeStructureAction(id: string): Promise<void> {
