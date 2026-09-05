@@ -5,11 +5,12 @@ import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-plus-jakarta-sans",
 });
 
-// Data font — spec: "used only where figures are compared down a column" (money, marks, counts).
+// Data font -- used only where figures are compared down a column (money, marks,
+// counts) -- Design Architecture v0.1, --eos-num.
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["500"],

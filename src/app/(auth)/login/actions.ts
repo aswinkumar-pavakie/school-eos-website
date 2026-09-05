@@ -75,12 +75,15 @@ export async function loginAction(
   const cookieStore = await cookies();
   setAuthCookies(cookieStore, { accessToken, refreshToken });
 
-  // Finance lands on the Finance module built for this role. Principal now has a real
-  // feature too — Purchase/Service Requests + the approvals they decide — so they land
-  // there instead of the generic placeholder. Admin still goes to the placeholder since
-  // no Admin-specific module exists yet (Admin can still reach /finance directly; the
-  // backend's own @Roles guards are what actually gate access, not this redirect).
+  // Each web-allowed role lands on the module built for it: Admin on the Admin
+  // Console, Finance on the Finance module, Principal on Purchase/Service Requests +
+  // the approvals routed to them. /dashboard is a defensive fallback only — every
+  // role that reaches here already passed the WEB_ALLOWED_ROLES check above, so it
+  // should never actually be hit.
   const roleCodes = roles.map((r) => r.role_code);
+  if (roleCodes.includes("ADMIN")) {
+    redirect("/admin");
+  }
   if (roleCodes.includes("FINANCE")) {
     redirect("/finance");
   }

@@ -4,7 +4,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getPurchaseOrdersSummary, getPurchaseRequestsSummary } from "@/lib/finance-api";
-import { logoutAction } from "@/app/dashboard/actions";
+// The old placeholder /dashboard route (and its actions.ts) was removed once real
+// modules existed to redirect to instead — logoutAction is genuinely shared, so it
+// now lives alongside the Admin Console, the other consumer of the same action.
+import { logoutAction } from "@/app/(dashboard)/admin/actions";
 
 // Sidebar arrangement mirrors a reference billing/finance portal's structure (grouped
 // sections, Students as the central hub, Fee Structures split from its reusable line

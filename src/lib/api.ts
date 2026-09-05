@@ -3,19 +3,25 @@
 // Tokens live only in httpOnly cookies -- the browser never holds them and never
 // calls the backend directly, so every authenticated call in this app goes through
 // a Server Action or Route Handler, which is also the only place Next.js allows
-// cookie writes from. That's why the silent-refresh logic lives here rather than in
-// middleware: refreshing needs to persist the new pair back to cookies, and this is
-// the layer that's actually allowed to do that.
+// cookie writes from. That's why the actual refresh-and-persist step happens in
+// src/proxy.ts (runs before Server Component rendering, and can write both the
+// request's and the response's cookies) -- getValidAccessToken() below only
+// refreshes the in-memory token for the current call as a fallback; it CANNOT
+// reliably persist a new pair to the browser on its own when called from a plain
+// Server Component render (Next.js disallows cookie writes there), which is what
+// most page.tsx files in this app do.
 
 import { cookies } from "next/headers";
+import {
+  decodeAccessTokenExpiry,
+  isExpiredOrExpiringSoon,
+  refreshTokens,
+  type TokenPair,
+} from "./token-refresh";
 
 export const ACCESS_TOKEN_COOKIE = "accessToken";
 export const REFRESH_TOKEN_COOKIE = "refreshToken";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
-
-/** No valid session could be established -- caller should redirect to /login. */
 export class AuthExpiredError extends Error {
   constructor() {
     super("Session expired, please sign in again.");
@@ -23,69 +29,25 @@ export class AuthExpiredError extends Error {
   }
 }
 
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-}
+export type { TokenPair };
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>;
 
-/** Reads exp out of the JWT payload without verifying it -- only ever used to decide
- * a cookie's own maxAge / whether to proactively refresh, never for authorization. */
-function decodeAccessTokenExpiry(token: string): number | null {
-  try {
-    const payload = token.split(".")[1];
-    const json = Buffer.from(payload, "base64url").toString("utf8");
-    const decoded = JSON.parse(json) as { exp?: unknown };
-    return typeof decoded.exp === "number" ? decoded.exp : null;
-  } catch {
-    return null;
-  }
-}
-
-const EXPIRY_SKEW_SECONDS = 30;
-
-function isExpiredOrExpiringSoon(token: string): boolean {
-  const exp = decodeAccessTokenExpiry(token);
-  if (exp === null) return true;
-  return exp - Math.floor(Date.now() / 1000) <= EXPIRY_SKEW_SECONDS;
-}
-
-async function refreshTokens(refreshToken: string): Promise<TokenPair | null> {
-  const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-
-  const body = await res.json().catch(() => null);
-  const data = body?.data;
-  if (typeof data?.accessToken !== "string" || typeof data?.refreshToken !== "string") {
-    return null;
-  }
-  return { accessToken: data.accessToken, refreshToken: data.refreshToken };
-}
-
-/** Sets both cookies from a fresh token pair -- used on login and on every refresh. */
 export function setAuthCookies(cookieStore: CookieStore, tokens: TokenPair): void {
   const accessExp = decodeAccessTokenExpiry(tokens.accessToken);
   const accessMaxAge = accessExp
     ? Math.max(accessExp - Math.floor(Date.now() / 1000), 60)
     : 15 * 60;
-
   const common = {
     httpOnly: true as const,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
   };
-
   cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, { ...common, maxAge: accessMaxAge });
   cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
     ...common,
-    maxAge: 60 * 60 * 24 * 30, // matches the backend's user_session TTL default
+    maxAge: 60 * 60 * 24 * 30,
   });
 }
 
@@ -95,35 +57,32 @@ export async function clearAuthCookies(cookieStore: CookieStore): Promise<void> 
 }
 
 /**
- * Returns a currently-valid access token, transparently refreshing (and persisting
- * the new pair back to cookies, WHEN this call happens to run inside a Server Action
- * or Route Handler) if the stored one is missing, expired, or within
+ * Returns a currently-valid access token for the current call, refreshing it (and
+ * best-effort persisting the new pair back to cookies — see file header, src/proxy.ts
+ * is what makes that durable) if the stored one is missing, expired, or within
  * EXPIRY_SKEW_SECONDS of expiring.
  *
- * getCurrentActor()/apiFetch are called from plain page/layout Server Components too
- * (every page needs the caller's role to render its nav/actions) — and Next.js
- * throws if `cookies().set()`/`.delete()` run outside a Server Action or Route
- * Handler. Without the try/catch below, a page load that happens to land inside the
- * ~30s-before-expiry refresh window (the access token is only 15 minutes, so this
- * recurs constantly) would throw mid-render and surface as a generic "Couldn't load
- * this page" error — not an auth problem at all, just an unpersisted cookie write.
- * The refreshed token is still valid and used for *this* request either way; if the
- * write couldn't land, the next Server Action or Route Handler call simply refreshes
- * again (one extra round-trip, never a broken page).
+ * The try/catches below are a second line of defense on top of proxy.ts, not a
+ * replacement for it: getCurrentActor()/apiFetch are still called directly from a few
+ * places outside the proxied request path (e.g. a route the proxy doesn't cover), and
+ * Next.js throws if `cookies().set()`/`.delete()` run outside a Server Action or Route
+ * Handler. Without them, a call that happens to land in the ~30s-before-expiry refresh
+ * window on one of those paths would throw mid-render and surface as a generic
+ * "Couldn't load this page" error — not an auth problem at all, just an unpersisted
+ * cookie write. The refreshed token is still valid and used for *this* request either
+ * way; if the write couldn't land, the next Server Action or Route Handler call (or
+ * the proxy, on the next navigation) simply refreshes again.
  */
 export async function getValidAccessToken(): Promise<string> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-
   if (accessToken && !isExpiredOrExpiringSoon(accessToken)) {
     return accessToken;
   }
-
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
   if (!refreshToken) {
     throw new AuthExpiredError();
   }
-
   const refreshed = await refreshTokens(refreshToken);
   if (!refreshed) {
     try {
@@ -136,6 +95,7 @@ export async function getValidAccessToken(): Promise<string> {
   }
 
   try {
+    // Best-effort only -- see file header. src/proxy.ts is what makes this durable.
     setAuthCookies(cookieStore, refreshed);
   } catch {
     // Same "not writable here" case, but this time refresh itself succeeded — use
@@ -144,38 +104,30 @@ export async function getValidAccessToken(): Promise<string> {
   return refreshed.accessToken;
 }
 
-/**
- * Authenticated fetch against the backend: attaches a guaranteed-fresh access token
- * and retries once on a 401 in case the session was revoked between the freshness
- * check and the call (e.g. logged out from another device in that instant).
- */
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
+
 export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const accessToken = await getValidAccessToken();
-
   const doFetch = (token: string) =>
     fetch(`${API_BASE_URL}${path}`, {
       ...init,
       headers: { ...init.headers, Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
-
   let res = await doFetch(accessToken);
-
   if (res.status === 401) {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
     if (!refreshToken) throw new AuthExpiredError();
-
     const refreshed = await refreshTokens(refreshToken);
     if (!refreshed) {
       await clearAuthCookies(cookieStore);
       throw new AuthExpiredError();
     }
-
     setAuthCookies(cookieStore, refreshed);
     res = await doFetch(refreshed.accessToken);
   }
-
   return res;
 }
 

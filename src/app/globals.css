@@ -7,47 +7,56 @@
  * were already established by this app's login/dashboard screens (--color-primary,
  * --color-bg, etc.); only their *values* are corrected here to match the real spec,
  * plus new tokens the spec defines that nothing in this app used yet.
+ * One blue does all the work — Signal Blue is the only primary/active/tile colour,
+ * Deep Blue only ever appears under or beside it (header gradient, active tab
+ * label). Status colour never fills anything pressable.
  */
 @theme {
-  /* Signal Blue — the one primary action color, every circular tile, active tab. */
+  /* Signal Blue — the one primary action color, every circular tile, active tab.
+     Kept as --color-primary too so the existing login screen (built before this
+     token pass) keeps working unchanged. */
   --color-primary: #2b6fe0;
   /* Deep Blue — header gradient far end / active tab label only, never a standalone fill. */
   --color-primary-deep: #1b3f9e;
 
+  /* Neutrals */
   --color-bg: #f4f6f9;      /* App ground — scrolling body */
-  --color-surface: #ffffff; /* card, sheet, row */
-  --color-field: #f7f9fc;   /* input, counter tile */
+  --color-surface: #ffffff; /* Card, sheet, row */
+  --color-field: #f7f9fc;   /* Input, counter tile */
   --color-border: #eaecf0;  /* Hairline — card border, divider */
   --color-text: #101828;    /* Ink — titles, values */
-  --color-text-muted: #98a2b3; /* eyebrows, timestamps */
+  --color-text-muted: #98a2b3; /* Muted — eyebrows, timestamps */
 
-  /* Exactly 3 status colors, reused verbatim everywhere (Attendance, Fees, Gate Pass, Transport alike) — never a 4th. */
+  /* Status — text/fill pairs, never used as a fill on anything pressable. Exactly 3
+     status colors, reused verbatim everywhere (Attendance, Fees, Gate Pass,
+     Transport alike) — never a 4th. */
   --color-success-bg: #ecfdf3;
   --color-success-text: #027a48;
   --color-pending-bg: #fffaeb;
   --color-pending-text: #b54708;
   --color-critical-bg: #fef3f2;
   --color-critical-text: #b42318;
-  /* error-* kept as an alias so the existing login form's classes stay correct. */
+  /* Kept for the existing login screen's error state — an alias, same values as critical. */
   --color-error-bg: #fef3f2;
   --color-error-text: #b42318;
 
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   /* Data font — used only where figures are compared down a column (money, marks, counts). */
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
-}
 
-/* Radius maps to component size, not taste — named tokens from the spec, used as
-   arbitrary values (rounded-[var(--radius-card)]) since they don't fit Tailwind's
-   default scale. */
-:root {
-  color-scheme: light;
+  /* Radius maps to component size, not taste — named tokens from the spec, used as
+     arbitrary values (rounded-[var(--radius-card)]) since they don't fit Tailwind's
+     default scale. */
   --radius-pill: 7px;    /* status pill, small button */
   --radius-input: 11px;  /* input, secondary button */
   --radius-card: 14px;   /* record card, list row */
   --radius-section: 16px; /* section container */
   --radius-sheet: 22px;  /* bottom sheet / modal top corners */
   --shadow-raised: 0 4px 12px rgba(43, 111, 224, 0.25);
+}
+
+:root {
+  color-scheme: light;
 }
 
 * {
