@@ -75,5 +75,5 @@ export async function loginAction(
   const cookieStore = await cookies();
   setAuthCookies(cookieStore, { accessToken, refreshToken });
 
-  redirect("/dashboard");
+  redirect("/admin");
 }

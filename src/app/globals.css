@@ -1,16 +1,46 @@
 @import "tailwindcss";
 
+/*
+ * Design Architecture v0.1 tokens (School EOS Design Architecture.pdf).
+ * One blue does all the work -- Signal Blue is the only primary/active/tile
+ * colour, Deep Blue only ever appears under or beside it (header gradient,
+ * active tab label). Status colour never fills anything pressable.
+ */
 @theme {
-  --color-primary: #1e3a5f;
-  --color-bg: #f6f5f1;
-  --color-surface: #ffffff;
-  --color-border: #e3e1d8;
-  --color-text: #22201c;
-  --color-text-muted: #78756b;
-  --color-error-bg: #fdecea;
-  --color-error-text: #b33a2e;
+  /* Primary -- kept as --color-primary too so the existing login screen
+     (built before this token pass) keeps working unchanged. */
+  --color-primary: #2b6fe0;
+  --color-primary-deep: #1b3f9e;
+
+  /* Neutrals */
+  --color-bg: #f4f6f9; /* App ground -- scrolling body */
+  --color-surface: #ffffff; /* Card, sheet, row */
+  --color-field: #f7f9fc; /* Input, counter tile */
+  --color-border: #eaecf0; /* Hairline -- card border, divider */
+  --color-text: #101828; /* Ink -- titles, values */
+  --color-text-muted: #98a2b3; /* Muted -- eyebrows, timestamps */
+
+  /* Status -- text/fill pairs, never used as a fill on anything pressable */
+  --color-success-bg: #ecfdf3;
+  --color-success-text: #027a48;
+  --color-pending-bg: #fffaeb;
+  --color-pending-text: #b54708;
+  --color-critical-bg: #fef3f2;
+  --color-critical-text: #b42318;
+
+  /* Kept for the existing login screen's error state */
+  --color-error-bg: #fef3f2;
+  --color-error-text: #b42318;
 
   --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radius -- maps to component size, not taste */
+  --radius-pill: 7px; /* status pill, small button */
+  --radius-input: 11px; /* input, secondary button */
+  --radius-card: 14px; /* record card, list row */
+  --radius-section: 16px; /* section container */
+  --radius-sheet: 22px; /* bottom sheet / modal top corners */
 }
 
 :root {
@@ -23,4 +53,5 @@
 
 body {
   margin: 0;
+  font-variant-numeric: tabular-nums;
 }
