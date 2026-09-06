@@ -116,6 +116,17 @@ const STATUS_LABELS: Record<string, string> = {
   IN_TRANSIT: "In transit",
   DELIVERED: "Delivered",
   PART_DELIVERED: "Partly delivered",
+  // Media Room (shoot assignments / social posts / equipment status)
+  PLANNED: "Planned",
+  IN_PROGRESS: "In progress",
+  COMPLETED: "Completed",
+  SCHEDULED: "Scheduled",
+  PUBLISHED: "Published",
+  AVAILABLE: "Available",
+  ASSIGNED: "Assigned",
+  DAMAGED: "Damaged",
+  LOST: "Lost",
+  RETIRED: "Retired",
 };
 
 export function statusLabel(state: string): string {
@@ -129,12 +140,15 @@ const STATUS_TONE: Record<string, StatusTone> = {
   ACTIVE: "success", APPROVED: "success", PAID: "success", CONFIRMED: "success",
   RECONCILED: "success", PROCESSED: "success", MATCHED: "success", RESOLVED: "success",
   COMMITTED: "success", VALIDATED: "success", CLOSED: "success", DELIVERED: "success",
+  COMPLETED: "success", PUBLISHED: "success", AVAILABLE: "success",
   DRAFT: "pending", PENDING: "pending", PENDING_APPROVAL: "pending", PARTIAL: "pending",
   RECORDED: "pending", INITIATED: "pending", RUNNING: "pending", NEEDS_REVIEW: "pending",
   UNMATCHED: "pending", SUPERSEDED: "pending",
   ORDERED: "pending", DISPATCHED: "pending", IN_TRANSIT: "pending", PART_DELIVERED: "pending",
+  PLANNED: "pending", IN_PROGRESS: "pending", SCHEDULED: "pending", ASSIGNED: "pending",
   REJECTED: "critical", CANCELLED: "critical", OVERDUE: "critical", FAILED: "critical",
   REVERSED: "critical", DISCREPANCY: "critical", VALIDATION_FAILED: "critical", WAIVED: "pending",
+  DAMAGED: "critical", LOST: "critical", RETIRED: "critical",
 };
 
 export function statusTone(state: string): StatusTone {
