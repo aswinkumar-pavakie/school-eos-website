@@ -39,6 +39,17 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   const { data } = (await res.json()) as MeResponse;
+
+  // Every backend endpoint under /admin/* already enforces @Roles('ADMIN'), so
+  // this redirect isn't the real security boundary -- but without it, a
+  // non-Admin who lands here (stale bookmark, typed URL) sees the full shell
+  // render before every single data fetch on the page 401s out from under
+  // them, instead of a clean bounce to their own portal. Same check Library's
+  // and Finance's own layouts already do for their roles.
+  if (!data.roles.some((r) => r.role_code === "ADMIN")) {
+    redirect("/login");
+  }
+
   const personName = [data.person.firstName, data.person.lastName].filter(Boolean).join(" ");
   const roleCode = data.roles[0]?.role_code ?? "ADMIN";
   const roleLabel = ROLE_LABELS[roleCode] ?? roleCode;

@@ -116,6 +116,23 @@ const STATUS_LABELS: Record<string, string> = {
   IN_TRANSIT: "In transit",
   DELIVERED: "Delivered",
   PART_DELIVERED: "Partly delivered",
+  // Library module additions (book/copy/member/issue/reservation/fine state
+  // vocab) — additive only, every key above is untouched.
+  WITHDRAWN: "Withdrawn",
+  AVAILABLE: "Available",
+  ISSUED: "Issued",
+  RESERVED: "Reserved",
+  LOST: "Lost",
+  DAMAGED: "Damaged",
+  SUSPENDED: "Suspended",
+  INACTIVE: "Inactive",
+  FULFILLED: "Fulfilled",
+  EXPIRED: "Expired",
+  SENT_TO_FINANCE: "Sent to Finance",
+  UNDER_REPAIR: "Under repair",
+  RETIRED: "Retired",
+  READY: "Ready for pickup",
+  PARTIALLY_PAID: "Partially paid",
 };
 
 export function statusLabel(state: string): string {
@@ -135,6 +152,12 @@ const STATUS_TONE: Record<string, StatusTone> = {
   ORDERED: "pending", DISPATCHED: "pending", IN_TRANSIT: "pending", PART_DELIVERED: "pending",
   REJECTED: "critical", CANCELLED: "critical", OVERDUE: "critical", FAILED: "critical",
   REVERSED: "critical", DISCREPANCY: "critical", VALIDATION_FAILED: "critical", WAIVED: "pending",
+  // Library module additions.
+  WITHDRAWN: "critical", AVAILABLE: "success", ISSUED: "pending", RESERVED: "pending",
+  LOST: "critical", DAMAGED: "critical", SUSPENDED: "critical", INACTIVE: "pending",
+  FULFILLED: "success", EXPIRED: "critical", SENT_TO_FINANCE: "pending",
+  UNDER_REPAIR: "pending", RETIRED: "critical",
+  READY: "success", PARTIALLY_PAID: "pending",
 };
 
 export function statusTone(state: string): StatusTone {

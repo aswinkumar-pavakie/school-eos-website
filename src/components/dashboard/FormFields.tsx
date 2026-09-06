@@ -11,6 +11,9 @@ export function Field({
   disabled,
   placeholder,
   defaultValue,
+  min,
+  max,
+  step,
 }: {
   label: string;
   name: string;
@@ -19,6 +22,11 @@ export function Field({
   disabled?: boolean;
   placeholder?: string;
   defaultValue?: string | number;
+  /** Native number-input bounds/step -- optional pass-through, additive only (every
+   * existing caller that doesn't pass these behaves exactly as before). */
+  min?: number;
+  max?: number;
+  step?: string | number;
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
@@ -33,6 +41,9 @@ export function Field({
         disabled={disabled}
         placeholder={placeholder}
         defaultValue={defaultValue}
+        min={min}
+        max={max}
+        step={step}
         className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
       />
     </label>

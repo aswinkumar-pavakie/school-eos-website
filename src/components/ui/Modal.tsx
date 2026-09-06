@@ -30,7 +30,7 @@ export function Modal({
       <span onClick={() => ref.current?.showModal()}>{trigger}</span>
       <dialog
         ref={ref}
-        className="w-[480px] max-w-[calc(100vw-32px)] rounded-[var(--radius-sheet)] border border-border bg-surface p-0 backdrop:bg-[rgba(16,24,40,0.45)]"
+        className="m-auto w-[480px] max-w-[calc(100vw-32px)] rounded-[var(--radius-sheet)] border border-border bg-surface p-0 backdrop:bg-[rgba(16,24,40,0.45)]"
         onClick={(e) => {
           if (e.target === ref.current) ref.current?.close();
         }}

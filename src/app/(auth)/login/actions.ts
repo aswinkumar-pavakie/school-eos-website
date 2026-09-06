@@ -7,13 +7,13 @@ import { setAuthCookies } from "@/lib/api";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
-// Admin, Principal (web half), Finance/Accounts -- the only web logins in the
-// system. Vice Principal moved to mobile-only per updated plan (2026-09-03) --
+// Admin, Principal (web half), Finance/Accounts, Library -- the only web logins in
+// the system. Vice Principal moved to mobile-only per updated plan (2026-09-03) --
 // see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts. Faculty/Parent/
 // Hostel Warden are mobile-only too; this backend endpoint itself doesn't restrict
 // by client, so the platform boundary is enforced here, not assumed from who the
 // task said would use this screen.
-const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE"];
+const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY"];
 
 export interface LoginState {
   error?: string;
@@ -89,6 +89,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("PRINCIPAL")) {
     redirect("/finance/purchase-requests");
+  }
+  if (roleCodes.includes("LIBRARY")) {
+    redirect("/library");
   }
   redirect("/dashboard");
 }

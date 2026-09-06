@@ -42,6 +42,11 @@ const FULL_NAV_ITEMS: ShellNavItem[] = [
   { href: "/finance/approvals", label: "Other Approvals", icon: "audit" },
   { href: "/finance/pop-tracking", label: "POP Tracking", icon: "transport" },
   { href: "/finance/sop-tracking", label: "SOP Tracking", icon: "transport" },
+  // Read-only view of the SAME /library/fines Library's own module reads, plus the
+  // one real financial action (Collect payment) once a fine reaches Finance — see
+  // src/app/(dashboard)/finance/library/page.tsx. Principal's narrower nav below
+  // doesn't get this; Library fines aren't Principal's concern.
+  { href: "/finance/library", label: "Library", icon: "academics" },
 ];
 
 const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
@@ -66,6 +71,15 @@ export default async function FinanceLayout({ children }: { children: ReactNode 
   const actor = await getCurrentActor().catch(() => null);
   if (!actor) redirect("/login");
   const isFinanceOrAdmin = actor.roles.includes("FINANCE") || actor.roles.includes("ADMIN");
+  const isPrincipal = actor.roles.includes("PRINCIPAL");
+  // Every backend endpoint under /finance/* already enforces its own @Roles(),
+  // so this isn't the real security boundary -- but without it, someone with
+  // neither Finance/Admin nor Principal (e.g. a Library-only login) silently
+  // fell through to the Principal nav below instead of being bounced to their
+  // own portal.
+  if (!isFinanceOrAdmin && !isPrincipal) {
+    redirect("/login");
+  }
 
   // Real name for the avatar/menu — same direct /auth/me fetch pattern Admin's own
   // layout uses (getCurrentActor() only returns personId/roles, not a display name).

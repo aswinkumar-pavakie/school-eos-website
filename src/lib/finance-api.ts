@@ -937,3 +937,47 @@ export async function allotPurchaseOrder(id: string, input: { quantity: number; 
   const res = await apiFetch(`/finance/purchase-orders/${id}/allot`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   return (await parseOrThrow<ApiEnvelope<PurchaseOrder>>(res)).data;
 }
+
+// ---------- Misc receivables (generic non-fee amounts owed to the school, sent in
+// from another module — today just Library fines: see src/lib/library-api.ts's
+// sendFineToFinance(). Finance's own /finance/library page reads this list for the
+// ones already routed here, and is the ONLY place that collects payment against
+// them; Library's own fines page never calls collect-payment itself.) ----------
+
+export type MiscReceivableStatus = "PENDING" | "PARTIAL" | "PAID" | "WAIVED" | "CANCELLED";
+
+export interface MiscReceivable {
+  id: string;
+  sourceModule: string;
+  sourceReferenceId: string;
+  personId: string;
+  description: string;
+  amountPaise: string;
+  paidPaise: string;
+  status: MiscReceivableStatus;
+}
+
+export async function listMiscReceivables(
+  filter: { status?: string; sourceModule?: string; page?: number; pageSize?: number } = {},
+): Promise<ApiEnvelope<MiscReceivable[]>> {
+  const qs = new URLSearchParams(Object.entries(filter).filter(([, v]) => v !== undefined) as [string, string][]);
+  const res = await apiFetch(`/finance/misc-receivables?${qs.toString()}`);
+  return parseOrThrow(res);
+}
+
+export async function getMiscReceivable(id: string): Promise<MiscReceivable> {
+  const res = await apiFetch(`/finance/misc-receivables/${id}`);
+  return (await parseOrThrow<ApiEnvelope<MiscReceivable>>(res)).data;
+}
+
+export async function collectMiscReceivablePayment(
+  id: string,
+  input: { amountPaise: string; mode: "CASH" | "CHEQUE" | "DD" | "ONLINE"; idempotencyKey: string },
+): Promise<MiscReceivable> {
+  const res = await apiFetch(`/finance/misc-receivables/${id}/collect-payment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return (await parseOrThrow<ApiEnvelope<MiscReceivable>>(res)).data;
+}

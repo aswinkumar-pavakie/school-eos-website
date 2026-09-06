@@ -13,28 +13,55 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BellIcon, CollapseIcon, NAV_ICONS } from "./icons";
 import { GlobalSearch } from "./GlobalSearch";
 
-export type ShellNavItem = { href: string; label: string; icon: keyof typeof NAV_ICONS };
+export type ShellNavItem = {
+  href: string;
+  label: string;
+  icon: keyof typeof NAV_ICONS;
+  /** Optional section header rendered immediately before this item, whenever it
+   * differs from the previous item's group. Omitted entirely by Finance/Library's
+   * own flat nav arrays, so their sidebars render with no headers, unchanged. */
+  group?: string;
+};
 
 const ADMIN_NAV_ITEMS: ShellNavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: "dashboard" },
-  { href: "/admin/students", label: "Students", icon: "students" },
-  { href: "/admin/parents", label: "Parents", icon: "parents" },
-  { href: "/admin/faculty", label: "Faculty", icon: "faculty" },
-  { href: "/admin/attendance", label: "Attendance", icon: "attendance" },
-  { href: "/admin/academics", label: "Academics", icon: "academics" },
-  { href: "/admin/community", label: "Communities", icon: "community" },
-  { href: "/admin/transport", label: "Transport", icon: "transport" },
-  { href: "/admin/hostel", label: "Hostel", icon: "hostel" },
-  { href: "/admin/inventory", label: "Inventory", icon: "inventory" },
-  { href: "/admin/maintenance", label: "Repair & Maintenance", icon: "maintenance" },
-  { href: "/admin/finance", label: "Finance", icon: "finance" },
-  { href: "/admin/timetable", label: "Timetable", icon: "timetable" },
-  { href: "/admin/academic-calendar", label: "Academic Calendar", icon: "calendar" },
-  { href: "/admin/reports", label: "Reports", icon: "reports" },
-  { href: "/admin/announcements", label: "Announcements", icon: "announcements" },
-  { href: "/admin/audit", label: "Audit Log", icon: "audit" },
-  { href: "/admin/requests", label: "Requests & Approvals", icon: "requests" },
-  { href: "/admin/settings", label: "Settings", icon: "settings" },
+  { href: "/admin", label: "Dashboard", icon: "dashboard", group: "MAIN" },
+
+  { href: "/admin/students", label: "Students", icon: "students", group: "PEOPLE" },
+  { href: "/admin/parents", label: "Parents", icon: "parents", group: "PEOPLE" },
+  { href: "/admin/faculty", label: "Faculty", icon: "faculty", group: "PEOPLE" },
+
+  { href: "/admin/academics", label: "Academics", icon: "academics", group: "ACADEMICS" },
+  { href: "/admin/timetable", label: "Class Timetable", icon: "timetable", group: "ACADEMICS" },
+  // Stub -- see src/app/(dashboard)/admin/examination-timetable/page.tsx. Reuses the
+  // "timetable" icon; no dedicated icon exists for this yet.
+  { href: "/admin/examination-timetable", label: "Examination Timetable", icon: "timetable", group: "ACADEMICS" },
+  { href: "/admin/academic-calendar", label: "Academic Calendar", icon: "calendar", group: "ACADEMICS" },
+  // Stub -- see src/app/(dashboard)/admin/examinations/page.tsx. Reuses the "reports"
+  // icon; no dedicated icon exists for this yet.
+  { href: "/admin/examinations", label: "Examinations", icon: "reports", group: "ACADEMICS" },
+
+  { href: "/admin/attendance", label: "Attendance", icon: "attendance", group: "ATTENDANCE" },
+
+  { href: "/admin/transport", label: "Transport", icon: "transport", group: "CAMPUS & OPERATIONS" },
+  { href: "/admin/hostel", label: "Hostel", icon: "hostel", group: "CAMPUS & OPERATIONS" },
+  { href: "/admin/inventory", label: "Inventory", icon: "inventory", group: "CAMPUS & OPERATIONS" },
+  // Oversight-only page (src/app/(dashboard)/admin/library/page.tsx) — Admin never
+  // gets Library's own operational shell, only a read-only summary. Reuses the
+  // "academics" icon (an open book) rather than inventing a new one -- no existing
+  // icon fits a library better, and this set already reuses icons across items.
+  { href: "/admin/library", label: "Library", icon: "academics", group: "CAMPUS & OPERATIONS" },
+  { href: "/admin/maintenance", label: "Repair & Maintenance", icon: "maintenance", group: "CAMPUS & OPERATIONS" },
+
+  { href: "/admin/finance", label: "Finance", icon: "finance", group: "FINANCE" },
+
+  { href: "/admin/community", label: "Communities", icon: "community", group: "COMMUNICATION" },
+  { href: "/admin/announcements", label: "Announcements", icon: "announcements", group: "COMMUNICATION" },
+
+  { href: "/admin/reports", label: "Reports", icon: "reports", group: "ADMINISTRATION" },
+  { href: "/admin/audit", label: "Audit Log", icon: "audit", group: "ADMINISTRATION" },
+  { href: "/admin/requests", label: "Requests & Approvals", icon: "requests", group: "ADMINISTRATION" },
+
+  { href: "/admin/settings", label: "Settings", icon: "settings", group: "SYSTEM" },
 ];
 
 interface ShellProps {
@@ -143,11 +170,22 @@ export function Shell({
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="flex flex-col gap-1">
-            {navItems.map((item) => {
+            {navItems.map((item, i) => {
               const Icon = NAV_ICONS[item.icon];
               const active = isActive(pathname, item.href, navItems[0].href);
+              const showGroupHeader =
+                !collapsed && item.group !== undefined && item.group !== navItems[i - 1]?.group;
               return (
                 <li key={item.href}>
+                  {showGroupHeader && (
+                    <div
+                      className={`px-3.5 pb-1.5 text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted ${
+                        i === 0 ? "pt-0" : "pt-4"
+                      }`}
+                    >
+                      {item.group}
+                    </div>
+                  )}
                   <Link
                     href={item.href}
                     title={collapsed ? item.label : undefined}
