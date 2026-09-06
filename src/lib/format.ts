@@ -133,6 +133,15 @@ const STATUS_LABELS: Record<string, string> = {
   RETIRED: "Retired",
   READY: "Ready for pickup",
   PARTIALLY_PAID: "Partially paid",
+  // Media Room (shoot assignments / social posts / equipment status) --
+  // AVAILABLE/DAMAGED/LOST/RETIRED already covered by Library above with the
+  // same labels, not repeated here.
+  PLANNED: "Planned",
+  IN_PROGRESS: "In progress",
+  COMPLETED: "Completed",
+  SCHEDULED: "Scheduled",
+  PUBLISHED: "Published",
+  ASSIGNED: "Assigned",
 };
 
 export function statusLabel(state: string): string {
@@ -146,14 +155,17 @@ const STATUS_TONE: Record<string, StatusTone> = {
   ACTIVE: "success", APPROVED: "success", PAID: "success", CONFIRMED: "success",
   RECONCILED: "success", PROCESSED: "success", MATCHED: "success", RESOLVED: "success",
   COMMITTED: "success", VALIDATED: "success", CLOSED: "success", DELIVERED: "success",
+  COMPLETED: "success", PUBLISHED: "success", AVAILABLE: "success",
   DRAFT: "pending", PENDING: "pending", PENDING_APPROVAL: "pending", PARTIAL: "pending",
   RECORDED: "pending", INITIATED: "pending", RUNNING: "pending", NEEDS_REVIEW: "pending",
   UNMATCHED: "pending", SUPERSEDED: "pending",
   ORDERED: "pending", DISPATCHED: "pending", IN_TRANSIT: "pending", PART_DELIVERED: "pending",
+  PLANNED: "pending", IN_PROGRESS: "pending", SCHEDULED: "pending", ASSIGNED: "pending",
   REJECTED: "critical", CANCELLED: "critical", OVERDUE: "critical", FAILED: "critical",
   REVERSED: "critical", DISCREPANCY: "critical", VALIDATION_FAILED: "critical", WAIVED: "pending",
-  // Library module additions.
-  WITHDRAWN: "critical", AVAILABLE: "success", ISSUED: "pending", RESERVED: "pending",
+  // Library module additions. AVAILABLE is already "success" above (Media
+  // Room's addition) -- not repeated here.
+  WITHDRAWN: "critical", ISSUED: "pending", RESERVED: "pending",
   LOST: "critical", DAMAGED: "critical", SUSPENDED: "critical", INACTIVE: "pending",
   FULFILLED: "success", EXPIRED: "critical", SENT_TO_FINANCE: "pending",
   UNDER_REPAIR: "pending", RETIRED: "critical",

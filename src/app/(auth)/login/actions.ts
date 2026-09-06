@@ -13,7 +13,7 @@ const API_BASE_URL =
 // Hostel Warden are mobile-only too; this backend endpoint itself doesn't restrict
 // by client, so the platform boundary is enforced here, not assumed from who the
 // task said would use this screen.
-const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY"];
+const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY", "MEDIA_ROOM"];
 
 export interface LoginState {
   error?: string;
@@ -92,6 +92,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("LIBRARY")) {
     redirect("/library");
+  }
+  if (roleCodes.includes("MEDIA_ROOM")) {
+    redirect("/media");
   }
   redirect("/dashboard");
 }
