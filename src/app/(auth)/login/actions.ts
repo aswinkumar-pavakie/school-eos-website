@@ -7,13 +7,13 @@ import { setAuthCookies } from "@/lib/api";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
-// Admin, Principal (web half), Finance/Accounts -- the only web logins in the
-// system. Vice Principal moved to mobile-only per updated plan (2026-09-03) --
+// Admin, Principal (web half), Finance/Accounts, Library -- the only web logins in
+// the system. Vice Principal moved to mobile-only per updated plan (2026-09-03) --
 // see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts. Faculty/Parent/
 // Hostel Warden are mobile-only too; this backend endpoint itself doesn't restrict
 // by client, so the platform boundary is enforced here, not assumed from who the
 // task said would use this screen.
-const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE"];
+const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY", "MEDIA_ROOM"];
 
 export interface LoginState {
   error?: string;
@@ -75,5 +75,28 @@ export async function loginAction(
   const cookieStore = await cookies();
   setAuthCookies(cookieStore, { accessToken, refreshToken });
 
+  // Each web-allowed role lands on the module built for it: Admin on the Admin
+  // Console, Finance on the Finance module, Principal on its own Principal Console
+  // (src/app/(dashboard)/principal/ — the full sidebar, not the narrow Purchase/
+  // Service Requests + Approvals view Finance's layout still offers Principal by
+  // direct URL). /dashboard is a defensive fallback only — every role that reaches
+  // here already passed the WEB_ALLOWED_ROLES check above, so it should never
+  // actually be hit.
+  const roleCodes = roles.map((r) => r.role_code);
+  if (roleCodes.includes("ADMIN")) {
+    redirect("/admin");
+  }
+  if (roleCodes.includes("FINANCE")) {
+    redirect("/finance");
+  }
+  if (roleCodes.includes("PRINCIPAL")) {
+    redirect("/principal");
+  }
+  if (roleCodes.includes("LIBRARY")) {
+    redirect("/library");
+  }
+  if (roleCodes.includes("MEDIA_ROOM")) {
+    redirect("/media");
+  }
   redirect("/dashboard");
 }

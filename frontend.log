@@ -1,0 +1,73 @@
+
+> school-eos-web@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by process 14696, using available port 3001 instead.
+▲ Next.js 16.3.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.56.1:3001
+- Environments: .env.local
+✓ Ready in 865ms
+✓ Running next.config.ts took 47ms
+
+ GET /media/social-publishing?tab=calendar 200 in 2.2s (next.js: 1506ms, application-code: 657ms)
+ GET /login 200 in 69ms (next.js: 39ms, application-code: 29ms)
+ GET /login 200 in 33ms (next.js: 11ms, application-code: 23ms)
+ GET /media/social-publishing?tab=calendar 200 in 503ms (next.js: 8ms, application-code: 495ms)
+ GET /login 200 in 25ms (next.js: 6ms, application-code: 19ms)
+ GET /media/raise-indent 200 in 448ms (next.js: 29ms, application-code: 419ms)
+ GET /media/raise-indent?tab=approved 200 in 500ms (next.js: 5ms, application-code: 495ms)
+ GET /media/raise-indent?tab=rejected 200 in 175ms (next.js: 5ms, application-code: 170ms)
+ GET /media 200 in 732ms (next.js: 32ms, application-code: 700ms)
+ GET /media/social-publishing 200 in 174ms (next.js: 5ms, application-code: 169ms)
+ GET /media/shoot-assignments 200 in 306ms (next.js: 35ms, application-code: 270ms)
+ GET /media/inventory 200 in 278ms (next.js: 27ms, application-code: 251ms)
+ GET /media/team 200 in 191ms (next.js: 29ms, application-code: 162ms)
+ GET /media 200 in 564ms (next.js: 5ms, application-code: 559ms)
+ POST /login 200 in 1311ms (next.js: 8ms, application-code: 1303ms)
+  └─ ƒ loginAction({}, {}) in 717ms src/app/(auth)/login/actions.ts
+ GET /media/shoot-assignments 200 in 249ms (next.js: 8ms, application-code: 241ms)
+ GET /media/social-publishing 200 in 125ms (next.js: 4ms, application-code: 121ms)
+ POST /media/social-publishing 200 in 102ms (next.js: 9ms, application-code: 94ms)
+  └─ ƒ createMediaPostAction({}, {}) in 52ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /media/inventory 200 in 612ms (next.js: 6ms, application-code: 606ms)
+ GET /media/raise-indent 200 in 173ms (next.js: 4ms, application-code: 168ms)
+ GET /media/raise-indent?tab=approved 200 in 175ms (next.js: 8ms, application-code: 167ms)
+ GET /media/team 200 in 94ms (next.js: 7ms, application-code: 87ms)
+ GET /media/social-publishing 200 in 111ms (next.js: 8ms, application-code: 103ms)
+ GET /media 200 in 511ms (next.js: 4ms, application-code: 506ms)
+ GET /media 200 in 47ms (next.js: 14ms, application-code: 33ms)
+✓ Compiled in 156ms
+ GET /login 200 in 125ms (next.js: 28ms, application-code: 97ms)
+ GET /media 200 in 798ms (next.js: 6ms, application-code: 792ms)
+ POST /login 200 in 1912ms (next.js: 8ms, application-code: 1904ms)
+  └─ ƒ loginAction({}, {}) in 1086ms src/app/(auth)/login/actions.ts
+ GET /media/shoot-assignments 200 in 544ms (next.js: 7ms, application-code: 537ms)
+ GET /media/social-publishing 200 in 120ms (next.js: 12ms, application-code: 108ms)
+ POST /media/social-publishing 200 in 2.4s (next.js: 11ms, application-code: 2.4s)
+  └─ ƒ createMediaPostAction({}, {}) in 2004ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /media/social-publishing?tab=feed 200 in 150ms (next.js: 5ms, application-code: 145ms)
+ POST /media/social-publishing?tab=feed 200 in 209ms (next.js: 11ms, application-code: 198ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 182ms src/app/(dashboard)/media/social-publishing/actions.ts
+ POST /media/social-publishing?tab=feed 200 in 229ms (next.js: 16ms, application-code: 214ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 201ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /media/social-publishing?tab=new 200 in 172ms (next.js: 5ms, application-code: 168ms)
+ GET /media/social-publishing?tab=feed 200 in 179ms (next.js: 5ms, application-code: 174ms)
+ POST /media/social-publishing?tab=feed 200 in 211ms (next.js: 16ms, application-code: 194ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 180ms src/app/(dashboard)/media/social-publishing/actions.ts
+ POST /media/social-publishing?tab=feed 200 in 242ms (next.js: 10ms, application-code: 232ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 221ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /media/social-publishing?tab=calendar 200 in 152ms (next.js: 4ms, application-code: 148ms)
+ GET /media/social-publishing?tab=feed 200 in 829ms (next.js: 5ms, application-code: 824ms)
+ POST /media/social-publishing?tab=feed 200 in 205ms (next.js: 11ms, application-code: 194ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 176ms src/app/(dashboard)/media/social-publishing/actions.ts
+ POST /media/social-publishing?tab=feed 200 in 256ms (next.js: 4ms, application-code: 252ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 242ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /media/social-publishing?tab=feed 200 in 186ms (next.js: 5ms, application-code: 181ms)
+ GET /media/social-publishing?tab=new 200 in 223ms (next.js: 9ms, application-code: 213ms)
+ GET /media/social-publishing?tab=calendar 200 in 257ms (next.js: 23ms, application-code: 234ms)
+ GET /media/social-publishing?tab=feed 200 in 162ms (next.js: 6ms, application-code: 156ms)
+ POST /media/social-publishing?tab=feed 200 in 204ms (next.js: 7ms, application-code: 197ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 184ms src/app/(dashboard)/media/social-publishing/actions.ts
+ POST /media/social-publishing?tab=feed 200 in 201ms (next.js: 7ms, application-code: 194ms)
+  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 185ms src/app/(dashboard)/media/social-publishing/actions.ts
