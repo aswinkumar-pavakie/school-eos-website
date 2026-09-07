@@ -13,7 +13,12 @@ async function readError(res: Response): Promise<string> {
   return body?.message ?? "Something went wrong. Nothing was changed.";
 }
 
+// Genuinely shared across Admin and Principal (per the approved API doc,
+// creating an announcement is "Admin/leadership/authorized role") -- same
+// precedent as markStaffAttendanceAction. Principal's page passes its own
+// revalidate path so its own view refreshes instead of Admin's cached one.
 export async function createAnnouncementAction(
+  revalidatePathOverride: string | undefined,
   _prev: FormActionState,
   formData: FormData,
 ): Promise<FormActionState> {
@@ -43,7 +48,7 @@ export async function createAnnouncementAction(
   });
 
   if (!res.ok) return { error: await readError(res) };
-  revalidatePath("/admin/announcements");
+  revalidatePath(revalidatePathOverride ?? "/admin/announcements");
   return {};
 }
 

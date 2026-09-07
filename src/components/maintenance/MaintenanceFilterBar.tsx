@@ -21,15 +21,19 @@ export function MaintenanceFilterBar({
   issueType,
   location,
   status,
+  formActionOverride,
 }: {
   search: string;
   priority: string;
   issueType: string;
   location: string;
   status?: string;
+  // Additive, defaults to Admin's own page so its existing usage is
+  // unaffected -- Principal's oversight view passes its own route.
+  formActionOverride?: string;
 }) {
   return (
-    <form action="/admin/maintenance" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/maintenance"} className="mt-6 flex flex-wrap items-end gap-3">
       {status && <input type="hidden" name="status" value={status} />}
       <AutoSubmitSearchInput
         type="search"

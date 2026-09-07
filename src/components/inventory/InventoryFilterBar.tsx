@@ -18,15 +18,19 @@ export function InventoryFilterBar({
   location,
   status,
   categories,
+  formActionOverride,
 }: {
   search: string;
   categoryId: string;
   location: string;
   status?: string;
   categories: Category[];
+  // Additive, defaults to Admin's own page so its existing usage is
+  // unaffected -- Principal's oversight view passes its own route.
+  formActionOverride?: string;
 }) {
   return (
-    <form action="/admin/inventory" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/inventory"} className="mt-6 flex flex-wrap items-end gap-3">
       {status && <input type="hidden" name="status" value={status} />}
       <AutoSubmitSearchInput
         type="search"

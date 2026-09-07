@@ -14,9 +14,21 @@ const MODES: [string, string][] = [
   ["WALLET_TOPUP", "Wallet top-up"],
 ];
 
-export function PaymentsFilterBar({ search, state, mode }: { search: string; state: string; mode: string }) {
+export function PaymentsFilterBar({
+  search,
+  state,
+  mode,
+  formActionOverride,
+}: {
+  search: string;
+  state: string;
+  mode: string;
+  // Additive, defaults to Admin's own page so its existing usage is
+  // unaffected -- Principal's oversight view passes its own route.
+  formActionOverride?: string;
+}) {
   return (
-    <form action="/admin/finance/payments" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/finance/payments"} className="mt-6 flex flex-wrap items-end gap-3">
       <AutoSubmitSearchInput
         type="search"
         name="search"
