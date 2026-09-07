@@ -33,6 +33,7 @@ export function StaffAttendanceFilterBar({
   grades,
   sections,
   subjects,
+  formAction,
 }: {
   date: string;
   isTeaching: string;
@@ -42,13 +43,16 @@ export function StaffAttendanceFilterBar({
   grades: Grade[];
   sections: Section[];
   subjects: Subject[];
+  // Additive, defaults to Admin's own page so its existing usage is
+  // unaffected -- Principal's oversight view passes its own route.
+  formAction?: string;
 }) {
   const [selectedIsTeaching, setSelectedIsTeaching] = useState(isTeaching);
   const [selectedGradeId, setSelectedGradeId] = useState(gradeId);
   const visibleSections = selectedGradeId ? sections.filter((s) => s.gradeId === selectedGradeId) : [];
 
   return (
-    <form action="/admin/attendance" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formAction ?? "/admin/attendance"} className="mt-6 flex flex-wrap items-end gap-3">
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="font-semibold text-text">Date</span>
         <AutoSubmitSearchInput

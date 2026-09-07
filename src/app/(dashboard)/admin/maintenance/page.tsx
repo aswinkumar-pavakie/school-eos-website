@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { CreateRepairRequestModal } from "@/components/maintenance/CreateRepairRequestModal";
 import { MaintenanceFilterBar } from "@/components/maintenance/MaintenanceFilterBar";
-import { ExportCsvLink } from "@/components/dashboard/ExportCsvLink";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { MaintenanceIcon } from "@/components/dashboard/icons";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { StatusPill } from "@/components/dashboard/StatusPill";
@@ -142,15 +142,7 @@ export default async function MaintenancePage({
           <p className="mt-1 text-sm text-text-muted">{meta.total} requests -- general assets, equipment &amp; facilities</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/print/maintenance/requests?${filterQuery()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
-          >
-            Print / PDF
-          </Link>
-          <ExportCsvLink href={`/api/export/maintenance-requests?${filterQuery()}`} />
+          <DownloadMenu csvHref={`/api/export/maintenance-requests?${filterQuery()}`} pdfHref={`/print/maintenance/requests?${filterQuery()}`} />
           <CreateRepairRequestModal
             presetItem={presetItem ? { id: presetItem.id, label: presetItem.assetCode ? `${presetItem.name} (${presetItem.assetCode})` : presetItem.name } : undefined}
             defaultOpen={params.new === "1"}

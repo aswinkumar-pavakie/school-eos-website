@@ -76,10 +76,12 @@ export async function loginAction(
   setAuthCookies(cookieStore, { accessToken, refreshToken });
 
   // Each web-allowed role lands on the module built for it: Admin on the Admin
-  // Console, Finance on the Finance module, Principal on Purchase/Service Requests +
-  // the approvals routed to them. /dashboard is a defensive fallback only — every
-  // role that reaches here already passed the WEB_ALLOWED_ROLES check above, so it
-  // should never actually be hit.
+  // Console, Finance on the Finance module, Principal on its own Principal Console
+  // (src/app/(dashboard)/principal/ — the full sidebar, not the narrow Purchase/
+  // Service Requests + Approvals view Finance's layout still offers Principal by
+  // direct URL). /dashboard is a defensive fallback only — every role that reaches
+  // here already passed the WEB_ALLOWED_ROLES check above, so it should never
+  // actually be hit.
   const roleCodes = roles.map((r) => r.role_code);
   if (roleCodes.includes("ADMIN")) {
     redirect("/admin");
@@ -88,7 +90,7 @@ export async function loginAction(
     redirect("/finance");
   }
   if (roleCodes.includes("PRINCIPAL")) {
-    redirect("/finance/purchase-requests");
+    redirect("/principal");
   }
   if (roleCodes.includes("LIBRARY")) {
     redirect("/library");

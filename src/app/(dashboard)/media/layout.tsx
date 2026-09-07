@@ -34,6 +34,9 @@ export default async function MediaLayout({ children }: { children: ReactNode })
 
   const actor = await getCurrentActor().catch(() => null);
   if (!actor) redirect("/login");
+  // Matches every other role's layout (Admin/Finance/Principal/Library) --
+  // without this, any authenticated login could open /media by URL.
+  if (!actor.roles.includes("MEDIA_ROOM")) redirect("/login");
 
   const meRes = await fetch(`${API_BASE_URL}/auth/me`, {
     headers: { Authorization: `Bearer ${accessToken}` },

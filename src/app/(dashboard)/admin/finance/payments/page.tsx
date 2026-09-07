@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { FinanceTabBar } from "@/components/finance/FinanceTabBar";
 import { PaymentsFilterBar } from "@/components/finance/PaymentsFilterBar";
-import { ExportCsvLink } from "@/components/dashboard/ExportCsvLink";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
 import { formatDate, formatMoneySummary } from "@/lib/format";
@@ -97,15 +97,7 @@ export default async function FinancePaymentsPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/print/finance/payments?${filterQuery()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
-          >
-            Print / PDF
-          </Link>
-          <ExportCsvLink href={`/api/export/finance-payments?${filterQuery()}`} />
+          <DownloadMenu csvHref={`/api/export/finance-payments?${filterQuery()}`} pdfHref={`/print/finance/payments?${filterQuery()}`} />
         </div>
       </div>
       <FinanceTabBar active="Payments" />

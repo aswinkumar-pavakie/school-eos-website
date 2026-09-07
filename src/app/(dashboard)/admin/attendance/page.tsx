@@ -6,6 +6,7 @@
 
 import { StaffAttendanceBoard, type StaffDailyStatus } from "@/components/attendance/StaffAttendanceBoard";
 import { StaffAttendanceFilterBar } from "@/components/attendance/StaffAttendanceFilterBar";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { apiFetch } from "@/lib/api";
 
 interface Grade {
@@ -66,8 +67,13 @@ export default async function AttendancePage({
 
   return (
     <div className="mx-auto max-w-[1000px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Attendance</h1>
-      <p className="mt-1 text-sm text-text-muted">Whole-day roll call for staff, marked by the admin in bulk.</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[28px] font-bold leading-[34px] text-text">Attendance</h1>
+          <p className="mt-1 text-sm text-text-muted">Whole-day roll call for staff, marked by the admin in bulk.</p>
+        </div>
+        <DownloadMenu csvHref={`/api/export/staff-attendance?${query.toString()}`} pdfHref={`/print/attendance/register?${query.toString()}`} />
+      </div>
 
       <StaffAttendanceFilterBar
         date={date}

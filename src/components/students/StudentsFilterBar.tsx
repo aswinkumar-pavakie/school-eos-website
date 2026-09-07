@@ -31,6 +31,7 @@ export function StudentsFilterBar({
   status,
   grades,
   sections,
+  formActionOverride,
 }: {
   search: string;
   gradeId: string;
@@ -39,13 +40,16 @@ export function StudentsFilterBar({
   status?: string;
   grades: Grade[];
   sections: Section[];
+  /** Overrides the default /admin/students submit target -- for a caller (e.g.
+   * Principal's own students list) whose page lives elsewhere. */
+  formActionOverride?: string;
 }) {
   const [selectedGradeId, setSelectedGradeId] = useState(gradeId);
   const visibleSections = selectedGradeId ? sections.filter((s) => s.gradeId === selectedGradeId) : [];
   const distinctSectionNames = [...new Set(sections.map((s) => s.name))].sort();
 
   return (
-    <form action="/admin/students" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/students"} className="mt-6 flex flex-wrap items-end gap-3">
       {status && <input type="hidden" name="status" value={status} />}
       <AutoSubmitSearchInput
         type="search"

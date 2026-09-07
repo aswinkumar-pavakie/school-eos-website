@@ -7,6 +7,7 @@
 import Link from "next/link";
 import { CreateParentModal } from "@/components/parents/CreateParentModal";
 import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import {
   PrintSelectedBar,
@@ -71,6 +72,13 @@ export default async function ParentsPage({
     return `/admin/parents?${next.toString()}`;
   }
 
+  function filterQuery() {
+    const q = new URLSearchParams();
+    if (params.search) q.set("search", params.search);
+    if (params.status) q.set("status", params.status);
+    return q.toString();
+  }
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -78,7 +86,10 @@ export default async function ParentsPage({
           <h1 className="text-[28px] font-bold leading-[34px] text-text">Parents</h1>
           <p className="mt-1 text-sm text-text-muted">{meta.total} parent accounts</p>
         </div>
-        <CreateParentModal />
+        <div className="flex items-center gap-3">
+          <DownloadMenu csvHref={`/api/export/parents?${filterQuery()}`} pdfHref={`/print/parents/roster?${filterQuery()}`} />
+          <CreateParentModal />
+        </div>
       </div>
 
       <form action="/admin/parents" className="mt-6 flex flex-wrap items-end gap-3">

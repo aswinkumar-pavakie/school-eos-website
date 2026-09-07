@@ -5,8 +5,10 @@
 import Link from "next/link";
 import { CreateFacultyModal } from "@/components/faculty/CreateFacultyModal";
 import { FacultyFilterBar } from "@/components/faculty/FacultyFilterBar";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import {
+  ClearSelectionLink,
   PrintIdCardsButton,
   RowCheckbox,
   SelectAllCheckbox,
@@ -147,6 +149,20 @@ export default async function FacultyPage({
     return `/print/faculty/id-cards?${next.toString()}`;
   }
 
+  function filterQuery() {
+    const q = new URLSearchParams();
+    if (params.search) q.set("search", params.search);
+    if (params.status) q.set("status", params.status);
+    if (params.isTeaching) q.set("isTeaching", params.isTeaching);
+    if (params.designation) q.set("designation", params.designation);
+    if (params.isTeaching === "true") {
+      if (params.gradeId) q.set("gradeId", params.gradeId);
+      if (params.sectionId) q.set("sectionId", params.sectionId);
+      if (params.subjectId) q.set("subjectId", params.subjectId);
+    }
+    return q.toString();
+  }
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <SelectionProvider storageKey="id-card-selection:faculty">
@@ -156,24 +172,28 @@ export default async function FacultyPage({
           <p className="mt-1 text-sm text-text-muted">{meta.total} staff records</p>
         </div>
         <div className="flex items-center gap-3">
+          <DownloadMenu csvHref={`/api/export/faculty?${filterQuery()}`} pdfHref={`/print/faculty/roster?${filterQuery()}`} />
           <PrintIdCardsButton basePath="/print/faculty/id-cards" filterHref={printIdCardsHref()} />
           <CreateFacultyModal />
         </div>
       </div>
 
-      <FacultyFilterBar
-        search={params.search ?? ""}
-        status={params.status}
-        isTeaching={params.isTeaching ?? ""}
-        designation={params.designation ?? ""}
-        gradeId={params.gradeId ?? ""}
-        sectionId={params.sectionId ?? ""}
-        subjectId={params.subjectId ?? ""}
-        grades={grades}
-        sections={sections}
-        subjects={subjects}
-        nonTeachingDesignations={nonTeachingDesignations}
-      />
+      <div className="flex flex-wrap items-end gap-3">
+        <FacultyFilterBar
+          search={params.search ?? ""}
+          status={params.status}
+          isTeaching={params.isTeaching ?? ""}
+          designation={params.designation ?? ""}
+          gradeId={params.gradeId ?? ""}
+          sectionId={params.sectionId ?? ""}
+          subjectId={params.subjectId ?? ""}
+          grades={grades}
+          sections={sections}
+          subjects={subjects}
+          nonTeachingDesignations={nonTeachingDesignations}
+        />
+        <ClearSelectionLink />
+      </div>
 
       <div className="mt-4 flex gap-2 overflow-x-auto">
         {STATUS_TABS.map((tab) => {

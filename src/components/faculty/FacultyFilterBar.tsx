@@ -41,6 +41,7 @@ export function FacultyFilterBar({
   sections,
   subjects,
   nonTeachingDesignations,
+  formActionOverride,
 }: {
   search: string;
   status?: string;
@@ -53,13 +54,16 @@ export function FacultyFilterBar({
   sections: Section[];
   subjects: Subject[];
   nonTeachingDesignations: string[];
+  /** Overrides the default /admin/faculty submit target -- for a caller (e.g.
+   * Principal's own faculty list) whose page lives elsewhere. */
+  formActionOverride?: string;
 }) {
   const [selectedIsTeaching, setSelectedIsTeaching] = useState(isTeaching);
   const [selectedGradeId, setSelectedGradeId] = useState(gradeId);
   const visibleSections = selectedGradeId ? sections.filter((s) => s.gradeId === selectedGradeId) : [];
 
   return (
-    <form action="/admin/faculty" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/faculty"} className="mt-6 flex flex-wrap items-end gap-3">
       {status && <input type="hidden" name="status" value={status} />}
       <AutoSubmitSearchInput
         type="search"

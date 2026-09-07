@@ -66,11 +66,16 @@ export function MonthCalendar({
   campuses,
   grades,
   sections,
+  readOnly,
 }: {
   events: CalendarEventRow[];
   campuses: { id: string; name: string }[];
   grades: { id: string; name: string }[];
   sections: { id: string; name: string }[];
+  // Additive, defaults to false so Admin's own page (the only current caller)
+  // is unaffected -- Principal's oversight view passes true to hide the
+  // Remove action it has no backend authority to perform.
+  readOnly?: boolean;
 }) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
@@ -204,7 +209,7 @@ export function MonthCalendar({
                 >
                   {EVENT_TYPE_LABELS[e.eventType] ?? e.eventType}
                 </span>
-                <DeleteCalendarEventButton id={e.id} />
+                {!readOnly && <DeleteCalendarEventButton id={e.id} />}
               </div>
             </li>
           ))}

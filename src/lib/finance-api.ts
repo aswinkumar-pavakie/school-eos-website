@@ -685,7 +685,7 @@ export interface ApprovalRequest {
   payload: Record<string, unknown>;
   amountPaise: string | null;
   currentStep: number;
-  state: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED" | "RETROSPECTIVE_PENDING";
+  state: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED" | "RETROSPECTIVE_PENDING" | "SENT_BACK";
   dueAt: string | null;
   decidedAt: string | null;
   createdAt: string;
@@ -728,6 +728,11 @@ export async function rejectRequest(id: string, comment: string): Promise<{ requ
 export async function withdrawRequest(id: string): Promise<ApprovalRequest> {
   const res = await apiFetch(`/approvals/${id}/withdraw`, { method: "POST" });
   return (await parseOrThrow<ApiEnvelope<ApprovalRequest>>(res)).data;
+}
+
+export async function sendBackRequest(id: string, comment: string): Promise<{ request: ApprovalRequest; steps: ApprovalStep[] }> {
+  const res = await apiFetch(`/approvals/${id}/send-back`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ comment }) });
+  return (await parseOrThrow<ApiEnvelope<{ request: ApprovalRequest; steps: ApprovalStep[] }>>(res)).data;
 }
 
 // ---------- Students (the Fee Payments / Student Workspace hub) ----------

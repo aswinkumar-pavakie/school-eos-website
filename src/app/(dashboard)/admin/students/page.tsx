@@ -5,8 +5,10 @@
 import Link from "next/link";
 import { CreateStudentModal } from "@/components/students/CreateStudentModal";
 import { StudentsFilterBar } from "@/components/students/StudentsFilterBar";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import {
+  ClearSelectionLink,
   PrintIdCardsButton,
   RowCheckbox,
   SelectAllCheckbox,
@@ -128,6 +130,16 @@ export default async function StudentsPage({
     return `/print/students/id-cards?${next.toString()}`;
   }
 
+  function filterQuery() {
+    const q = new URLSearchParams();
+    if (params.search) q.set("search", params.search);
+    if (params.status) q.set("status", params.status);
+    if (params.gradeId) q.set("gradeId", params.gradeId);
+    if (params.sectionId) q.set("sectionId", params.sectionId);
+    if (params.sectionName) q.set("sectionName", params.sectionName);
+    return q.toString();
+  }
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <SelectionProvider storageKey="id-card-selection:students">
@@ -137,20 +149,24 @@ export default async function StudentsPage({
           <p className="mt-1 text-sm text-text-muted">{meta.total} student records</p>
         </div>
         <div className="flex items-center gap-3">
+          <DownloadMenu csvHref={`/api/export/students?${filterQuery()}`} pdfHref={`/print/students/roster?${filterQuery()}`} />
           <PrintIdCardsButton basePath="/print/students/id-cards" filterHref={printIdCardsHref()} />
           <CreateStudentModal grades={grades} sections={sections} />
         </div>
       </div>
 
-      <StudentsFilterBar
-        grades={grades}
-        sections={sections}
-        search={params.search ?? ""}
-        gradeId={params.gradeId ?? ""}
-        sectionId={params.sectionId ?? ""}
-        sectionName={params.sectionName}
-        status={params.status}
-      />
+      <div className="flex flex-wrap items-end gap-3">
+        <StudentsFilterBar
+          grades={grades}
+          sections={sections}
+          search={params.search ?? ""}
+          gradeId={params.gradeId ?? ""}
+          sectionId={params.sectionId ?? ""}
+          sectionName={params.sectionName}
+          status={params.status}
+        />
+        <ClearSelectionLink />
+      </div>
 
       <div className="mt-4 flex gap-2 overflow-x-auto">
         {STATUS_TABS.map((tab) => {

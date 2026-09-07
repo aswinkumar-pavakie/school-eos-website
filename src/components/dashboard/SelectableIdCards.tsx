@@ -136,7 +136,7 @@ export function SelectAllCheckbox({ ids }: { ids: string[] }) {
  * (e.g. the whole "Active" tab), which is what "print all active students at
  * once" actually is -- no separate control needed for that case. */
 export function PrintIdCardsButton({ basePath, filterHref }: { basePath: string; filterHref: string }) {
-  const { selected, clear } = useSelection();
+  const { selected } = useSelection();
 
   if (selected.size === 0) {
     return (
@@ -151,21 +151,29 @@ export function PrintIdCardsButton({ basePath, filterHref }: { basePath: string;
 
   const href = `${basePath}?ids=${[...selected].join(",")}`;
   return (
-    <div className="flex items-center gap-2">
-      <a
-        href={href}
-        className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white"
-      >
-        Print {selected.size} selected
-      </a>
-      <button
-        type="button"
-        onClick={clear}
-        className="text-[13px] font-semibold text-text-muted hover:text-text"
-      >
-        Clear
-      </button>
-    </div>
+    <a
+      href={href}
+      className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white"
+    >
+      Print {selected.size} selected
+    </a>
+  );
+}
+
+/** Split out of PrintIdCardsButton so it can sit near the filter row instead of
+ * the top header's action buttons -- same "clear the hand-picked selection"
+ * action, just relocated. Renders nothing when there's no selection to clear. */
+export function ClearSelectionLink() {
+  const { selected, clear } = useSelection();
+  if (selected.size === 0) return null;
+  return (
+    <button
+      type="button"
+      onClick={clear}
+      className="text-[13px] font-semibold text-text-muted hover:text-text"
+    >
+      Clear selection ({selected.size})
+    </button>
   );
 }
 

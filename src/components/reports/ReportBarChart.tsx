@@ -15,7 +15,13 @@ export function ReportBarChart({
   color?: string;
   valueLabel?: string;
 }) {
-  const height = Math.max(160, data.length * 36 + 24);
+  // Per-row height must comfortably fit a 2-line wrapped label (Recharts wraps a
+  // category tick onto multiple <tspan> lines when it doesn't fit `width`) --
+  // 36px was only slightly more than a wrapped 2-line label's own height, so
+  // adjacent rows' labels visually collided for long real labels ("Graduate
+  // Teacher - Physical Training" and similar designations). 56px leaves real
+  // clearance regardless of how many rows wrap.
+  const height = Math.max(160, data.length * 56 + 24);
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} layout="vertical" margin={{ left: 8, right: 20, top: 4, bottom: 4 }}>
@@ -24,8 +30,8 @@ export function ReportBarChart({
         <YAxis
           type="category"
           dataKey="label"
-          width={130}
-          tick={{ fontSize: 12, fill: AXIS_TICK_TEXT }}
+          width={150}
+          tick={{ fontSize: 11, fill: AXIS_TICK_TEXT }}
           tickLine={false}
           axisLine={false}
         />

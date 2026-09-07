@@ -5,6 +5,7 @@
 import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { CreateCalendarEventForm } from "@/components/academics/CreateCalendarEventForm";
 import { MonthCalendar, type CalendarEventRow } from "@/components/academics/MonthCalendar";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { apiFetch } from "@/lib/api";
 
 interface AcademicYear {
@@ -48,7 +49,13 @@ export default async function AcademicCalendarPage({
           <h1 className="text-[28px] font-bold leading-[34px] text-text">Academic Calendar</h1>
           <p className="mt-1 text-sm text-text-muted">Term dates, holidays, exams, and school events.</p>
         </div>
-        <CreateCalendarEventForm academicYears={academicYears} campuses={campuses} grades={grades} sections={sections} />
+        <div className="flex items-center gap-3">
+          <DownloadMenu
+            csvHref={`/api/export/academic-calendar-events?${query.toString()}`}
+            pdfHref={`/print/academic-calendar/events?${query.toString()}`}
+          />
+          <CreateCalendarEventForm academicYears={academicYears} campuses={campuses} grades={grades} sections={sections} />
+        </div>
       </div>
 
       <form action="/admin/academic-calendar" className="mt-6 flex items-end gap-3">

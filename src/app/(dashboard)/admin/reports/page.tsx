@@ -16,6 +16,7 @@ import {
   StudentsIcon,
   TransportIcon,
 } from "@/components/dashboard/icons";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { ReportBarChart } from "@/components/reports/ReportBarChart";
 import { ReportDonutChart, type DonutSlice } from "@/components/reports/ReportDonutChart";
@@ -156,11 +157,14 @@ export default async function ReportsPage() {
 
     return (
       <div className="mx-auto max-w-[1280px]">
-        <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Reports &amp; Analytics</h1>
-          <p className="mt-1 text-sm text-text-muted">
-            Institution-wide figures, straight from each module&apos;s own real data.
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-[28px] font-bold leading-[34px] text-text">Reports &amp; Analytics</h1>
+            <p className="mt-1 text-sm text-text-muted">
+              Institution-wide figures, straight from each module&apos;s own real data.
+            </p>
+          </div>
+          <DownloadMenu csvHref="/api/export/admin-reports-summary" pdfHref="/print/admin/reports-summary" />
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">

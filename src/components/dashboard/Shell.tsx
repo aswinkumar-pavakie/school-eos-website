@@ -88,6 +88,21 @@ function isActive(pathname: string, href: string, rootHref: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+// Some nav lists have a sibling item whose own href is a URL *prefix* of
+// another sibling's (e.g. Principal's "Academics" at /principal/academics and
+// "Class Timetable" at /principal/academics/class-timetable, grouped under
+// the same path for URL-namespacing, not a real parent/child relationship).
+// Matching each item independently would light up both at once -- only the
+// single longest (most specific) matching href should ever be active.
+function findActiveHref(pathname: string, navItems: ShellNavItem[]): string | null {
+  let best: string | null = null;
+  for (const item of navItems) {
+    if (!isActive(pathname, item.href, navItems[0].href)) continue;
+    if (best === null || item.href.length > best.length) best = item.href;
+  }
+  return best;
+}
+
 const NOTIF_SEEN_STORAGE_KEY = "school-eos:notif-seen-count";
 
 export function Shell({
@@ -168,39 +183,51 @@ export function Shell({
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <nav
+          className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-color:#eaecf0_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-track]:bg-transparent"
+        >
           <ul className="flex flex-col gap-1">
-            {navItems.map((item, i) => {
-              const Icon = NAV_ICONS[item.icon];
-              const active = isActive(pathname, item.href, navItems[0].href);
-              const showGroupHeader =
-                !collapsed && item.group !== undefined && item.group !== navItems[i - 1]?.group;
-              return (
-                <li key={item.href}>
-                  {showGroupHeader && (
-                    <div
-                      className={`px-3.5 pb-1.5 text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted ${
-                        i === 0 ? "pt-0" : "pt-4"
-                      }`}
+            {(() => {
+              const activeHref = findActiveHref(pathname, navItems);
+              return navItems.map((item, i) => {
+                const Icon = NAV_ICONS[item.icon];
+                const active = item.href === activeHref;
+                const showGroupHeader =
+                  !collapsed && item.group !== undefined && item.group !== navItems[i - 1]?.group;
+                return (
+                  <li key={item.href}>
+                    {showGroupHeader && (
+                      <div
+                        className={`px-3.5 pb-1.5 text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted ${
+                          i === 0 ? "pt-0" : "pt-4"
+                        }`}
+                      >
+                        {item.group}
+                      </div>
+                    )}
+                    <Link
+                      href={item.href}
+                      title={collapsed ? item.label : undefined}
+                      className={`flex items-center gap-3.5 rounded-[11px] px-3.5 py-3 text-[14.5px] font-semibold transition-colors ${
+                        active
+                          ? "bg-primary/10 text-primary"
+                          : "text-text hover:bg-bg"
+                      } ${collapsed ? "justify-center px-2" : ""}`}
                     >
-                      {item.group}
-                    </div>
-                  )}
-                  <Link
-                    href={item.href}
-                    title={collapsed ? item.label : undefined}
-                    className={`flex items-center gap-3.5 rounded-[11px] px-3.5 py-3 text-[14.5px] font-semibold transition-colors ${
-                      active
-                        ? "bg-primary/10 text-primary"
-                        : "text-text hover:bg-bg"
-                    } ${collapsed ? "justify-center px-2" : ""}`}
-                  >
-                    <Icon className="h-6 w-6 shrink-0" />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
-                  </Link>
-                </li>
-              );
-            })}
+                      <Icon className="h-6 w-6 shrink-0" />
+                      {/* line-clamp instead of a single-line truncate -- the sidebar's
+                          264px width (fixed, Design Architecture v0.1 §04) isn't quite
+                          wide enough at this padding/icon/gap for the longest labels
+                          ("Examination Timetable", "Requests & Approvals") to fit on one
+                          line without an ellipsis; wrapping to a 2nd line keeps every
+                          label fully readable without shrinking padding, icon size, or
+                          font for the many short labels that never needed it. */}
+                      {!collapsed && <span className="line-clamp-2 leading-[1.2]">{item.label}</span>}
+                    </Link>
+                  </li>
+                );
+              });
+            })()}
           </ul>
         </nav>
       </aside>

@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { CreateInventoryItemModal } from "@/components/inventory/CreateInventoryItemModal";
 import { InventoryFilterBar } from "@/components/inventory/InventoryFilterBar";
-import { ExportCsvLink } from "@/components/dashboard/ExportCsvLink";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { InventoryIcon } from "@/components/dashboard/icons";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { StatusPill } from "@/components/dashboard/StatusPill";
@@ -124,15 +124,7 @@ export default async function InventoryPage({
           <p className="mt-1 text-sm text-text-muted">{meta.total} inventory items</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/print/inventory/items?${filterQuery()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
-          >
-            Print / PDF
-          </Link>
-          <ExportCsvLink href={`/api/export/inventory-items?${filterQuery()}`} />
+          <DownloadMenu csvHref={`/api/export/inventory-items?${filterQuery()}`} pdfHref={`/print/inventory/items?${filterQuery()}`} />
           <CreateInventoryItemModal categories={categories} />
         </div>
       </div>

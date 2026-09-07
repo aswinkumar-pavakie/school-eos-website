@@ -27,7 +27,17 @@ function statusLabel(status: string | null): { label: string; tone: "success" | 
   return { label: "Not marked", tone: "pending" };
 }
 
-export function StaffAttendanceBoard({ date, roster }: { date: string; roster: StaffDailyStatus[] }) {
+export function StaffAttendanceBoard({
+  date,
+  roster,
+  revalidatePathOverride,
+}: {
+  date: string;
+  roster: StaffDailyStatus[];
+  // Additive, defaults to Admin's own page -- Principal's page passes its own
+  // route so marking attendance refreshes its own view, not Admin's.
+  revalidatePathOverride?: string;
+}) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [reason, setReason] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -61,7 +71,7 @@ export function StaffAttendanceBoard({ date, roster }: { date: string; roster: S
       return;
     }
     setIsPending(true);
-    const result = await markStaffAttendanceAction([...selected], date, status, reason);
+    const result = await markStaffAttendanceAction([...selected], date, status, reason, revalidatePathOverride);
     setIsPending(false);
     if (result.error) {
       setError(result.error);

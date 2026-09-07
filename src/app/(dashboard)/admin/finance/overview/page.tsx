@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { FinanceTabBar } from "@/components/finance/FinanceTabBar";
 import { FeeStatusFilterBar } from "@/components/finance/FeeStatusFilterBar";
-import { ExportCsvLink } from "@/components/dashboard/ExportCsvLink";
+import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { FinanceIcon } from "@/components/dashboard/icons";
 import { StatusPill } from "@/components/dashboard/StatusPill";
@@ -165,15 +165,7 @@ export default async function FinanceOverviewPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/print/finance/fee-status?${filterQuery()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
-          >
-            Print / PDF
-          </Link>
-          <ExportCsvLink href={`/api/export/finance-fee-status?${filterQuery()}`} />
+          <DownloadMenu csvHref={`/api/export/finance-fee-status?${filterQuery()}`} pdfHref={`/print/finance/fee-status?${filterQuery()}`} />
         </div>
       </div>
       <FinanceTabBar active="Overview" />

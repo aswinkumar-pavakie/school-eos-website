@@ -11,7 +11,16 @@ import { getApproval } from "@/lib/finance-api";
  * approvals page — that's the one place Approve/Reject/Withdraw actually live — but
  * seeing the status itself never requires leaving this page.
  */
-export async function ApprovalStatusPanel({ approvalRequestId }: { approvalRequestId: string }) {
+export async function ApprovalStatusPanel({
+  approvalRequestId,
+  decideHrefOverride,
+}: {
+  approvalRequestId: string;
+  /** Overrides the default /finance/approvals/{id} link -- for a caller (e.g.
+   * Principal's own purchase-request view) whose own decide/manage page lives
+   * elsewhere. */
+  decideHrefOverride?: string;
+}) {
   const result = await getApproval(approvalRequestId).catch(() => null);
   if (!result) return null;
   const { request, steps } = result;
@@ -42,7 +51,10 @@ export async function ApprovalStatusPanel({ approvalRequestId }: { approvalReque
       {request.dueAt && (request.state === "PENDING" || request.state === "RETROSPECTIVE_PENDING") && (
         <p className="mt-2 text-xs text-text-muted">Due {formatDate(request.dueAt)}</p>
       )}
-      <Link href={`/finance/approvals/${approvalRequestId}`} className="mt-3 inline-block text-xs font-bold text-primary hover:underline">
+      <Link
+        href={decideHrefOverride ?? `/finance/approvals/${approvalRequestId}`}
+        className="mt-3 inline-block text-xs font-bold text-primary hover:underline"
+      >
         Decide / manage this approval →
       </Link>
     </section>
