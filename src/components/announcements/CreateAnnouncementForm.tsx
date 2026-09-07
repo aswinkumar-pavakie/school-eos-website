@@ -31,10 +31,17 @@ const ROLES: [string, string][] = [
   ["CANTEEN_VENDOR", "Canteen Vendors"],
 ];
 
-export function CreateAnnouncementForm() {
+export function CreateAnnouncementForm({
+  revalidatePathOverride,
+}: {
+  // Additive, defaults to Admin's own page -- Principal's page passes its own
+  // route so sending an announcement refreshes its own view, not Admin's.
+  revalidatePathOverride?: string;
+} = {}) {
   const [open, setOpen] = useState(false);
   const [audienceType, setAudienceType] = useState("SCHOOL");
-  const [state, formAction, isPending] = useActionState(createAnnouncementAction, initialState);
+  const action = createAnnouncementAction.bind(null, revalidatePathOverride);
+  const [state, formAction, isPending] = useActionState(action, initialState);
   const wasPending = useRef(false);
 
   useEffect(() => {

@@ -12,6 +12,7 @@ import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { ExitStaffDialog } from "@/components/faculty/ExitStaffDialog";
 import { FacultyProfileForm, FACULTY_SAVE_BUTTON_SLOT } from "@/components/faculty/FacultyProfileForm";
+import { FacultySubjectsSection, type TaughtOffering } from "@/components/faculty/FacultySubjectsSection";
 import { TimetableGrid, type TimetableSlot } from "@/components/academics/TimetableGrid";
 import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/format";
@@ -100,12 +101,16 @@ export default async function FacultyDetailPage({
   const { data: staff } = (await res.json()) as { data: StaffDetail };
   const isActive = staff.status !== "EXITED";
 
-  const [timetableRes, rolesRes, documentsRes, attendanceRes] = await Promise.all([
-    apiFetch(`/staff/${id}/timetable`),
-    apiFetch(`/role-assignments?personId=${staff.personId}`),
-    apiFetch(`/documents?ownerObjectType=staff&ownerObjectId=${id}&category=STAFF_HR`),
-    apiFetch(`/staff/${id}/attendance-summary`),
-  ]);
+  const [timetableRes, rolesRes, documentsRes, attendanceRes, subjectOfferingsRes, gradesRes, sectionsRes] =
+    await Promise.all([
+      apiFetch(`/staff/${id}/timetable`),
+      apiFetch(`/role-assignments?personId=${staff.personId}`),
+      apiFetch(`/documents?ownerObjectType=staff&ownerObjectId=${id}&category=STAFF_HR`),
+      apiFetch(`/staff/${id}/attendance-summary`),
+      apiFetch(`/subject-offerings/by-teacher/${id}`),
+      apiFetch("/grades"),
+      apiFetch("/sections?status=ACTIVE"),
+    ]);
   const timetableSlots: TimetableSlot[] = timetableRes.ok
     ? ((await timetableRes.json()) as { data: TimetableSlot[] }).data
     : [];
@@ -118,6 +123,13 @@ export default async function FacultyDetailPage({
   const attendanceSummary = attendanceRes.ok
     ? ((await attendanceRes.json()) as { data: { percentage: number | null } }).data
     : { percentage: null };
+  const taughtOfferings: TaughtOffering[] = subjectOfferingsRes.ok
+    ? ((await subjectOfferingsRes.json()) as { data: TaughtOffering[] }).data
+    : [];
+  const grades: { id: string; name: string }[] = gradesRes.ok ? ((await gradesRes.json()) as { data: { id: string; name: string }[] }).data : [];
+  const sections: { id: string; gradeId: string; name: string }[] = sectionsRes.ok
+    ? ((await sectionsRes.json()) as { data: { id: string; gradeId: string; name: string }[] }).data
+    : [];
   // Only the "extra responsibility" roles belong in this section -- the base
   // FACULTY login role (and anything else) isn't shown here.
   const roleAssignments = allRoleAssignments.filter((r) => r.roleCode in ROLE_LABELS);
@@ -233,6 +245,19 @@ export default async function FacultyDetailPage({
           </ul>
         )}
       </section>
+
+      {staff.isTeaching && (
+        <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
+          <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Subjects</h2>
+          <FacultySubjectsSection
+            staffId={staff.id}
+            facultyDetailPath={`/admin/faculty/${staff.id}`}
+            taught={taughtOfferings}
+            grades={grades}
+            sections={sections}
+          />
+        </section>
+      )}
 
       <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
         <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Timetable</h2>

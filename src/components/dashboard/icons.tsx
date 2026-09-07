@@ -267,4 +267,5 @@ export const NAV_ICONS = {
   maintenance: MaintenanceIcon,
   requests: RequestsIcon,
   settings: SettingsIcon,
+  profile: IdCardIcon,
 } as const;

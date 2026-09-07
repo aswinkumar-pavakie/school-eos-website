@@ -171,3 +171,53 @@ export async function exitStaffAction(
 /** Address lives on `person`, not `staff` -- PATCHes /persons/:id (same
  * endpoint EditParentContactForm uses for mobile/email), scoped to just the
  * address fields here. */
+
+export interface SectionSubjectOffering {
+  id: string;
+  sectionId: string;
+  gradeName: string;
+  sectionName: string;
+  subjectId: string;
+  subjectName: string;
+  teacherStaffId: string | null;
+  teacherFirstName: string | null;
+  teacherLastName: string | null;
+}
+
+/** A plain data lookup (not a mutation) -- called directly from the client
+ * component when a grade/section is picked in "Assign a subject", the same
+ * way a client component can call any "use server" function and await its
+ * return value. */
+export async function listSectionSubjectOfferingsAction(
+  sectionId: string,
+): Promise<{ data: SectionSubjectOffering[] } | { error: string }> {
+  const res = await apiFetch(`/subject-offerings?sectionId=${sectionId}`);
+  if (!res.ok) return { error: await readError(res) };
+  return { data: (await res.json()).data };
+}
+
+export interface AssignSubjectTeacherState {
+  error?: string;
+  success?: boolean;
+}
+
+/** Reassigns a subject_offering's teacher to this faculty member -- the real,
+ * already-populated teaching-assignment table (subject_offering.teacher_staff_id),
+ * not a new concept. Every offering already has a teacher, so this always
+ * takes over from whoever currently holds it -- the UI shows who that is
+ * before the admin confirms. */
+export async function assignSubjectTeacherAction(
+  offeringId: string,
+  staffId: string,
+  facultyDetailPath: string,
+): Promise<AssignSubjectTeacherState> {
+  const res = await apiFetch(`/subject-offerings/${offeringId}/teacher`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ teacherStaffId: staffId }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+
+  revalidatePath(facultyDetailPath);
+  return { success: true };
+}

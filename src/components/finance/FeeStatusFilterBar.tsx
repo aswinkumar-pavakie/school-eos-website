@@ -32,6 +32,7 @@ export function FeeStatusFilterBar({
   academicYears,
   grades,
   sections,
+  formActionOverride,
 }: {
   search: string;
   academicYearId: string;
@@ -41,12 +42,15 @@ export function FeeStatusFilterBar({
   academicYears: AcademicYear[];
   grades: Grade[];
   sections: Section[];
+  // Additive, defaults to Admin's own page so its existing usage is
+  // unaffected -- Principal's oversight view passes its own route.
+  formActionOverride?: string;
 }) {
   const [selectedGradeId, setSelectedGradeId] = useState(gradeId);
   const visibleSections = selectedGradeId ? sections.filter((s) => s.gradeId === selectedGradeId) : [];
 
   return (
-    <form action="/admin/finance/overview" className="mt-6 flex flex-wrap items-end gap-3">
+    <form action={formActionOverride ?? "/admin/finance/overview"} className="mt-6 flex flex-wrap items-end gap-3">
       {state && <input type="hidden" name="state" value={state} />}
       <AutoSubmitSearchInput
         type="search"
