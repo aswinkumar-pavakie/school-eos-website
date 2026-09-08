@@ -239,6 +239,15 @@ export function BellIcon({ className }: IconProps) {
   );
 }
 
+export function CoordinatorIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden>
+      <path d="M12 3.5 19 6v6c0 5-3 8-7 9-4-1-7-4-7-9V6Z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
 export function CollapseIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className} aria-hidden>
@@ -267,4 +276,5 @@ export const NAV_ICONS = {
   maintenance: MaintenanceIcon,
   requests: RequestsIcon,
   settings: SettingsIcon,
+  coordinator: CoordinatorIcon,
 } as const;

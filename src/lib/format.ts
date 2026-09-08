@@ -21,6 +21,14 @@ export function formatTime(value: string | Date | null | undefined): string {
   return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
+/** "31 Aug 2026, 14:20" -- the Faculty module's own combined form (an
+ * announcement's post time, an LMS file's upload time) -- same null/invalid
+ * handling as formatDate/formatTime individually. */
+export function formatDateTime(value: string | Date | null | undefined): string {
+  if (!value) return "—";
+  return `${formatDate(value)}, ${formatTime(value)}`;
+}
+
 export function formatRelativeTime(value: string | Date): string {
   const date = typeof value === "string" ? new Date(value) : value;
   const diffMs = Date.now() - date.getTime();
@@ -75,6 +83,22 @@ export function formatMoneySummary(paise: string | number): string {
   return `₹ ${rupees.toLocaleString("en-IN")}`;
 }
 
+/** "2.4 MB" -- for LMS file listing rows. `bytes` arrives as a numeric
+ * string (Postgres bigint) or number. */
+export function formatBytes(bytes: string | number): string {
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n < 0) return "—";
+  if (n < 1024) return `${n} B`;
+  const units = ["KB", "MB", "GB"];
+  let value = n / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  return `${value.toFixed(value < 10 ? 1 : 0)} ${units[unitIndex]}`;
+}
+
 // No value is ever 0, blank, or "N/A" — em dash in muted grey instead.
 export function orDash(value: string | number | null | undefined): string {
   if (value === null || value === undefined || value === "") return "—";
@@ -107,6 +131,9 @@ const STATUS_LABELS: Record<string, string> = {
   MATCHED: "Matched",
   UNMATCHED: "Unmatched",
   DISCREPANCY: "Discrepancy",
+  SUBMITTED: "Submitted",
+  GRADED: "Graded",
+  NOT_DONE: "Not submitted",
   RESOLVED: "Resolved",
   VALIDATED: "Validated",
   VALIDATION_FAILED: "Validation failed",
@@ -127,6 +154,15 @@ const STATUS_LABELS: Record<string, string> = {
   DAMAGED: "Damaged",
   LOST: "Lost",
   RETIRED: "Retired",
+  // Faculty module -- real attendance/leave/task states this app didn't have
+  // a label for yet.
+  PRESENT: "Present",
+  ABSENT: "Absent",
+  LATE: "Late",
+  HALF_DAY: "Half day",
+  ON_LEAVE: "On leave",
+  ON_DUTY: "On duty",
+  OPEN: "Open",
 };
 
 export function statusLabel(state: string): string {
@@ -149,6 +185,13 @@ const STATUS_TONE: Record<string, StatusTone> = {
   REJECTED: "critical", CANCELLED: "critical", OVERDUE: "critical", FAILED: "critical",
   REVERSED: "critical", DISCREPANCY: "critical", VALIDATION_FAILED: "critical", WAIVED: "pending",
   DAMAGED: "critical", LOST: "critical", RETIRED: "critical",
+  // Faculty module
+  PRESENT: "success", ON_DUTY: "success", OPEN: "success",
+  LATE: "pending", HALF_DAY: "pending", ON_LEAVE: "pending",
+  ABSENT: "critical",
+  // Parent module (homework submissions, document/outing requests)
+  SUBMITTED: "success", GRADED: "success",
+  NOT_DONE: "critical",
 };
 
 export function statusTone(state: string): StatusTone {

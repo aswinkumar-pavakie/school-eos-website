@@ -1,73 +1,160 @@
-
-> school-eos-web@0.1.0 dev
-> next dev
-
-⚠ Port 3000 is in use by process 14696, using available port 3001 instead.
 ▲ Next.js 16.3.4 (Turbopack)
-- Local:         http://localhost:3001
-- Network:       http://192.168.56.1:3001
+- Local:         http://localhost:3100
+- Network:       http://192.168.56.1:3100
 - Environments: .env.local
-✓ Ready in 865ms
-✓ Running next.config.ts took 47ms
+✓ Ready in 3.0s
+✓ Running next.config.ts took 292ms
 
- GET /media/social-publishing?tab=calendar 200 in 2.2s (next.js: 1506ms, application-code: 657ms)
- GET /login 200 in 69ms (next.js: 39ms, application-code: 29ms)
- GET /login 200 in 33ms (next.js: 11ms, application-code: 23ms)
- GET /media/social-publishing?tab=calendar 200 in 503ms (next.js: 8ms, application-code: 495ms)
- GET /login 200 in 25ms (next.js: 6ms, application-code: 19ms)
- GET /media/raise-indent 200 in 448ms (next.js: 29ms, application-code: 419ms)
- GET /media/raise-indent?tab=approved 200 in 500ms (next.js: 5ms, application-code: 495ms)
- GET /media/raise-indent?tab=rejected 200 in 175ms (next.js: 5ms, application-code: 170ms)
- GET /media 200 in 732ms (next.js: 32ms, application-code: 700ms)
- GET /media/social-publishing 200 in 174ms (next.js: 5ms, application-code: 169ms)
- GET /media/shoot-assignments 200 in 306ms (next.js: 35ms, application-code: 270ms)
- GET /media/inventory 200 in 278ms (next.js: 27ms, application-code: 251ms)
- GET /media/team 200 in 191ms (next.js: 29ms, application-code: 162ms)
- GET /media 200 in 564ms (next.js: 5ms, application-code: 559ms)
- POST /login 200 in 1311ms (next.js: 8ms, application-code: 1303ms)
-  └─ ƒ loginAction({}, {}) in 717ms src/app/(auth)/login/actions.ts
- GET /media/shoot-assignments 200 in 249ms (next.js: 8ms, application-code: 241ms)
- GET /media/social-publishing 200 in 125ms (next.js: 4ms, application-code: 121ms)
- POST /media/social-publishing 200 in 102ms (next.js: 9ms, application-code: 94ms)
-  └─ ƒ createMediaPostAction({}, {}) in 52ms src/app/(dashboard)/media/social-publishing/actions.ts
- GET /media/inventory 200 in 612ms (next.js: 6ms, application-code: 606ms)
- GET /media/raise-indent 200 in 173ms (next.js: 4ms, application-code: 168ms)
- GET /media/raise-indent?tab=approved 200 in 175ms (next.js: 8ms, application-code: 167ms)
- GET /media/team 200 in 94ms (next.js: 7ms, application-code: 87ms)
- GET /media/social-publishing 200 in 111ms (next.js: 8ms, application-code: 103ms)
- GET /media 200 in 511ms (next.js: 4ms, application-code: 506ms)
- GET /media 200 in 47ms (next.js: 14ms, application-code: 33ms)
-✓ Compiled in 156ms
- GET /login 200 in 125ms (next.js: 28ms, application-code: 97ms)
- GET /media 200 in 798ms (next.js: 6ms, application-code: 792ms)
- POST /login 200 in 1912ms (next.js: 8ms, application-code: 1904ms)
-  └─ ƒ loginAction({}, {}) in 1086ms src/app/(auth)/login/actions.ts
- GET /media/shoot-assignments 200 in 544ms (next.js: 7ms, application-code: 537ms)
- GET /media/social-publishing 200 in 120ms (next.js: 12ms, application-code: 108ms)
- POST /media/social-publishing 200 in 2.4s (next.js: 11ms, application-code: 2.4s)
-  └─ ƒ createMediaPostAction({}, {}) in 2004ms src/app/(dashboard)/media/social-publishing/actions.ts
- GET /media/social-publishing?tab=feed 200 in 150ms (next.js: 5ms, application-code: 145ms)
- POST /media/social-publishing?tab=feed 200 in 209ms (next.js: 11ms, application-code: 198ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 182ms src/app/(dashboard)/media/social-publishing/actions.ts
- POST /media/social-publishing?tab=feed 200 in 229ms (next.js: 16ms, application-code: 214ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 201ms src/app/(dashboard)/media/social-publishing/actions.ts
- GET /media/social-publishing?tab=new 200 in 172ms (next.js: 5ms, application-code: 168ms)
- GET /media/social-publishing?tab=feed 200 in 179ms (next.js: 5ms, application-code: 174ms)
- POST /media/social-publishing?tab=feed 200 in 211ms (next.js: 16ms, application-code: 194ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 180ms src/app/(dashboard)/media/social-publishing/actions.ts
- POST /media/social-publishing?tab=feed 200 in 242ms (next.js: 10ms, application-code: 232ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 221ms src/app/(dashboard)/media/social-publishing/actions.ts
- GET /media/social-publishing?tab=calendar 200 in 152ms (next.js: 4ms, application-code: 148ms)
- GET /media/social-publishing?tab=feed 200 in 829ms (next.js: 5ms, application-code: 824ms)
- POST /media/social-publishing?tab=feed 200 in 205ms (next.js: 11ms, application-code: 194ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 176ms src/app/(dashboard)/media/social-publishing/actions.ts
- POST /media/social-publishing?tab=feed 200 in 256ms (next.js: 4ms, application-code: 252ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 242ms src/app/(dashboard)/media/social-publishing/actions.ts
- GET /media/social-publishing?tab=feed 200 in 186ms (next.js: 5ms, application-code: 181ms)
- GET /media/social-publishing?tab=new 200 in 223ms (next.js: 9ms, application-code: 213ms)
- GET /media/social-publishing?tab=calendar 200 in 257ms (next.js: 23ms, application-code: 234ms)
- GET /media/social-publishing?tab=feed 200 in 162ms (next.js: 6ms, application-code: 156ms)
- POST /media/social-publishing?tab=feed 200 in 204ms (next.js: 7ms, application-code: 197ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 184ms src/app/(dashboard)/media/social-publishing/actions.ts
- POST /media/social-publishing?tab=feed 200 in 201ms (next.js: 7ms, application-code: 194ms)
-  └─ ƒ getMediaPostCommentsAction("e8fa3cf8-6310-494d-8be9-50567302230d") in 185ms src/app/(dashboard)/media/social-publishing/actions.ts
+ GET /faculty 200 in 8.5s (next.js: 626ms, proxy.ts: 491ms, application-code: 7.4s)
+ GET /faculty/attendance 200 in 4.8s (next.js: 269ms, proxy.ts: 4ms, application-code: 4.5s)
+ GET /faculty/student-leave 200 in 4.4s (next.js: 221ms, proxy.ts: 5ms, application-code: 4.1s)
+ GET /faculty/subject-records 200 in 4.6s (next.js: 361ms, proxy.ts: 3ms, application-code: 4.2s)
+ GET /faculty/marks-entry 200 in 4.5s (next.js: 276ms, proxy.ts: 3ms, application-code: 4.3s)
+ GET /faculty/announcements 200 in 8.8s (next.js: 306ms, proxy.ts: 3ms, application-code: 8.5s)
+ GET /faculty/class-results 200 in 4.6s (next.js: 179ms, proxy.ts: 3ms, application-code: 4.4s)
+ GET /faculty/homework 200 in 4.9s (next.js: 393ms, proxy.ts: 3ms, application-code: 4.5s)
+ GET /faculty/class-teacher 200 in 4.1s (next.js: 235ms, proxy.ts: 4ms, application-code: 3.9s)
+ GET /faculty/parent-meetings 200 in 5.9s (next.js: 252ms, proxy.ts: 4ms, application-code: 5.6s)
+ GET /faculty 200 in 4.8s (next.js: 7ms, proxy.ts: 4ms, application-code: 4.8s)
+ GET /faculty/attendance 200 in 3.6s (next.js: 6ms, proxy.ts: 3ms, application-code: 3.6s)
+ GET /faculty/student-leave 200 in 1689ms (next.js: 5ms, proxy.ts: 3ms, application-code: 1681ms)
+ GET /faculty/subject-records 200 in 13.8s (next.js: 5ms, proxy.ts: 6ms, application-code: 13.7s)
+ GET /faculty/marks-entry 200 in 2.9s (next.js: 5ms, proxy.ts: 3ms, application-code: 2.9s)
+ GET /faculty/announcements 200 in 5.5s (next.js: 5ms, proxy.ts: 3ms, application-code: 5.5s)
+ GET /faculty/class-results 200 in 3.4s (next.js: 5ms, proxy.ts: 3ms, application-code: 3.4s)
+ GET /faculty/homework 200 in 2.8s (next.js: 5ms, proxy.ts: 3ms, application-code: 2.7s)
+ GET /faculty/class-teacher 200 in 5.3s (next.js: 15ms, proxy.ts: 6ms, application-code: 5.3s)
+ GET /faculty/parent-meetings 200 in 3.3s (next.js: 6ms, proxy.ts: 5ms, application-code: 3.3s)
+ GET /faculty/my-attendance 200 in 2.9s (next.js: 207ms, proxy.ts: 3ms, application-code: 2.7s)
+ GET /faculty/staff-leave 200 in 3.4s (next.js: 477ms, proxy.ts: 4ms, application-code: 2.9s)
+ GET /faculty/hr-requests 200 in 3.8s (next.js: 249ms, proxy.ts: 5ms, application-code: 3.5s)
+ GET /faculty/payslip 200 in 2.6s (next.js: 215ms, proxy.ts: 3ms, application-code: 2.4s)
+ GET /faculty/appraisal 200 in 3.1s (next.js: 223ms, proxy.ts: 3ms, application-code: 2.9s)
+ GET /faculty/library 200 in 3.7s (next.js: 385ms, proxy.ts: 4ms, application-code: 3.3s)
+ GET /faculty/lms 200 in 2.9s (next.js: 165ms, proxy.ts: 4ms, application-code: 2.7s)
+ GET /faculty/timetable 200 in 2.9s (next.js: 184ms, proxy.ts: 3ms, application-code: 2.7s)
+ GET /faculty/calendar 200 in 2.9s (next.js: 181ms, proxy.ts: 3ms, application-code: 2.8s)
+ GET /faculty/bus 200 in 3.0s (next.js: 180ms, proxy.ts: 3ms, application-code: 2.8s)
+ GET /faculty/calendar 200 in 6.6s (next.js: 14ms, proxy.ts: 6ms, application-code: 6.6s)
+ GET /faculty/lms 200 in 5.1s (next.js: 6ms, proxy.ts: 3ms, application-code: 5.1s)
+ GET /faculty/lms/daf1b05d-fab5-4afc-9028-6d5e756f5d88?tab=materials 200 in 6.7s (next.js: 911ms, proxy.ts: 3ms, application-code: 5.8s)
+ GET /faculty/lms/daf1b05d-fab5-4afc-9028-6d5e756f5d88?tab=tasks 200 in 3.4s (next.js: 16ms, proxy.ts: 3ms, application-code: 3.3s)
+ GET /faculty 200 in 6.3s (next.js: 21ms, proxy.ts: 4ms, application-code: 6.3s)
+ GET /faculty/coordinator 200 in 5.5s (next.js: 216ms, proxy.ts: 3ms, application-code: 5.3s)
+ GET /faculty/coordinator/structure 200 in 5.1s (next.js: 431ms, proxy.ts: 3ms, application-code: 4.6s)
+ GET /faculty/coordinator/offerings 200 in 6.1s (next.js: 225ms, proxy.ts: 3ms, application-code: 5.9s)
+ GET /faculty/coordinator/offerings?tab=workload 200 in 15.8s (next.js: 7ms, proxy.ts: 3ms, application-code: 15.8s)
+⨯ Error: Internal server error
+    at parseOrThrow (src\lib\faculty-coordinator-api.ts:16:11)
+    at async getCoordinatorOfferings (src\lib\faculty-coordinator-api.ts:106:11)
+    at async TimetableGrid (src\app\(dashboard)\faculty\coordinator\timetable\page.tsx:56:43)
+  14 |   if (!res.ok) {
+  15 |     const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
+> 16 |     throw new Error(message ?? `Request failed (${res.status})`);
+     |           ^
+  17 |   }
+  18 |   return body as T;
+  19 | } {
+  digest: '3867624986'
+}
+ GET /faculty/coordinator/timetable 500 in 83s (next.js: 231ms, proxy.ts: 4ms, application-code: 82s)
+ GET /faculty/coordinator/exams 307 in 24.4s (next.js: 239ms, proxy.ts: 4ms, application-code: 24.2s)
+ GET /faculty/coordinator/calendar 307 in 24.6s (next.js: 460ms, proxy.ts: 3ms, application-code: 24.1s)
+ GET /faculty/coordinator/timetable 200 in 10.2s (next.js: 6ms, proxy.ts: 3ms, application-code: 10.2s)
+ GET /faculty/coordinator/exams 200 in 6.1s (next.js: 7ms, proxy.ts: 4ms, application-code: 6.0s)
+ GET /faculty/coordinator/calendar 200 in 3.5s (next.js: 8ms, proxy.ts: 4ms, application-code: 3.5s)
+ GET /faculty/coordinator 200 in 11.4s (next.js: 9ms, proxy.ts: 4ms, application-code: 11.3s)
+ GET /faculty/coordinator/structure 200 in 4.8s (next.js: 9ms, proxy.ts: 6ms, application-code: 4.8s)
+ GET /faculty/coordinator/offerings?tab=workload 200 in 4.6s (next.js: 8ms, proxy.ts: 4ms, application-code: 4.6s)
+ GET /faculty/coordinator/exams 200 in 5.3s (next.js: 5ms, proxy.ts: 4ms, application-code: 5.3s)
+ GET / 307 in 390ms (next.js: 328ms, application-code: 62ms)
+ GET /login 200 in 134ms (next.js: 70ms, application-code: 65ms)
+ GET /faculty 200 in 6.7s (next.js: 10ms, proxy.ts: 8ms, application-code: 6.7s)
+ POST /login 200 in 16.2s (next.js: 21ms, application-code: 16.2s)
+  └─ ƒ loginAction({}, {}) in 9396ms src/app/(auth)/login/actions.ts
+ GET /faculty/attendance 200 in 506ms (next.js: 15ms, proxy.ts: 3ms, application-code: 488ms)
+ GET /faculty/student-leave 200 in 655ms (next.js: 16ms, proxy.ts: 7ms, application-code: 632ms)
+ GET /faculty/marks-entry 200 in 722ms (next.js: 9ms, proxy.ts: 3ms, application-code: 709ms)
+ GET /faculty/marks-entry 200 in 741ms (next.js: 7ms, proxy.ts: 3ms, application-code: 731ms)
+ GET /faculty/marks-entry 200 in 511ms (next.js: 5ms, proxy.ts: 3ms, application-code: 503ms)
+ GET /login 200 in 39ms (next.js: 7ms, application-code: 32ms)
+ POST /faculty/announcements 200 in 550ms (next.js: 5ms, proxy.ts: 3ms, application-code: 541ms)
+  └─ ƒ logoutAction() in 485ms src/app/(dashboard)/admin/actions.ts
+ GET /login 200 in 16ms (next.js: 6ms, application-code: 10ms)
+ GET /login 200 in 26ms (next.js: 9ms, application-code: 17ms)
+ GET /faculty/announcements 200 in 4.3s (next.js: 12ms, proxy.ts: 5ms, application-code: 4.3s)
+ GET /faculty 200 in 5.0s (next.js: 9ms, proxy.ts: 6ms, application-code: 5.0s)
+ POST /login 200 in 12.3s (next.js: 8ms, application-code: 12.2s)
+  └─ ƒ loginAction({}, {}) in 7204ms src/app/(auth)/login/actions.ts
+ GET /faculty/attendance 200 in 3.9s (next.js: 5ms, proxy.ts: 3ms, application-code: 3.9s)
+ GET /faculty/student-leave 200 in 5.1s (next.js: 5ms, proxy.ts: 3ms, application-code: 5.1s)
+ GET /faculty/student-leave 200 in 22ms (next.js: 9ms, proxy.ts: 6ms, application-code: 7ms)
+ POST /faculty/attendance 200 in 11.9s (next.js: 10ms, proxy.ts: 7ms, application-code: 11.8s)
+  └─ ƒ markAllPresentAction("421f19af-0c2c-4dbc-8366-0e200997d1f5", "2026-09-08") in 8636ms src/app/(dashboard)/faculty/attendance/actions.ts
+ GET /faculty/student-leave 200 in 4.2s (next.js: 7ms, proxy.ts: 3ms, application-code: 4.2s)
+ GET /faculty/student-leave 200 in 3.5s (next.js: 9ms, proxy.ts: 21ms, application-code: 3.5s)
+ GET /faculty/student-leave 200 in 1229ms (next.js: 7ms, proxy.ts: 7ms, application-code: 1214ms)
+ GET /faculty/student-leave 200 in 1810ms (next.js: 5ms, proxy.ts: 3ms, application-code: 1802ms)
+ GET /faculty/student-leave 200 in 1582ms (next.js: 7ms, proxy.ts: 4ms, application-code: 1571ms)
+ GET /faculty/subject-records 200 in 13.8s (next.js: 7ms, proxy.ts: 3ms, application-code: 13.8s)
+ GET /faculty/subject-records 200 in 13.4s (next.js: 7ms, proxy.ts: 6ms, application-code: 13.4s)
+ GET /faculty/subject-records 200 in 13.2s (next.js: 9ms, proxy.ts: 9ms, application-code: 13.2s)
+ GET /faculty/subject-records 200 in 16.9s (next.js: 8ms, proxy.ts: 7ms, application-code: 16.9s)
+ GET /faculty/subject-records 200 in 16.7s (next.js: 11ms, proxy.ts: 6ms, application-code: 16.7s)
+ GET /faculty/subject-records 200 in 19.1s (next.js: 7ms, proxy.ts: 6ms, application-code: 19.1s)
+ GET /faculty/subject-records 200 in 14.4s (next.js: 11ms, proxy.ts: 5ms, application-code: 14.4s)
+ GET /faculty/subject-records 200 in 14.4s (next.js: 46ms, proxy.ts: 7ms, application-code: 14.4s)
+ GET /faculty/subject-records 200 in 14.4s (next.js: 25ms, proxy.ts: 10ms, application-code: 14.4s)
+ GET /faculty/marks-entry 200 in 4.1s (next.js: 14ms, proxy.ts: 10ms, application-code: 4.1s)
+ GET /faculty/student-leave 200 in 3.2s (next.js: 6ms, proxy.ts: 6ms, application-code: 3.2s)
+ GET /faculty/subject-records 200 in 12.3s (next.js: 24ms, proxy.ts: 27ms, application-code: 12.2s)
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '559533825'
+}
+ GET /faculty/subject-records 200 in 8.2s (next.js: 8ms, proxy.ts: 5ms, application-code: 8.2s)
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '559533825'
+}
+ GET /faculty/subject-records 200 in 10.6s (next.js: 6ms, proxy.ts: 4ms, application-code: 10.6s)
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '559533825'
+}
+ GET /faculty/subject-records 200 in 7.7s (next.js: 35ms, proxy.ts: 8ms, application-code: 7.7s)
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '559533825'
+}
+ GET /faculty/subject-records 200 in 12.7s (next.js: 28ms, proxy.ts: 7ms, application-code: 12.6s)
+⨯ Error: The destination stream closed early.
+    at ignore-listed frames {
+  digest: '559533825'
+}
+ GET /faculty/announcements 200 in 5.3s (next.js: 8ms, proxy.ts: 4ms, application-code: 5.3s)
+ GET /faculty/marks-entry 200 in 6.4s (next.js: 9ms, proxy.ts: 4ms, application-code: 6.4s)
+ GET /faculty/homework 200 in 1048ms (next.js: 12ms, proxy.ts: 3ms, application-code: 1033ms)
+ GET /faculty/marks-entry 200 in 6.0s (next.js: 10ms, proxy.ts: 6ms, application-code: 6.0s)
+ GET /faculty/my-attendance 200 in 1220ms (next.js: 7ms, proxy.ts: 3ms, application-code: 1211ms)
+ GET /faculty/staff-leave 200 in 1568ms (next.js: 9ms, proxy.ts: 4ms, application-code: 1556ms)
+ GET /faculty/hr-requests 200 in 1599ms (next.js: 13ms, proxy.ts: 4ms, application-code: 1582ms)
+ GET /faculty/payslip 200 in 1482ms (next.js: 10ms, proxy.ts: 3ms, application-code: 1469ms)
+ GET /faculty/library 200 in 1161ms (next.js: 7ms, proxy.ts: 3ms, application-code: 1151ms)
+ GET /faculty/library?tab=my-issues 200 in 530ms (next.js: 6ms, proxy.ts: 3ms, application-code: 522ms)
+ GET /faculty/library 200 in 1154ms (next.js: 6ms, proxy.ts: 6ms, application-code: 1142ms)
+ GET /faculty/parent-meetings 200 in 966ms (next.js: 10ms, proxy.ts: 5ms, application-code: 952ms)
+ POST /faculty/parent-meetings 200 in 10.6s (next.js: 18ms, proxy.ts: 6ms, application-code: 10.6s)
+  └─ ƒ createSlotAction({}, {}) in 4732ms src/app/(dashboard)/faculty/parent-meetings/actions.ts
+ GET /faculty/class-teacher 200 in 4.8s (next.js: 8ms, proxy.ts: 3ms, application-code: 4.8s)
+ GET /faculty 200 in 1160ms (next.js: 13ms, proxy.ts: 4ms, application-code: 1143ms)
+ GET /login 200 in 35ms (next.js: 5ms, application-code: 30ms)
+ POST /faculty 200 in 531ms (next.js: 7ms, proxy.ts: 5ms, application-code: 519ms)
+  └─ ƒ logoutAction() in 466ms src/app/(dashboard)/admin/actions.ts
+ GET /login 200 in 13ms (next.js: 6ms, application-code: 7ms)
+ GET /login 200 in 37ms (next.js: 9ms, application-code: 28ms)
+ GET / 307 in 80ms (next.js: 19ms, application-code: 61ms)
+ GET /login 200 in 41ms (next.js: 8ms, application-code: 33ms)
+ POST /login 200 in 14.7s (next.js: 15ms, application-code: 14.7s)
+  └─ ƒ loginAction({}, {}) in 14676ms src/app/(auth)/login/actions.ts
+[?25h
