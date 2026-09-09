@@ -6,8 +6,19 @@
 // state (component 22) with the one-time temporary password, then links to the new
 // parent's profile. The generated password is never put in a URL -- same corrected
 // pattern as CreateFacultyModal.tsx.
+//
+// Rendered via createPortal into document.body rather than inline: this modal's
+// "Not found -- create new parent" trigger is used from inside GuardiansSection's
+// own <form> (the "link guardian" form on a student's profile), and this modal's
+// overlay contains its own <form>. Rendered inline, that put a <form> inside a
+// <form> in the actual DOM despite the overlay being visually a full-screen
+// fixed-position layer -- invalid HTML that Next.js/React flagged as a hydration
+// error. The portal keeps the overlay's real DOM position at the body root, same
+// as any other real-world modal, while staying part of this component's React
+// tree for state/context.
 
 import { useActionState, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createParentAction, type FormActionState } from "@/app/(dashboard)/admin/parents/actions";
 import { LinkNewParentToStudentForm } from "./LinkNewParentToStudentForm";
@@ -45,121 +56,123 @@ export function CreateParentModal({
         {triggerLabel}
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
-          <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
-            {created ? (
-              <>
-                <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
-                  Parent account created
-                </h2>
-                <p className="mt-1.5 text-sm text-text-muted">
-                  This is the only time the temporary password is shown. Share it with
-                  the parent now — they should sign in and change it as soon as
-                  possible.
-                </p>
-                <p className="mt-4 rounded-[11px] bg-field px-3.5 py-2.5 font-mono text-[15px] font-semibold text-text">
-                  {state.temporaryPassword}
-                </p>
-
-                <LinkNewParentToStudentForm parentPersonId={state.personId!} presetStudent={presetStudent} />
-
-                <div className="mt-5 flex gap-3">
-                  <Link
-                    href={`/admin/parents/${state.personId}`}
-                    onClick={handleClose}
-                    className="flex-1 rounded-[11px] bg-primary px-4 py-2.5 text-center text-sm font-bold text-white transition-opacity hover:opacity-90"
-                  >
-                    View profile
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="rounded-[11px] border border-border px-4 py-2.5 text-sm font-bold text-text hover:bg-bg"
-                  >
-                    Done
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center justify-between">
-                  <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New parent account</h2>
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    aria-label="Close"
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:bg-bg"
-                  >
-                    ×
-                  </button>
-                </div>
-                <p className="mt-1.5 text-[13px] text-text-muted">
-                  Parent is a real mobile login — this creates the account and a
-                  one-time temporary password. Link them to a child afterwards from
-                  the student&apos;s own profile.
-                </p>
-
-                {state.error && (
-                  <p
-                    role="alert"
-                    className="mt-4 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm font-medium text-critical-text"
-                  >
-                    {state.error}
+      {open &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
+            <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
+              {created ? (
+                <>
+                  <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
+                    Parent account created
+                  </h2>
+                  <p className="mt-1.5 text-sm text-text-muted">
+                    This is the only time the temporary password is shown. Share it with
+                    the parent now — they should sign in and change it as soon as
+                    possible.
                   </p>
-                )}
+                  <p className="mt-4 rounded-[11px] bg-field px-3.5 py-2.5 font-mono text-[15px] font-semibold text-text">
+                    {state.temporaryPassword}
+                  </p>
 
-                <form action={formAction} className="mt-4 flex flex-col gap-4" noValidate>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="First name" name="firstName" required disabled={isPending} />
-                    <Field label="Last name" name="lastName" disabled={isPending} />
+                  <LinkNewParentToStudentForm parentPersonId={state.personId!} presetStudent={presetStudent} />
+
+                  <div className="mt-5 flex gap-3">
+                    <Link
+                      href={`/admin/parents/${state.personId}`}
+                      onClick={handleClose}
+                      className="flex-1 rounded-[11px] bg-primary px-4 py-2.5 text-center text-sm font-bold text-white transition-opacity hover:opacity-90"
+                    >
+                      View profile
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="rounded-[11px] border border-border px-4 py-2.5 text-sm font-bold text-text hover:bg-bg"
+                    >
+                      Done
+                    </button>
                   </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New parent account</h2>
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      aria-label="Close"
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:bg-bg"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="mt-1.5 text-[13px] text-text-muted">
+                    Parent is a real mobile login — this creates the account and a
+                    one-time temporary password. Link them to a child afterwards from
+                    the student&apos;s own profile.
+                  </p>
 
-                  <SelectField
-                    label="Gender"
-                    name="gender"
-                    disabled={isPending}
-                    options={[
-                      ["", "Select"],
-                      ["MALE", "Male"],
-                      ["FEMALE", "Female"],
-                      ["OTHER", "Other"],
-                      ["UNDISCLOSED", "Prefer not to say"],
-                    ]}
-                  />
+                  {state.error && (
+                    <p
+                      role="alert"
+                      className="mt-4 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm font-medium text-critical-text"
+                    >
+                      {state.error}
+                    </p>
+                  )}
 
-                  <div className="grid grid-cols-[auto_1fr] gap-4">
+                  <form action={formAction} className="mt-4 flex flex-col gap-4" noValidate>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="First name" name="firstName" required disabled={isPending} />
+                      <Field label="Last name" name="lastName" disabled={isPending} />
+                    </div>
+
                     <SelectField
-                      label="Login via"
-                      name="identifierType"
+                      label="Gender"
+                      name="gender"
                       disabled={isPending}
                       options={[
-                        ["EMAIL", "Email"],
-                        ["MOBILE", "Mobile"],
+                        ["", "Select"],
+                        ["MALE", "Male"],
+                        ["FEMALE", "Female"],
+                        ["OTHER", "Other"],
+                        ["UNDISCLOSED", "Prefer not to say"],
                       ]}
                     />
-                    <Field
-                      label="Email or mobile"
-                      name="identifierValue"
-                      required
-                      disabled={isPending}
-                      placeholder="name@example.com or 10-digit mobile"
-                    />
-                  </div>
 
-                  <button
-                    type="submit"
-                    disabled={isPending}
-                    className="mt-2 rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {isPending ? "Creating…" : "Create parent account"}
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+                    <div className="grid grid-cols-[auto_1fr] gap-4">
+                      <SelectField
+                        label="Login via"
+                        name="identifierType"
+                        disabled={isPending}
+                        options={[
+                          ["EMAIL", "Email"],
+                          ["MOBILE", "Mobile"],
+                        ]}
+                      />
+                      <Field
+                        label="Email or mobile"
+                        name="identifierValue"
+                        required
+                        disabled={isPending}
+                        placeholder="name@example.com or 10-digit mobile"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isPending}
+                      className="mt-2 rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {isPending ? "Creating…" : "Create parent account"}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

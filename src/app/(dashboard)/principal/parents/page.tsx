@@ -102,28 +102,27 @@ export default async function PrincipalParentsPage({
               <th className="px-4 py-3">Contact</th>
               <th className="px-4 py-3">Children linked</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {parents.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-text-muted">
+                <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
                   No parents match this search.
                 </td>
               </tr>
             )}
             {parents.map((parent) => (
-              <tr key={parent.id}>
+              <tr key={parent.id} className="hover:bg-field">
                 <td className="px-4 py-3 font-semibold text-text">
-                  <div className="flex items-center gap-2.5">
+                  <Link href={`/principal/parents/${parent.id}`} className="flex items-center gap-2.5 hover:text-primary hover:underline">
                     <PersonAvatar
                       photoUrl={parent.photoUrl}
                       name={`${parent.firstName} ${parent.lastName ?? ""}`}
                       size={28}
                     />
                     {parent.firstName} {parent.lastName ?? ""}
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-4 py-3 text-text-muted">{parent.occupation ?? "—"}</td>
                 <td className="px-4 py-3 text-text-muted">
@@ -132,11 +131,6 @@ export default async function PrincipalParentsPage({
                 <td className="px-4 py-3 font-mono text-[13px] text-text">{parent.childrenCount}</td>
                 <td className="px-4 py-3">
                   <StatusPill tone={parent.status === "ACTIVE" ? "success" : "critical"} label={parent.status} />
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Link href={`/principal/parents/${parent.id}`} className="text-[13px] font-semibold text-primary">
-                    View
-                  </Link>
                 </td>
               </tr>
             ))}

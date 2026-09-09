@@ -2,7 +2,23 @@
 
 // Create-student modal -- Design Architecture v0.1 component 13 (Modal, 480px web,
 // same field rhythm as the mobile bottom sheet). Two-column field layout per
-// reference-img/admission-student.png, our own field set and tokens.
+// reference-img/admission-student.png, our own field set and tokens. Widened to
+// 760px (was 480px) and given a 3-column grid at this width so fields like
+// City/State/Pincode and the Enrolment details row below get real room instead
+// of three squeezed inputs in a 480px-wide sheet.
+//
+// Enrolment details (type, remarks) are real, already-supported fields on
+// CreateEnrolmentDto (school-eos-backend's create-enrolment.dto.ts:
+// enrolmentType one of REGULAR/PROMOTED/DETAINED/READMITTED/TRANSFER_IN,
+// remarks a free-text string) that createStudentAction's own POST
+// /students/:id/enrolments call was never sending -- not invented fields, an
+// existing capability this modal just didn't expose yet. Both are optional
+// (enrolmentType defaults to REGULAR at the DB level, remarks may be blank).
+//
+// Class itself is REQUIRED, not optional -- every admission must be enrolled
+// into a section immediately (see createStudentAction's own guard, checked
+// server-side too since a server action can be invoked directly and must not
+// rely on this <select required> alone).
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
@@ -38,7 +54,7 @@ export function CreateStudentModal({ grades, sections }: { grades: Grade[]; sect
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
-          <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
+          <div className="w-full max-w-[760px] rounded-[16px] bg-surface p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New admission</h2>
               <button
@@ -109,13 +125,14 @@ export function CreateStudentModal({ grades, sections }: { grades: Grade[]; sect
                 <Field label="Admission date" name="admissionDate" type="date" required disabled={isPending} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <SelectField
-                  label="Class (optional)"
+                  label="Class"
                   name="sectionId"
+                  required
                   disabled={isPending}
                   options={[
-                    ["", "Assign later"],
+                    ["", "Select class"],
                     ...sections.map(
                       (s) => [s.id, `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`] as [string, string],
                     ),
@@ -128,7 +145,25 @@ export function CreateStudentModal({ grades, sections }: { grades: Grade[]; sect
                   disabled={isPending}
                   placeholder="Auto-assigned if left blank"
                 />
+                <SelectField
+                  label="Enrolment type (optional)"
+                  name="enrolmentType"
+                  disabled={isPending}
+                  options={[
+                    ["", "Regular (default)"],
+                    ["PROMOTED", "Promoted"],
+                    ["DETAINED", "Detained"],
+                    ["READMITTED", "Readmitted"],
+                    ["TRANSFER_IN", "Transfer in"],
+                  ]}
+                />
               </div>
+              <Field
+                label="Enrolment remarks (optional)"
+                name="enrolmentRemarks"
+                disabled={isPending}
+                placeholder="e.g. Transferred from Sunrise Matric, Class VI"
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <Field
@@ -217,25 +252,31 @@ function Field({
 function SelectField({
   label,
   name,
+  required,
   disabled,
   options,
 }: {
   label: string;
   name: string;
+  required?: boolean;
   disabled?: boolean;
   options: [string, string][];
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
-      <span className="font-semibold text-text">{label}</span>
+      <span className="font-semibold text-text">
+        {label}
+        {required && <span className="text-critical-text"> *</span>}
+      </span>
       <select
         name={name}
+        required={required}
         disabled={disabled}
         defaultValue=""
         className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
       >
         {options.map(([value, text]) => (
-          <option key={value} value={value}>
+          <option key={value} value={value} disabled={required && value === ""}>
             {text}
           </option>
         ))}

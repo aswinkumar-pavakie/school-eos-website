@@ -51,6 +51,7 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   // icon fits a library better, and this set already reuses icons across items.
   { href: "/admin/library", label: "Library", icon: "academics", group: "CAMPUS & OPERATIONS" },
   { href: "/admin/maintenance", label: "Repair & Maintenance", icon: "maintenance", group: "CAMPUS & OPERATIONS" },
+  { href: "/admin/sports", label: "Sports", icon: "sports", group: "CAMPUS & OPERATIONS" },
 
   { href: "/admin/finance", label: "Finance", icon: "finance", group: "FINANCE" },
 

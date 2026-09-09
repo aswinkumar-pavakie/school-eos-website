@@ -32,12 +32,28 @@ export function SectionsPanel({
   const [state, formAction, isPending] = useActionState(createSectionAction, initialState);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [gradeFilter, setGradeFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
 
-  const yearName = (id: string) => years.find((y) => y.id === id)?.name ?? id;
   const gradeName = (id: string) => grades.find((g) => g.id === id)?.name ?? id;
-  const mediumName = (id: string) => mediums.find((m) => m.id === id)?.name ?? id;
 
-  const filtered = gradeFilter ? sections.filter((s) => s.gradeId === gradeFilter) : sections;
+  // GET /sections orders by section name ("A", "B", ...) only, with no
+  // secondary key -- across grades that ties on the same section letter, so
+  // the list previously showed standards in whatever order the DB happened to
+  // return them in (8, 6, 3, 7, 5, 4, LKG, 11, 1, ...), not ascending. `grades`
+  // itself already comes back ordered by the real level_no column (GET /grades
+  // -- grade.repository.ts: `ORDER BY level_no`), so its array position IS the
+  // correct LKG/UKG-first, Standard-1-through-12 ascending rank; sort sections
+  // by that rank (then by name within the same standard) instead of re-deriving
+  // an order from scratch.
+  const gradeRank = new Map(grades.map((g, index) => [g.id, index]));
+  const filtered = sections
+    .filter((s) => !gradeFilter || s.gradeId === gradeFilter)
+    .filter((s) => !yearFilter || s.academicYearId === yearFilter)
+    .slice()
+    .sort((a, b) => {
+      const rankDiff = (gradeRank.get(a.gradeId) ?? 0) - (gradeRank.get(b.gradeId) ?? 0);
+      return rankDiff !== 0 ? rankDiff : a.name.localeCompare(b.name);
+    });
 
   return (
     <div>
@@ -85,27 +101,60 @@ export function SectionsPanel({
         </PanelCreateForm>
       )}
 
-      <div className="mt-4 flex items-end gap-3">
+      <div className="mt-4 flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1.5 text-sm">
           <span className="font-semibold text-text">Filter by grade</span>
           <GradeFilterSelect grades={grades} value={gradeFilter} onChange={setGradeFilter} />
         </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="font-semibold text-text">Filter by academic year</span>
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="min-w-[180px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+          >
+            <option value="">All years</option>
+            {years.map((y) => (
+              <option key={y.id} value={y.id}>
+                {y.name}
+                {y.isCurrent ? " (current)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <ul className="mt-4 flex flex-col divide-y divide-border">
-        {filtered.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No sections match this filter.</li>}
-        {filtered.map((section) => (
-          <SectionRow
-            key={section.id}
-            section={section}
-            yearLabel={yearName(section.academicYearId)}
-            gradeLabel={gradeName(section.gradeId)}
-            mediumLabel={mediumName(section.mediumId)}
-            editing={editingId === section.id}
-            onToggle={() => setEditingId((v) => (v === section.id ? null : section.id))}
-          />
-        ))}
-      </ul>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[680px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Standard</th>
+              <th className="py-2.5 pr-3">Section</th>
+              <th className="py-2.5 pr-3">Capacity</th>
+              <th className="py-2.5 pr-3">Status</th>
+              <th className="py-2.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-6 text-center text-text-muted">
+                  No sections match this filter.
+                </td>
+              </tr>
+            )}
+            {filtered.map((section) => (
+              <SectionRow
+                key={section.id}
+                section={section}
+                gradeLabel={gradeName(section.gradeId)}
+                editing={editingId === section.id}
+                onToggle={() => setEditingId((v) => (v === section.id ? null : section.id))}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -188,16 +237,12 @@ function GradeFilterSelect({
 
 function SectionRow({
   section,
-  yearLabel,
   gradeLabel,
-  mediumLabel,
   editing,
   onToggle,
 }: {
   section: Section;
-  yearLabel: string;
   gradeLabel: string;
-  mediumLabel: string;
   editing: boolean;
   onToggle: () => void;
 }) {
@@ -205,51 +250,51 @@ function SectionRow({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[13.5px] font-semibold text-text">
-            {gradeLabel} · {section.name}
-          </p>
-          <p className="text-xs text-text-muted">
-            {yearLabel} · {mediumLabel}
-            {section.capacity && ` · capacity ${section.capacity}`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2.5">
+    <>
+      <tr>
+        <td className="py-3 pr-3 font-semibold text-text">{gradeLabel}</td>
+        <td className="py-3 pr-3 text-text">{section.name}</td>
+        <td className="py-3 pr-3 text-text-muted">{section.capacity ?? "—"}</td>
+        <td className="py-3 pr-3">
           <StatusPill tone={section.status === "ACTIVE" ? "success" : "pending"} label={section.status} />
+        </td>
+        <td className="py-3 text-right">
           <button type="button" onClick={onToggle} className="text-[13px] font-semibold text-primary">
             {editing ? "Cancel" : "Edit"}
           </button>
-        </div>
-      </div>
+        </td>
+      </tr>
       {editing && (
-        <form action={formAction} className="mt-2.5 flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
-          {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
-          <div className="grid grid-cols-2 gap-2.5">
-            <Field label="Section name" name="name" disabled={isPending} defaultValue={section.name} />
-            <Field label="Capacity" name="capacity" type="number" disabled={isPending} defaultValue={section.capacity ?? undefined} />
-            <SelectField
-              label="Status"
-              name="status"
-              disabled={isPending}
-              defaultValue={section.status}
-              options={[
-                ["ACTIVE", "Active"],
-                ["INACTIVE", "Inactive"],
-                ["ARCHIVED", "Archived"],
-              ]}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {isPending ? "Saving…" : "Save changes"}
-          </button>
-        </form>
+        <tr>
+          <td colSpan={5} className="pb-3">
+            <form action={formAction} className="flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
+              {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
+              <div className="grid grid-cols-2 gap-2.5">
+                <Field label="Section name" name="name" disabled={isPending} defaultValue={section.name} />
+                <Field label="Capacity" name="capacity" type="number" disabled={isPending} defaultValue={section.capacity ?? undefined} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue={section.status}
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                    ["ARCHIVED", "Archived"],
+                  ]}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {isPending ? "Saving…" : "Save changes"}
+              </button>
+            </form>
+          </td>
+        </tr>
       )}
-    </li>
+    </>
   );
 }

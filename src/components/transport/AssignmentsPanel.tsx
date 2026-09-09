@@ -98,22 +98,37 @@ export function AssignmentsPanel({
         </label>
       </div>
 
-      <ul className="mt-4 flex flex-col divide-y divide-border">
-        {filtered.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No assignments match this filter.</li>}
-        {filtered.map((a) => (
-          <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-            <div>
-              <p className="text-[13.5px] font-semibold text-text">
-                {vehicleLabel(a.vehicleId)} → {routeLabel(a.routeId)}
-              </p>
-              <p className="text-xs text-text-muted">
-                Driver: {personLabel(drivers, a.driverId)} · Attendant: {personLabel(attendants, a.attendantId)}
-                {!isCurrent(a) && " · ended"}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Vehicle</th>
+              <th className="py-2.5 pr-3">Route</th>
+              <th className="py-2.5 pr-3">Driver</th>
+              <th className="py-2.5 pr-3">Attendant</th>
+              <th className="py-2.5">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-6 text-center text-text-muted">
+                  No assignments match this filter.
+                </td>
+              </tr>
+            )}
+            {filtered.map((a) => (
+              <tr key={a.id}>
+                <td className="py-3 pr-3 font-semibold text-text">{vehicleLabel(a.vehicleId)}</td>
+                <td className="py-3 pr-3 text-text">{routeLabel(a.routeId)}</td>
+                <td className="py-3 pr-3 text-text-muted">{personLabel(drivers, a.driverId)}</td>
+                <td className="py-3 pr-3 text-text-muted">{personLabel(attendants, a.attendantId)}</td>
+                <td className="py-3 text-text-muted">{isCurrent(a) ? "Active" : "Ended"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

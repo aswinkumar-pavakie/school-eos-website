@@ -278,4 +278,5 @@ export const NAV_ICONS = {
   settings: SettingsIcon,
   profile: IdCardIcon,
   coordinator: CoordinatorIcon,
+  sports: SportsIcon,
 } as const;

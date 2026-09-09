@@ -16,6 +16,37 @@ async function readError(res: Response): Promise<string> {
   return body?.message ?? "Something went wrong. Nothing was changed.";
 }
 
+export interface ResetPasswordState {
+  error?: string;
+  temporaryPassword?: string;
+}
+
+/**
+ * Same real POST /persons/:id/password-reset every role's admin reset already
+ * goes through (see admin/parents/actions.ts's own resetParentPasswordAction)
+ * -- ADMIN-only, role-agnostic on the backend. Faculty's own profile gates
+ * showing this the same way Parent's does: only once resetAllowanceUsed is
+ * true (the faculty member already used their one self-service reset via
+ * the public /auth/password-reset/* flow, itself unrelated to and unchanged
+ * by this action).
+ *
+ * Two different ids on purpose: the reset itself targets personId (the
+ * person/login row -- staff.id is a different row entirely), but this page's
+ * own URL is keyed by staffId (/admin/faculty/[id] fetches GET /staff/:id),
+ * so that's what needs revalidating, not personId.
+ */
+export async function resetFacultyPasswordAction(staffId: string, personId: string): Promise<ResetPasswordState> {
+  const res = await apiFetch(`/persons/${personId}/password-reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  const { data } = (await res.json()) as { data: { newPassword: string } };
+  revalidatePath(`/admin/faculty/${staffId}`);
+  return { temporaryPassword: data.newPassword };
+}
+
 /**
  * Faculty is a real mobile login role, unlike Students -- creating one is a genuine
  * two-step orchestration: POST /persons (person + login + FACULTY role assignment),
@@ -68,6 +99,10 @@ export async function createFacultyAction(
     const value = formData.get(key);
     if (typeof value === "string" && value.trim() !== "") staffPayload[key] = value;
   }
+  const experienceYears = formData.get("experienceYears");
+  if (typeof experienceYears === "string" && experienceYears.trim() !== "") {
+    staffPayload.experienceYears = Number(experienceYears);
+  }
 
   const staffRes = await apiFetch("/staff", {
     method: "POST",
@@ -87,6 +122,92 @@ export async function createFacultyAction(
 
   const { data: staff } = (await staffRes.json()) as { data: { id: string } };
   revalidatePath("/admin/faculty");
+
+  // Extra responsibility role (optional) -- same real role_assignment system
+  // admin/academics/actions.ts's assignCoordinatorAction/assignClassAdvisorAction
+  // already use, reused here (not duplicated as a second engine) so a brand-new
+  // hire can be given Academic Coordinator / Sports Faculty / Class Advisor at
+  // creation time instead of a separate trip to Academics afterward. If the
+  // chosen scope already has a different active holder, that holder is
+  // revoked first -- the same one-active-holder-per-scope fix applied to
+  // assignCoordinatorAction, so this can't silently create a second active
+  // coordinator for the same standard/stage/section.
+  const extraRole = formData.get("extraRole");
+  if (typeof extraRole === "string" && extraRole.trim() !== "") {
+    const target =
+      extraRole === "CLASS_ADVISOR"
+        ? (() => {
+            const sectionId = formData.get("extraRoleSectionId");
+            return typeof sectionId === "string" && sectionId.trim() !== ""
+              ? { scopeType: "SECTION", scopeId: sectionId }
+              : null;
+          })()
+        : (() => {
+            const gradeId = formData.get("extraRoleScopeGradeId");
+            const scopeStage = formData.get("extraRoleScopeStage");
+            if (typeof gradeId === "string" && gradeId.trim() !== "") return { scopeType: "GRADE", scopeId: gradeId };
+            if (typeof scopeStage === "string" && scopeStage.trim() !== "") return { scopeType: "STAGE", scopeStage };
+            return null;
+          })();
+
+    if (!target) {
+      return {
+        error: `Faculty account was created, but no scope was selected for the extra role — assign it from the profile's Roles section instead.`,
+        temporaryPassword,
+        personId,
+        staffId: staff.id,
+      };
+    }
+
+    const yearRes = await apiFetch("/academic-years");
+    const currentYear = yearRes.ok
+      ? ((await yearRes.json()) as { data: { id: string; isCurrent: boolean }[] }).data.find((y) => y.isCurrent)
+      : undefined;
+
+    const existingRes = await apiFetch(`/role-assignments?roleCode=${extraRole}&status=ACTIVE`);
+    const existing: { id: string; personId: string; scopeType: string; scopeId: string | null; scopeStage: string | null }[] =
+      existingRes.ok ? (await existingRes.json()).data : [];
+    const holder = existing.find(
+      (a) =>
+        a.scopeType === target.scopeType &&
+        ("scopeStage" in target
+          ? a.scopeStage === target.scopeStage
+          : a.scopeId === target.scopeId),
+    );
+
+    if (holder) {
+      const revokeRes = await apiFetch(`/role-assignments/${holder.id}/revoke`, { method: "POST" });
+      if (!revokeRes.ok) {
+        return {
+          error: `Faculty account was created, but the previous holder of this role/scope couldn't be revoked: ${await readError(revokeRes)}. Reassign it from Academics instead.`,
+          temporaryPassword,
+          personId,
+          staffId: staff.id,
+        };
+      }
+    }
+
+    const roleRes = await apiFetch("/role-assignments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        personId,
+        roleCode: extraRole,
+        academicYearId: currentYear?.id,
+        ...target,
+      }),
+    });
+    if (!roleRes.ok) {
+      return {
+        error: `Faculty account was created, but the extra role couldn't be assigned: ${await readError(roleRes)}. Assign it from the profile's Roles section instead.`,
+        temporaryPassword,
+        personId,
+        staffId: staff.id,
+      };
+    }
+    revalidatePath("/admin/academics");
+  }
+
   // Not a redirect: a temporary password must never travel through a URL (browser
   // history, server access logs, and the Referer header would all capture it).
   // Returned here instead, shown once in the modal's own confirmation state, and
@@ -110,6 +231,10 @@ export async function updateFacultyProfileAction(
   for (const key of ["employeeNo", "designation", "teacherCategory", "postType", "stateTeacherId"]) {
     const value = formData.get(key);
     if (typeof value === "string" && value.trim() !== "") staffPayload[key] = value;
+  }
+  const experienceYears = formData.get("experienceYears");
+  if (typeof experienceYears === "string" && experienceYears.trim() !== "") {
+    staffPayload.experienceYears = Number(experienceYears);
   }
 
   const addressPayload: Record<string, unknown> = {};

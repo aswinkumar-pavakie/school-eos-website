@@ -117,24 +117,41 @@ export function CoordinatorsPanel({
 
       {open && <AssignCoordinatorForm grades={grades} academicYearId={academicYearId} onDone={() => setOpen(false)} />}
 
-      <ul className="mt-4 flex flex-col divide-y divide-border">
-        {grouped.size === 0 && <li className="py-3 text-sm text-text-muted">No coordinator/sports-faculty roles assigned yet.</li>}
-        {[...grouped.entries()].map(([key, entry]) => (
-          <li key={key} className="flex flex-wrap items-center justify-between gap-3 py-3">
-            <div>
-              <p className="text-[13.5px] font-semibold text-text">{entry.staffName}</p>
-              <p className="text-xs text-text-muted">
-                {entry.roleLabel} · {entry.coverage.join(", ")}
-              </p>
-            </div>
-            <div className="flex gap-3">
-              {entry.ids.map((id) => (
-                <EndButton key={id} id={id} />
-              ))}
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[560px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Staff</th>
+              <th className="py-2.5 pr-3">Role</th>
+              <th className="py-2.5 pr-3">Coverage</th>
+              <th className="py-2.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {grouped.size === 0 && (
+              <tr>
+                <td colSpan={4} className="py-6 text-center text-text-muted">
+                  No coordinator/sports-faculty roles assigned yet.
+                </td>
+              </tr>
+            )}
+            {[...grouped.entries()].map(([key, entry]) => (
+              <tr key={key}>
+                <td className="py-3 pr-3 font-semibold text-text">{entry.staffName}</td>
+                <td className="py-3 pr-3 text-text">{entry.roleLabel}</td>
+                <td className="py-3 pr-3 text-text-muted">{entry.coverage.join(", ")}</td>
+                <td className="py-3 text-right">
+                  <div className="flex justify-end gap-3">
+                    {entry.ids.map((id) => (
+                      <EndButton key={id} id={id} />
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

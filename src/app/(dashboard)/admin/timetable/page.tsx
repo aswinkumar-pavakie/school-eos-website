@@ -2,6 +2,16 @@
 // which already existed fully populated in the database with no API in front of
 // it (see query.md). Pick a Standard + Section, see that section's real weekly
 // grid.
+//
+// On a fresh page load (neither gradeId nor sectionId in the URL yet) this
+// defaults to the lowest standard's first section instead of an empty
+// "pick something" prompt -- GET /grades already returns grades ordered by
+// the real level_no column (grade.repository.ts: `ORDER BY level_no`), so
+// grades[0] is genuinely the lowest standard, not an arbitrary/alphabetical
+// pick (which would wrongly put "Standard 10" before "Standard 2"). Once the
+// admin explicitly picks a standard or section via the selects below, that
+// explicit choice always wins -- this default only fills the truly blank
+// first-visit state.
 
 import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { TimetableGrid, type TimetableSlot } from "@/components/academics/TimetableGrid";
@@ -32,23 +42,35 @@ export default async function TimetablePage({
   const grades: Grade[] = gradesRes.ok ? ((await gradesRes.json()) as { data: Grade[] }).data : [];
   const sections: Section[] = sectionsRes.ok ? ((await sectionsRes.json()) as { data: Section[] }).data : [];
   const gradeById = new Map(grades.map((g) => [g.id, g.name]));
+
+  const isFreshLoad = !params.gradeId && !params.sectionId;
+  const defaultGradeId = grades[0]?.id;
+  const defaultSectionId = defaultGradeId
+    ? sections
+        .filter((s) => s.gradeId === defaultGradeId)
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))[0]?.id
+    : undefined;
+  const effectiveGradeId = isFreshLoad ? defaultGradeId : params.gradeId;
+  const effectiveSectionId = isFreshLoad ? defaultSectionId : params.sectionId;
+
   const visibleSections = (
-    params.gradeId ? sections.filter((s) => s.gradeId === params.gradeId) : sections
+    effectiveGradeId ? sections.filter((s) => s.gradeId === effectiveGradeId) : sections
   )
     .slice()
     .sort((a, b) => {
-      if (params.gradeId) return a.name.localeCompare(b.name);
+      if (effectiveGradeId) return a.name.localeCompare(b.name);
       const gradeCompare = (gradeById.get(a.gradeId) ?? "").localeCompare(gradeById.get(b.gradeId) ?? "");
       return gradeCompare !== 0 ? gradeCompare : a.name.localeCompare(b.name);
     });
 
   let slots: TimetableSlot[] = [];
-  if (params.sectionId) {
-    const res = await apiFetch(`/timetable?sectionId=${params.sectionId}`);
+  if (effectiveSectionId) {
+    const res = await apiFetch(`/timetable?sectionId=${effectiveSectionId}`);
     if (res.ok) slots = ((await res.json()) as { data: TimetableSlot[] }).data;
   }
 
-  const selectedSection = sections.find((s) => s.id === params.sectionId);
+  const selectedSection = sections.find((s) => s.id === effectiveSectionId);
   const selectedSectionLabel = selectedSection
     ? `${gradeById.get(selectedSection.gradeId) ?? "—"} · Section ${selectedSection.name}`
     : null;
@@ -63,7 +85,7 @@ export default async function TimetablePage({
           <span className="font-semibold text-text">Standard</span>
           <AutoSubmitSelect
             name="gradeId"
-            defaultValue={params.gradeId ?? ""}
+            defaultValue={effectiveGradeId ?? ""}
             className="min-w-[180px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
           >
             <option value="">Select a standard</option>
@@ -78,13 +100,13 @@ export default async function TimetablePage({
           <span className="font-semibold text-text">Section</span>
           <AutoSubmitSelect
             name="sectionId"
-            defaultValue={params.sectionId ?? ""}
+            defaultValue={effectiveSectionId ?? ""}
             className="min-w-[160px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
           >
             <option value="">Select a section</option>
             {visibleSections.map((s) => (
               <option key={s.id} value={s.id}>
-                {params.gradeId ? s.name : `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`}
+                {effectiveGradeId ? s.name : `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`}
               </option>
             ))}
           </AutoSubmitSelect>
@@ -92,7 +114,7 @@ export default async function TimetablePage({
       </form>
 
       <div className="mt-6">
-        {!params.sectionId ? (
+        {!effectiveSectionId ? (
           <p className="text-sm text-text-muted">Pick a standard and section to see its timetable.</p>
         ) : (
           <>

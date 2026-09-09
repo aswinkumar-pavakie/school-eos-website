@@ -19,6 +19,18 @@ export async function createStudentAction(
   _prev: FormActionState,
   formData: FormData,
 ): Promise<FormActionState> {
+  // Class is a required field on this form (CreateStudentModal's own
+  // SelectField `required` attribute) -- checked again here since a server
+  // action can be invoked directly and must not trust client-side HTML
+  // validation alone. Failing fast, before the student record is even
+  // created, matches the "every admission gets a class" requirement --
+  // previously this was optional ("Assign later") and the student POST
+  // happened regardless.
+  const sectionId = formData.get("sectionId");
+  if (typeof sectionId !== "string" || sectionId.trim() === "") {
+    return { error: "Class is required." };
+  }
+
   const payload: Record<string, unknown> = {
     firstName: formData.get("firstName"),
     admissionNo: formData.get("admissionNo"),
@@ -66,44 +78,44 @@ export async function createStudentAction(
   const { data } = (await res.json()) as { data: { id: string } };
   revalidatePath("/admin/students");
 
-  // Class assignment is optional at admission time -- only attempt an enrolment if
-  // a section was actually picked in the form.
-  const sectionId = formData.get("sectionId");
-  if (typeof sectionId === "string" && sectionId.trim() !== "") {
-    const yearRes = await apiFetch("/academic-years");
-    const currentYear = yearRes.ok
-      ? ((await yearRes.json()) as { data: { id: string; isCurrent: boolean }[] }).data.find(
-          (y) => y.isCurrent,
-        )
-      : undefined;
+  // Class is required (validated above), so an enrolment is always attempted now.
+  const yearRes = await apiFetch("/academic-years");
+  const currentYear = yearRes.ok
+    ? ((await yearRes.json()) as { data: { id: string; isCurrent: boolean }[] }).data.find(
+        (y) => y.isCurrent,
+      )
+    : undefined;
 
-    if (!currentYear) {
-      // Student exists; just no current academic year configured to enrol into.
-      return {
-        error:
-          "Student record was created, but there's no current academic year set — add the class enrolment from the profile once one is configured.",
-        studentId: data.id,
-      };
-    }
+  if (!currentYear) {
+    // Student exists; just no current academic year configured to enrol into.
+    return {
+      error:
+        "Student record was created, but there's no current academic year set — add the class enrolment from the profile once one is configured.",
+      studentId: data.id,
+    };
+  }
 
-    const rollNo = formData.get("rollNo");
-    const enrolmentPayload: Record<string, unknown> = { academicYearId: currentYear.id, sectionId };
-    if (typeof rollNo === "string" && rollNo.trim() !== "") enrolmentPayload.rollNo = Number(rollNo);
+  const rollNo = formData.get("rollNo");
+  const enrolmentPayload: Record<string, unknown> = { academicYearId: currentYear.id, sectionId };
+  if (typeof rollNo === "string" && rollNo.trim() !== "") enrolmentPayload.rollNo = Number(rollNo);
+  const enrolmentType = formData.get("enrolmentType");
+  if (typeof enrolmentType === "string" && enrolmentType.trim() !== "") enrolmentPayload.enrolmentType = enrolmentType;
+  const enrolmentRemarks = formData.get("enrolmentRemarks");
+  if (typeof enrolmentRemarks === "string" && enrolmentRemarks.trim() !== "") enrolmentPayload.remarks = enrolmentRemarks.trim();
 
-    const enrolmentRes = await apiFetch(`/students/${data.id}/enrolments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(enrolmentPayload),
-    });
+  const enrolmentRes = await apiFetch(`/students/${data.id}/enrolments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(enrolmentPayload),
+  });
 
-    if (!enrolmentRes.ok) {
-      // The student record itself was created successfully -- don't let that fact
-      // get lost just because the class enrolment failed (e.g. roll number clash).
-      return {
-        error: `Student record was created, but the class enrolment couldn't be saved: ${await readError(enrolmentRes)}. Add it manually from the profile.`,
-        studentId: data.id,
-      };
-    }
+  if (!enrolmentRes.ok) {
+    // The student record itself was created successfully -- don't let that fact
+    // get lost just because the class enrolment failed (e.g. roll number clash).
+    return {
+      error: `Student record was created, but the class enrolment couldn't be saved: ${await readError(enrolmentRes)}. Add it manually from the profile.`,
+      studentId: data.id,
+    };
   }
 
   redirect(`/admin/students/${data.id}`);

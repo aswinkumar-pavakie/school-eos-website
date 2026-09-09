@@ -13,10 +13,15 @@ const API_BASE_URL =
 // (2026-09-03) -- see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts.
 // Faculty was mobile-only too until the product decision on 2026-09-08 to
 // bring the same module to the web (see src/app/(dashboard)/faculty); Parent
-// got the same treatment right after (see src/app/(dashboard)/parent).
-// Hostel Warden stays mobile-only; this backend endpoint itself doesn't
-// restrict by client, so the platform boundary is enforced here, not assumed
-// from who the task said would use this screen.
+// got the same treatment right after (see src/app/(dashboard)/parent). FACULTY
+// also covers Sports Faculty (Sports In-Charge) operations (see /sports's own
+// layout.tsx) -- the /sports module only ever shows data for sport(s) a
+// SPORTS_FACULTY role_assignment scopes an account to, so a non-PT teacher's
+// account just sees empty lists there (same "empty, not 403" convention the
+// backend already uses); reached via the "Sports" nav item inside /faculty,
+// not a separate login path. Hostel Warden stays mobile-only; this backend
+// endpoint itself doesn't restrict by client, so the platform boundary is
+// enforced here, not assumed from who the task said would use this screen.
 const WEB_ALLOWED_ROLES = [
   "ADMIN",
   "PRINCIPAL",
@@ -119,6 +124,9 @@ export async function loginAction(
     redirect("/transport-manager");
   }
   if (roleCodes.includes("FACULTY")) {
+    // Every FACULTY login (including Sports Faculty) lands on the general
+    // Faculty Console -- Sports is reached from there via its own nav item
+    // (see faculty/layout.tsx), not a separate landing page.
     redirect("/faculty");
   }
   if (roleCodes.includes("PARENT")) {

@@ -55,12 +55,31 @@ export function SubjectsPanel({ subjects }: { subjects: Subject[] }) {
         </PanelCreateForm>
       )}
 
-      <ul className="mt-4 flex flex-col divide-y divide-border">
-        {subjects.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No subjects yet.</li>}
-        {subjects.map((subject) => (
-          <SubjectRow key={subject.id} subject={subject} editing={editingId === subject.id} onToggle={() => setEditingId((v) => (v === subject.id ? null : subject.id))} />
-        ))}
-      </ul>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[560px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Name</th>
+              <th className="py-2.5 pr-3">Code</th>
+              <th className="py-2.5 pr-3">Type</th>
+              <th className="py-2.5 pr-3">Status</th>
+              <th className="py-2.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {subjects.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-6 text-center text-text-muted">
+                  No subjects yet.
+                </td>
+              </tr>
+            )}
+            {subjects.map((subject) => (
+              <SubjectRow key={subject.id} subject={subject} editing={editingId === subject.id} onToggle={() => setEditingId((v) => (v === subject.id ? null : subject.id))} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -70,48 +89,51 @@ function SubjectRow({ subject, editing, onToggle }: { subject: Subject; editing:
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[13.5px] font-semibold text-text">
-            {subject.name} <span className="font-mono text-text-muted">· {subject.code}</span>
-          </p>
-          <p className="text-xs text-text-muted">{subject.subjectType.replace(/_/g, " ").toLowerCase()}</p>
-        </div>
-        <div className="flex items-center gap-2.5">
+    <>
+      <tr>
+        <td className="py-3 pr-3 font-semibold text-text">{subject.name}</td>
+        <td className="py-3 pr-3 font-mono text-text-muted">{subject.code}</td>
+        <td className="py-3 pr-3 text-text-muted">{subject.subjectType.replace(/_/g, " ").toLowerCase()}</td>
+        <td className="py-3 pr-3">
           <StatusPill tone={subject.status === "ACTIVE" ? "success" : "pending"} label={subject.status} />
+        </td>
+        <td className="py-3 text-right">
           <button type="button" onClick={onToggle} className="text-[13px] font-semibold text-primary">
             {editing ? "Cancel" : "Edit"}
           </button>
-        </div>
-      </div>
+        </td>
+      </tr>
       {editing && (
-        <form action={formAction} className="mt-2.5 flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
-          {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
-          <div className="grid grid-cols-2 gap-2.5">
-            <Field label="Name" name="name" disabled={isPending} defaultValue={subject.name} />
-            <Field label="Code" name="code" disabled={isPending} defaultValue={subject.code} />
-            <SelectField label="Type" name="subjectType" disabled={isPending} defaultValue={subject.subjectType} options={TYPES} />
-            <SelectField
-              label="Status"
-              name="status"
-              disabled={isPending}
-              defaultValue={subject.status}
-              options={[
-                ["ACTIVE", "Active"],
-                ["INACTIVE", "Inactive"],
-              ]}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {isPending ? "Saving…" : "Save changes"}
-          </button>
-        </form>
+        <tr>
+          <td colSpan={5} className="pb-3">
+            <form action={formAction} className="flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
+              {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
+              <div className="grid grid-cols-2 gap-2.5">
+                <Field label="Name" name="name" disabled={isPending} defaultValue={subject.name} />
+                <Field label="Code" name="code" disabled={isPending} defaultValue={subject.code} />
+                <SelectField label="Type" name="subjectType" disabled={isPending} defaultValue={subject.subjectType} options={TYPES} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue={subject.status}
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                  ]}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {isPending ? "Saving…" : "Save changes"}
+              </button>
+            </form>
+          </td>
+        </tr>
       )}
-    </li>
+    </>
   );
 }

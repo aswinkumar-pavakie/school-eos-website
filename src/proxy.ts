@@ -66,5 +66,7 @@ export const config = {
     "/community/:path*",
     "/faculty/:path*",
     "/parent/:path*",
+    "/media/:path*",
+    "/sports/:path*",
   ],
 };

@@ -197,24 +197,23 @@ export default async function StudentsPage({
               <th className="px-4 py-3">Class</th>
               <th className="px-4 py-3">Admitted</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {students.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-text-muted">
+                <td colSpan={6} className="px-4 py-10 text-center text-text-muted">
                   No students match this filter.
                 </td>
               </tr>
             )}
             {students.map((student) => (
-              <tr key={student.id}>
+              <tr key={student.id} className="hover:bg-field">
                 <td className="px-4 py-3">
                   <RowCheckbox id={student.id} />
                 </td>
                 <td className="px-4 py-3 font-semibold text-text">
-                  <div className="flex items-center gap-2.5">
+                  <Link href={`/admin/students/${student.id}`} className="flex items-center gap-2.5 hover:text-primary hover:underline">
                     <PersonAvatar
                       photoUrl={student.photoUrl}
                       name={`${student.firstName} ${student.lastName ?? ""}`}
@@ -224,7 +223,7 @@ export default async function StudentsPage({
                     {student.isHosteller && (
                       <span className="text-xs font-normal text-text-muted">(Hosteller)</span>
                     )}
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-4 py-3 font-mono text-[13px] text-text">{student.admissionNo}</td>
                 <td className="px-4 py-3 text-text-muted">
@@ -239,11 +238,6 @@ export default async function StudentsPage({
                 <td className="px-4 py-3 text-text-muted">{formatDate(student.admissionDate)}</td>
                 <td className="px-4 py-3">
                   <StatusPill tone={statusTone(student.status)} label={student.status.replace(/_/g, " ")} />
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/students/${student.id}`} className="text-[13px] font-semibold text-primary">
-                    View
-                  </Link>
                 </td>
               </tr>
             ))}
