@@ -76,13 +76,18 @@ export async function updateAttendantAction(id: string, _prev: FormActionState, 
   return runMutation(`/attendants/${id}`, "PATCH", collect(formData, ["fullName", "phone", "status"]));
 }
 
-// Vehicle-route assignments
+// Vehicle-route assignments -- shared by Admin's own Transport tabs AND
+// Transport Manager's Bus Allocation page (the backend already permits
+// TRANSPORT_MANAGER on this endpoint), so this one revalidates both pages'
+// paths rather than only the Admin one runMutation defaults to.
 export async function createAssignmentAction(_prev: FormActionState, formData: FormData) {
-  return runMutation(
+  const result = await runMutation(
     "/vehicle-route-assignments",
     "POST",
     collect(formData, ["vehicleId", "routeId", "driverId", "attendantId", "effectiveFrom"]),
   );
+  if (!result.error) revalidatePath("/transport-manager/allocation");
+  return result;
 }
 
 // Route -> assigned students (Route detail page)
