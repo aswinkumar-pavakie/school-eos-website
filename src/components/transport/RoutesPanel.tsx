@@ -48,10 +48,21 @@ export function RoutesPanel({
   routes,
   assignments,
   vehicleRegNoById,
+  readOnly = false,
+  routesBasePath = "/admin/transport/routes",
 }: {
   routes: Route[];
   assignments: RouteAssignment[];
   vehicleRegNoById: Map<string, string>;
+  /** Transport Manager's own read-only view of route master data -- hides
+   * "+ New route", every row's "Edit" toggle/form, and "+ Add stop". Defaults
+   * to false so Admin's existing usage is completely unaffected. */
+  readOnly?: boolean;
+  /** "View route" needs a role-reachable detail page -- Admin's own route
+   * detail page lives under /admin/transport/routes/:id, which a
+   * Transport Manager can't reach (gated to ADMIN at the layout level).
+   * Transport Manager's own equivalent page passes its own base path here. */
+  routesBasePath?: string;
 }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createRouteAction, initialState);
@@ -62,14 +73,14 @@ export function RoutesPanel({
     <div>
       <div className="flex items-center justify-between">
         <p className="text-[13px] text-text-muted">{routes.length} routes</p>
-        {!adding && (
+        {!readOnly && !adding && (
           <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
             + New route
           </button>
         )}
       </div>
 
-      {adding && (
+      {!readOnly && adding && (
         <PanelCreateForm title="New route" onCancel={() => setAdding(false)} formAction={formAction} isPending={isPending} error={state.error} submitLabel="Create">
           <Field label="Name" name="name" required disabled={isPending} placeholder="Route 12" />
           <Field label="Code" name="code" disabled={isPending} />
@@ -100,6 +111,8 @@ export function RoutesPanel({
               onToggleExpand={() => setExpandedId((v) => (v === route.id ? null : route.id))}
               editing={editingId === route.id}
               onToggleEdit={() => setEditingId((v) => (v === route.id ? null : route.id))}
+              readOnly={readOnly}
+              routesBasePath={routesBasePath}
             />
           );
         })}
@@ -115,6 +128,8 @@ function RouteRow({
   onToggleExpand,
   editing,
   onToggleEdit,
+  readOnly,
+  routesBasePath,
 }: {
   route: Route;
   vehicleRegNo: string | null;
@@ -122,6 +137,8 @@ function RouteRow({
   onToggleExpand: () => void;
   editing: boolean;
   onToggleEdit: () => void;
+  readOnly: boolean;
+  routesBasePath: string;
 }) {
   const action = updateRouteAction.bind(null, route.id);
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -152,19 +169,21 @@ function RouteRow({
         </div>
         <div className="flex items-center gap-2.5">
           <StatusPill tone={route.status === "ACTIVE" ? "success" : "pending"} label={route.status} />
-          <Link href={`/admin/transport/routes/${route.id}`} className="text-[13px] font-semibold text-primary">
+          <Link href={`${routesBasePath}/${route.id}`} className="text-[13px] font-semibold text-primary">
             View route
           </Link>
           <button type="button" onClick={onToggleExpand} className="text-[13px] font-semibold text-primary">
             {expanded ? "Hide stops" : "Stops"}
           </button>
-          <button type="button" onClick={onToggleEdit} className="text-[13px] font-semibold text-primary">
-            {editing ? "Cancel" : "Edit"}
-          </button>
+          {!readOnly && (
+            <button type="button" onClick={onToggleEdit} className="text-[13px] font-semibold text-primary">
+              {editing ? "Cancel" : "Edit"}
+            </button>
+          )}
         </div>
       </div>
 
-      {editing && (
+      {!readOnly && editing && (
         <form action={formAction} className="mt-2.5 flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
           {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
           <div className="grid grid-cols-2 gap-2.5">
@@ -213,7 +232,7 @@ function RouteRow({
                 </li>
               ))}
           </ul>
-          {!addingStop ? (
+          {readOnly ? null : !addingStop ? (
             <button type="button" onClick={() => setAddingStop(true)} className="mt-2 text-[13px] font-semibold text-primary">
               + Add stop
             </button>
