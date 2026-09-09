@@ -28,6 +28,8 @@ export interface AssignedStudent {
   studentFirstName: string;
   studentLastName: string | null;
   admissionNo: string;
+  gradeName?: string | null;
+  sectionName?: string | null;
   routeStopId: string;
   stopName: string;
   direction: string;
@@ -56,11 +58,17 @@ export function RouteAssignedStudents({
   academicYearId,
   stops,
   students,
+  readOnly = false,
 }: {
   routeId: string;
   academicYearId?: string;
   stops: RouteStopOption[];
   students: AssignedStudent[];
+  /** Transport Manager's own read-only view -- hides "+ Add student", every
+   * row's "Change stop"/"Remove", and "View student" (that link points at
+   * Admin's own student profile page, which Transport Manager can't reach).
+   * Defaults to false so Admin's existing usage is completely unaffected. */
+  readOnly?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const sortedStops = [...stops].sort((a, b) => a.sequenceNo - b.sequenceNo);
@@ -69,20 +77,20 @@ export function RouteAssignedStudents({
     <div>
       <div className="flex items-center justify-between">
         <p className="text-[13px] text-text-muted">{students.length} assigned</p>
-        {!adding && academicYearId && (
+        {!readOnly && !adding && academicYearId && (
           <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
             + Add student
           </button>
         )}
       </div>
 
-      {!academicYearId && (
+      {!readOnly && !academicYearId && (
         <p className="mt-2 text-xs text-text-muted">
           Set a current academic year first (Academics → Academic years) before assigning students.
         </p>
       )}
 
-      {adding && academicYearId && (
+      {!readOnly && adding && academicYearId && (
         <AddStudentForm
           routeId={routeId}
           academicYearId={academicYearId}
@@ -96,7 +104,7 @@ export function RouteAssignedStudents({
           <li className="py-6 text-center text-sm text-text-muted">No students assigned to this route yet.</li>
         )}
         {students.map((s) => (
-          <AssignedStudentRow key={s.id} routeId={routeId} student={s} stops={sortedStops} />
+          <AssignedStudentRow key={s.id} routeId={routeId} student={s} stops={sortedStops} readOnly={readOnly} />
         ))}
       </ul>
     </div>
@@ -196,10 +204,12 @@ function AssignedStudentRow({
   routeId,
   student,
   stops,
+  readOnly,
 }: {
   routeId: string;
   student: AssignedStudent;
   stops: RouteStopOption[];
+  readOnly: boolean;
 }) {
   const [changingStop, setChangingStop] = useState(false);
   const changeAction = changeStudentTransportStopAction.bind(null, routeId, student.id);
@@ -213,17 +223,22 @@ function AssignedStudentRow({
             {student.studentFirstName} {student.studentLastName ?? ""}
           </p>
           <p className="text-xs text-text-muted">
-            {student.admissionNo} · Stop: {student.stopName} · {student.direction.toLowerCase()}
+            {student.admissionNo}
+            {student.gradeName ? ` · ${student.gradeName}${student.sectionName ? `-${student.sectionName}` : ""}` : ""}
+            {" · Stop: "}
+            {student.stopName} · {student.direction.toLowerCase()}
             {student.feeSlab ? ` · ${student.feeSlab}` : ""}
           </p>
           <p className="text-xs text-text-muted">Since {formatDate(student.validFrom)}</p>
         </div>
         <div className="flex items-center gap-2.5">
           <StatusPill tone={tone(student.status)} label={student.status} />
-          <Link href={`/admin/students/${student.studentId}`} className="text-[13px] font-semibold text-primary">
-            View student
-          </Link>
-          {student.status === "ACTIVE" && (
+          {!readOnly && (
+            <Link href={`/admin/students/${student.studentId}`} className="text-[13px] font-semibold text-primary">
+              View student
+            </Link>
+          )}
+          {!readOnly && student.status === "ACTIVE" && (
             <>
               <button
                 type="button"
@@ -244,7 +259,7 @@ function AssignedStudentRow({
         </div>
       </div>
 
-      {changingStop && (
+      {!readOnly && changingStop && (
         <form action={changeFormAction} className="mt-2.5 flex items-center gap-2">
           {changeState.error && <span className="text-xs text-critical-text">{changeState.error}</span>}
           <select

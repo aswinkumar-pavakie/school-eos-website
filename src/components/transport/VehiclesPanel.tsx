@@ -57,11 +57,16 @@ export function VehiclesPanel({
   assignments,
   routeNameById,
   driverNameById,
+  readOnly = false,
 }: {
   vehicles: Vehicle[];
   assignments: VehicleAssignment[];
   routeNameById: Map<string, string>;
   driverNameById: Map<string, string>;
+  /** Transport Manager's own read-only view of the same Admin-owned vehicle
+   * master data -- hides "+ New vehicle" and every row's "Edit" toggle/form.
+   * Defaults to false so Admin's existing usage is completely unaffected. */
+  readOnly?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createVehicleAction, initialState);
@@ -74,14 +79,14 @@ export function VehiclesPanel({
     <div>
       <div className="flex items-center justify-between">
         <p className="text-[13px] text-text-muted">{vehicles.length} vehicles</p>
-        {!adding && (
+        {!readOnly && !adding && (
           <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
             + New vehicle
           </button>
         )}
       </div>
 
-      {adding && (
+      {!readOnly && adding && (
         <PanelCreateForm title="New vehicle" onCancel={() => setAdding(false)} formAction={formAction} isPending={isPending} error={state.error} submitLabel="Create">
           <Field label="Registration no." name="registrationNo" required disabled={isPending} placeholder="TN-01-AB-1234" />
           <Field label="Model" name="model" disabled={isPending} />
@@ -130,6 +135,7 @@ export function VehiclesPanel({
               driverName={assignment?.driverId ? (driverNameById.get(assignment.driverId) ?? null) : null}
               editing={editingId === vehicle.id}
               onToggle={() => setEditingId((v) => (v === vehicle.id ? null : vehicle.id))}
+              readOnly={readOnly}
             />
           );
         })}
@@ -144,12 +150,14 @@ function VehicleRow({
   driverName,
   editing,
   onToggle,
+  readOnly,
 }: {
   vehicle: Vehicle;
   routeName: string | null;
   driverName: string | null;
   editing: boolean;
   onToggle: () => void;
+  readOnly: boolean;
 }) {
   const action = updateVehicleAction.bind(null, vehicle.id);
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -180,12 +188,14 @@ function VehicleRow({
         </div>
         <div className="flex items-center gap-2.5">
           <StatusPill tone={tone(vehicle.operationalStatus)} label={vehicle.operationalStatus} />
-          <button type="button" onClick={onToggle} className="text-[13px] font-semibold text-primary">
-            {editing ? "Cancel" : "Edit"}
-          </button>
+          {!readOnly && (
+            <button type="button" onClick={onToggle} className="text-[13px] font-semibold text-primary">
+              {editing ? "Cancel" : "Edit"}
+            </button>
+          )}
         </div>
       </div>
-      {editing && (
+      {!readOnly && editing && (
         <form action={formAction} className="mt-2.5 flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
           {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
           <div className="grid grid-cols-2 gap-2.5">
