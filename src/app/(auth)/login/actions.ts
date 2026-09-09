@@ -8,13 +8,25 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
 // Admin, Principal (web half), Finance/Accounts, Library, Media Room, Community
-// (Phase 1: login only) -- the only web logins in the system. Vice Principal
-// moved to mobile-only per updated plan (2026-09-03) -- see
-// MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts. Faculty/Parent/
-// Hostel Warden are mobile-only too; this backend endpoint itself doesn't restrict
-// by client, so the platform boundary is enforced here, not assumed from who the
-// task said would use this screen.
-const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY", "MEDIA_ROOM", "COMMUNITY"];
+// (Phase 1: login only), Faculty, Parent -- the web logins in the system.
+// Vice Principal moved to mobile-only per updated plan (2026-09-03) -- see
+// MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts. Faculty was
+// mobile-only too until the product decision on 2026-09-08 to bring the same
+// module to the web (see src/app/(dashboard)/faculty); Parent got the same
+// treatment right after (see src/app/(dashboard)/parent). Hostel Warden
+// stays mobile-only; this backend endpoint itself doesn't restrict by
+// client, so the platform boundary is enforced here, not assumed from who
+// the task said would use this screen.
+const WEB_ALLOWED_ROLES = [
+  "ADMIN",
+  "PRINCIPAL",
+  "FINANCE",
+  "LIBRARY",
+  "MEDIA_ROOM",
+  "COMMUNITY",
+  "FACULTY",
+  "PARENT",
+];
 
 export interface LoginState {
   error?: string;
@@ -101,6 +113,12 @@ export async function loginAction(
   }
   if (roleCodes.includes("COMMUNITY")) {
     redirect("/community");
+  }
+  if (roleCodes.includes("FACULTY")) {
+    redirect("/faculty");
+  }
+  if (roleCodes.includes("PARENT")) {
+    redirect("/parent");
   }
   redirect("/dashboard");
 }

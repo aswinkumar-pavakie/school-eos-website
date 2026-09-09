@@ -1,0 +1,501 @@
+<title>School EOS Feature Report</title>
+<style>
+  :root {
+    --ink: #16213e;
+    --bg: #f6f5f0;
+    --surface: #ffffff;
+    --accent: #1b3f9e;
+    --accent-soft: #e8edfa;
+    --border: #e2dfd5;
+    --muted: #6b7280;
+    --done: #1e7a3e;
+    --done-soft: #e7f6ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #edebe3;
+      --bg: #12161d;
+      --surface: #1a2029;
+      --accent: #7d9df0;
+      --accent-soft: #202a42;
+      --border: #2a313d;
+      --muted: #93a0b4;
+      --done: #4fbe7c;
+      --done-soft: #182a20;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #edebe3;
+    --bg: #12161d;
+    --surface: #1a2029;
+    --accent: #7d9df0;
+    --accent-soft: #202a42;
+    --border: #2a313d;
+    --muted: #93a0b4;
+    --done: #4fbe7c;
+    --done-soft: #182a20;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', -apple-system, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 56px 24px 80px;
+    line-height: 1.55;
+  }
+  .page { max-width: 760px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(32px, 5vw, 44px);
+    font-weight: 600;
+    margin: 10px 0 8px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 62ch;
+    margin: 0 0 30px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 13px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    margin-bottom: 24px;
+  }
+  .meta-row span b { color: var(--ink); font-weight: 600; }
+
+  nav.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 44px;
+  }
+  nav.toc a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 7px 14px;
+    background: var(--surface);
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); }
+  nav.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .module {
+    margin-bottom: 64px;
+    scroll-margin-top: 24px;
+  }
+  .module-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .module-head h1 {
+    font-size: clamp(26px, 4vw, 32px);
+    margin: 0;
+  }
+  .module-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .module-summary {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 64ch;
+    margin: 6px 0 26px;
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 0 30px;
+  }
+  .stat {
+    background: var(--surface);
+    padding: 16px 18px;
+  }
+  .stat .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  section.area { margin-bottom: 34px; }
+  section.area .head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  section.area .head h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0;
+  }
+  section.area .head .count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  ul.features { list-style: none; margin: 0; padding: 0; }
+  ul.features li {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  ul.features li:last-child { border-bottom: none; }
+  .mark {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--done-soft);
+    color: var(--done);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .feat-name { font-weight: 600; color: var(--ink); }
+  .feat-desc { color: var(--muted); font-size: 14.5px; margin-top: 1px; }
+
+  .note {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--ink);
+    margin-top: 14px;
+  }
+  .note b { color: var(--accent); }
+
+  .standards {
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    background: var(--surface);
+  }
+  .standards .eyebrow { margin-bottom: 10px; }
+  .standards ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 24px;
+  }
+  .standards li {
+    font-size: 14px;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+  }
+  .standards li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .standards li b { color: var(--ink); }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 0 56px;
+  }
+
+  footer {
+    margin-top: 40px;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<div class="page">
+  <p class="eyebrow">Status report</p>
+  <h1>Everything shipped so far</h1>
+  <p class="subtitle">A complete, accurate account of four modules built and working in School EOS — for handoff to management. Every item below is live, wired to real data, and verified working.</p>
+
+  <div class="meta-row">
+    <span>Product: <b>School EOS</b></span>
+    <span>Prepared for: <b>Manager review</b></span>
+    <span>Covers: <b>Finance · Fees Payment (Parent App) · Media Room · Events &amp; Permissions</b></span>
+  </div>
+
+  <nav class="toc">
+    <a href="#finance">01 · Finance</a>
+    <a href="#fees-payment">02 · Fees Payment (Parent App)</a>
+    <a href="#media-room">03 · Media Room</a>
+    <a href="#events">04 · Events &amp; Permissions</a>
+  </nav>
+
+  <!-- ============ 01 FINANCE ============ -->
+  <div class="module" id="finance">
+    <div class="module-head"><h1>Finance</h1><span class="module-tag">01 / web</span></div>
+    <p class="module-summary">Fee collection, payments, procurement, and the approval chains that govern all of it.</p>
+
+    <div class="stat-strip">
+      <div class="stat"><div class="num">7</div><div class="label">business areas</div></div>
+      <div class="stat"><div class="num">20+</div><div class="label">screens shipped</div></div>
+      <div class="stat"><div class="num">5</div><div class="label">approval workflows</div></div>
+      <div class="stat"><div class="num">1</div><div class="label">shared approvals engine</div></div>
+    </div>
+
+    <section class="area">
+      <div class="head"><h2>Fee management</h2><span class="count">6</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Fee structures</div><div class="feat-desc">Build and manage a fee structure per grade and term, made up of individual line items.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Fee structure items (fee heads)</div><div class="feat-desc">The individual charge types — tuition, transport, lab fee, etc. — that make up a structure.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Obligations</div><div class="feat-desc">Every student's real, itemised fee obligation for the year, generated from their structure.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Bulk obligation import</div><div class="feat-desc">Import a whole cohort's obligations at once, with a validate → confirm → cancel safety check before anything is committed.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Fee overview</div><div class="feat-desc">A live, school-wide summary of collection status — due, collected, outstanding.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Fee payments register</div><div class="feat-desc">Who has paid what, what's still outstanding, per student and per term.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Payments &amp; collections</h2><span class="count">7</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Record &amp; review payments</div><div class="feat-desc">Cash, cheque, DD, or online — every payment logged with full drill-down.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Payment allocations</div><div class="feat-desc">Apply a single payment across multiple fee heads correctly.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Official receipts</div><div class="feat-desc">Generated on the real school letterhead — identical template on the web and the parent's phone.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Refunds</div><div class="feat-desc">Raise and process a refund against a specific payment, gated behind approval.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Education loan DD tracking</div><div class="feat-desc">Loan-funded Demand Draft payments and their clearing status, tracked end to end.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Bank reconciliation</div><div class="feat-desc">Match recorded payments against the bank statement; run, resolve, and close each cycle.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Student finance record</div><div class="feat-desc">One student's full payment and loan history, plus a "receive payment" entry for counter collections.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Procurement</h2><span class="count">4</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Purchase &amp; service requests</div><div class="feat-desc">Raise a goods (POP) or service (SOP) request, routed Principal → Finance for approval.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">POP / SOP approval queues</div><div class="feat-desc">Finance's own approval inbox for Purchase Orders and Service Orders, separately.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">POP / SOP tracking</div><div class="feat-desc">Order status after approval, through to fulfilment.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Reused school-wide</div><div class="feat-desc">The same engine now also powers other departments' indents — e.g. Media Room's equipment requests — each with its own approval routing.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Concessions</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Fee concessions</div><div class="feat-desc">Waivers and discounts per student, with a real two-step approval chain (Finance → Principal) before it touches a balance.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Expenses</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Expense tracking</div><div class="feat-desc">Raise and track school expenses, approval-gated by amount, only markable "paid" once approved.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Approvals engine</h2><span class="count">2</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">One shared approval engine</div><div class="feat-desc">A single, generic routing engine sits under Concessions, Purchase/Service Requests, Refunds, Expenses, and Fee Structure activation — every decision is fully audited: who, when, and what they said.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Role-scoped views</div><div class="feat-desc">Finance/Admin see the full module; the Principal gets a deliberately narrow view — only what's actually routed to them.</div></div></li>
+      </ul>
+    </section>
+
+    <div class="standards">
+      <p class="eyebrow">Built to this standard</p>
+      <ul>
+        <li><b>No floating-point money.</b> Every amount is stored and handled as integer paise.</li>
+        <li><b>Real state machines.</b> Every status is a constrained value checked against the database, never assumed.</li>
+        <li><b>Full audit trail.</b> Every sensitive action is logged with who, when, and why.</li>
+        <li><b>Enforced at the API.</b> Role access is checked server-side on every request, not just hidden on screen.</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 02 FEES PAYMENT (PARENT APP) ============ -->
+  <div class="module" id="fees-payment">
+    <div class="module-head"><h1>Fees Payment</h1><span class="module-tag">02 / parent mobile app</span></div>
+    <p class="module-summary">The parent's own view of their child's fees, and a real, working online payment — inside the mobile app, not a redirect to a browser.</p>
+
+    <section class="area">
+      <div class="head"><h2>Viewing fees</h2><span class="count">5</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Multi-child support</div><div class="feat-desc">A parent with more than one child at the school switches between them; every screen reflects the one currently selected.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Term selector</div><div class="feat-desc">Pick the academic year and instalment to view — defaults to the most recent real term.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Total / Paid / Outstanding summary</div><div class="feat-desc">A live rollup for the selected term, computed from real fee-demand data, not cached or estimated.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Line-item breakdown</div><div class="feat-desc">Every fee head shown with its own total, paid, and due amount, and a clear status pill (Pending / Partial / Overdue / Paid).</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Payment history</div><div class="feat-desc">Every past payment, its mode (UPI / card / net banking / cash / cheque / DD), and its confirmation status.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Paying online</h2><span class="count">5</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Select which fee lines to pay</div><div class="feat-desc">Checkbox-select one or more still-due lines; the amount owed updates to match the real selection.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Partial payment</div><div class="feat-desc">A parent can type a smaller amount than the full due and pay that now, settling the rest in a later payment.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Razorpay checkout, in-app</div><div class="feat-desc">A real hosted Razorpay order, opened directly inside the app — no browser hand-off.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Server-confirmed, not client-trusted</div><div class="feat-desc">A payment is only ever marked confirmed by Razorpay's own webhook hitting the backend directly — the app closing the checkout screen never marks anything paid on its own.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">View-only access respected</div><div class="feat-desc">A guardian with view-only access (not the primary payer) sees everything but the Pay button is correctly disabled, with a clear reason shown.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Receipts</h2><span class="count">2</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Official receipt, same template as web</div><div class="feat-desc">Real school letterhead, receipt number, financial year, and line items — not a simplified mobile version.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Download as PDF</div><div class="feat-desc">One tap opens the native print/share screen with the receipt ready; saved to the phone as a real PDF from there.</div></div></li>
+      </ul>
+    </section>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 03 MEDIA ROOM ============ -->
+  <div class="module" id="media-room">
+    <div class="module-head"><h1>Media Room</h1><span class="module-tag">03 / web · new role &amp; login</span></div>
+    <p class="module-summary">A brand-new department module and login (role: Media Room Head) — social media publishing, shoot planning, and an equipment register scoped to Media alone.</p>
+
+    <section class="area">
+      <div class="head"><h2>Dashboard</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Real-time overview</div><div class="feat-desc">Shoots scheduled today, scheduled/live post counts, pending indents, and a low-stock equipment alert — all live counts, never placeholders.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Social media publishing</h2><span class="count">5</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Multi-image &amp; video posts</div><div class="feat-desc">Attach several photos or videos to one post; uploaded to real cloud storage, not simulated.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Draft, schedule, or publish now</div><div class="feat-desc">Save a draft, schedule a future date/time, or publish immediately — a real state machine (Draft → Scheduled → Published/Cancelled).</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Automatic publishing</div><div class="feat-desc">A scheduled post publishes itself at the exact scheduled minute — a real background job, not a manual step, verified live.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Comment moderation</div><div class="feat-desc">Reply to or remove comments on a published post, with the staff reply attributed and timestamped.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Full CRUD</div><div class="feat-desc">Edit, cancel, or delete a post — deleting also removes its uploaded images/videos from storage.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Shoot assignments</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Plan a shoot with real crew &amp; gear</div><div class="feat-desc">Assign real team members and real equipment from the register to an event — not free-typed names — with status tracking from Planned through Completed.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Media team</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Crew roster</div><div class="feat-desc">Manage who's on the media team — including short-term/student help with no school login — with skills and a real, computed "active jobs" count.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Inventory</h2><span class="count">2</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Media &amp; AV equipment register</div><div class="feat-desc">Cameras, lenses, audio and lighting gear, scoped strictly to Media's own category — verified unable to see or touch any other department's assets.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Full lifecycle</div><div class="feat-desc">Issue, return, mark damaged, mark lost, or retire an item, each a real, audited status change.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Raise indent</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Equipment/service requests</div><div class="feat-desc">Raised directly to the Principal for a decision — this is the one workflow that does <em>not</em> pass through Finance, by design.</div></div></li>
+      </ul>
+    </section>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 04 EVENTS & PERMISSIONS ============ -->
+  <div class="module" id="events">
+    <div class="module-head"><h1>Events &amp; Permissions</h1><span class="module-tag">04 / mobile app · faculty + parent</span></div>
+    <p class="module-summary">Digital consent for student event participation — a faculty member requests it, a real parent signs it, and it produces a professional, downloadable permission letter. Built across both the Faculty and Parent sides of the mobile app.</p>
+
+    <section class="area">
+      <div class="head"><h2>Faculty side</h2><span class="count">7</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Create an event</div><div class="feat-desc">Name, location, purpose, and a from/to date &amp; time window, with a real staff member picked as the monitoring teacher (searched, never free-typed).</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Events list &amp; detail</div><div class="feat-desc">Every event a faculty member has created, as cards, with full detail on tap.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Add students — search &amp; filter</div><div class="feat-desc">Case-insensitive search by name or roll number, plus class/section filter chips, to find and add exactly the right students.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Live status per student</div><div class="feat-desc">Each added student shows Waiting for approval / Approved / Rejected, updating in real time as parents decide.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Remove a student</div><div class="feat-desc">Full CRUD — with one deliberate exception: a student whose parent has already signed can't be removed (see Security, below).</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Delete an event</div><div class="feat-desc">Same protection extends to the whole event — it can't be deleted while it holds even one signed approval.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Download the permission letter</div><div class="feat-desc">Once a student is approved, download the same professional PDF the parent gets, for the school's own records.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>Parent side</h2><span class="count">5</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">Permissions list</div><div class="feat-desc">Every request across every one of the parent's real, linked children, as cards with a clear status.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Full request detail</div><div class="feat-desc">Complete event information — location, purpose, timing, and the supervising teacher — before deciding.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Reject</div><div class="feat-desc">One tap, with confirmation — a final decision, clearly labelled once made.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Sign as Guardian</div><div class="feat-desc">A real digital signature pad — draw with a finger, Reset if it's wrong, then Approve.</div></div></li>
+        <li><span class="mark">✓</span><div><div class="feat-name">Download the permission letter</div><div class="feat-desc">Once approved, the Reject/Sign buttons are replaced with a Download button — a professional letter (school letterhead, student details, the actual signature) as a real PDF.</div></div></li>
+      </ul>
+    </section>
+
+    <section class="area">
+      <div class="head"><h2>The permission letter</h2><span class="count">1</span></div>
+      <ul class="features">
+        <li><span class="mark">✓</span><div><div class="feat-name">One professional template, real data throughout</div><div class="feat-desc">From (the student's real class teacher + school letterhead), To (the parent who actually signed), Subject, a reusable request paragraph built from the real event details, and the parent's actual signature — nothing on it is a placeholder.</div></div></li>
+      </ul>
+    </section>
+
+    <div class="standards">
+      <p class="eyebrow">Security — this is the most sensitive feature in the app</p>
+      <ul>
+        <li><b>Real consent records are immutable.</b> Once a parent signs, that student can never be removed and the event can never be deleted, by design.</li>
+        <li><b>Scoped strictly.</b> A faculty member only ever manages events they created; a parent only ever acts on their own, real, linked children.</li>
+        <li><b>No double-decisions.</b> If both parents open the same request, whoever decides first wins — the second is safely blocked, never overwritten.</li>
+        <li><b>Signature verified, not assumed.</b> The uploaded file is checked to be a genuine image, not just trusted by name or label, before it's ever stored.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>School EOS · Feature status report</footer>
+</div>
