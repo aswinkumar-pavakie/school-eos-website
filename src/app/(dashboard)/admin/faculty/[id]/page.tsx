@@ -11,6 +11,7 @@ import { PersonPhotoEditor } from "@/components/dashboard/PersonPhotoEditor";
 import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/dashboard/ProfileHeader";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { ExitStaffDialog } from "@/components/faculty/ExitStaffDialog";
+import { FacultyLoginSecuritySection } from "@/components/faculty/FacultyLoginSecuritySection";
 import { FacultyProfileForm, FACULTY_SAVE_BUTTON_SLOT } from "@/components/faculty/FacultyProfileForm";
 import { FacultySubjectsSection, type TaughtOffering } from "@/components/faculty/FacultySubjectsSection";
 import { TimetableGrid, type TimetableSlot } from "@/components/academics/TimetableGrid";
@@ -51,6 +52,12 @@ function describeScope(r: RoleAssignment): string {
   return "Whole school";
 }
 
+interface LoginIdentifier {
+  identifierType: string;
+  value: string;
+  isVerified: boolean;
+}
+
 interface StaffDetail {
   id: string;
   personId: string;
@@ -65,6 +72,7 @@ interface StaffDetail {
   dateOfJoining: string;
   dateOfExit: string | null;
   exitReason: string | null;
+  experienceYears: number | null;
   status: string;
   photoUrl: string | null;
   addressLine1: string | null;
@@ -72,6 +80,8 @@ interface StaffDetail {
   city: string | null;
   state: string | null;
   pincode: string | null;
+  loginIdentifiers: LoginIdentifier[];
+  resetAllowanceUsed: boolean;
 }
 
 function statusTone(status: string): "success" | "pending" | "critical" {
@@ -135,11 +145,6 @@ export default async function FacultyDetailPage({
   const roleAssignments = allRoleAssignments.filter((r) => r.roleCode in ROLE_LABELS);
   const activeAdvisorRole = roleAssignments.find((r) => r.roleCode === "CLASS_ADVISOR" && r.status === "ACTIVE");
 
-  const yearsOfExperience = Math.max(
-    0,
-    Math.floor((Date.now() - new Date(staff.dateOfJoining).getTime()) / (365.25 * 24 * 60 * 60 * 1000)),
-  );
-
   const pills: ProfilePill[] = [
     { label: `ID ${staff.employeeNo}`, tone: "neutral" },
     { label: staff.status.replace(/_/g, " "), tone: statusTone(staff.status) },
@@ -154,7 +159,14 @@ export default async function FacultyDetailPage({
       value: attendanceSummary.percentage !== null ? `${attendanceSummary.percentage}%` : "—",
       hint: "across marked days",
     },
-    { label: "Experience", value: `${yearsOfExperience} yrs`, hint: `joined ${formatDate(staff.dateOfJoining)}` },
+    {
+      label: "Experience",
+      // Real, admin-entered prior experience (see FacultyProfileForm's own
+      // field, filled in once certificates are reviewed) -- NOT years since
+      // date_of_joining, which is tenure at this school, not prior experience.
+      value: staff.experienceYears !== null ? `${staff.experienceYears} yrs` : "—",
+      hint: staff.experienceYears !== null ? `joined ${formatDate(staff.dateOfJoining)}` : "not yet verified",
+    },
   ];
 
   return (
@@ -211,6 +223,21 @@ export default async function FacultyDetailPage({
             pincode: staff.pincode,
           }}
         />
+      </section>
+
+      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
+        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Login &amp; security</h2>
+        <p className="mt-1 text-[13px] text-text-muted">
+          The faculty member&apos;s own login, distinct from the contact details above.
+        </p>
+        <div className="mt-3">
+          <FacultyLoginSecuritySection
+            staffId={staff.id}
+            personId={staff.personId}
+            loginIdentifiers={staff.loginIdentifiers}
+            resetAllowanceUsed={staff.resetAllowanceUsed}
+          />
+        </div>
       </section>
 
       <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">

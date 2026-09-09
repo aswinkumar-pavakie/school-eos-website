@@ -24,6 +24,28 @@ const SUBJECT_LINKS: Record<string, (id: string) => string> = {
   purchase_request: (id) => `/principal/finance/purchase-requests/${id}`,
 };
 
+// Payload shape is genuinely different per request type (see each service's
+// own approvalsService.createRequest() call: staff-leave.service.ts sends
+// {leaveType,fromDate,toDate}, faculty-hr-requests.service.ts sends
+// {category,subject}, community-proposals.service.ts sends {title}, etc.) --
+// no single request type has every field, so this renders whatever real
+// fields exist instead of one type's fields hardcoded for every type (which
+// is what previously left this box blank for e.g. STAFF_LEAVE_REQUEST, whose
+// payload has no `reason` and whose request carries no amountPaise either).
+// *Id-suffixed keys (studentId, membershipId, categoryId, ...) are skipped --
+// they're raw foreign-key UUIDs with no human-readable value in the payload
+// itself, and showing a bare UUID would be worse than showing nothing.
+const HIDDEN_PAYLOAD_KEYS = new Set(["approverScope"]);
+
+function isDisplayableValue(value: unknown): value is string | number | boolean {
+  return (typeof value === "string" && value.trim() !== "") || typeof value === "number" || typeof value === "boolean";
+}
+
+function humanizeKey(key: string): string {
+  const spaced = key.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase();
+}
+
 export default async function PrincipalRequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
@@ -33,6 +55,10 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
     const canDecide = isOpen && !!currentStep && actor.roles.includes(currentStep.approverRoleCode) && request.requestedBy !== actor.personId;
     const isRequester = isOpen && request.requestedBy === actor.personId;
     const subjectHref = SUBJECT_LINKS[request.subjectObjectType]?.(request.subjectObjectId);
+    const payloadEntries = Object.entries(request.payload ?? {}).filter(
+      ([key, value]) => !HIDDEN_PAYLOAD_KEYS.has(key) && !/Id$/.test(key) && isDisplayableValue(value),
+    ) as [string, string | number | boolean][];
+    const hasDetails = !!request.amountPaise || payloadEntries.length > 0;
 
     return (
       <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -57,10 +83,25 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
           )}
         </div>
 
-        <div className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-          {request.amountPaise && <p className="text-sm text-text">Amount: <span className="font-mono font-bold">{formatMoneyDetail(request.amountPaise)}</span></p>}
-          {typeof request.payload.reason === "string" && <p className="mt-2 text-sm text-text">Reason: {request.payload.reason}</p>}
-        </div>
+        {hasDetails && (
+          <div className="rounded-[var(--radius-card)] border border-border bg-field p-4">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-text-muted">Details</h2>
+            <dl className="mt-2.5 flex flex-col gap-2">
+              {request.amountPaise && (
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <dt className="text-text-muted">Amount</dt>
+                  <dd className="font-mono font-bold text-text">{formatMoneyDetail(request.amountPaise)}</dd>
+                </div>
+              )}
+              {payloadEntries.map(([key, value]) => (
+                <div key={key} className="flex items-start justify-between gap-4 text-sm">
+                  <dt className="text-text-muted">{humanizeKey(key)}</dt>
+                  <dd className="text-right font-semibold text-text">{String(value)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
 
         <section>
           <h2 className="text-xs font-bold tracking-wide text-text-muted uppercase">Approval chain</h2>

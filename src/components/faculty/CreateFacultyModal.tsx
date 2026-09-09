@@ -1,12 +1,36 @@
 "use client";
 
-// Create-faculty modal -- Design Architecture v0.1 component 13 (Modal, 480px web).
+// Create-faculty modal -- Design Architecture v0.1 component 13 (Modal, was 480px
+// web, widened to 760px -- was cramped, especially the 3-column City/State/Pincode
+// row -- same width CreateStudentModal already moved to for the same reason).
 // Unlike Students, Faculty needs a real login: this form drives a two-step Server
 // Action (POST /persons then POST /staff). On success the modal switches to its own
 // Confirmation-dialog state (component 22) showing the one-time temporary password --
 // it is NEVER put in a URL (redirect, query param, etc.), since that would leak it
 // into browser history, server access logs, and the Referer header. It's shown here
 // once and is not retrievable again after the modal closes.
+//
+// Designation is genuinely free text on the backend (staff.designation is a plain
+// column, not an FK to a lookup table -- see staff.service.ts's own
+// listDesignations(), which runs a DISTINCT query over existing values rather than
+// reading a fixed table). A strict <select> would wrongly block ever hiring into a
+// brand-new designation, so this uses a <datalist>-backed input instead: it
+// suggests every designation already in real use (fetched via the same
+// GET /staff/designations this page's own filter bar already calls), but still
+// accepts free text for a genuinely new one.
+//
+// Extra responsibility role (optional): a new hire can be given Academic
+// Coordinator / Sports Faculty / Class Advisor right here instead of a
+// separate trip to Academics -> Assign role afterward -- same real
+// role_assignment system every other role uses (see this repo's
+// admin/academics/actions.ts for assignCoordinatorAction/
+// assignClassAdvisorAction, the pre-existing flows this reuses via the
+// server action, not a second implementation). If the chosen scope already
+// has a different active holder, that holder is revoked first -- same
+// one-active-holder-per-scope guarantee assignCoordinatorAction now enforces
+// there, so "1 email, multiple role allocations" stays correct: the new
+// hire's own login gains the role's features, the previous holder's login
+// loses them, cleanly, with no stale double-holder.
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
@@ -14,10 +38,39 @@ import { createFacultyAction, type FormActionState } from "@/app/(dashboard)/adm
 
 const initialState: FormActionState = {};
 
-export function CreateFacultyModal() {
+interface Grade {
+  id: string;
+  name: string;
+}
+interface Section {
+  id: string;
+  gradeId: string;
+  name: string;
+}
+
+const STAGES: [string, string][] = [
+  ["PRE_PRIMARY", "Pre-primary"],
+  ["PRIMARY", "Primary"],
+  ["MIDDLE", "Middle"],
+  ["SECONDARY", "Secondary"],
+  ["HIGHER_SECONDARY", "Higher secondary"],
+];
+
+export function CreateFacultyModal({
+  designations,
+  grades,
+  sections,
+}: {
+  designations: string[];
+  grades: Grade[];
+  sections: Section[];
+}) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(createFacultyAction, initialState);
   const created = Boolean(state.staffId);
+  const [extraRole, setExtraRole] = useState<"" | "ACADEMIC_COORDINATOR" | "SPORTS_FACULTY" | "CLASS_ADVISOR">("");
+  const [coordScopeKind, setCoordScopeKind] = useState<"STAGE" | "GRADE">("STAGE");
+  const gradeById = new Map(grades.map((g) => [g.id, g.name]));
 
   function handleClose() {
     setOpen(false);
@@ -35,7 +88,7 @@ export function CreateFacultyModal() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
-          <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
+          <div className="w-full max-w-[760px] rounded-[16px] bg-surface p-6 shadow-lg">
             {created ? (
               <>
                 <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
@@ -145,11 +198,17 @@ export function CreateFacultyModal() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Field label="Designation" name="designation" disabled={isPending} />
+                <Field
+                  label="Designation"
+                  name="designation"
+                  disabled={isPending}
+                  placeholder="e.g. Tamil Teacher"
+                  listOptions={designations}
+                />
                 <Field label="Teacher category" name="teacherCategory" disabled={isPending} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <SelectField
                   label="Post type"
                   name="postType"
@@ -162,6 +221,13 @@ export function CreateFacultyModal() {
                   ]}
                 />
                 <Field label="State teacher ID" name="stateTeacherId" disabled={isPending} />
+                <Field
+                  label="Experience (years, optional)"
+                  name="experienceYears"
+                  type="number"
+                  disabled={isPending}
+                  placeholder="After reviewing certificates"
+                />
               </div>
 
               <label className="flex items-center gap-2 text-[13px] text-text">
@@ -174,6 +240,81 @@ export function CreateFacultyModal() {
                 />
                 Teaching staff
               </label>
+
+              <div className="flex flex-col gap-3 border-t border-border pt-4">
+                <div>
+                  <h3 className="text-[13px] font-bold text-text">Extra responsibility role (optional)</h3>
+                  <p className="text-xs text-text-muted">
+                    If this scope already has someone else assigned, they&apos;ll be moved off it automatically.
+                  </p>
+                </div>
+                <select
+                  name="extraRole"
+                  value={extraRole}
+                  onChange={(e) => setExtraRole(e.target.value as typeof extraRole)}
+                  disabled={isPending}
+                  className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+                >
+                  <option value="">None</option>
+                  <option value="ACADEMIC_COORDINATOR">Academic Coordinator</option>
+                  <option value="SPORTS_FACULTY">Sports Faculty</option>
+                  <option value="CLASS_ADVISOR">Class Advisor</option>
+                </select>
+
+                {(extraRole === "ACADEMIC_COORDINATOR" || extraRole === "SPORTS_FACULTY") && (
+                  <>
+                    <div className="flex gap-4 text-sm">
+                      <label className="flex items-center gap-1.5">
+                        <input
+                          type="radio"
+                          name="extraRoleScopeKind"
+                          checked={coordScopeKind === "STAGE"}
+                          onChange={() => setCoordScopeKind("STAGE")}
+                          disabled={isPending}
+                        />
+                        By stage
+                      </label>
+                      <label className="flex items-center gap-1.5">
+                        <input
+                          type="radio"
+                          name="extraRoleScopeKind"
+                          checked={coordScopeKind === "GRADE"}
+                          onChange={() => setCoordScopeKind("GRADE")}
+                          disabled={isPending}
+                        />
+                        By standard
+                      </label>
+                    </div>
+                    {coordScopeKind === "STAGE" ? (
+                      <SelectField
+                        label="Stage covered"
+                        name="extraRoleScopeStage"
+                        disabled={isPending}
+                        options={[["", "Select"], ...STAGES]}
+                      />
+                    ) : (
+                      <SelectField
+                        label="Standard covered"
+                        name="extraRoleScopeGradeId"
+                        disabled={isPending}
+                        options={[["", "Select"], ...grades.map((g) => [g.id, g.name] as [string, string])]}
+                      />
+                    )}
+                  </>
+                )}
+
+                {extraRole === "CLASS_ADVISOR" && (
+                  <SelectField
+                    label="Section"
+                    name="extraRoleSectionId"
+                    disabled={isPending}
+                    options={[
+                      ["", "Select"],
+                      ...sections.map((s) => [s.id, `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`] as [string, string]),
+                    ]}
+                  />
+                )}
+              </div>
 
               <button
                 type="submit"
@@ -199,6 +340,7 @@ function Field({
   required,
   disabled,
   placeholder,
+  listOptions,
 }: {
   label: string;
   name: string;
@@ -206,7 +348,13 @@ function Field({
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  /** Real, already-in-use values suggested via a native <datalist> -- the field
+   * stays free text (see this file's own header comment on why designation
+   * can't be a strict <select>), this just makes existing values easy to
+   * reuse instead of retyping. */
+  listOptions?: string[];
 }) {
+  const listId = listOptions ? `${name}-options` : undefined;
   return (
     <label className="flex flex-col gap-1.5 text-sm">
       <span className="font-semibold text-text">
@@ -219,8 +367,16 @@ function Field({
         required={required}
         disabled={disabled}
         placeholder={placeholder}
+        list={listId}
         className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
       />
+      {listOptions && (
+        <datalist id={listId}>
+          {listOptions.map((option) => (
+            <option key={option} value={option} />
+          ))}
+        </datalist>
+      )}
     </label>
   );
 }

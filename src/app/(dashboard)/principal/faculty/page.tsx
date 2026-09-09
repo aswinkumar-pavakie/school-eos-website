@@ -178,21 +178,20 @@ export default async function PrincipalFacultyPage({
               <th className="px-4 py-3">Designation</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {staff.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-text-muted">
+                <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
                   No staff match this filter.
                 </td>
               </tr>
             )}
             {staff.map((member) => (
-              <tr key={member.id}>
+              <tr key={member.id} className="hover:bg-field">
                 <td className="px-4 py-3 font-semibold text-text">
-                  <div className="flex items-center gap-2.5">
+                  <Link href={`/principal/faculty/${member.id}`} className="flex items-center gap-2.5 hover:text-primary hover:underline">
                     <PersonAvatar
                       photoUrl={member.photoUrl}
                       name={`${member.firstName} ${member.lastName ?? ""}`}
@@ -202,18 +201,13 @@ export default async function PrincipalFacultyPage({
                     {!member.isTeaching && (
                       <span className="text-xs font-normal text-text-muted">(Non-teaching)</span>
                     )}
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-4 py-3 font-mono text-[13px] text-text">{member.employeeNo}</td>
                 <td className="px-4 py-3 text-text-muted">{member.designation ?? "—"}</td>
                 <td className="px-4 py-3 text-text-muted">{formatDate(member.dateOfJoining)}</td>
                 <td className="px-4 py-3">
                   <StatusPill tone={statusTone(member.status)} label={member.status.replace(/_/g, " ")} />
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Link href={`/principal/faculty/${member.id}`} className="text-[13px] font-semibold text-primary">
-                    View
-                  </Link>
                 </td>
               </tr>
             ))}

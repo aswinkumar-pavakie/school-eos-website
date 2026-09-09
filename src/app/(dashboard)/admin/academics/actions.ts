@@ -129,6 +129,25 @@ export async function endStaffRoleAssignmentAction(id: string): Promise<void> {
   revalidatePath("/admin/faculty");
 }
 
+/**
+ * Reassigning Academic Coordinator/Sports Faculty for a standard or stage that
+ * already has a DIFFERENT active holder used to just add a second active
+ * assignment alongside the first -- unlike assignClassAdvisorAction above,
+ * which already revokes the section's current advisor before granting the
+ * new one, this action never checked for an existing holder at all. The DB
+ * only blocks the exact same person+role+scope being granted twice
+ * (uq_role_assignment_active) -- two DIFFERENT people both holding
+ * "Academic Coordinator, Standard 5" at once is not blocked by any
+ * constraint, so a stale-old-holder bug here was real, not hypothetical.
+ *
+ * Fixed the same way Class Advisor already works: for each target scope,
+ * look up who (if anyone) currently holds this exact role there and revoke
+ * that assignment first -- so the role, and whatever it unlocks for that
+ * person's own login, moves cleanly from the old coordinator to the new one
+ * instead of both being active simultaneously. Re-selecting a scope the same
+ * person already covers is a no-op (skipped, not re-granted, since granting
+ * it again would just hit the same unique-violation the DB already guards).
+ */
 export async function assignCoordinatorAction(
   academicYearId: string,
   _prev: FormActionState,
@@ -148,8 +167,31 @@ export async function assignCoordinatorAction(
   if (targets.length === 0) {
     return { error: scopeKind === "STAGE" ? "Select at least one stage." : "Select at least one standard." };
   }
+  if (typeof roleCode !== "string" || typeof personId !== "string") {
+    return { error: "Missing role or staff selection." };
+  }
+
+  const existingRes = await apiFetch(`/role-assignments?roleCode=${roleCode}&status=ACTIVE`);
+  const existing: { id: string; personId: string; scopeType: string; scopeId: string | null; scopeStage: string | null }[] =
+    existingRes.ok ? (await existingRes.json()).data : [];
 
   for (const target of targets) {
+    const holder = existing.find(
+      (a) =>
+        a.scopeType === target.scopeType &&
+        (target.scopeType === "GRADE" ? a.scopeId === target.scopeId : a.scopeStage === target.scopeStage),
+    );
+
+    if (holder && holder.personId === personId) {
+      // Already correctly assigned to this exact person -- nothing to do.
+      continue;
+    }
+
+    if (holder) {
+      const revokeRes = await apiFetch(`/role-assignments/${holder.id}/revoke`, { method: "POST" });
+      if (!revokeRes.ok) return { error: await readError(revokeRes) };
+    }
+
     const res = await apiFetch("/role-assignments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -164,5 +206,6 @@ export async function assignCoordinatorAction(
   }
 
   revalidatePath("/admin/academics");
+  revalidatePath("/admin/faculty");
   return {};
 }

@@ -25,12 +25,20 @@ const API_BASE_URL =
 // closer semantic fit for "who this login represents" than a system-settings
 // icon; no new icon drawn, per this icon set's own "never introduce a new nav
 // icon" rule (icons.tsx).
+//
+// "Announcements" added after: a real, already-live capability on the
+// Community mobile app (send a notice to your own community, direct-publish,
+// no approval step -- see community-announcements.controller.ts's own
+// @Roles('ADMIN','COMMUNITY') grant on create/update) had no website
+// equivalent at all. Reuses the same "announcements" bell icon key Admin's
+// own sidebar already uses, per this same icon-set rule.
 const COMMUNITY_NAV_ITEMS: ShellNavItem[] = [
   { href: "/community", label: "Dashboard", icon: "dashboard" },
   { href: "/community/profile", label: "Profile", icon: "profile" },
   { href: "/community/community", label: "Communities", icon: "community" },
   { href: "/community/proposals", label: "Proposals", icon: "requests" },
   { href: "/community/activities", label: "Activities", icon: "calendar" },
+  { href: "/community/announcements", label: "Announcements", icon: "announcements" },
 ];
 
 interface MeResponse {

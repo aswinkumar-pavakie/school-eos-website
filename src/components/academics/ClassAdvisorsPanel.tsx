@@ -47,11 +47,21 @@ export function ClassAdvisorsPanel({
   const gradeById = new Map(grades.map((g) => [g.id, g.name]));
   const advisorBySection = new Map(assignments.map((a) => [a.scopeId, a]));
   const sectionsInGrade = gradeFilter ? sections.filter((s) => s.gradeId === gradeFilter) : [];
-  const visibleSections = sectionFilter
-    ? sectionsInGrade.filter((s) => s.id === sectionFilter)
-    : gradeFilter
-      ? sectionsInGrade
-      : sections;
+  // grades is already ordered by the real level_no column (GET /grades --
+  // see grade.repository.ts's own `ORDER BY level_no`), so its array
+  // position is the correct LKG/UKG-first, ascending-standard rank -- sort
+  // the "all sections" view by that instead of leaving it in GET /sections'
+  // own name-only order (which ties across every standard's "A" section and
+  // otherwise shows standards in an arbitrary order).
+  const gradeRank = new Map(grades.map((g, index) => [g.id, index]));
+  const visibleSections = (
+    sectionFilter ? sectionsInGrade.filter((s) => s.id === sectionFilter) : gradeFilter ? sectionsInGrade : sections
+  )
+    .slice()
+    .sort((a, b) => {
+      const rankDiff = (gradeRank.get(a.gradeId) ?? 0) - (gradeRank.get(b.gradeId) ?? 0);
+      return rankDiff !== 0 ? rankDiff : a.name.localeCompare(b.name);
+    });
 
   if (!academicYearId) {
     return <p className="text-sm text-text-muted">Set a current academic year first (Academic years tab).</p>;
@@ -99,17 +109,36 @@ export function ClassAdvisorsPanel({
           </select>
         </label>
       </div>
-      <ul className="flex flex-col divide-y divide-border">
-        {visibleSections.map((section) => (
-          <SectionAdvisorRow
-            key={section.id}
-            section={section}
-            gradeName={gradeById.get(section.gradeId) ?? "—"}
-            current={advisorBySection.get(section.id) ?? null}
-            academicYearId={academicYearId}
-          />
-        ))}
-      </ul>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[560px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Standard</th>
+              <th className="py-2.5 pr-3">Section</th>
+              <th className="py-2.5 pr-3">Faculty name</th>
+              <th className="py-2.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {visibleSections.length === 0 && (
+              <tr>
+                <td colSpan={4} className="py-6 text-center text-text-muted">
+                  No sections match this filter.
+                </td>
+              </tr>
+            )}
+            {visibleSections.map((section) => (
+              <SectionAdvisorRow
+                key={section.id}
+                section={section}
+                gradeName={gradeById.get(section.gradeId) ?? "—"}
+                current={advisorBySection.get(section.id) ?? null}
+                academicYearId={academicYearId}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -130,19 +159,20 @@ function SectionAdvisorRow({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13.5px] font-semibold text-text">
-          {gradeName} · {section.name}
-        </p>
-        <div className="flex items-center gap-3">
+    <>
+      <tr>
+        <td className="py-3 pr-3 font-semibold text-text">{gradeName}</td>
+        <td className="py-3 pr-3 text-text">{section.name}</td>
+        <td className="py-3 pr-3">
           {current ? (
-            <span className="text-sm text-text">
+            <span className="text-text">
               {current.personFirstName} {current.personLastName ?? ""}
             </span>
           ) : (
-            <span className="text-sm text-text-muted">Not assigned</span>
+            <span className="text-text-muted">Not assigned</span>
           )}
+        </td>
+        <td className="py-3 text-right">
           <button
             type="button"
             onClick={() => setEditing((v) => !v)}
@@ -150,32 +180,36 @@ function SectionAdvisorRow({
           >
             {current ? "Change" : "Assign"}
           </button>
-        </div>
-      </div>
+        </td>
+      </tr>
 
       {editing && (
-        <form
-          action={(formData) => {
-            formAction(formData);
-            setEditing(false);
-          }}
-          className="mt-3 flex flex-wrap items-end gap-3 rounded-[11px] bg-field p-3"
-        >
-          {state.error && (
-            <p className="w-full rounded-[11px] bg-critical-bg px-3 py-2 text-sm text-critical-text">{state.error}</p>
-          )}
-          <div className="min-w-[240px]">
-            <StaffPersonPicker disabled={isPending} />
-          </div>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {isPending ? "Saving…" : "Save"}
-          </button>
-        </form>
+        <tr>
+          <td colSpan={4} className="pb-3">
+            <form
+              action={(formData) => {
+                formAction(formData);
+                setEditing(false);
+              }}
+              className="flex flex-wrap items-end gap-3 rounded-[11px] bg-field p-3"
+            >
+              {state.error && (
+                <p className="w-full rounded-[11px] bg-critical-bg px-3 py-2 text-sm text-critical-text">{state.error}</p>
+              )}
+              <div className="min-w-[240px]">
+                <StaffPersonPicker disabled={isPending} />
+              </div>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {isPending ? "Saving…" : "Save"}
+              </button>
+            </form>
+          </td>
+        </tr>
       )}
-    </li>
+    </>
   );
 }

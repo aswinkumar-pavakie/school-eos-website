@@ -22,6 +22,7 @@ interface StaffDetail {
   postType: string | null;
   stateTeacherId: string | null;
   isTeaching: boolean;
+  experienceYears: number | null;
 }
 
 const initialState: FormActionState = {};
@@ -99,6 +100,18 @@ export function FacultyProfileForm({ staff, address }: { staff: StaffDetail; add
               name="stateTeacherId"
               defaultValue={staff.stateTeacherId ?? ""}
               disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Experience (years)</span>
+            <input
+              name="experienceYears"
+              type="number"
+              min={0}
+              defaultValue={staff.experienceYears ?? ""}
+              disabled={isPending}
+              placeholder="After reviewing certificates"
               className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
             />
           </label>

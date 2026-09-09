@@ -142,7 +142,7 @@ export function PrintIdCardsButton({ basePath, filterHref }: { basePath: string;
     return (
       <a
         href={filterHref}
-        className="rounded-[11px] border border-border px-4 py-2.5 text-sm font-semibold text-text hover:bg-bg"
+        className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:opacity-90"
       >
         Print ID cards
       </a>
@@ -153,7 +153,7 @@ export function PrintIdCardsButton({ basePath, filterHref }: { basePath: string;
   return (
     <a
       href={href}
-      className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white"
+      className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:opacity-90"
     >
       Print {selected.size} selected
     </a>

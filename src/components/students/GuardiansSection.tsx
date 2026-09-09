@@ -42,11 +42,26 @@ export function GuardiansSection({ studentId, guardians }: { studentId: string; 
         </p>
       )}
 
-      <ul className="flex flex-col divide-y divide-border">
-        {active.map((g) => (
-          <GuardianRowItem key={g.id} studentId={studentId} guardian={g} />
-        ))}
-      </ul>
+      {active.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+                <th className="py-2.5 pr-3">Guardian</th>
+                <th className="py-2.5 pr-3">Relationship</th>
+                <th className="py-2.5 pr-3">Access</th>
+                <th className="py-2.5 pr-3">Occupation</th>
+                <th className="py-2.5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {active.map((g) => (
+                <GuardianRowItem key={g.id} studentId={studentId} guardian={g} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {revoked.length > 0 && (
         <details className="mt-3">
@@ -146,39 +161,36 @@ function GuardianRowItem({ studentId, guardian }: { studentId: string; guardian:
   const [isPending, startTransition] = useTransition();
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 py-3">
-      <div>
-        <p className="text-[13.5px] font-semibold text-text">
-          {guardian.firstName} {guardian.lastName ?? ""}
-          {guardian.isPrimaryContact && (
-            <span className="ml-2 text-xs font-bold text-primary">PRIMARY</span>
+    <tr>
+      <td className="py-3 pr-3 font-semibold text-text">
+        {guardian.firstName} {guardian.lastName ?? ""}
+        {guardian.isPrimaryContact && <span className="ml-2 text-xs font-bold text-primary">PRIMARY</span>}
+      </td>
+      <td className="py-3 pr-3 text-text-muted">{guardian.relationship.toLowerCase()}</td>
+      <td className="py-3 pr-3 text-text-muted">{guardian.accessLevel.toLowerCase().replace(/_/g, " ")}</td>
+      <td className="py-3 pr-3 text-text-muted">{guardian.occupation ?? "—"}</td>
+      <td className="py-3 text-right">
+        <div className="flex justify-end gap-3">
+          {!guardian.isPrimaryContact && (
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => startTransition(() => setPrimaryGuardianAction(studentId, guardian.id))}
+              className="text-[13px] font-semibold text-primary disabled:opacity-60"
+            >
+              Set primary
+            </button>
           )}
-        </p>
-        <p className="text-xs text-text-muted">
-          {guardian.relationship.toLowerCase()} · {guardian.accessLevel.toLowerCase().replace(/_/g, " ")}
-          {guardian.occupation ? ` · ${guardian.occupation}` : ""}
-        </p>
-      </div>
-      <div className="flex items-center gap-3">
-        {!guardian.isPrimaryContact && (
           <button
             type="button"
             disabled={isPending}
-            onClick={() => startTransition(() => setPrimaryGuardianAction(studentId, guardian.id))}
-            className="text-[13px] font-semibold text-primary disabled:opacity-60"
+            onClick={() => startTransition(() => revokeGuardianAction(studentId, guardian.id))}
+            className="text-[13px] font-semibold text-critical-text disabled:opacity-60"
           >
-            Set primary
+            Revoke
           </button>
-        )}
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => startTransition(() => revokeGuardianAction(studentId, guardian.id))}
-          className="text-[13px] font-semibold text-critical-text disabled:opacity-60"
-        >
-          Revoke
-        </button>
-      </div>
-    </li>
+        </div>
+      </td>
+    </tr>
   );
 }

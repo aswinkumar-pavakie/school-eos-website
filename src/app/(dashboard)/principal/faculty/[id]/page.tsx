@@ -62,6 +62,7 @@ interface StaffDetail {
   dateOfJoining: string;
   dateOfExit: string | null;
   exitReason: string | null;
+  experienceYears: number | null;
   status: string;
   photoUrl: string | null;
   addressLine1: string | null;
@@ -114,11 +115,6 @@ export default async function PrincipalFacultyDetailPage({
   const roleAssignments = allRoleAssignments.filter((r) => r.roleCode in ROLE_LABELS);
   const activeAdvisorRole = roleAssignments.find((r) => r.roleCode === "CLASS_ADVISOR" && r.status === "ACTIVE");
 
-  const yearsOfExperience = Math.max(
-    0,
-    Math.floor((Date.now() - new Date(staff.dateOfJoining).getTime()) / (365.25 * 24 * 60 * 60 * 1000)),
-  );
-
   const pills: ProfilePill[] = [
     { label: `ID ${staff.employeeNo}`, tone: "neutral" },
     { label: staff.status.replace(/_/g, " "), tone: statusTone(staff.status) },
@@ -133,7 +129,14 @@ export default async function PrincipalFacultyDetailPage({
       value: attendanceSummary.percentage !== null ? `${attendanceSummary.percentage}%` : "—",
       hint: "across marked days",
     },
-    { label: "Experience", value: `${yearsOfExperience} yrs`, hint: `joined ${formatDate(staff.dateOfJoining)}` },
+    {
+      label: "Experience",
+      // Real, admin-entered prior experience -- see Admin's own faculty
+      // profile FacultyProfileForm.tsx, not years since date_of_joining
+      // (tenure at this school, a different thing).
+      value: staff.experienceYears !== null ? `${staff.experienceYears} yrs` : "—",
+      hint: staff.experienceYears !== null ? `joined ${formatDate(staff.dateOfJoining)}` : "not yet verified",
+    },
   ];
 
   return (

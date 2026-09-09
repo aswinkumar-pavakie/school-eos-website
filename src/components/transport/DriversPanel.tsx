@@ -94,24 +94,43 @@ export function DriversPanel({
           <Field label="Licence expiry" name="licenceExpiry" type="date" required disabled={isPending} />
         </PanelCreateForm>
       )}
-      <ul className="mt-4 flex flex-col divide-y divide-border">
-        {drivers.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No drivers yet.</li>}
-        {drivers.map((driver) => {
-          const assignment = currentAssignmentFor(assignments, driver.id);
-          return (
-          <DriverRow
-            key={driver.id}
-            driver={driver}
-            assignment={assignment}
-            vehicle={assignment ? vehicleById.get(assignment.vehicleId) ?? null : null}
-            vehicles={vehicles}
-            editing={editingId === driver.id}
-            onToggle={() => setEditingId((v) => (v === driver.id ? null : driver.id))}
-            readOnly={readOnly}
-          />
-          );
-        })}
-      </ul>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+              <th className="py-2.5 pr-3">Driver</th>
+              <th className="py-2.5 pr-3">Contact / licence</th>
+              <th className="py-2.5 pr-3">Vehicle</th>
+              <th className="py-2.5 pr-3">Status</th>
+              {!readOnly && <th className="py-2.5 text-right">Action</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {drivers.length === 0 && (
+              <tr>
+                <td colSpan={readOnly ? 4 : 5} className="py-6 text-center text-text-muted">
+                  No drivers yet.
+                </td>
+              </tr>
+            )}
+            {drivers.map((driver) => {
+              const assignment = currentAssignmentFor(assignments, driver.id);
+              return (
+                <DriverRow
+                  key={driver.id}
+                  driver={driver}
+                  assignment={assignment}
+                  vehicle={assignment ? vehicleById.get(assignment.vehicleId) ?? null : null}
+                  vehicles={vehicles}
+                  editing={editingId === driver.id}
+                  onToggle={() => setEditingId((v) => (v === driver.id ? null : driver.id))}
+                  readOnly={readOnly}
+                />
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -145,103 +164,111 @@ function DriverRow({
   );
 
   return (
-    <li className="py-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[13.5px] font-semibold text-text">{driver.fullName}</p>
-          <p className="text-xs text-text-muted">
-            {driver.phone ?? "—"} · licence {driver.licenceNo}
-          </p>
-          <p className="mt-1 text-xs text-text-muted">
-            {vehicle ? (
-              <>
-                Driving <span className="font-semibold text-text">{vehicle.registrationNo}</span>
-                {vehicle.model ? ` (${vehicle.model})` : ""}
-              </>
-            ) : (
-              "No vehicle currently assigned"
-            )}
-            {!readOnly && assignment && (
-              <button
-                type="button"
-                onClick={() => setChangingVehicle((v) => !v)}
-                className="ml-2 font-semibold text-primary"
-              >
-                {changingVehicle ? "Cancel" : "Change vehicle"}
-              </button>
-            )}
-          </p>
-        </div>
-        <div className="flex items-center gap-2.5">
+    <>
+      <tr>
+        <td className="py-3 pr-3 font-semibold text-text">{driver.fullName}</td>
+        <td className="py-3 pr-3 text-text-muted">
+          {driver.phone ?? "—"} · licence {driver.licenceNo}
+        </td>
+        <td className="py-3 pr-3 text-text-muted">
+          {vehicle ? (
+            <>
+              <span className="font-semibold text-text">{vehicle.registrationNo}</span>
+              {vehicle.model ? ` (${vehicle.model})` : ""}
+            </>
+          ) : (
+            "No vehicle assigned"
+          )}
+          {!readOnly && assignment && (
+            <button
+              type="button"
+              onClick={() => setChangingVehicle((v) => !v)}
+              className="ml-2 font-semibold text-primary"
+            >
+              {changingVehicle ? "Cancel" : "Change vehicle"}
+            </button>
+          )}
+        </td>
+        <td className="py-3 pr-3">
           <StatusPill tone={driver.status === "ACTIVE" ? "success" : "pending"} label={driver.status} />
-          {!readOnly && (
+        </td>
+        {!readOnly && (
+          <td className="py-3 text-right">
             <button type="button" onClick={onToggle} className="text-[13px] font-semibold text-primary">
               {editing ? "Cancel" : "Edit"}
             </button>
-          )}
-        </div>
-      </div>
+          </td>
+        )}
+      </tr>
 
       {!readOnly && changingVehicle && assignment && (
-        <form
-          action={(formData) => {
-            vehicleFormAction(formData);
-            setChangingVehicle(false);
-          }}
-          className="mt-2.5 flex flex-wrap items-center gap-2.5 rounded-[11px] bg-field p-3"
-        >
-          {vehicleState.error && <span className="w-full text-xs text-critical-text">{vehicleState.error}</span>}
-          <select
-            name="vehicleId"
-            required
-            disabled={isChangingVehicle}
-            defaultValue=""
-            className="rounded-[11px] border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-primary"
-          >
-            <option value="" disabled>
-              Select a vehicle
-            </option>
-            {vehicles.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.registrationNo}
-                {v.model ? ` (${v.model})` : ""}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            disabled={isChangingVehicle}
-            className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
-          >
-            {isChangingVehicle ? "Saving…" : "Save"}
-          </button>
-        </form>
+        <tr>
+          <td colSpan={5} className="pb-3">
+            <form
+              action={(formData) => {
+                vehicleFormAction(formData);
+                setChangingVehicle(false);
+              }}
+              className="flex flex-wrap items-center gap-2.5 rounded-[11px] bg-field p-3"
+            >
+              {vehicleState.error && <span className="w-full text-xs text-critical-text">{vehicleState.error}</span>}
+              <select
+                name="vehicleId"
+                required
+                disabled={isChangingVehicle}
+                defaultValue=""
+                className="rounded-[11px] border border-border bg-surface px-3 py-2 text-sm text-text outline-none focus:border-primary"
+              >
+                <option value="" disabled>
+                  Select a vehicle
+                </option>
+                {vehicles.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.registrationNo}
+                    {v.model ? ` (${v.model})` : ""}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                disabled={isChangingVehicle}
+                className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {isChangingVehicle ? "Saving…" : "Save"}
+              </button>
+            </form>
+          </td>
+        </tr>
       )}
 
       {!readOnly && editing && (
-        <form action={formAction} className="mt-2.5 flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
-          {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
-          <div className="grid grid-cols-2 gap-2.5">
-            <Field label="Full name" name="fullName" disabled={isPending} defaultValue={driver.fullName} />
-            <Field label="Phone" name="phone" disabled={isPending} defaultValue={driver.phone ?? undefined} />
-            <Field label="Licence no." name="licenceNo" disabled={isPending} defaultValue={driver.licenceNo} />
-            <Field label="Licence expiry" name="licenceExpiry" type="date" disabled={isPending} defaultValue={driver.licenceExpiry.slice(0, 10)} />
-            <SelectField
-              label="Status"
-              name="status"
-              disabled={isPending}
-              defaultValue={driver.status}
-              options={[
-                ["ACTIVE", "Active"],
-                ["INACTIVE", "Inactive"],
-              ]}
-            />
-          </div>
-          <button type="submit" disabled={isPending} className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60">
-            {isPending ? "Saving…" : "Save changes"}
-          </button>
-        </form>
+        <tr>
+          <td colSpan={5} className="pb-3">
+            <form action={formAction} className="flex flex-col gap-2.5 rounded-[11px] bg-field p-3">
+              {state.error && <p className="text-xs text-critical-text">{state.error}</p>}
+              <div className="grid grid-cols-2 gap-2.5">
+                <Field label="Full name" name="fullName" disabled={isPending} defaultValue={driver.fullName} />
+                <Field label="Phone" name="phone" disabled={isPending} defaultValue={driver.phone ?? undefined} />
+                <Field label="Licence no." name="licenceNo" disabled={isPending} defaultValue={driver.licenceNo} />
+                <Field label="Licence expiry" name="licenceExpiry" type="date" disabled={isPending} defaultValue={driver.licenceExpiry.slice(0, 10)} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue={driver.status}
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                  ]}
+                />
+              </div>
+              <button type="submit" disabled={isPending} className="w-fit rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60">
+                {isPending ? "Saving…" : "Save changes"}
+              </button>
+            </form>
+          </td>
+        </tr>
       )}
-    </li>
+    </>
   );
 }
