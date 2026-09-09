@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { CoachesPanel, type Coach } from "./CoachesPanel";
 import { EquipmentPanel, type Equipment } from "./EquipmentPanel";
+import { SportsOversightPanel, type SportsOverview } from "./SportsOversightPanel";
 import { SportsPanel, type Sport, type SportCategory } from "./SportsPanel";
 
-const TABS = ["Sports", "Equipment", "Coaches"] as const;
+const TABS = ["Sports", "Equipment", "Coaches", "Oversight"] as const;
 type Tab = (typeof TABS)[number];
 
 export function SportsTabs({
@@ -13,11 +14,13 @@ export function SportsTabs({
   categoriesBySport,
   equipment,
   coaches,
+  overview,
 }: {
   sports: Sport[];
   categoriesBySport: Record<string, SportCategory[]>;
   equipment: Equipment[];
   coaches: Coach[];
+  overview: SportsOverview | null;
 }) {
   const [tab, setTab] = useState<Tab>("Sports");
 
@@ -42,6 +45,12 @@ export function SportsTabs({
         {tab === "Sports" && <SportsPanel sports={sports} categoriesBySport={categoriesBySport} />}
         {tab === "Equipment" && <EquipmentPanel equipment={equipment} sports={sports} />}
         {tab === "Coaches" && <CoachesPanel coaches={coaches} />}
+        {tab === "Oversight" &&
+          (overview ? (
+            <SportsOversightPanel overview={overview} coaches={coaches} />
+          ) : (
+            <p className="py-6 text-center text-sm text-text-muted">Couldn&apos;t load oversight data — try refreshing the page.</p>
+          ))}
       </div>
     </div>
   );

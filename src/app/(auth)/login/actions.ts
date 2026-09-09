@@ -7,13 +7,20 @@ import { setAuthCookies } from "@/lib/api";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
-// Admin, Principal (web half), Finance/Accounts, Library -- the only web logins in
-// the system. Vice Principal moved to mobile-only per updated plan (2026-09-03) --
-// see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts. Faculty/Parent/
-// Hostel Warden are mobile-only too; this backend endpoint itself doesn't restrict
-// by client, so the platform boundary is enforced here, not assumed from who the
-// task said would use this screen.
-const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY", "MEDIA_ROOM"];
+// Admin, Principal (web half), Finance/Accounts, Library, Media Room -- plus
+// FACULTY as of 2026-09-08, web-enabled specifically for Sports Faculty (Sports
+// In-Charge) operations (see /sports's own layout.tsx). FACULTY is a broad role
+// code shared with every teaching staff member, not just Sports In-Charge ones --
+// this opens web login to all of them, but the /sports module itself only ever
+// shows data for sport(s) a SPORTS_FACULTY role_assignment scopes them to, so a
+// non-PT teacher's account just sees empty lists everywhere (same "empty, not
+// 403" convention the backend already uses). Vice Principal moved to mobile-only
+// per updated plan (2026-09-03) -- see MOBILE_ALLOWED_ROLES in
+// school-eos-mobile/src/lib/auth.ts. Parent/Hostel Warden are still mobile-only;
+// this backend endpoint itself doesn't restrict by client, so the platform
+// boundary is enforced here, not assumed from who the task said would use this
+// screen.
+const WEB_ALLOWED_ROLES = ["ADMIN", "PRINCIPAL", "FINANCE", "LIBRARY", "MEDIA_ROOM", "FACULTY"];
 
 export interface LoginState {
   error?: string;
@@ -97,6 +104,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("MEDIA_ROOM")) {
     redirect("/media");
+  }
+  if (roleCodes.includes("FACULTY")) {
+    redirect("/sports");
   }
   redirect("/dashboard");
 }

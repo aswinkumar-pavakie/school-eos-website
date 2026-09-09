@@ -143,6 +143,12 @@ const STATUS_LABELS: Record<string, string> = {
   SCHEDULED: "Scheduled",
   PUBLISHED: "Published",
   ASSIGNED: "Assigned",
+  // Sports module additions (tournament/fixture/attendance state vocab).
+  ONGOING: "Ongoing",
+  LIVE: "Live",
+  PRESENT: "Present",
+  ABSENT: "Absent",
+  LATE: "Late",
 };
 
 export function statusLabel(state: string): string {
@@ -172,6 +178,8 @@ const STATUS_TONE: Record<string, StatusTone> = {
   FULFILLED: "success", EXPIRED: "critical", SENT_TO_FINANCE: "pending",
   UNDER_REPAIR: "pending", RETIRED: "critical",
   READY: "success", PARTIALLY_PAID: "pending",
+  // Sports module additions. SCHEDULED/COMPLETED/CANCELLED already covered above.
+  ONGOING: "success", LIVE: "success", PRESENT: "success", ABSENT: "critical", LATE: "pending",
 };
 
 export function statusTone(state: string): StatusTone {
