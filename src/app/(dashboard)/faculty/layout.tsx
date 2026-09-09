@@ -5,6 +5,7 @@ import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getCoordinatorMe } from "@/lib/faculty-coordinator-api";
 import { listStudentLeaveRequests } from "@/lib/faculty-api";
+import { listMyTeams } from "@/lib/sports-faculty-api";
 // logoutAction is genuinely shared with the Admin Console -- same reasoning
 // finance/layout.tsx's own copy of this comment gives: one real sign-out
 // action, not a lookalike rebuild per module.
@@ -42,6 +43,12 @@ const BASE_NAV_ITEMS: ShellNavItem[] = [
   { href: "/faculty/library", label: "Library", icon: "inventory" },
 ];
 const COORDINATOR_NAV_ITEM: ShellNavItem = { href: "/faculty/coordinator", label: "Academic Coordinator", icon: "coordinator" };
+// Sports is its own top-level dashboard (src/app/(dashboard)/sports -- separate
+// layout, separate Shell instance, gated only on the FACULTY role there) rather
+// than a route under /faculty, so this is an external link, same as any other
+// nav entry -- only shown to a faculty member with a live team assignment, same
+// live-check pattern as COORDINATOR_NAV_ITEM above.
+const SPORTS_NAV_ITEM: ShellNavItem = { href: "/sports", label: "Sports", icon: "sports" };
 
 interface MeResponse {
   data: {
@@ -71,7 +78,9 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
   // token. A plain Faculty member simply never sees this nav entry; every
   // route behind it re-checks the same thing server-side regardless.
   const coordinatorMe = await getCoordinatorMe().catch(() => ({ isCoordinator: false }));
-  const navItems = coordinatorMe.isCoordinator ? [...BASE_NAV_ITEMS, COORDINATOR_NAV_ITEM] : BASE_NAV_ITEMS;
+  const myTeams = await listMyTeams().catch(() => []);
+  let navItems = coordinatorMe.isCoordinator ? [...BASE_NAV_ITEMS, COORDINATOR_NAV_ITEM] : BASE_NAV_ITEMS;
+  if (myTeams.length > 0) navItems = [...navItems, SPORTS_NAV_ITEM];
 
   // The bell's one honest thing to say: real student-leave requests (as
   // class advisor) still awaiting this faculty member's own decision.

@@ -180,6 +180,11 @@ const STATUS_LABELS: Record<string, string> = {
   ON_LEAVE: "On leave",
   ON_DUTY: "On duty",
   OPEN: "Open",
+  // Sports module additions (tournament/fixture state vocab). PRESENT/ABSENT/
+  // LATE already covered by the Faculty additions above, with identical
+  // labels -- not repeated here.
+  ONGOING: "Ongoing",
+  LIVE: "Live",
 };
 
 export function statusLabel(state: string): string {
@@ -216,6 +221,9 @@ const STATUS_TONE: Record<string, StatusTone> = {
   // Parent module (homework submissions, document/outing requests)
   SUBMITTED: "success", GRADED: "success",
   NOT_DONE: "critical",
+  // Sports module additions. SCHEDULED/COMPLETED/CANCELLED/PRESENT/ABSENT/LATE
+  // already covered above.
+  ONGOING: "success", LIVE: "success",
 };
 
 export function statusTone(state: string): StatusTone {
