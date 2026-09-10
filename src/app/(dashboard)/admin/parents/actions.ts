@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { parseApiError } from "@/lib/form-errors";
 
 export interface FormActionState {
   error?: string;
+  fieldErrors?: Record<string, string>;
   temporaryPassword?: string;
   personId?: string;
 }
@@ -38,12 +40,13 @@ export async function createParentAction(
       gender: formData.get("gender") || undefined,
       identifierType: formData.get("identifierType"),
       identifierValue: formData.get("identifierValue"),
+      initialPassword: formData.get("initialPassword") || undefined,
       initialRole: { roleCode: "PARENT", scopeType: "SCHOOL" },
     }),
   });
 
   if (!res.ok) {
-    return { error: await readError(res) };
+    return await parseApiError(res);
   }
 
   const { data } = (await res.json()) as {
@@ -99,11 +102,11 @@ export interface ResetPasswordState {
  * is returned in this action's own state and shown once, never put in a URL
  * (same lesson as the initial temp password on account creation).
  */
-export async function resetParentPasswordAction(personId: string): Promise<ResetPasswordState> {
+export async function resetParentPasswordAction(personId: string, newPassword?: string): Promise<ResetPasswordState> {
   const res = await apiFetch(`/persons/${personId}/password-reset`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
+    body: JSON.stringify({ newPassword: newPassword || undefined }),
   });
   if (!res.ok) return { error: await readError(res) };
   const { data } = (await res.json()) as { data: { newPassword: string } };
