@@ -52,6 +52,7 @@ interface ParentDetail {
   children: ChildLink[];
   loginIdentifiers: LoginIdentifier[];
   resetAllowanceUsed: boolean;
+  adminVisiblePassword: string | null;
 }
 
 function statusTone(status: string): "success" | "pending" | "critical" {
@@ -128,8 +129,10 @@ export default async function ParentDetailPage({ params }: { params: Promise<{ i
         <div className="mt-3">
           <ParentLoginSecuritySection
             personId={parent.id}
+            personName={`${parent.firstName} ${parent.lastName ?? ""}`.trim()}
             loginIdentifiers={parent.loginIdentifiers}
             resetAllowanceUsed={parent.resetAllowanceUsed}
+            adminVisiblePassword={parent.adminVisiblePassword}
           />
         </div>
       </section>

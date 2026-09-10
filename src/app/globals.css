@@ -71,3 +71,16 @@ body {
 .font-mono {
   font-variant-numeric: tabular-nums;
 }
+
+/* Chrome/Edge force a light-blue background on autofilled inputs that no
+   ordinary background-color rule can override -- this is the one reliable
+   fix (a huge inset box-shadow painted in the field's own intended fill,
+   plus a very long transition delay so Chrome's own repaint never gets a
+   chance to show through). Keeps every input's real background color
+   whether the browser or a password manager filled it or not. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
