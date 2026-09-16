@@ -1,0 +1,108 @@
+/*
+ * Design tokens for the Academic Coordinator portal, measured verbatim from
+ * brain/SIS ACAD co-ord/Academic Coordinator Portal.dc.html -- a separate
+ * design spec from sitewide globals.css and from every other rebuilt role's
+ * own tokens (different accent, different font -- Hanken Grotesk + IBM Plex
+ * Mono here, not Outfit/Plus Jakarta Sans).
+ *
+ * Scoped deliberately: every variable is --acc-* and only takes effect
+ * inside .academic-coordinator-scope, which AcademicCoordinatorShell applies
+ * once to its own outermost wrapper. This is a genuinely separate portal
+ * from /faculty (see AcademicCoordinatorShell's own header comment) -- an
+ * account that is both FACULTY and ACADEMIC_COORDINATOR uses /faculty for
+ * its own classes and this portal for stage-wide co-ordination duties.
+ */
+
+.academic-coordinator-scope {
+  --acc-bg: #ffffff;
+  --acc-surface: #ffffff;
+  --acc-navy: #12275c;
+  --acc-text: #0f172a;
+  --acc-body: #475569;
+  --acc-body-muted: #64748b;
+  --acc-tertiary: #94a3b8;
+  --acc-accent: #1d4ed8;
+  --acc-accent-tint: #eef3ff;
+  --acc-accent-border: #dbe4fb;
+  --acc-accent-hover-border: #93b4f5;
+  --acc-accent-row-ring: #a8c2f7;
+  --acc-border: #e6eaf2;
+  --acc-divider: #eef1f6;
+  --acc-divider-soft: #f3f5f9;
+  --acc-panel: #f3f6fb;
+  --acc-panel-2: #f7f9fd;
+  --acc-panel-3: #fbfcfe;
+  --acc-btn-border: #d8e0ee;
+  --acc-red: #b91c1c;
+  --acc-red-bg: #fdeaea;
+  --acc-green: #166534;
+  --acc-green-bg: #eef7f0;
+  --acc-amber: #9a5b04;
+  --acc-amber-bg: #fef4e7;
+
+  --acc-radius-card: 14px;
+  --acc-radius-input: 10px;
+  --acc-radius-pill: 99px;
+  --acc-radius-modal: 16px;
+
+  --acc-font-sans: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --acc-font-mono: var(--font-ibm-plex-mono-acc), ui-monospace, monospace;
+
+  font-family: var(--acc-font-sans);
+  color: var(--acc-text);
+  background: var(--acc-bg);
+}
+
+.academic-coordinator-scope * {
+  box-sizing: border-box;
+}
+.academic-coordinator-scope input,
+.academic-coordinator-scope select,
+.academic-coordinator-scope textarea,
+.academic-coordinator-scope button {
+  font-family: inherit;
+}
+.academic-coordinator-scope a {
+  color: var(--acc-accent);
+  text-decoration: none;
+}
+.academic-coordinator-scope a:hover {
+  color: var(--acc-navy);
+}
+
+.academic-coordinator-scope ::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+.academic-coordinator-scope ::-webkit-scrollbar-thumb {
+  background: #d5dce8;
+  border-radius: 9px;
+}
+
+/* KPI-card / panel hover -- exact match of the design's own
+   style-hover="transform:translateY(-1px);border-color:#93b4f5;
+   box-shadow:0 5px 14px rgba(29,78,216,.08)" on every card. */
+.acc-card-hover {
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.acc-card-hover:hover,
+.acc-card-hover:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--acc-accent-hover-border);
+  box-shadow: 0 5px 14px rgba(29, 78, 216, 0.08);
+}
+
+/* List-row hover -- exact match of the design's own
+   style-hover="transform:translateY(-1px);background:#fff;
+   box-shadow:0 0 0 1px #a8c2f7,0 4px 12px rgba(29,78,216,.07);
+   border-radius:10px" used on every row inside a card. */
+.acc-row-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, padding 0.15s ease;
+  border-radius: 10px;
+}
+.acc-row-hover:hover,
+.acc-row-hover:focus-visible {
+  transform: translateY(-1px);
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--acc-accent-row-ring), 0 4px 12px rgba(29, 78, 216, 0.07);
+}

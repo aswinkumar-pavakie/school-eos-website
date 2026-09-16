@@ -158,6 +158,8 @@ export async function assignCoordinatorAction(
   const scopeKind = formData.get("scopeKind");
   const gradeIds = formData.getAll("gradeIds").filter((v): v is string => typeof v === "string" && v !== "");
   const scopeStages = formData.getAll("scopeStages").filter((v): v is string => typeof v === "string" && v !== "");
+  const coordinatorEmail = formData.get("coordinatorEmail");
+  const coordinatorPassword = formData.get("coordinatorPassword");
 
   const targets: { scopeType: string; scopeId?: string; scopeStage?: string }[] =
     scopeKind === "STAGE"
@@ -171,6 +173,29 @@ export async function assignCoordinatorAction(
     return { error: "Missing role or staff selection." };
   }
 
+  // Academic Coordinator only: Admin can optionally give this assignment its
+  // own separate login (own email + own password), distinct from the
+  // faculty member's own faculty login -- see persons.service.ts's
+  // createAcademicCoordinatorLogin. Every role_assignment below is then
+  // granted against that NEW coordinator-only person, never against the
+  // faculty's own personId. Leaving both fields blank keeps today's exact
+  // behaviour (the role_assignment goes directly on the faculty's own
+  // account, no separate login).
+  let assignPersonId = personId;
+  if (roleCode === "ACADEMIC_COORDINATOR" && typeof coordinatorEmail === "string" && coordinatorEmail.trim() !== "") {
+    if (typeof coordinatorPassword !== "string" || coordinatorPassword.length < 8) {
+      return { error: "Coordinator login password must be at least 8 characters." };
+    }
+    const loginRes = await apiFetch(`/persons/${personId}/academic-coordinator-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifierType: "EMAIL", identifierValue: coordinatorEmail.trim(), password: coordinatorPassword }),
+    });
+    if (!loginRes.ok) return { error: await readError(loginRes) };
+    const loginBody = (await loginRes.json()) as { data: { coordinatorPersonId: string } };
+    assignPersonId = loginBody.data.coordinatorPersonId;
+  }
+
   const existingRes = await apiFetch(`/role-assignments?roleCode=${roleCode}&status=ACTIVE`);
   const existing: { id: string; personId: string; scopeType: string; scopeId: string | null; scopeStage: string | null }[] =
     existingRes.ok ? (await existingRes.json()).data : [];
@@ -182,7 +207,7 @@ export async function assignCoordinatorAction(
         (target.scopeType === "GRADE" ? a.scopeId === target.scopeId : a.scopeStage === target.scopeStage),
     );
 
-    if (holder && holder.personId === personId) {
+    if (holder && holder.personId === assignPersonId) {
       // Already correctly assigned to this exact person -- nothing to do.
       continue;
     }
@@ -196,7 +221,7 @@ export async function assignCoordinatorAction(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        personId,
+        personId: assignPersonId,
         roleCode,
         academicYearId,
         ...target,

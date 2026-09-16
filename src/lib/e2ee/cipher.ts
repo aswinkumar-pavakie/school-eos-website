@@ -1,0 +1,85 @@
+// Application-message encryption/decryption -- the steady-state path used
+// for every message after a conversation's group already exists. Identical
+// to the mobile app's own src/services/e2ee/cipher.ts. Per-message forward
+// secrecy comes from MLS's own secret-tree ratchet advancing on every single
+// call here.
+
+import { createApplicationMessage, decodeMlsMessage, emptyPskIndex, encodeMlsMessage, processMessage } from "ts-mls";
+import { fromBase64, toBase64 } from "./codec";
+import { withConversationLock } from "./conversationLock";
+import { getMlsCiphersuiteImpl, MLS_ENCRYPTION_VERSION } from "./setup";
+import { getReceivedPlaintext, loadGroupState, saveGroupState, saveReceivedPlaintext } from "./storage";
+
+export class NoGroupStateError extends Error {
+  constructor(conversationId: string) {
+    super(`No local MLS group state for conversation ${conversationId} -- join it (see group.ts) before sending or receiving.`);
+    this.name = "NoGroupStateError";
+  }
+}
+
+export interface EncryptedMessage {
+  ciphertext: string; // base64, opaque to the server
+  encryptionVersion: string;
+}
+
+/** Encrypts one outgoing message. Advances and durably persists this
+ * conversation's group state BEFORE returning -- a send must never be
+ * transmitted from state that could not be saved. */
+export async function encryptMessage(conversationId: string, plaintext: string): Promise<EncryptedMessage> {
+  return withConversationLock(conversationId, async () => {
+    const state = await loadGroupState(conversationId);
+    if (!state) throw new NoGroupStateError(conversationId);
+
+    const impl = await getMlsCiphersuiteImpl();
+    const result = await createApplicationMessage(state, new TextEncoder().encode(plaintext), impl);
+
+    await saveGroupState(conversationId, result.newState);
+
+    const wire = encodeMlsMessage({ privateMessage: result.privateMessage, wireformat: "mls_private_message", version: "mls10" });
+    return { ciphertext: toBase64(wire), encryptionVersion: MLS_ENCRYPTION_VERSION };
+  });
+}
+
+async function decryptMessageRaw(conversationId: string, ciphertextBase64: string): Promise<string> {
+  const state = await loadGroupState(conversationId);
+  if (!state) throw new NoGroupStateError(conversationId);
+
+  const impl = await getMlsCiphersuiteImpl();
+  const decoded = decodeMlsMessage(fromBase64(ciphertextBase64), 0);
+  if (!decoded || decoded[0].wireformat !== "mls_private_message") {
+    throw new Error("Expected an MLS application message on the wire.");
+  }
+
+  const result = await processMessage(decoded[0], state, emptyPskIndex, () => "accept", impl);
+
+  await saveGroupState(conversationId, result.newState);
+
+  if (result.kind !== "applicationMessage") {
+    throw new Error(
+      `Expected an application message, got MLS state-change kind "${result.kind}" -- this V1 build has no post-creation control-message traffic, so this indicates a protocol mismatch, not a normal case.`,
+    );
+  }
+  return new TextDecoder().decode(result.message);
+}
+
+/** Decrypts one incoming message. Exported as-is for tests; real app code
+ * should call decryptMessageCached below instead. */
+export async function decryptMessage(conversationId: string, ciphertextBase64: string): Promise<string> {
+  return withConversationLock(conversationId, () => decryptMessageRaw(conversationId, ciphertextBase64));
+}
+
+/** The real app's entry point for decrypting a RECEIVED message -- checking
+ * the already-decrypted-plaintext cache and the actual decrypt both happen
+ * inside the SAME lock acquisition, atomically, so a second caller racing
+ * behind the first uses the cached result instead of a doomed second decrypt
+ * attempt (MLS only allows decrypting a given message once, ever). */
+export async function decryptMessageCached(conversationId: string, messageId: string, ciphertextBase64: string): Promise<string> {
+  return withConversationLock(conversationId, async () => {
+    const cached = await getReceivedPlaintext(conversationId, messageId);
+    if (cached !== null) return cached;
+
+    const plaintext = await decryptMessageRaw(conversationId, ciphertextBase64);
+    await saveReceivedPlaintext(conversationId, messageId, plaintext);
+    return plaintext;
+  });
+}

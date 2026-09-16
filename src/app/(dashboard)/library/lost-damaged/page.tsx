@@ -1,165 +1,136 @@
+// Lost & damaged books -- pixel-rebuilt from the design's own screen. Real
+// backend's lost-damaged.controller.ts is GET-only (list/get) -- there is no
+// settle/collect/replace endpoint on it at all. What IS real: each report
+// carries the real Fine it produced (fineId/fineStatus/fineAmountPaise), and
+// that Fine has the exact same real collect workflow already wired on
+// Overdue & fines (sendFineToFinanceAction/waiveFineAction) -- "Collect"
+// here reuses it directly rather than inventing a second, fake collection
+// path. "Replacement copy" genuinely has no real backend action anywhere
+// (confirmed) -- kept visible, wired to an honest explainer.
+
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { StatusPill } from "@/components/dashboard/StatusPill";
-import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { AuthExpiredError } from "@/lib/api";
 import { listLostDamagedReports } from "@/lib/library-api";
-import { formatDate, formatMoneySummary, statusLabel, statusTone } from "@/lib/format";
-
-const TYPE_OPTIONS = ["LOST", "DAMAGED"];
-const STATUS_OPTIONS = ["LOST", "DAMAGED", "UNDER_REPAIR", "RETIRED", "AVAILABLE"];
+import { formatDate, formatMoneySummary } from "@/lib/format";
+import { AutoSubmitSearchInput } from "@/components/dashboard/AutoSubmitFilter";
+import { EmptyRow, Pill, TableShell, Td, Th } from "@/components/library-ui/primitives";
+import { LostDamagedRowAction } from "./LostDamagedRowAction";
 
 export default async function LibraryLostDamagedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; type?: string; status?: string; page?: string }>;
+  searchParams: Promise<{ kind?: string; tab?: string; search?: string }>;
 }) {
   const params = await searchParams;
-  const page = Number(params.page ?? "1") || 1;
+  const kind = params.kind === "damaged" ? "DAMAGED" : "LOST";
+  const settledTab = params.tab === "settled";
 
   try {
-    const { data: reports, meta } = await listLostDamagedReports({
-      search: params.search || undefined,
-      type: params.type || undefined,
-      status: params.status || undefined,
-      page,
-      limit: 50,
-    });
-    const total = meta?.total ?? reports.length;
-    const limit = meta?.limit ?? 50;
-    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const { data: reports } = await listLostDamagedReports({ type: kind, search: params.search || undefined, limit: 200 });
+    const isSettled = (status: string | null) => status === "PAID" || status === "WAIVED" || status === "CANCELLED";
+    const view = reports.filter((r) => (settledTab ? isSettled(r.fineStatus) : !isSettled(r.fineStatus)));
 
-    function hrefWith(overrides: Record<string, string | undefined>) {
+    function href(overrides: { kind?: string; tab?: string }) {
       const next = new URLSearchParams();
+      next.set("kind", overrides.kind ?? params.kind ?? "lost");
+      next.set("tab", overrides.tab ?? params.tab ?? "unsettled");
       if (params.search) next.set("search", params.search);
-      if (params.type) next.set("type", params.type);
-      if (params.status) next.set("status", params.status);
-      next.set("page", String(page));
-      for (const [key, value] of Object.entries(overrides)) {
-        if (value === undefined) next.delete(key);
-        else next.set(key, value);
-      }
       return `/library/lost-damaged?${next.toString()}`;
     }
 
     return (
-      <div className="mx-auto max-w-[1200px]">
-        <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Lost &amp; Damaged</h1>
-          <p className="mt-1 text-sm text-text-muted">
-            {total} incidents on record. Reported through a copy&apos;s own Mark lost / Mark damaged action -- this is
-            the history, not a second place to make that change.
-          </p>
-        </div>
-
-        <form action="/library/lost-damaged" className="mt-6 flex flex-wrap items-center gap-2.5">
-          <AutoSubmitSearchInput
-            type="search"
-            name="search"
-            defaultValue={params.search ?? ""}
-            placeholder="Search by book title or member…"
-            className="h-[42px] w-full max-w-xs rounded-[11px] border border-border bg-field px-3.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
-          />
-          <AutoSubmitSelect name="type" defaultValue={params.type ?? ""} className="h-[42px] rounded-[11px] border border-border bg-field px-3.5 text-sm text-text outline-none focus:border-primary focus:bg-surface">
-            <option value="">Type: All</option>
-            {TYPE_OPTIONS.map((t) => <option key={t} value={t}>{t}</option>)}
-          </AutoSubmitSelect>
-          <AutoSubmitSelect name="status" defaultValue={params.status ?? ""} className="h-[42px] rounded-[11px] border border-border bg-field px-3.5 text-sm text-text outline-none focus:border-primary focus:bg-surface">
-            <option value="">Current status: All</option>
-            {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
-          </AutoSubmitSelect>
-          <button type="submit" className="h-[42px] rounded-[11px] border border-border px-4 text-sm font-semibold text-text hover:bg-bg">
-            Filter
-          </button>
-          <Link href="/library/lost-damaged" className="text-xs font-bold text-text-muted hover:text-text">
-            Clear
-          </Link>
-        </form>
-
-        <div className="mt-6 overflow-x-auto rounded-[16px] border border-border bg-surface">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-                <th className="px-4 py-3">Book</th>
-                <th className="px-4 py-3">Copy</th>
-                <th className="px-4 py-3">Member</th>
-                <th className="px-4 py-3">Type</th>
-                <th className="px-4 py-3">Reported</th>
-                <th className="px-4 py-3">Reported by</th>
-                <th className="px-4 py-3">Current status</th>
-                <th className="px-4 py-3">Fine</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {reports.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-text-muted">No lost/damaged incidents match this filter.</td>
-                </tr>
-              )}
-              {reports.map((r) => (
-                <tr key={r.id}>
-                  <td className="px-4 py-3 font-semibold text-text">
-                    <Link href={`/library/books/${r.bookId}`} className="text-primary hover:underline">{r.bookTitle}</Link>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-muted">{r.copyCode}</td>
-                  <td className="px-4 py-3 text-text-muted">
-                    {r.memberId ? (
-                      <Link href={`/library/members/${r.memberId}`} className="text-primary hover:underline">{r.memberName}</Link>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusPill tone={r.type === "LOST" ? "critical" : "pending"} label={r.type} />
-                  </td>
-                  <td className="px-4 py-3 text-text-muted">
-                    {formatDate(r.reportedAt)}
-                    {(r.reason || r.notes) && (
-                      <p className="mt-0.5 max-w-[220px] truncate text-xs text-text-muted" title={[r.reason, r.notes].filter(Boolean).join(" — ")}>
-                        {[r.reason, r.notes].filter(Boolean).join(" — ")}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-text-muted">{r.reportedByName}</td>
-                  <td className="px-4 py-3">
-                    <StatusPill tone={statusTone(r.currentCopyStatus)} label={statusLabel(r.currentCopyStatus)} />
-                  </td>
-                  <td className="px-4 py-3 text-text-muted">
-                    {r.fineId ? (
-                      <>
-                        {formatMoneySummary(r.fineAmountPaise ?? 0)}
-                        <p className="text-xs">
-                          <StatusPill tone={statusTone(r.fineStatus ?? "PENDING")} label={statusLabel(r.fineStatus ?? "PENDING")} />
-                        </p>
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between text-sm text-text-muted">
-            <span>Page {page} of {totalPages}</span>
-            <div className="flex gap-2">
-              {page > 1 && <Link href={hrefWith({ page: String(page - 1) })} className="font-semibold text-primary">Previous</Link>}
-              {page < totalPages && <Link href={hrefWith({ page: String(page + 1) })} className="font-semibold text-primary">Next</Link>}
-            </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <h1 style={{ margin: 0, font: "700 38px/1.15 var(--lib-font-sans)" }}>Lost & damaged books</h1>
+          <div style={{ font: "400 16px/1.5 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>
+            Copies written off the shelf — what was charged, what was recovered and what is still open.
           </div>
-        )}
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, padding: 4, borderRadius: 11, background: "var(--lib-panel)" }}>
+            <PillTab active={kind === "LOST"} href={href({ kind: "lost" })}>
+              Lost
+            </PillTab>
+            <PillTab active={kind === "DAMAGED"} href={href({ kind: "damaged" })}>
+              Damaged
+            </PillTab>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, padding: 4, borderRadius: 11, background: "var(--lib-panel)" }}>
+            <PillTab active={!settledTab} href={href({ tab: "unsettled" })}>
+              Unsettled
+            </PillTab>
+            <PillTab active={settledTab} href={href({ tab: "settled" })}>
+              Settled
+            </PillTab>
+          </div>
+          <form action="/library/lost-damaged" style={{ flex: 1, minWidth: 240, maxWidth: 420, display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", border: "1px solid var(--lib-border)", borderRadius: 11 }}>
+            <input type="hidden" name="kind" value={params.kind ?? "lost"} />
+            <input type="hidden" name="tab" value={params.tab ?? "unsettled"} />
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+              <circle cx="9" cy="9" r="5.6" />
+              <path d="M13.2 13.2L17 17" />
+            </svg>
+            <AutoSubmitSearchInput
+              type="search"
+              name="search"
+              defaultValue={params.search ?? ""}
+              placeholder="Search by title, accession or member"
+              style={{ flex: 1, border: 0, outline: "none", font: "400 15px/1.2 var(--lib-font-sans)", color: "var(--lib-ink)", background: "transparent" }}
+            />
+          </form>
+        </div>
+
+        <TableShell>
+          <thead>
+            <tr style={{ background: "var(--lib-panel)" }}>
+              <Th>Accession</Th>
+              <Th>Title</Th>
+              <Th>Member</Th>
+              <Th>Declared</Th>
+              <Th>Cause</Th>
+              <Th>Charge</Th>
+              <th style={{ padding: "14px 18px" }} />
+            </tr>
+          </thead>
+          <tbody>
+            {view.length === 0 && <EmptyRow colSpan={7} />}
+            {view.map((r) => (
+              <tr key={r.id} className="lib-row-hover">
+                <Td mono>{r.copyCode}</Td>
+                <Td>{r.bookTitle}</Td>
+                <Td>{r.memberName ?? "—"}</Td>
+                <Td>{formatDate(r.reportedAt)}</Td>
+                <Td>
+                  <Pill label={r.type === "LOST" ? "Lost" : "Damaged"} tone="red" />
+                </Td>
+                <Td mono style={{ fontWeight: 500, color: "var(--lib-ink)" }}>
+                  {r.fineAmountPaise !== null ? formatMoneySummary(r.fineAmountPaise) : "—"}
+                </Td>
+                <Td align="right">
+                  {settledTab ? <Pill label="Settled" tone="green" /> : <LostDamagedRowAction report={r} />}
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </TableShell>
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return (
-      <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
-        <p className="text-[15px] font-extrabold leading-[20px] text-text">Couldn&apos;t load Lost &amp; Damaged</p>
-        <p className="mt-1.5 text-sm text-text-muted">Nothing was changed — try refreshing the page.</p>
+      <div style={{ border: "1px solid var(--lib-border)", borderRadius: "var(--lib-radius-card)", background: "var(--lib-white)", padding: 32, textAlign: "center" }}>
+        <p style={{ font: "600 15px/1.3 var(--lib-font-sans)" }}>Couldn&apos;t load Lost &amp; damaged</p>
+        <p style={{ marginTop: 6, font: "400 14px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>Nothing was changed — try refreshing the page.</p>
       </div>
     );
   }
+}
+
+function PillTab({ active, href, children }: { active: boolean; href: string; children: React.ReactNode }) {
+  return (
+    <a href={href} style={{ padding: "11px 26px", borderRadius: 8, textDecoration: "none", font: "500 15px/1.2 var(--lib-font-sans)", background: active ? "var(--lib-white)" : "transparent", color: active ? "var(--lib-ink)" : "var(--lib-body-muted)" }}>
+      {children}
+    </a>
+  );
 }
