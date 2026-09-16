@@ -656,3 +656,61 @@ export async function listTransactionHistory(
   const res = await apiFetch(`/library/reports/transaction-history?${qs(filter)}`);
   return parseOrThrow(res);
 }
+
+// ---------- eBooks (real, own table -- a real external link per row, no file
+// ever stored by this app; opening one just navigates to resourceUrl,
+// exactly how a real school library's own eResources list works) ----------
+
+export interface Ebook {
+  id: string;
+  title: string;
+  author: string | null;
+  publisher: string | null;
+  edition: string | null;
+  language: string | null;
+  description: string | null;
+  categoryId: string | null;
+  categoryName: string | null;
+  coverImageUrl: string | null;
+  resourceUrl: string;
+  status: "ACTIVE" | "WITHDRAWN";
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function listEbooks(
+  filter: { search?: string; categoryId?: string; status?: string; page?: number; limit?: number } = {},
+): Promise<ApiEnvelope<Ebook[]>> {
+  const res = await apiFetch(`/library/ebooks?${qs(filter)}`);
+  return parseOrThrow(res);
+}
+
+export async function createEbook(input: {
+  title: string;
+  resourceUrl: string;
+  author?: string;
+  publisher?: string;
+  edition?: string;
+  categoryId?: string;
+  language?: string;
+  description?: string;
+  coverImageUrl?: string;
+}): Promise<Ebook> {
+  const res = await apiFetch("/library/ebooks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  return (await parseOrThrow<ApiEnvelope<Ebook>>(res)).data;
+}
+
+export async function withdrawEbook(id: string): Promise<Ebook> {
+  const res = await apiFetch(`/library/ebooks/${id}/withdraw`, { method: "POST" });
+  return (await parseOrThrow<ApiEnvelope<Ebook>>(res)).data;
+}
+
+export async function reactivateEbook(id: string): Promise<Ebook> {
+  const res = await apiFetch(`/library/ebooks/${id}/reactivate`, { method: "POST" });
+  return (await parseOrThrow<ApiEnvelope<Ebook>>(res)).data;
+}

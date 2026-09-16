@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-text: #101828;
+    --color-accent: #2a52d8;
+    --color-accent-100: #eef2fe;
+    --color-accent-200: #dbe4fd;
+    --color-accent-300: #c3d0fb;
+    --color-accent-600: #1d3da6;
+    --color-accent-700: #2447c4;
+    --color-accent-900: #10233f;
+    --color-divider: #e6e9ee;
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-heading-weight: 700;
+    --radius-sm: 9px;
+    --radius-md: 14px;
+  }
+  body { margin: 0; background: #fff; color: #101828; text-wrap: pretty; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: #2447c4; text-decoration: none; }
+  a:hover { color: #10233f; text-decoration: underline; }
+  .card { background: #fff; border-radius: 14px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px;
+    border: 1px solid transparent; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 700;
+    line-height: 1; cursor: pointer; white-space: nowrap; background: #fff; color: #101828; }
+  .btn-primary { background: #2a52d8; color: #fff; }
+  .btn-primary:hover { background: #1d3da6; }
+  .btn-secondary { background: #fff; color: #101828; border-color: #d9dee6; }
+  .btn-secondary:hover { background: #f4f6fa; }
+  .btn-ghost { background: transparent; color: #2447c4; }
+  .btn-ghost:hover { background: #eef2fe; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .input { width: 100%; height: 36px; padding: 0 10px; border: 1px solid #e6e9ee; border-radius: 9px;
+    font-family: inherit; font-size: 13px; color: #101828; background: #fff; outline: none; }
+  .input:focus { border-color: #2a52d8; }
+  table.table { border-collapse: collapse; }
+  table.table th { text-align: left; color: #6b7580; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; background: #f7f8fa; border-bottom: 1px solid #e6e9ee; }
+  table.table td { border-bottom: 1px solid #eef0f4; }
+  table.table tbody tr:hover { background: #f7f8fa; }
+  ::selection { background: #dbe4fd; }
+  .lift { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; will-change: transform; }
+  .lift:hover, .lift:focus-visible { transform: translateY(-4px); border-color: #2a52d8 !important;
+    box-shadow: 0 12px 26px rgba(42,82,216,.16); }
+  .lift:active { transform: translateY(-2px); }
+  table.table tbody tr { transition: transform .15s ease, box-shadow .15s ease; }
+  table.table tbody tr:hover { background: #fff; transform: translateY(-4px);
+    box-shadow: 0 12px 26px rgba(42,82,216,.16); outline: 1px solid #2a52d8; outline-offset: -1px; position: relative; z-index: 1; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #dde2e8; border-radius: 8px; }
+</style>
+</helmet>
+
+<div style="display: flex; min-height: 100vh; background: #fff; color: #101828; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;">
+
+  <aside style="width: 272px; flex: 0 0 272px; border-right: 1px solid #e6e9ee; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; background: #fff;">
+    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 18px 20px;">
+      <span style="width: 44px; height: 44px; flex: 0 0 44px; border-radius: 13px; background: #10233f; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; letter-spacing: 0.01em;">PP</span>
+      <span style="min-width: 0; text-align: left;">
+        <span style="display: block; font-weight: 800; font-size: 17px; letter-spacing: -0.02em; line-height: 1.15; white-space: nowrap; color: #101828;">Pavakie</span>
+        <span style="display: block; font-size: 12.5px; color: #6b7580; margin-top: 1px;">Public School · Hostels</span>
+      </span>
+    </div>
+
+    <nav style="flex: 1; overflow-y: auto; padding: 12px 10px 20px; display: flex; flex-direction: column; gap: 16px;">
+      <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; padding: 6px 12px 8px;">{{ g.label }}</div>
+          <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="4">
+            <button type="button" onClick="{{ n.go }}" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; font-size: 15px; font-weight: 500; background: {{ n.bg }}; color: {{ n.fg }};" style-hover="background: #f4f6fa;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ n.icon }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 18px;"><path d="{{ n.d }}"></path></svg>
+              <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ n.label }}</span>
+              <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size: 13px; font-weight: 500; color: #9aa4b0; font-variant-numeric: tabular-nums;">{{ n.badge }}</span>
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div style="border-top: 1px solid #e6e9ee; padding: 14px 16px; display: flex; align-items: center; gap: 11px;">
+      <span style="width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; background: #10233f; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px;">RK</span>
+      <span style="min-width: 0; flex: 1;">
+        <span style="display: block; font-size: 14px; font-weight: 700; letter-spacing: -0.01em;">R. Krishnan</span>
+        <span style="display: block; font-size: 12px; color: #6b7580; margin-top: 1px;">Chief warden · Hostels</span>
+      </span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9aa4b0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 17px;"><path d="m9 18 6-6-6-6"></path></svg>
+    </div>
+  </aside>
+
+  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #fff;">
+    <header style="min-height: 70px; border-bottom: 1px solid #e6e9ee; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 32px; position: sticky; top: 0; background: #fff; z-index: 5;">
+      <div style="min-width: 0;">
+        <h1 style="margin: 0; font-weight: 800; font-size: 27px; letter-spacing: -0.03em; line-height: 1.15;">{{ viewTitle }}</h1>
+        
+      </div>
+      <div style="flex: 1;"></div>
+      <div role="group" aria-label="Hostel wing" style="display: flex; align-items: center; gap: 4px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 3px;">
+        <sc-for list="{{ wingChips }}" as="w" hint-placeholder-count="2">
+          <button type="button" onClick="{{ w.go }}" style="all: unset; cursor: pointer; padding: 6px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 700; white-space: nowrap; background: {{ w.bg }}; color: {{ w.fg }};" style-hover="background: #eef2fe;">{{ w.label }}</button>
+        </sc-for>
+      </div>
+      <label style="display: flex; align-items: center; gap: 8px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 12px; height: 40px; flex: 1 1 200px; min-width: 0; max-width: 340px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 16px;"><path d="m21 21-4.3-4.3M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"></path></svg>
+        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search by name, admission number or room" aria-label="Search" style="all: unset; flex: 1; min-width: 0; font-family: inherit; font-size: 13px; color: #101828;">
+      </label>
+      <button type="button" onClick="{{ goApprovals }}" aria-label="Students out of the hostel now" style="all: unset; cursor: pointer; position: relative; width: 40px; height: 40px; flex: 0 0 40px; border: 1px solid #e6e9ee; border-radius: 9px; display: grid; place-items: center;" style-hover="background: #f4f6fa;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+        <span style="position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; border-radius: 20px; background: #2a52d8; color: #fff; font-size: 10.5px; font-weight: 700; display: grid; place-items: center; padding: 0 4px;">{{ pendingCount }}</span>
+      </button>
+    </header>
+
+    <sc-if value="{{ flash }}" hint-placeholder-val="{{ false }}">
+      <div style="margin: 18px 32px -6px; border: 1px solid #c3d0fb; background: #eef2fe; border-radius: 9px; padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 16px;"><path d="M20 6 9 17l-5-5"></path></svg>
+        <span style="flex: 1; color: #10233f;">{{ flash }}</span>
+        <button type="button" onClick="{{ clearFlash }}" aria-label="Dismiss" style="all: unset; cursor: pointer; color: #2447c4; font-size: 17px; line-height: 1; padding: 0 2px;">×</button>
+      </div>
+    </sc-if>
+
+    <div style="padding: 30px 32px 60px; display: flex; flex-direction: column; gap: 24px;">
+
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+
+          <div style="display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 300px;">
+              <h2 style="margin: 0; font-size: 38px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">{{ greeting }}</h2>
+              <p style="margin: 12px 0 0; font-size: 15px; color: #6b7580;">{{ dashLine }}</p>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button type="button" onClick="{{ goRecordExit }}" style="all: unset; cursor: pointer; background: #fff; color: #101828; border: 1px solid #d9dee6; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 700;" style-hover="background: #f4f6fa;">Record exit</button>
+              <button type="button" onClick="{{ goApprovals }}" style="all: unset; cursor: pointer; background: #2a52d8; color: #fff; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 700;" style-hover="background: #1d3da6;">Open movement log</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px;">
+            <sc-for list="{{ dashStats }}" as="k" hint-placeholder-count="4">
+              <div class="lift" role="button" tabindex="0" onClick="{{ k.go }}" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 14px; background: #fff; cursor: pointer;" style-hover="border-color: #c3d0fb;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <span style="flex: 1; font-size: 15px; font-weight: 700; color: #101828;">{{ k.label }}</span>
+                  <span style="width: 34px; height: 34px; flex: 0 0 34px; border-radius: 9px; background: #eef2fe; display: grid; place-items: center;">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="{{ k.d }}"></path></svg>
+                  </span>
+                </div>
+                <div style="font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;">{{ k.value }}</div>
+                <div style="font-size: 13.5px; color: #6b7580;"><b style="color: #2a52d8;">{{ k.deltaStrong }}</b> {{ k.deltaText }}</div>
+                <div style="height: 6px; border-radius: 99px; background: #edf0f4; overflow: hidden;">
+                  <div style="{{ k.barStyle }}"></div>
+                </div>
+                <div style="font-size: 12.5px; color: #9aa4b0;">{{ k.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start;">
+
+            <section class="lift" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 22px 24px; background: #fff;">
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px;">
+                <h2 style="margin: 0; flex: 1; font-size: 22px; font-weight: 800; letter-spacing: -0.02em;">Students out of the hostel</h2>
+                <span style="font-size: 12.5px; font-weight: 700; color: #2447c4; background: #eef2fe; border-radius: 99px; padding: 6px 12px; white-space: nowrap;">{{ pendingCount }} out now</span>
+              </div>
+              <sc-for list="{{ outNow }}" as="r" hint-placeholder-count="5">
+                <div style="display: flex; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid #eef0f4;">
+                  <span style="flex: 1; min-width: 0;">
+                    <span style="display: block; font-size: 15px; font-weight: 700;">{{ r.name }}</span>
+                    <span style="display: block; font-size: 13px; color: #8b95a1; margin-top: 3px;">{{ r.outLine }}</span>
+                  </span>
+                  <button type="button" onClick="{{ r.recordReturn }}" style="all: unset; cursor: pointer; flex: 0 0 auto; font-size: 12.5px; font-weight: 700; color: #2a52d8; background: #eef2fe; border-radius: 8px; padding: 8px 13px; white-space: nowrap;" style-hover="background: #dbe4fd;">Record return</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ queueEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 28px 0 8px; font-size: 13px; color: #6b7580;">Everyone is inside the hostel right now.</div>
+              </sc-if>
+              <button type="button" onClick="{{ goApprovals }}" style="all: unset; cursor: pointer; margin-top: 16px; font-size: 13.5px; font-weight: 700; color: #2a52d8;" style-hover="color: #1d3da6;">Open movement log →</button>
+            </section>
+
+            <section class="lift" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 22px 24px; background: #fff;">
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px;">
+                <h2 style="margin: 0; flex: 1; font-size: 22px; font-weight: 800; letter-spacing: -0.02em;">Needs attention</h2>
+                <span style="font-size: 12.5px; font-weight: 700; color: #2447c4; background: #eef2fe; border-radius: 99px; padding: 6px 12px; white-space: nowrap;">{{ flagCount }}</span>
+              </div>
+              <sc-for list="{{ attention }}" as="f" hint-placeholder-count="5">
+                <div role="button" tabindex="0" onClick="{{ f.go }}" style="display: flex; gap: 14px; padding: 15px 0; border-bottom: 1px solid #eef0f4; cursor: pointer;">
+                  <span style="flex: 0 0 8px; width: 8px; height: 8px; border-radius: 99px; background: #2a52d8; margin-top: 7px;"></span>
+                  <span style="flex: 1; min-width: 0;">
+                    <span style="display: block; font-size: 15px; font-weight: 700;">{{ f.title }}</span>
+                    <span style="display: block; font-size: 13px; color: #8b95a1; margin-top: 3px;">{{ f.note }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </section>
+
+            <section class="lift" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 22px 24px; background: #fff;">
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px;">
+                <h2 style="margin: 0; flex: 1; font-size: 22px; font-weight: 800; letter-spacing: -0.02em;">Gate log · today</h2>
+                <button type="button" onClick="{{ goGate }}" style="all: unset; cursor: pointer; font-size: 12.5px; font-weight: 700; color: #2a52d8;" style-hover="color: #1d3da6;">Register</button>
+              </div>
+              <sc-for list="{{ movements }}" as="m" hint-placeholder-count="6">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #eef0f4;">
+                  <span style="flex: 0 0 46px; font-family: ui-monospace, monospace; font-size: 13px; font-weight: 600; color: #2a52d8;">{{ m.time }}</span>
+                  <span style="flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.4;">{{ m.text }}</span>
+                  <span style="flex: 0 0 auto; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-radius: 7px; padding: 4px 8px; background: {{ m.bg }}; color: {{ m.fg }};">{{ m.kind }}</span>
+                </div>
+              </sc-for>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isApprovals }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <sc-for list="{{ approvalTabs }}" as="t" hint-placeholder-count="6">
+              <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; padding: 7px 13px; border-radius: 20px; white-space: nowrap; font-size: 12.5px; font-weight: 600; border: 1px solid {{ t.bd }}; background: {{ t.bg }}; color: {{ t.fg }};" style-hover="border-color: #c3d0fb;">{{ t.label }}</button>
+            </sc-for>
+            <span style="width: 1px; height: 22px; background: #e6e9ee; margin: 0 6px;"></span>
+            <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Block
+              <select value="{{ blockValue }}" onChange="{{ onBlockChange }}" style="height: 34px; min-width: 160px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #2447c4; background: #fff; text-transform: none; letter-spacing: 0;">
+                <sc-for list="{{ blockOptions }}" as="b" hint-placeholder-count="5">
+                  <option value="{{ b.value }}">{{ b.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <div style="flex: 1;"></div>
+            <button type="button" onClick="{{ toggleExit }}" style="all: unset; cursor: pointer; height: 34px; padding: 0 15px; border-radius: 9px; background: #2a52d8; color: #fff; font-size: 12.5px; font-weight: 700; white-space: nowrap;" style-hover="background: #1d3da6;">{{ exitButtonLabel }}</button>
+          </div>
+
+          <sc-if value="{{ exitOpen }}" hint-placeholder-val="{{ false }}">
+            <section class="card" style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 18px;">
+              <h2 style="margin: 0 0 4px; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">Record an exit</h2>
+              <p style="margin: 0 0 14px; font-size: 12.5px; color: #6b7580;">Fill this in while the parent is on the line. The gate copy and the SMS to the parent both print from this entry.</p>
+              <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Student
+                  <input class="input" value="{{ exitForm.name }}" onChange="{{ setExitName }}" placeholder="Aarav Menon" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Room
+                  <input class="input" value="{{ exitForm.room }}" onChange="{{ setExitRoom }}" placeholder="A-212" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Purpose
+                  <input class="input" value="{{ exitForm.purpose }}" onChange="{{ setExitPurpose }}" placeholder="Home leave" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Parent who called
+                  <input class="input" value="{{ exitForm.caller }}" onChange="{{ setExitCaller }}" placeholder="Father · S. Menon" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Parent phone
+                  <input class="input" value="{{ exitForm.phone }}" onChange="{{ setExitPhone }}" placeholder="98450 22104" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Call taken at
+                  <input class="input" value="{{ exitForm.callAt }}" onChange="{{ setExitCallAt }}" placeholder="18:40" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Leaving at
+                  <input class="input" value="{{ exitForm.outAt }}" onChange="{{ setExitOutAt }}" placeholder="02 Aug 2026 · 19:30" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Expected return
+                  <input class="input" value="{{ exitForm.returnBy }}" onChange="{{ setExitReturnBy }}" placeholder="05 Aug 2026 · 18:00" style="height: 34px; font-size: 13px;">
+                </label>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px;">
+                <button type="button" class="btn btn-primary" onClick="{{ saveExit }}" style="height: 32px; font-size: 12.5px;">Save to log</button>
+                <button type="button" class="btn btn-ghost" onClick="{{ toggleExit }}" style="height: 32px; font-size: 12.5px;">Cancel</button>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 12px; color: #9aa4b0;">Recorded by R. Krishnan · chief warden</span>
+              </div>
+            </section>
+          </sc-if>
+
+          <sc-if value="{{ approvalsAsList }}" hint-placeholder-val="{{ true }}">
+            <section class="card" style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+              <div style="overflow-x: auto;">
+                <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                  <thead>
+                    <tr style="background: #f7f8fa; text-align: left;">
+                      <th scope="col" style="padding: 10px 14px; white-space: nowrap;">Purpose</th>
+                      <th scope="col" style="padding: 10px 14px; white-space: nowrap;">Student</th>
+                      <th scope="col" style="padding: 10px 14px; white-space: nowrap;">Room</th>
+                      
+                      <th scope="col" style="padding: 10px 14px; white-space: nowrap;">Left at</th>
+                      <th scope="col" style="padding: 10px 14px; white-space: nowrap;">Expected return</th>
+                      <th scope="col" style="padding: 10px 14px;">Parent call</th>
+                      <th scope="col" style="padding: 10px 14px; text-align: right; white-space: nowrap;">Gate action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ filteredQueue }}" as="r" hint-placeholder-count="6">
+                      <tr style="border-top: 1px solid #eef0f4;">
+                        <td style="padding: 10px 14px; white-space: nowrap;">
+                          <span style="display: block; font-weight: 600;">{{ r.type }}</span>
+                          <span style="display: block; font-size: 11.5px; color: #9aa4b0;">{{ r.id }}</span>
+                        </td>
+                        <td style="padding: 10px 14px; white-space: nowrap; font-weight: 600;">{{ r.name }}</td>
+                        <td style="padding: 10px 14px; white-space: nowrap; color: #6b7580;">{{ r.room }}</td>
+                        
+                        <td style="padding: 10px 14px; white-space: nowrap; color: #6b7580;">{{ r.outWhen }}</td>
+                        <td style="padding: 10px 14px; white-space: nowrap; color: #6b7580;">{{ r.returnBy }}</td>
+                        <td style="padding: 10px 14px; min-width: 220px; line-height: 1.45;">{{ r.call }}</td>
+                        <td style="padding: 10px 14px; text-align: right; white-space: nowrap;">
+                          <span style="display: inline-flex; gap: 8px;">
+                            <button type="button" class="btn btn-primary" onClick="{{ r.recordReturn }}" style="height: 30px; font-size: 12px; padding: 0 12px;">Record return</button>
+                            <button type="button" class="btn btn-secondary" onClick="{{ r.editEntry }}" style="height: 30px; font-size: 12px; padding: 0 12px;">Amend</button>
+                          </span>
+                        </td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </sc-if>
+          <sc-if value="{{ filterEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="border: 1px dashed #dde2e8; border-radius: 14px; padding: 44px; text-align: center; font-size: 13px; color: #6b7580;">No students are out under this filter.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHostels }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Block
+              <select value="{{ blockValue }}" onChange="{{ onBlockChange }}" style="height: 34px; min-width: 160px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #2447c4; background: #fff; text-transform: none; letter-spacing: 0;">
+                <sc-for list="{{ blockOptions }}" as="b" hint-placeholder-count="5">
+                  <option value="{{ b.value }}">{{ b.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+            <sc-for list="{{ hostelStats }}" as="k" hint-placeholder-count="4">
+              <div class="card lift" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 14px 16px;">
+                <div style="font-size: 12px; font-weight: 600; color: #6b7580;">{{ k.label }}</div>
+                <div style="font-weight: 800; font-size: 26px; line-height: 1.1; margin-top: 6px; font-variant-numeric: tabular-nums;">{{ k.value }}</div>
+                
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ formOpen }}" hint-placeholder-val="{{ false }}">
+            <section class="card" style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 16px;">
+              <h2 style="margin: 0 0 12px; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">{{ formTitle }}</h2>
+              <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Block name
+                  <input class="input" value="{{ form.name }}" onChange="{{ setName }}" placeholder="E Block" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Code
+                  <input class="input" value="{{ form.code }}" onChange="{{ setCode }}" placeholder="BLK-E" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Type
+                  <input class="input" value="{{ form.type }}" onChange="{{ setType }}" placeholder="Boys / Girls / PG" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Wings
+                  <input class="input" value="{{ form.blockCount }}" onChange="{{ setBlocks }}" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Rooms
+                  <input class="input" value="{{ form.rooms }}" onChange="{{ setRooms }}" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Capacity (beds)
+                  <input class="input" value="{{ form.capacity }}" onChange="{{ setCapacity }}" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Warden in charge
+                  <input class="input" value="{{ form.warden }}" onChange="{{ setWarden }}" style="height: 34px; font-size: 13px;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">Warden contact
+                  <input class="input" value="{{ form.phone }}" onChange="{{ setPhone }}" placeholder="98450 00000" style="height: 34px; font-size: 13px;">
+                </label>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 14px;">
+                <button type="button" class="btn btn-primary" onClick="{{ saveHostel }}" style="height: 32px; font-size: 12.5px;">{{ saveLabel }}</button>
+                <button type="button" class="btn btn-ghost" onClick="{{ closeForm }}" style="height: 32px; font-size: 12.5px;">Cancel</button>
+              </div>
+            </section>
+          </sc-if>
+
+          <section class="card" style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #e6e9ee;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13M9 21v-5h6v5"></path></svg>
+              <h2 style="margin: 0; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">Block records</h2>
+              <div style="flex: 1;"></div>
+              
+              
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="table" style="font-size: 13px; margin: 0; width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th scope="col" style="text-align: left; padding: 10px 14px;">Block</th>
+                    
+                    <th scope="col" style="text-align: right; padding: 10px 14px;">Rooms</th>
+                    <th scope="col" style="text-align: right; padding: 10px 14px;">Capacity</th>
+                    <th scope="col" style="text-align: right; padding: 10px 14px;">Occupied</th>
+                    <th scope="col" style="text-align: right; padding: 10px 14px;">Vacant</th>
+                    <th scope="col" style="text-align: right; padding: 10px 22px 10px 14px; position: relative;">Occupancy</th>
+                    <th scope="col" style="text-align: left; white-space: nowrap; padding: 10px 24px; min-width: 190px; position: relative;">Warden in charge</th>
+                    
+                    <th scope="col" style="text-align: right; padding: 10px 14px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ hostels }}" as="h" hint-placeholder-count="4">
+                    <tr>
+                      <td style="text-align: left; padding: 10px 14px;"><span style="font-weight: 600;">{{ h.name }}</span></td>
+                      
+                      <td style="text-align: right; padding: 10px 14px; font-variant-numeric: tabular-nums;">{{ h.rooms }}</td>
+                      <td style="text-align: right; padding: 10px 14px; font-variant-numeric: tabular-nums;">{{ h.capacity }}</td>
+                      <td style="text-align: right; padding: 10px 14px; font-variant-numeric: tabular-nums;">{{ h.occupied }}</td>
+                      <td style="text-align: right; padding: 10px 14px; font-variant-numeric: tabular-nums;">{{ h.vacant }}</td>
+                      <td style="text-align: right; padding: 10px 22px 10px 14px; font-variant-numeric: tabular-nums; font-weight: 600;">{{ h.pct }}</td>
+                      <td style="text-align: left; padding: 10px 24px; min-width: 190px;">{{ h.warden }}<span style="display: block; font-size: 12px; color: #6b7580;">{{ h.phone }}</span></td>
+                      
+                      <td style="text-align: right; white-space: nowrap; padding: 10px 14px;">
+                        <span style="display: inline-flex; gap: 6px;">
+                          <button type="button" class="btn btn-secondary" onClick="{{ h.edit }}" style="height: 28px; font-size: 12px; padding: 0 10px;">Edit</button>
+                          <button type="button" class="btn btn-ghost" onClick="{{ h.remove }}" style="height: 28px; font-size: 12px; padding: 0 10px;">Delete</button>
+                        </span>
+                      </td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRooms }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          
+          <sc-if value="{{ blocksOverview }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-direction: row; gap: 18px; overflow-x: auto; padding-bottom: 6px;">
+              <sc-for list="{{ blockSquares }}" as="b" hint-placeholder-count="4">
+                <div class="lift" role="button" tabindex="0" onClick="{{ b.open }}" style="flex: 0 0 252px; position: relative; border: 1px solid {{ b.selBd }}; border-radius: 10px; background: {{ b.selBg }}; color: #101828; padding: 18px; display: flex; flex-direction: column; gap: 14px; cursor: pointer;" style-hover="border-color: #c3d0fb;">
+                  <div style="display: flex; align-items: baseline; gap: 8px;">
+                    <span style="font-weight: 800; font-size: 19px; letter-spacing: -0.01em;">{{ b.name }}</span>
+                    <span style="flex: 1;"></span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: #2a52d8; font-variant-numeric: tabular-nums;">{{ b.pct }}</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <span style="display: block; height: 8px; border-radius: 20px; background: #eef2fe; overflow: hidden;">
+                      <span style="display: block; height: 8px; width: {{ b.bar }}; background: #2a52d8;"></span>
+                    </span>
+                    <span style="font-size: 12.5px; color: #6b7580; font-variant-numeric: tabular-nums;">{{ b.beds }}</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid #eef0f4; padding-top: 12px;">
+                    <span>
+                      <span style="display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b0;">Beds vacant</span>
+                      <span style="display: block; font-weight: 800; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums;">{{ b.vacant }}</span>
+                    </span>
+                    <span>
+                      <span style="display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b0;">Rooms</span>
+                      <span style="display: block; font-weight: 800; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums;">{{ b.roomCount }}</span>
+                    </span>
+                  </div>
+                  <div style="font-size: 12.5px; color: #6b7580;">Warden · {{ b.warden }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ blockOpen }}" hint-placeholder-val="{{ false }}">
+            <section class="card" style="border: 1px solid #e6e9ee; border-radius: 0; padding: 18px;">
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                <button type="button" onClick="{{ closeBlock }}" style="all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border: 1px solid #e6e9ee; border-radius: 9px; font-size: 12.5px; font-weight: 600; color: #2447c4;" style-hover="background: #eef2fe;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                  Close room list
+                </button>
+                <h2 style="margin: 0; font-weight: 700; font-size: 16px;">{{ openBlockTitle }}</h2>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 12px; color: #6b7580;">All rooms shown below</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px;">
+                <sc-for list="{{ heatRooms }}" as="rm" hint-placeholder-count="30">
+                  <div class="lift" style="border: 1px solid {{ rm.bd }}; border-radius: 0; padding: 11px 12px; background: {{ rm.bg }}; color: {{ rm.fg }};">
+                    <div style="font-weight: 700; font-size: 13.5px; font-variant-numeric: tabular-nums;">{{ rm.no }}</div>
+                    <div style="font-size: 11.5px; opacity: .88; margin-top: 3px; white-space: nowrap;">{{ rm.beds }}</div>
+                    <div style="font-size: 11.5px; opacity: .72; margin-top: 2px; white-space: nowrap;">{{ rm.sharing }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStudy }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+              <h2 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">{{ studyHeading }}</h2>
+              <p style="margin: 8px 0 0; font-size: 13.5px; color: #6b7580;">{{ studyDateLine }}</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <sc-for list="{{ studySessionChips }}" as="c" hint-placeholder-count="2">
+                <button type="button" onClick="{{ c.go }}" style="all: unset; cursor: pointer; padding: 9px 16px; border-radius: 9px; border: 1px solid {{ c.bd }}; background: {{ c.bg }}; color: {{ c.fg }}; text-align: left; white-space: nowrap;">
+                  <span style="display: block; font-size: 13.5px; font-weight: 700;">{{ c.label }}</span>
+                  <span style="display: block; font-size: 11.5px; margin-top: 2px; color: {{ c.sub }};">{{ c.time }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Block
+              <select value="{{ blockValue }}" onChange="{{ onBlockChange }}" style="height: 34px; min-width: 160px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #2447c4; background: #fff; text-transform: none; letter-spacing: 0;">
+                <sc-for list="{{ blockOptions }}" as="b" hint-placeholder-count="5">
+                  <option value="{{ b.value }}">{{ b.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+            <span style="flex: 1;"></span>
+            <span style="font-size: 12.5px; color: #6b7580;">{{ studyProgress }}</span>
+            <button type="button" onClick="{{ markAll }}" class="btn btn-secondary" style="height: 34px; font-size: 12.5px;">Mark all present</button>
+            <button type="button" onClick="{{ saveStudy }}" class="btn btn-primary" style="height: 34px; font-size: 12.5px;">Save roll</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px;">
+            <sc-for list="{{ studyStats }}" as="k" hint-placeholder-count="4">
+              <div class="card lift" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 16px 18px;">
+                <div style="font-size: 12.5px; font-weight: 600; color: #6b7580;">{{ k.label }}</div>
+                <div style="font-weight: 800; font-size: 30px; line-height: 1.1; margin-top: 6px; font-variant-numeric: tabular-nums;">{{ k.value }}</div>
+                <div style="font-size: 12px; color: #9aa4b0; margin-top: 4px;">{{ k.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <section class="card" style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #e6e9ee;">
+              <h2 style="margin: 0; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">Study hall roll</h2>
+              <div style="flex: 1;"></div>
+              <span style="font-size: 12.5px; color: #6b7580;">Tap present, absent or excused for each student</span>
+            </div>
+            <sc-for list="{{ studyRoster }}" as="r" hint-placeholder-count="10">
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 13px 18px; border-bottom: 1px solid #eef0f4;">
+                <span style="width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; background: #eef2fe; color: #2447c4; display: grid; place-items: center; font-weight: 700; font-size: 12px;">{{ r.initials }}</span>
+                <span style="flex: 1 1 190px; min-width: 150px;">
+                  <span style="display: block; font-size: 14px; font-weight: 700;">{{ r.name }}</span>
+                  <span style="display: block; font-size: 12px; color: #6b7580; margin-top: 2px;">{{ r.meta }}</span>
+                </span>
+                <span style="flex: 1 1 auto; min-width: 0; font-size: 12px; color: #9aa4b0;">{{ r.note }}</span>
+                <span style="display: inline-flex; gap: 6px; flex: 0 0 auto; flex-wrap: nowrap;">
+                  <sc-for list="{{ r.options }}" as="o" hint-placeholder-count="3">
+                    <button type="button" onClick="{{ o.set }}" style="all: unset; cursor: pointer; padding: 7px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 700; border: 1px solid {{ o.bd }}; background: {{ o.bg }}; color: {{ o.fg }};" style-hover="border-color: #c3d0fb;">{{ o.label }}</button>
+                  </sc-for>
+                </span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ studyEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 40px 18px; text-align: center; font-size: 13px; color: #6b7580;">No students on the roll for this block.</div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <sc-if value="{{ hasSubTabsRow }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <sc-if value="{{ hasSubTabs }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; margin-right: 4px;">{{ subTabLabel }}</span>
+              </sc-if>
+              <sc-for list="{{ subTabs }}" as="t" hint-placeholder-count="4">
+                <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; padding: 7px 14px; border-radius: 20px; white-space: nowrap; font-size: 12.5px; font-weight: 600; border: 1px solid {{ t.bd }}; background: {{ t.bg }}; color: {{ t.fg }};" style-hover="border-color: #c3d0fb;">{{ t.label }}</button>
+              </sc-for>
+              <sc-if value="{{ hasSubTabs2 }}" hint-placeholder-val="{{ false }}">
+                <span style="width: 1px; height: 22px; background: #e6e9ee; margin: 0 6px;"></span>
+                <span style="font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; margin-right: 4px;">{{ subTab2Label }}</span>
+                <sc-for list="{{ subTabs2 }}" as="p" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ p.go }}" style="all: unset; cursor: pointer; padding: 7px 14px; border-radius: 20px; white-space: nowrap; font-size: 12.5px; font-weight: 600; border: 1px solid {{ p.bd }}; background: {{ p.bg }}; color: {{ p.fg }};" style-hover="border-color: #c3d0fb;">{{ p.label }}</button>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ hasBlockSelect }}" hint-placeholder-val="{{ false }}">
+                <span style="width: 1px; height: 22px; background: #e6e9ee; margin: 0 6px;"></span>
+              <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Block
+              <select value="{{ blockValue }}" onChange="{{ onBlockChange }}" style="height: 34px; min-width: 160px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #2447c4; background: #fff; text-transform: none; letter-spacing: 0;">
+                <sc-for list="{{ blockOptions }}" as="b" hint-placeholder-count="5">
+                  <option value="{{ b.value }}">{{ b.label }}</option>
+                </sc-for>
+              </select>
+            </label>
+              </sc-if>
+              <sc-if value="{{ hasStageSelect }}" hint-placeholder-val="{{ false }}">
+                <span style="flex: 1;"></span>
+                <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Show
+                  <select value="{{ stageValue }}" onChange="{{ onStageChange }}" style="height: 34px; min-width: 210px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #2447c4; background: #fff; text-transform: none; letter-spacing: 0;">
+                    <option value="Active">Open · out now</option>
+                    <option value="History">Closed · history</option>
+                  </select>
+                </label>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ canAddEntry }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex;">
+              <button type="button" onClick="{{ openEntryNew }}" style="all: unset; cursor: pointer; margin-left: auto; height: 34px; padding: 0 15px; border-radius: 9px; background: #2a52d8; color: #fff; font-size: 12.5px; font-weight: 700; white-space: nowrap;" style-hover="background: #1d3da6;">{{ addEntryLabel }}</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ entryOpen }}" hint-placeholder-val="{{ false }}">
+            <section class="card lift" style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 18px;">
+              <h2 style="margin: 0 0 4px; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">{{ entryTitle }}</h2>
+              <p style="margin: 0 0 14px; font-size: 12.5px; color: #6b7580;">{{ entryNote }}</p>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;">
+                <sc-for list="{{ entryFields }}" as="f" hint-placeholder-count="8">
+                  <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: #6b7580;">{{ f.label }}
+                    <input class="input" value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" style="height: 34px; font-size: 13px;">
+                  </label>
+                </sc-for>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px;">
+                <button type="button" class="btn btn-primary" onClick="{{ saveEntry }}" style="height: 32px; font-size: 12.5px;">{{ entrySaveLabel }}</button>
+                <button type="button" class="btn btn-ghost" onClick="{{ closeEntry }}" style="height: 32px; font-size: 12.5px;">Cancel</button>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 12px; color: #9aa4b0;">Entered by R. Krishnan · chief warden</span>
+              </div>
+            </section>
+          </sc-if>
+          <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+            <section class="card" style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 18px;">
+              <h2 style="margin: 0 0 4px; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">Build a report</h2>
+              <p style="margin: 0 0 16px; font-size: 12.5px; color: #6b7580;">Pick what to include and the period. Only records dated between the two dates are exported.</p>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px;">
+                <sc-for list="{{ reportOptions }}" as="o" hint-placeholder-count="5">
+                  <label class="lift" style="display: flex; align-items: flex-start; gap: 10px; border: 1px solid {{ o.bd }}; border-radius: 9px; padding: 12px 14px; cursor: pointer; background: {{ o.bg }};" style-hover="border-color: #c3d0fb;">
+                    <input type="checkbox" checked="{{ o.on }}" onChange="{{ o.toggle }}" style="margin-top: 2px; accent-color: #2a52d8; width: 16px; height: 16px;">
+                    <span>
+                      <span style="display: block; font-size: 13px; font-weight: 600;">{{ o.label }}</span>
+                      <span style="display: block; font-size: 11.5px; color: #6b7580; margin-top: 2px;">{{ o.note }}</span>
+                    </span>
+                  </label>
+                </sc-for>
+              </div>
+              <div style="display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;">
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">Start date
+                  <input type="date" value="{{ reportFrom }}" onChange="{{ onReportFrom }}" style="height: 36px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 13px; font-weight: 600; color: #101828; background: #fff; letter-spacing: 0; text-transform: none;">
+                </label>
+                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">End date
+                  <input type="date" value="{{ reportTo }}" onChange="{{ onReportTo }}" style="height: 36px; border: 1px solid #e6e9ee; border-radius: 9px; padding: 0 10px; font-family: inherit; font-size: 13px; font-weight: 600; color: #101828; background: #fff; letter-spacing: 0; text-transform: none;">
+                </label>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 12.5px; color: #6b7580;">{{ reportSummary }}</span>
+                <button type="button" class="btn btn-primary" onClick="{{ downloadReport }}" style="height: 36px;">Download report</button>
+              </div>
+            </section>
+          </sc-if>
+          <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+              <sc-for list="{{ tableStats }}" as="k" hint-placeholder-count="4">
+                
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <section class="card" style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid #e6e9ee;">
+              <h2 style="margin: 0; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">{{ tableTitle }}</h2>
+              <div style="flex: 1;"></div>
+              <span style="font-size: 12.5px; color: #6b7580; font-variant-numeric: tabular-nums;">{{ tableCount }}</span>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="table" style="font-size: 13px; margin: 0; width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <sc-for list="{{ tableCols }}" as="c" hint-placeholder-count="6">
+                      <th scope="col" style="text-align: {{ c.align }}; white-space: nowrap; vertical-align: middle; padding: 10px 14px;">{{ c.label }}</th>
+                    </sc-for>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ tableRows }}" as="row" hint-placeholder-count="8">
+                    <tr>
+                      <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="6">
+                        <td style="text-align: {{ c.align }}; white-space: {{ c.wrap }}; vertical-align: middle; padding: 11px 14px;">
+                          <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ true }}">
+                            <span style="display: block; font-weight: {{ c.weight }}; color: {{ c.color }};">{{ c.text }}</span>
+                            <sc-if value="{{ c.sub }}" hint-placeholder-val="{{ false }}">
+                              <span style="display: block; font-size: 12px; color: #6b7580; margin-top: 2px;">{{ c.sub }}</span>
+                            </sc-if>
+                          </sc-if>
+                          <sc-if value="{{ c.isTag }}" hint-placeholder-val="{{ false }}">
+                            <span style="display: inline-block; font-size: 11.5px; font-weight: 700; border-radius: 7px; padding: 3px 8px; white-space: nowrap; background: {{ c.bg }}; color: {{ c.fg }};">{{ c.text }}</span>
+                          </sc-if>
+                          <sc-if value="{{ c.actions }}" hint-placeholder-val="{{ false }}">
+                            <span style="display: inline-flex; gap: 6px; justify-content: center;">
+                              <sc-for list="{{ c.actions }}" as="a" hint-placeholder-count="2">
+                                <button type="button" class="btn {{ a.cls }}" onClick="{{ a.run }}" style="height: 28px; font-size: 12px; padding: 0 11px; white-space: nowrap;">{{ a.label }}</button>
+                              </sc-for>
+                            </span>
+                          </sc-if>
+                          <sc-if value="{{ c.info }}" hint-placeholder-val="{{ false }}">
+                            <button type="button" onClick="{{ c.info }}" aria-label="Student details" style="all: unset; cursor: pointer; width: 26px; height: 26px; border: 1px solid #e6e9ee; border-radius: 50%; display: inline-grid; place-items: center; color: #2a52d8; font-size: 12.5px; font-weight: 700;" style-hover="background: #eef2fe;">i</button>
+                          </sc-if>
+                        </td>
+                      </sc-for>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+            <sc-if value="{{ tableEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 40px 16px; text-align: center; font-size: 13px; color: #6b7580;">{{ emptyNote }}</div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <sc-if value="{{ studentOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position: fixed; inset: 0; background: rgba(16,20,24,.42); display: grid; place-items: center; padding: 24px; z-index: 40;" onClick="{{ closeStudent }}">
+        <div class="card" style="width: 780px; max-width: 100%; max-height: 86vh; overflow-y: auto; background: #fff; border: 1px solid #e6e9ee; border-radius: 10px; padding: 20px 22px;">
+          <div style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eef0f4; padding-bottom: 14px;">
+            <span style="width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; background: #eef2fe; color: #2447c4; display: grid; place-items: center; font-weight: 800; font-size: 19px; letter-spacing: -0.02em;">{{ student.initials }}</span>
+            <span style="min-width: 0; flex: 1;">
+              <span style="display: block; font-size: 17px; font-weight: 800; letter-spacing: -0.01em;">{{ student.name }}</span>
+              <span style="display: block; font-size: 12.5px; color: #6b7580; margin-top: 2px;">{{ student.roll }} · {{ student.course }} · {{ student.year }}</span>
+            </span>
+            <button type="button" onClick="{{ closeStudent }}" aria-label="Close" style="all: unset; cursor: pointer; width: 30px; height: 30px; border: 1px solid #e6e9ee; border-radius: 9px; display: grid; place-items: center; color: #6b7580;" style-hover="background: #f4f6fa;">×</button>
+          </div>
+          <div style="display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; padding-top: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <span style="display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b0;">Student photo</span>
+                <span style="display: grid; place-items: center; width: 100%; height: 200px; border: 1px solid #e6e9ee; border-radius: 14px; background: #f7f8fa;">
+                  <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#c3d0fb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg>
+                </span>
+              </span>
+              <span style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <span style="display: flex; flex-direction: column; gap: 6px;">
+                  <span style="font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b0;">Father</span>
+                  <span style="display: grid; place-items: center; width: 100%; height: 104px; border: 1px solid #e6e9ee; border-radius: 14px; background: #f7f8fa;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c3d0fb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg>
+                  </span>
+                </span>
+                <span style="display: flex; flex-direction: column; gap: 6px;">
+                  <span style="font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9aa4b0;">Mother</span>
+                  <span style="display: grid; place-items: center; width: 100%; height: 104px; border: 1px solid #e6e9ee; border-radius: 14px; background: #f7f8fa;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c3d0fb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+              <sc-for list="{{ student.sections }}" as="sec" hint-placeholder-count="4">
+                <section style="display: flex; flex-direction: column; gap: 10px;">
+                  <h3 style="margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #2a52d8; border-bottom: 1px solid #eef2fe; padding-bottom: 6px;">{{ sec.title }}</h3>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px;">
+                    <sc-for list="{{ sec.items }}" as="f" hint-placeholder-count="6">
+                      <span style="display: grid; grid-template-columns: 132px minmax(0, 1fr); align-items: baseline; gap: 10px;">
+                        <span style="font-size: 11.5px; font-weight: 600; color: #9aa4b0;">{{ f.label }}</span>
+                        <span style="font-size: 13px; color: #101828; overflow-wrap: anywhere;">{{ f.value }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                </section>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2a52d8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#2a52d8&quot;,&quot;#2447c4&quot;,&quot;#0F6B5C&quot;,&quot;#7A3E9D&quot;]},&quot;showQueueBadges&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;pageTitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Dashboard&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const BLUE = '#2a52d8', BLUE_DK = '#10233f', TINT = '#eef2fe', LINE = '#e6e9ee';
+const PR = {
+  High: { prBg: '#fdecec', prFg: '#a02020' },
+  Medium: { prBg: '#fdf3e2', prFg: '#8a5a12' },
+  Low: { prBg: TINT, prFg: '#2447c4' },
+};
+const ageOf = (when) => {
+  const m = when.match(/(\d+)\s*h/);
+  if (m) return Number(m[1]);
+  const d = when.match(/(\d+)\s*day/);
+  if (d) return Number(d[1]) * 24;
+  return /yesterday/i.test(when) ? 24 : 999;
+};
+const tag = (text, kind) => {
+  const map = {
+    ok: { bg: TINT, fg: '#2447c4' },
+    warn: { bg: '#fdf3e2', fg: '#8a5a12' },
+    bad: { bg: '#fdecec', fg: '#a02020' },
+    mute: { bg: '#f7f8fa', fg: '#6b7580' },
+    solid: { bg: BLUE, fg: '#fff' },
+  }[kind] || { bg: '#f7f8fa', fg: '#6b7580' };
+  return { text, isTag: true, isText: false, align: 'left', wrap: 'nowrap', ...map };
+};
+const cell = (text, opts = {}) => ({
+  text, isTag: false, isText: true, align: opts.align || 'left',
+  wrap: opts.wrap || 'nowrap', weight: opts.weight || 400, sub: opts.sub || '',
+  color: opts.color || '#101828',
+});
+const MON = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+const stamp = (str) => {
+  const m = String(str).match(/(\d+)\s+(\w{3})\s+(\d+):(\d+)/);
+  return m ? Date.UTC(2026, MON[m[2]], Number(m[1]), Number(m[3]), Number(m[4])) : 0;
+};
+
+const WARDENS = { A: 'R. Krishnan', B: 'L. Fernandes', C: 'S. Bhatt', D: 'M. Qureshi' };
+const CLASS_TEACHERS = { 'Class 6': 'Mrs. Meenakshi R', 'Class 7': 'Mr. S. Balaji', 'Class 8': 'Mrs. Anitha M', 'Class 9': 'Mr. D. Sekar', 'Class 10': 'Mrs. Lalitha V', 'Class 11': 'Mr. P. Anand', 'Class 12': 'Mrs. K. Revathi' };
+
+const STUDENTS = [
+  { name: 'Aarav Menon', roll: 'ADM-8114', course: 'Class 8', year: 'Section A', room: 'A-212', sharing: 'Triple', guardian: 'S. Menon (father)', gphone: '98450 22104', phone: '98450 22110', att: '91%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Palakkad, Kerala', blood: 'O+', admitted: '12 Jun 2023', dob: '14 Mar 2012' },
+  { name: 'Rahul Iyer', roll: 'ADM-7220', course: 'Class 7', year: 'Section B', room: 'A-118', sharing: 'Double', guardian: 'K. Iyer (father)', gphone: '78450 11902', phone: '78450 11905', att: '84%', fee: ['Due ₹18,000', 'warn'], state: ['Checked out', 'warn'], home: 'Coimbatore, Tamil Nadu', blood: 'B+', admitted: '10 Jun 2024', dob: '02 Sep 2013' },
+  { name: 'Dev Patel', roll: 'ADM-8077', course: 'Class 8', year: 'Section C', room: 'B-305', sharing: 'Triple', guardian: 'N. Patel (father)', gphone: '79000 41822', phone: '79000 41830', att: '89%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Surat, Gujarat', blood: 'A+', admitted: '12 Jun 2023', dob: '27 Jan 2012' },
+  { name: 'Vikram Naidu', roll: 'ADM-6140', course: 'Class 6', year: 'Section A', room: 'A-121', sharing: 'Triple', guardian: 'P. Naidu (mother)', gphone: '90032 77410', phone: '90032 77419', att: '95%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Vijayawada, Andhra Pradesh', blood: 'O-', admitted: '08 Jun 2025', dob: '09 Jun 2014' },
+  { name: 'Rohit Sharma', roll: 'ADM-9019', course: 'Class 9', year: 'Section B', room: 'A-208', sharing: 'Double', guardian: 'V. Sharma (father)', gphone: '70112 30099', phone: '70112 30102', att: '73%', fee: ['Due ₹22,000', 'bad'], state: ['In hostel', 'ok'], home: 'Nagpur, Maharashtra', blood: 'AB+', admitted: '12 Jun 2023', dob: '18 Nov 2011' },
+  { name: 'Nivedha S', roll: 'ADM-10091', course: 'Class 10', year: 'Section A', room: 'A-104', sharing: 'Double', guardian: 'S. Selvam (father)', gphone: '90031 88112', phone: '90031 88119', att: '96%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Madurai, Tamil Nadu', blood: 'B+', admitted: '15 Jun 2022', dob: '21 Apr 2010' },
+  { name: 'Fatima Noor', roll: 'ADM-6012', course: 'Class 6', year: 'Section B', room: 'B-231', sharing: 'Triple', guardian: 'A. Noor (father)', gphone: '99400 71230', phone: '99400 71238', att: '88%', fee: ['Paid', 'ok'], state: ['On leave', 'warn'], home: 'Kozhikode, Kerala', blood: 'A-', admitted: '08 Jun 2025', dob: '03 Aug 2014' },
+  { name: 'Meera Pillai', roll: 'ADM-7188', course: 'Class 7', year: 'Section A', room: 'B-214', sharing: 'Triple', guardian: 'R. Pillai (mother)', gphone: '70119 55012', phone: '70119 55018', att: '93%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Kollam, Kerala', blood: 'O+', admitted: '10 Jun 2024', dob: '12 Dec 2013' },
+  { name: 'Ananya Das', roll: 'ADM-10120', course: 'Class 10', year: 'Section C', room: 'B-002', sharing: 'Single', guardian: 'S. Das (father)', gphone: '90800 41190', phone: '90800 41196', att: '97%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Bhubaneswar, Odisha', blood: 'B-', admitted: '15 Jun 2022', dob: '30 Jan 2010' },
+  { name: 'Aisha Kabir', roll: 'ADM-6030', course: 'Class 6', year: 'Section C', room: 'B-118', sharing: 'Triple', guardian: 'M. Kabir (father)', gphone: '88450 90031', phone: '88450 90039', att: '92%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Hyderabad, Telangana', blood: 'A+', admitted: '08 Jun 2025', dob: '17 Jul 2014' },
+  { name: 'Karthik R', roll: 'ADM-9045', course: 'Class 9', year: 'Section A', room: 'C-108', sharing: 'Single', guardian: 'R. Raman (father)', gphone: '88450 33019', phone: '88450 33025', att: '79%', fee: ['Paid', 'ok'], state: ['Returning', 'mute'], home: 'Salem, Tamil Nadu', blood: 'O+', admitted: '12 Jun 2023', dob: '05 Oct 2011' },
+  { name: 'Zoya Rahman', roll: 'ADM-12004', course: 'Class 12', year: 'Section A', room: 'C-112', sharing: 'Single', guardian: 'I. Rahman (father)', gphone: '98111 22093', phone: '98111 22099', att: '90%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'New Delhi', blood: 'AB-', admitted: '05 Jun 2026', dob: '22 Feb 2008' },
+  { name: 'Sneha Kulkarni', roll: 'ADM-11220', course: 'Class 11', year: 'Section B', room: 'C-104', sharing: 'Double', guardian: 'D. Kulkarni (father)', gphone: '98450 11204', phone: '98450 11209', att: '94%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Pune, Maharashtra', blood: 'B+', admitted: '05 Jun 2026', dob: '11 May 2009' },
+  { name: 'Ishan Verma', roll: 'ADM-6003', course: 'Class 6', year: 'Section A', room: 'D-011', sharing: 'Double', guardian: 'A. Verma (mother)', gphone: '96770 12045', phone: '96770 12050', att: '71%', fee: ['Due ₹9,500', 'bad'], state: ['In hostel', 'ok'], home: 'Lucknow, Uttar Pradesh', blood: 'A+', admitted: '08 Jun 2025', dob: '28 Jun 2014' },
+  { name: 'Harshit Rao', roll: 'ADM-7066', course: 'Class 7', year: 'Section C', room: 'D-004', sharing: 'Double', guardian: 'G. Rao (father)', gphone: '90011 55420', phone: '90011 55428', att: '86%', fee: ['Paid', 'ok'], state: ['Checked out', 'warn'], home: 'Warangal, Telangana', blood: 'O+', admitted: '10 Jun 2024', dob: '09 Mar 2013' },
+  { name: 'Tanya Joseph', roll: 'ADM-6018', course: 'Class 6', year: 'Section B', room: 'D-017', sharing: 'Single', guardian: 'J. Joseph (father)', gphone: '89400 71002', phone: '89400 71008', att: '91%', fee: ['Paid', 'ok'], state: ['In hostel', 'ok'], home: 'Kochi, Kerala', blood: 'B+', admitted: '08 Jun 2025', dob: '25 Nov 2014' },
+];
+
+const BOYS = ['Aarav Menon', 'Rahul Iyer', 'Dev Patel', 'Vikram Naidu', 'Rohit Sharma', 'Karthik R', 'Ishan Verma', 'Harshit Rao'];
+const WING_OF = {};
+const sexOf = name => {
+  const n = String(name || '').trim();
+  return WING_OF[n] || (BOYS.includes(n) ? 'Boys' : 'Girls');
+};
+const YEAR_OF = {};
+const SHARING_OF = {};
+STUDENTS.forEach(st => { YEAR_OF[st.name] = st.course; SHARING_OF[st.name] = st.sharing; });
+const nameOfCell = r => String((r.cells && r.cells[0] && r.cells[0].text) || '').trim();
+
+const NAV = [
+  { g: 'Overview', items: [
+    { id: 'dashboard', label: 'Dashboard', d: 'M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-5H3zM13 8h8V3h-8z' },
+    { id: 'approvals', label: 'Movement log', d: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' },
+  ]},
+  { g: 'Students', items: [
+    { id: 'students', label: 'Student details', d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.9' },
+    { id: 'leave', label: 'Leave register', d: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM12 14v4M10 16h4' },
+    { id: 'study', label: 'Study hours', d: 'M12 6v14M12 6C10 4 7 4 3 5v13c4-1 7-1 9 1M12 6c2-2 5-2 9-1v13c-4-1-7-1-9 1' },
+    { id: 'gate', label: 'Check-in / check-out', d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' },
+  ]},
+  { g: 'Hostel', items: [
+    { id: 'hostels', label: 'Hostel details', d: 'M3 21V8l9-5 9 5v13M9 21v-5h6v5' },
+    { id: 'rooms', label: 'Rooms & occupancy', d: 'M3 3h18v18H3zM3 9h18M9 21V9' },
+    { id: 'fees', label: 'Hostel fees', d: 'M2 7h20v10H2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6M6 12h.01M18 12h.01' },
+  ]},
+  { g: 'Administration', items: [
+    { id: 'complaints', label: 'Issues & maintenance', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM12 8v4M12 14h.01' },
+    { id: 'reports', label: 'Reports', d: 'M3 3v18h18M7 16V10M12 16V6M17 16v-4' },
+  ]},
+];
+
+const TITLES = {
+  dashboard: ['Dashboard', 'Occupancy, students out of the hostel and today\'s gate movement'],
+  approvals: ['Movement log', 'Exits recorded by the warden after the parent calls — students out and yet to return'],
+  applications: ['Student applications', 'Admission requests for intake 2026–27'],
+  students: ['Student details', 'Block-wise resident register with room, guardian and fee state'],
+  attendance: ['Attendance', 'Nightly roll call — 01 August 2026'],
+  leave: ['Leave register', 'Home leave entered by the warden on the parent\'s call — days away and purpose'],
+  study: ['Study hours', 'Morning and evening study hour attendance, marked by the warden in the study hall'],
+  gate: ['Check-in / check-out', 'Gate register — exits and returns logged by the warden'],
+  hostels: ['Hostel details', 'Create, amend and retire hostel records'],
+  rooms: ['Rooms & occupancy', 'Bed-level allotment across all blocks'],
+  fees: ['Hostel fees', 'Invoices, receipts and outstanding dues'],
+  complaints: ['Issues & maintenance', 'Issues the warden notes on the block round or hears from a student in person'],
+  reports: ['Reports', 'Generated statements and exports'],
+};
+
+const PRIMARY = {
+  applications: 'New application', students: 'Add student', attendance: 'Mark roll call',
+  leave: 'Record leave', study: 'Mark study hour', gate: 'Record exit', hostels: 'Add hostel', rooms: 'Allot room',
+  fees: 'Raise invoice', complaints: 'Log an issue',
+  reports: 'Generate report', dashboard: 'Quick action', approvals: 'Record exit',
+};
+
+const ENTRY = {
+  students: { coll: 'students', key: 'roll', label: 'student', title: 'student record',
+    fields: [['name','Student name','Aarav Menon'],['roll','Admission no.','ADM-8114'],['course','Class','Class 8'],['year','Section','Section A'],['room','Room','A-212'],['sharing','Sharing','Triple'],['guardian','Guardian','S. Menon (father)'],['gphone','Guardian phone','98450 22104'],['phone','Second contact','98450 22110'],['feeText','Fees','Paid / Due ₹18,000'],['stateText','Current status','In hostel']] },
+  leave: { coll: 'leave', key: 'name', label: 'leave', title: 'leave entry',
+    fields: [['name','Student name','Fatima Noor'],['roll','Admission no.','ADM-6012'],['block','Block','B Block'],['room','Room','B-231'],['days','Days','3'],['purpose','Purpose','Sibling wedding at Kozhikode'],['call','Parent call','Father · 99400 71230 · 19:10'],['from','From','04 Aug'],['to','To','06 Aug']] },
+  gateOut: { coll: 'gateOut', key: 'name', label: 'exit', title: 'exit to record',
+    fields: [['name','Student name','Rahul Iyer'],['roll','Admission no.','ADM-7220'],['block','Block','A Block'],['room','Room','A-118'],['going','Going to','Home — medical emergency'],['call','Parent call','Father · 78450 11902 · 20:45'],['returnBy','Return by','05 Aug 18:00']] },
+  gateIn: { coll: 'gateIn', key: 'name', label: 'return', title: 'expected return',
+    fields: [['name','Student name','Karthik R'],['roll','Admission no.','ADM-9045'],['block','Block','C Block'],['room','Room','C-108'],['from','Returning from','Sports camp, Bengaluru'],['due','Due time','31 Jul 22:00']] },
+  fees: { coll: 'fees', key: 'invoice', label: 'invoice', title: 'fee entry',
+    fields: [['name','Student name','Rahul Iyer'],['roomLine','Room · block','A-118 · A Block'],['invoice','Invoice no.','INV-20261-0412'],['head','Fee head','Room + mess, Term 1'],['amount','Amount','₹18,000'],['due','Due date','05 Aug 2026'],['status','Status','Paid / Pending / Overdue'],['block','Block','A Block']] },
+  issues: { coll: 'issues', key: 'id', label: 'issue', title: 'issue entry',
+    fields: [['title','Issue','Water heater dead in A-wing bathroom'],['id','Reference','CMP-1188'],['area','Area','Hostel / Mess / Amenities'],['category','Category','Plumbing'],['told','Told to warden by','Aarav Menon · A-212'],['owner','Assigned to','Estate — plumbing'],['priority','Priority','High / Medium / Low'],['block','Block','A Block'],['age','Age','2 days']] },
+};
+const ENTRY_FOR_VIEW = { students: 'students', leave: 'leave', fees: 'fees', complaints: 'issues' };
+
+class Component extends DCLogic {
+  state = {
+    view: 'dashboard', tab: 'All', query: '', flash: '', editingId: null,
+    blockTab: 'A Block', gateTab: 'Check-in', gateStage: 'Active', leaveStage: 'Active', presenceTab: 'All', student: null,
+    prFilter: 'All', timeSort: 'Priority', filterOpen: false, openBlock: null, reqBlock: 'All', wing: 'Boys',
+    yearFilter: 'All', areaFilter: 'All',
+    rptFrom: '2026-07-01', rptTo: '2026-08-01',
+    rptOn: { fees: true, arrears: false, occupancy: true, complaints: false, feedback: false },
+    entry: { open: false, view: '', key: null, draft: {} },
+    studySession: 'Morning', studyMarks: {}, studySaved: '',
+    data: {
+      students: STUDENTS.map(st => ({ ...st })),
+      leave: [
+        { name: 'Fatima Noor', roll: 'ADM-6012', block: 'B Block', room: 'B-231', days: '3', purpose: 'Sibling wedding at Kozhikode', call: 'Father · 99400 71230 · 19:10', from: '04 Aug', to: '06 Aug' },
+        { name: 'Ishan Verma', roll: 'ADM-6003', block: 'D Block', room: 'D-011', days: '1', purpose: 'Town library reference work', call: 'Mother · 96770 12045 · 08:15', from: '03 Aug', to: '03 Aug' },
+        { name: 'Rahul Iyer', roll: 'ADM-7220', block: 'A Block', room: 'A-118', days: '5', purpose: 'Family medical emergency', call: 'Father · 78450 11902 · 20:45', from: '01 Aug', to: '05 Aug' },
+        { name: 'Dev Patel', roll: 'ADM-8077', block: 'B Block', room: 'B-305', days: '7', purpose: 'Onam festival at home', call: 'Father · 79000 41822 · 18:05', from: '12 Aug', to: '18 Aug' },
+        { name: 'Zoya Rahman', roll: 'ADM-12004', block: 'C Block', room: 'C-112', days: '2', purpose: 'State science exhibition, Bengaluru', call: 'Father · 98111 22093 · 16:40', from: '08 Aug', to: '09 Aug' },
+        { name: 'Aisha Kabir', roll: 'ADM-6030', block: 'B Block', room: 'B-118', days: '4', purpose: 'Cousin wedding, Chennai', call: 'Father · 88450 90031 · 17:20', from: '09 Aug', to: '12 Aug' },
+        { name: 'Vikram Naidu', roll: 'ADM-6140', block: 'A Block', room: 'A-121', days: '2', purpose: 'Inter-school match at Salem', call: 'Mother · 90032 77410 · 06:45', from: '02 Aug', to: '03 Aug' },
+        { name: 'Ananya Das', roll: 'ADM-10120', block: 'B Block', room: 'B-002', days: '3', purpose: 'Scholarship interview, Hyderabad', call: 'Father · 90800 41190 · 15:30', from: '05 Aug', to: '07 Aug' },
+      ],
+      gateOut: [
+        { name: 'Rahul Iyer', roll: 'ADM-7220', block: 'A Block', room: 'A-118', going: 'Home — medical emergency', call: 'Father · 78450 11902 · 20:45', returnBy: '05 Aug 18:00' },
+        { name: 'Ishan Verma', roll: 'ADM-6003', block: 'D Block', room: 'D-011', going: 'Town central library', call: 'Mother · 96770 12045 · 08:15', returnBy: '03 Aug 18:00' },
+        { name: 'Rohit Sharma', roll: 'ADM-9019', block: 'A Block', room: 'A-208', going: 'Field trip — geography class', call: 'Father · 70112 30099 · 07:30', returnBy: '02 Aug 19:30' },
+        { name: 'Fatima Noor', roll: 'ADM-6012', block: 'B Block', room: 'B-231', going: 'Sibling wedding, Kozhikode', call: 'Father · 99400 71230 · 19:10', returnBy: '06 Aug 20:00' },
+        { name: 'Zoya Rahman', roll: 'ADM-12004', block: 'C Block', room: 'C-112', going: 'Science exhibition, Bengaluru', call: 'Father · 98111 22093 · 16:40', returnBy: '09 Aug 19:00' },
+        { name: 'Sneha Kulkarni', roll: 'ADM-11220', block: 'C Block', room: 'C-104', going: 'Science lab visit, main school', call: 'Mother · 98450 11209 · 08:05', returnBy: '02 Aug 18:00' },
+      ],
+      gateIn: [
+        { name: 'Karthik R', roll: 'ADM-9045', block: 'C Block', room: 'C-108', from: 'Sports camp, Bengaluru', due: '31 Jul 22:00' },
+        { name: 'Harshit Rao', roll: 'ADM-7066', block: 'D Block', room: 'D-004', from: 'Home leave', due: '01 Aug 20:00' },
+        { name: 'Rahul Iyer', roll: 'ADM-7220', block: 'A Block', room: 'A-118', from: 'Family medical emergency', due: '05 Aug 18:00' },
+        { name: 'Vikram Naidu', roll: 'ADM-6140', block: 'A Block', room: 'A-121', from: 'Inter-school match, Salem', due: '02 Aug 21:00' },
+        { name: 'Fatima Noor', roll: 'ADM-6012', block: 'B Block', room: 'B-231', from: 'Sibling wedding, Kozhikode', due: '06 Aug 20:00' },
+        { name: 'Meera Pillai', roll: 'ADM-7188', block: 'B Block', room: 'B-214', from: 'Orthopaedic review', due: '02 Aug 19:00' },
+        { name: 'Zoya Rahman', roll: 'ADM-12004', block: 'C Block', room: 'C-112', from: 'Science exhibition, Bengaluru', due: '09 Aug 19:00' },
+        { name: 'Aisha Kabir', roll: 'ADM-6030', block: 'B Block', room: 'B-118', from: 'Family visit, Chennai', due: '03 Aug 20:30' },
+      ],
+      fees: [
+        { name: 'Rahul Iyer', roomLine: 'A-118 · A Block', invoice: 'INV-20261-0412', head: 'Room + mess, Term 1', amount: '₹18,000', due: '05 Aug 2026', status: 'Overdue', block: 'A Block' },
+        { name: 'Ishan Verma', roomLine: 'D-011 · D Block', invoice: 'INV-20261-0398', head: 'Short stay, Aug', amount: '₹9,500', due: '03 Aug 2026', status: 'Overdue', block: 'D Block' },
+        { name: 'Fatima Noor', roomLine: 'B-231 · B Block', invoice: 'INV-20261-0377', head: 'Room + mess, Term 1', amount: '₹46,000', due: '12 Jul 2026', status: 'Paid', block: 'B Block' },
+        { name: 'Aarav Menon', roomLine: 'A-212 · A Block', invoice: 'INV-20261-0344', head: 'Room + mess, Term 1', amount: '₹46,000', due: '12 Jul 2026', status: 'Paid', block: 'A Block' },
+        { name: 'Meera Pillai', roomLine: 'B-214 · B Block', invoice: 'INV-20261-0402', head: 'Mess top-up', amount: '₹4,200', due: '10 Aug 2026', status: 'Pending', block: 'B Block' },
+        { name: 'Zoya Rahman', roomLine: 'C-112 · C Block', invoice: 'INV-20261-0410', head: 'Senior room + mess, Term 1', amount: '₹52,000', due: '14 Aug 2026', status: 'Pending', block: 'C Block' },
+        { name: 'Nivedha S', roomLine: 'A-104 · A Block', invoice: 'INV-20261-0366', head: 'Room + mess, Term 1', amount: '₹46,000', due: '12 Jul 2026', status: 'Paid', block: 'A Block' },
+        { name: 'Dev Patel', roomLine: 'B-305 · B Block', invoice: 'INV-20261-0381', head: 'Room + mess, Term 1', amount: '₹46,000', due: '18 Aug 2026', status: 'Pending', block: 'B Block' },
+        { name: 'Tanya Joseph', roomLine: 'D-017 · D Block', invoice: 'INV-20261-0391', head: 'Room + mess, Term 1', amount: '₹52,000', due: '02 Aug 2026', status: 'Overdue', block: 'D Block' },
+      ],
+      issues: [
+        { title: 'Water heater dead in A-wing bathroom', id: 'CMP-1188', category: 'Plumbing', told: 'Aarav Menon · A-212', age: '2 days', owner: 'Estate — plumbing', priority: 'High', block: 'A Block', area: 'Hostel' },
+        { title: 'Wi-Fi drops after 23:00 in B Block', id: 'CMP-1185', category: 'Network', told: 'Nivedha S · A-104', age: '3 days', owner: 'IT helpdesk', priority: 'Medium', block: 'A Block', area: 'Amenities' },
+        { title: 'Mess dinner repetitive — noted at the mess round', id: 'CMP-1180', category: 'Mess', told: 'Sneha Kulkarni · C-104', age: '4 days', owner: 'Mess supervisor', priority: 'Low', block: 'C Block', area: 'Mess' },
+        { title: 'Broken window latch D-011', id: 'CMP-1176', category: 'Carpentry', told: 'Ishan Verma · D-011', age: '6 days', owner: 'Estate — carpentry', priority: 'High', block: 'D Block', area: 'Hostel' },
+        { title: 'Study lamp needed in C-108', id: 'CMP-1170', category: 'Facilities', told: 'Karthik R · C-108', age: '8 days', owner: 'Store', priority: 'Low', block: 'C Block', area: 'Amenities' },
+        { title: 'Breakfast served cold in D mess', id: 'CMP-1166', category: 'Mess', told: 'Tanya Joseph · D-017', age: '5 days', owner: 'Mess supervisor', priority: 'Medium', block: 'D Block', area: 'Mess' },
+        { title: 'Washing machine out of order', id: 'CMP-1162', category: 'Facilities', told: 'Dev Patel · B-305', age: '9 days', owner: 'Store', priority: 'Medium', block: 'B Block', area: 'Amenities' },
+        { title: 'Corridor light flickering B-231', id: 'CMP-1159', category: 'Electrical', told: 'Fatima Noor · B-231', age: '3 days', owner: 'Estate — electrical', priority: 'Low', block: 'B Block', area: 'Hostel' },
+      ],
+    },
+    formOpen: false, exitOpen: false,
+    exit: { name: '', room: '', purpose: '', caller: '', phone: '', callAt: '', outAt: '', returnBy: '' },
+    form: { name: '', code: '', type: 'Boys', blockCount: '2', rooms: '', capacity: '', warden: '', phone: '' },
+    queue: [
+      { id: 'LOG-4412', type: 'Home leave', call: 'Father · S. Menon · 98450 22104 · called 18:40', name: 'Aarav Menon', roll: 'ADM-8114', room: 'A-212', block: 'A Block', outType: 'Home leave', outWhen: '01 Aug 2026 · 19:30', returnBy: '05 Aug 2026 · 18:00', reason: 'Father admitted at Kozhikode; travelling tonight and returning on the 5th.', when: '2 h ago' },
+      { id: 'LOG-4410', type: 'Home leave', call: 'Father · G. Rao · 90011 55428 · called 06:20', name: 'Harshit Rao', roll: 'ADM-7066', room: 'D-004', block: 'D Block', outType: 'Home leave', outWhen: '28 Jul 2026 · 07:10', returnBy: '01 Aug 2026 · 20:00', reason: 'Returning from home leave; the night bus was delayed by two hours.', when: '3 h ago' },
+      { id: 'LOG-4408', type: 'Medical', call: 'Father · K. Iyer · 78450 11902 · called 20:45', name: 'Rahul Iyer', roll: 'ADM-7220', room: 'A-118', block: 'A Block', outType: 'Emergency outing', outWhen: '01 Aug 2026 · 21:15', returnBy: '05 Aug 2026 · 18:00', reason: 'Family medical emergency at home; guardian has called the warden office.', when: '4 h ago' },
+      { id: 'LOG-4405', type: 'Home leave', call: 'Father · A. Noor · 99400 71230 · called 19:10', name: 'Fatima Noor', roll: 'ADM-6012', room: 'B-231', block: 'B Block', outType: 'Home leave', outWhen: '04 Aug 2026 · 07:00', returnBy: '06 Aug 2026 · 20:00', reason: 'Sibling wedding at Kozhikode.', when: 'Yesterday' },
+      { id: 'LOG-4402', type: 'School event', call: 'Father · R. Raman · 88450 33019 · called 17:30', name: 'Karthik R', roll: 'ADM-9045', room: 'C-108', block: 'C Block', outType: 'Sports camp travel', outWhen: '18 Jul 2026 · 06:30', returnBy: '31 Jul 2026 · 22:00', reason: 'Returning from the Bengaluru sports camp by the night train.', when: 'Yesterday' },
+      { id: 'LOG-4396', type: 'Local outing', call: 'Mother · A. Verma · 96770 12045 · called 08:15', name: 'Ishan Verma', roll: 'ADM-6003', room: 'D-011', block: 'D Block', outType: 'Local outing', outWhen: '03 Aug 2026 · 09:00', returnBy: '03 Aug 2026 · 18:00', reason: 'Reference work at the town central library.', when: '2 days ago' },
+      { id: 'LOG-4390', type: 'Local outing', call: 'Mother · R. Pillai · 70119 55012 · called 07:50', name: 'Meera Pillai', roll: 'ADM-7188', room: 'B-214', block: 'B Block', outType: 'Local outing', outWhen: '02 Aug 2026 · 09:00', returnBy: '02 Aug 2026 · 20:00', reason: 'Weekend outing to the city with two block-mates.', when: '3 days ago' },
+      { id: 'LOG-4386', type: 'Home leave', call: 'Father · N. Patel · 79000 41822 · called 18:05', name: 'Dev Patel', roll: 'ADM-8077', room: 'A-305', block: 'A Block', outType: 'Festival leave', outWhen: '12 Aug 2026 · 06:00', returnBy: '18 Aug 2026 · 20:00', reason: 'Onam at home with family.', when: '4 days ago' },
+      { id: 'LOG-4381', type: 'School event', call: 'Father · I. Rahman · 98111 22093 · called 16:40', name: 'Zoya Rahman', roll: 'ADM-12004', room: 'C-112', block: 'C Block', outType: 'School event travel', outWhen: '08 Aug 2026 · 06:30', returnBy: '09 Aug 2026 · 19:00', reason: 'Presenting at the state science exhibition in Bengaluru.', when: '4 days ago' },
+    ],
+    hostels: [
+      { id: 1, name: 'A Block', code: 'BLK-A', wing: 'Boys', type: 'Boys & girls wings', blockCount: 3, rooms: 120, capacity: 360, occupied: 331, warden: 'R. Krishnan', phone: '98450 22001', mess: 'Veg + non-veg', established: 2004 },
+      { id: 2, name: 'B Block', code: 'BLK-B', wing: 'Girls', type: 'Boys & girls wings', blockCount: 2, rooms: 96, capacity: 288, occupied: 274, warden: 'L. Fernandes', phone: '98450 22002', mess: 'Veg + non-veg', established: 2008 },
+      { id: 3, name: 'C Block', code: 'BLK-C', wing: 'Girls', type: 'Senior — boys & girls wings', blockCount: 1, rooms: 40, capacity: 80, occupied: 63, warden: 'S. Bhatt', phone: '98450 22003', mess: 'Pure veg', established: 2016 },
+      { id: 4, name: 'D Block', code: 'BLK-D', wing: 'Boys', type: 'Short stay — boys & girls wings', blockCount: 1, rooms: 24, capacity: 48, occupied: 19, warden: 'M. Qureshi', phone: '98450 22004', mess: 'Day mess only', established: 2021 },
+    ],
+  };
+
+  wingBlocks() { return this.state.hostels.map(h => h.name); }
+  wingLetters() { return this.wingBlocks().map(n => n.charAt(0)); }
+  inWing(name) { return sexOf(name) === this.state.wing; }
+
+  componentDidMount() { this.applyAccent(); }
+  componentDidUpdate() { this.applyAccent(); }
+  applyAccent() {
+    const a = this.props.accentColor;
+    if (a) document.documentElement.style.setProperty('--color-accent', a);
+  }
+
+  set(view) { this.setState({ view, flash: '', openBlock: null, student: null }); }
+  note(msg) { this.setState({ flash: msg }); }
+  logReturn(id) {
+    const item = this.state.queue.find(q => q.id === id);
+    this.setState(s => ({ queue: s.queue.filter(q => q.id !== id), flash: `Return logged for ${item.name} · ${item.room} — parent informed.` }));
+  }
+
+  queueRow(r) {
+    return {
+      ...r,
+      room: `${r.roll} · ${r.room} · ${r.block}`,
+      initials: r.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+      openQueue: e => {
+        if (e && e.target && e.target.closest && e.target.closest('button')) return;
+        this.setState({ view: 'approvals', tab: 'All', flash: '' });
+      },
+      recordReturn: () => this.logReturn(r.id),
+      editEntry: () => this.note(`${r.id} opened — amend the call details or the expected return time.`),
+    };
+  }
+
+  buildTable() {
+    const s = this.state, v = s.view, q = s.query.trim().toLowerCase();
+    const A = (label, cls, run) => ({ label, cls, run });
+    const ED = (view, key) => A('Edit', 'btn-secondary', () => this.openEntry(view, key));
+    const STATUS_TONE = { Paid: 'ok', Pending: 'warn', Overdue: 'bad' };
+    const PR_TONE = { High: 'bad', Medium: 'warn', Low: 'ok' };
+    let title = '', cols = [], rows = [], stats = [], subTabs = [], subTabLabel = '', subTabs2 = [], subTab2Label = '', subTabs3 = [], subTab3Label = '', hasBlockSelect = false, hasPriority = false;
+    const chips = (list, current, pick) => list.map(t => ({
+      label: t, go: () => pick(t),
+      bg: current === t ? BLUE : '#fff', fg: current === t ? '#fff' : '#3d4754',
+      bd: current === t ? BLUE : LINE,
+    }));
+
+    if (v === 'applications') {
+      title = 'Admission applications';
+      stats = [
+        { label: 'Applications received', value: '412', note: 'Intake 2026–27' },
+        { label: 'Shortlisted', value: '188', note: 'Distance + merit rule' },
+        { label: 'Seats free', value: '34', note: 'Across four hostels' },
+        { label: 'Awaiting documents', value: '27', note: 'Reminder sent 30 Jul' },
+      ];
+      cols = ['Applicant', 'Class / section', 'Distance', 'Preference', 'Documents', 'Status', 'Action'];
+      rows = [
+        ['Sneha Kulkarni', 'AP-2091 · 98450 11204', 'Class 11 · Section B', '412 km', 'C Block · Triple', ['Complete', 'ok'], ['Shortlisted', 'ok'], 'C Block'],
+        ['Vikram Naidu', 'AP-2088 · 90032 77410', 'Class 6 · Section A', '96 km', 'A Block · Double', ['Complete', 'ok'], ['Under review', 'warn'], 'A Block'],
+        ['Zoya Rahman', 'AP-2081 · 98111 22093', 'Class 12 · Section A', '1,204 km', 'C Block · Single', ['Aadhaar pending', 'warn'], ['On hold', 'warn'], 'C Block'],
+        ['Dev Patel', 'AP-2077 · 79000 41822', 'Class 8 · Section C', '38 km', 'A Block · Triple', ['Complete', 'ok'], ['Waitlisted', 'mute'], 'A Block'],
+        ['Aisha Kabir', 'AP-2070 · 88450 90031', 'Class 6 · Section C', '760 km', 'B Block · Double', ['Complete', 'ok'], ['Shortlisted', 'ok'], 'B Block'],
+      ].map(r => ({ block: r[7], cells: [
+        cell(r[0], { weight: 600, sub: r[1] }), cell(r[2]), cell(r[3], { align: 'right' }), cell(r[4]),
+        tag(r[5][0], r[5][1]), tag(r[6][0], r[6][1]),
+        { ...cell(''), isText: false, align: 'right', actions: [A('Allot room', 'btn-primary', () => this.note(`Room allotted to ${r[0]} — allotment letter queued.`))] },
+      ]}));
+    }
+
+    if (v === 'students') {
+      const isAll = s.reqBlock === 'All';
+      const letter = isAll ? '' : s.reqBlock.charAt(0);
+      const wl = this.wingLetters();
+      const all = s.data.students.filter(st => (st.wing || sexOf(st.name)) === s.wing).filter(st => wl.includes(st.room.charAt(0))).filter(st => isAll || st.room.charAt(0) === letter);
+      title = isAll ? 'All blocks — resident register' : `${s.reqBlock} — resident register`;
+      const inHostel = all.filter(r => r.state[0] === 'In hostel');
+      const onLeave = all.filter(r => r.state[0] === 'On leave');
+      const onOuting = all.filter(r => r.state[0] === 'Checked out' || r.state[0] === 'Returning');
+      const defaulters = all.filter(r => r.fee[1] !== 'ok');
+      const presence = [
+        { key: 'All', label: isAll ? 'Allotted, all blocks' : 'Allotted in block', note: isAll ? `${s.wing} hostel · ${this.wingBlocks().join(', ')}` : s.reqBlock, list: all },
+        { key: 'In hostel', label: 'In hostel now', note: `${onOuting.length} out on pass`, list: inHostel },
+        { key: 'On leave', label: 'On leave', note: 'Recorded by the warden', list: onLeave },
+        { key: 'Defaulters', label: 'Fee defaulters', note: 'Dues pending', list: defaulters },
+      ];
+      const picked = presence.find(p => p.key === s.presenceTab) || presence[0];
+      stats = presence.map(p => ({
+        label: p.label, value: String(p.list.length), note: p.note,
+        go: () => this.setState({ presenceTab: p.key }),
+        cursor: 'pointer',
+        bg: picked.key === p.key ? TINT : '#fff',
+        bd: picked.key === p.key ? BLUE : LINE,
+      }));
+      cols = ['Student', 'Class · section', 'Block', 'Room', 'Sharing', 'Guardian contact', 'Fees', 'Current status', 'Details', 'Record'];
+      rows = picked.list.map(st => ({ block: `${st.room.charAt(0)} Block`, cells: [
+        cell(st.name, { weight: 600, sub: st.roll }),
+        cell(st.course, { sub: st.year }),
+        cell(`${st.room.charAt(0)} Block`),
+        cell(st.room), cell(st.sharing),
+        cell(st.gphone, { sub: st.guardian }),
+        tag(st.fee[0], st.fee[1]), tag(st.state[0], st.state[1]),
+        { ...cell(''), isText: false, info: () => this.setState({ student: st }) },
+        { ...cell(''), isText: false, align: 'right', actions: [ED('students', st.roll)] },
+      ]}));
+    }
+
+    if (v === 'attendance') {
+      title = 'Roll call — 01 August 2026, 22:00';
+      stats = [
+        { label: 'Present', value: '641', note: 'Warden sweep, block by block' },
+        { label: 'Away on recorded leave', value: '46', note: 'Entered from parent calls' },
+        { label: 'Unaccounted', value: '4', note: 'Escalated to security' },
+        { label: 'Month average', value: '94.2%', note: 'Target 90%' },
+      ];
+      cols = ['Block', 'Rooms swept', 'Present', 'On leave', 'Unaccounted', 'Verified by', 'Status'];
+      rows = [
+        ['Block A', '120', '318', '11', '2', 'R. Krishnan', ['Closed', 'ok']],
+        ['Block B', '96', '262', '10', '2', 'L. Fernandes', ['Closed', 'ok']],
+        ['Block C', '40', '58', '5', '0', 'S. Bhatt', ['Closed', 'ok']],
+        ['Block D', '24', '3', '20', '0', 'M. Qureshi', ['Open', 'warn']],
+      ].map(r => ({ cells: [
+        cell(r[0], { weight: 600 }), cell(r[1], { align: 'right' }), cell(r[2], { align: 'right' }),
+        cell(r[3], { align: 'right' }), cell(r[4], { align: 'right' }), cell(r[5]), tag(r[6][0], r[6][1]),
+      ]}));
+    }
+
+    if (v === 'leave') {
+      const active = s.leaveStage === 'Active';
+      title = active ? 'Leave recorded — students away now' : 'Leave history';
+      stats = active ? [
+        { label: 'Away on leave', value: String(s.data.leave.length), note: 'Entered by the warden' },
+        { label: 'Longest leave', value: '7 days', note: 'Dev Patel, B Block' },
+        { label: 'Currently away', value: '46', note: '5 overdue returns' },
+        { label: 'Logged this week', value: '38', note: 'Avg 2.6 days away' },
+      ] : [
+        { label: 'Closed this month', value: '148', note: 'Avg 2.6 days' },
+        { label: 'Refused on the call', value: '7', note: 'Attendance or dues' },
+        { label: 'Returned on time', value: '141', note: 'Of 148 recorded' },
+        { label: 'Late returns', value: '7', note: 'Noted in the register' },
+      ];
+      if (active) {
+        cols = ['Student', 'Block', 'Room', 'Days', 'Purpose', 'Parent call', 'From', 'To', 'Action'];
+        rows = s.data.leave.map(r => ({ block: r.block, cells: [
+          cell(r.name, { weight: 600, sub: r.roll }), cell(r.block), cell(r.room), cell(r.days, { weight: 700 }),
+          cell(r.purpose, { wrap: 'normal' }), cell(r.call, { wrap: 'normal' }), cell(r.from), cell(r.to),
+          { ...cell(''), isText: false, actions: [
+            A('Record return', 'btn-primary', () => this.closeLeave(r.name)),
+            ED('leave', r.name),
+          ] },
+        ]}));
+      } else {
+        cols = ['Student', 'Block', 'Room', 'Days', 'Purpose', 'From', 'To', 'Outcome', 'Returned on'];
+        rows = [
+          ['Meera Pillai', 'ADM-7188', 'B Block', 'B-214', '2', 'Orthopaedic review at home', '29 Jul', '30 Jul', ['Closed', 'ok'], '30 Jul 17:20'],
+          ['Karthik R', 'ADM-9045', 'C Block', 'C-108', '14', 'Sports camp travel to Bengaluru', '18 Jul', '31 Jul', ['Closed', 'ok'], '31 Jul 23:10'],
+          ['Aarav Menon', 'ADM-8114', 'A Block', 'A-212', '3', 'Grandfather ceremony', '10 Jul', '12 Jul', ['Closed', 'ok'], '12 Jul 19:40'],
+          ['Rohit Sharma', 'ADM-9019', 'A Block', 'A-208', '4', 'Personal work at home', '02 Jul', '05 Jul', ['Refused', 'bad'], '—'],
+          ['Tanya Joseph', 'ADM-6018', 'D Block', 'D-017', '2', 'Art club field trip, Kochi', '20 Jul', '21 Jul', ['Closed', 'ok'], '21 Jul 18:05'],
+          ['Nivedha S', 'ADM-10091', 'A Block', 'A-104', '1', 'District quiz finals', '24 Jul', '24 Jul', ['Closed', 'ok'], '24 Jul 21:10'],
+        ].map(r => ({ block: r[2], cells: [
+          cell(r[0], { weight: 600, sub: r[1] }), cell(r[2]), cell(r[3]), cell(r[4], { weight: 700 }), cell(r[5], { wrap: 'normal' }),
+          cell(r[6]), cell(r[7]), tag(r[8][0], r[8][1]), cell(r[9]),
+        ]}));
+      }
+    }
+
+    if (v === 'gate') {
+      subTabLabel = 'Register';
+      subTabs = chips(['Check-out', 'Check-in'], s.gateTab, t => this.setState({ gateTab: t }));
+      const isIn = s.gateTab === 'Check-in';
+      const active = s.gateStage === 'Active';
+      if (isIn && active) {
+        title = 'Returns expected — log the student in at the gate';
+        stats = [
+          { label: 'At the gate now', value: '4', note: 'Waiting to be logged in' },
+          { label: 'Due back today', value: '9', note: 'Across four blocks' },
+          { label: 'Overdue returns', value: '5', note: 'Parents called' },
+          { label: 'Returns logged today', value: '47', note: 'By the night warden' },
+        ];
+        cols = ['Student', 'Admission no.', 'Block', 'Room no.', 'Returning from', 'Due time', 'Action'];
+        rows = s.data.gateIn.map(r => ({ block: r.block, cells: [
+          cell(r.name, { weight: 600 }), cell(r.roll), cell(r.block), cell(r.room), cell(r.from, { wrap: 'normal' }), cell(r.due),
+          { ...cell(''), isText: false, actions: [
+            A('Record return', 'btn-primary', () => this.logGate('gateIn', r.name, `Return logged for ${r.name} at 21:05 — parent informed.`)),
+            ED('gateIn', r.name),
+          ] },
+        ]}));
+      } else if (isIn) {
+        title = 'Check-in history';
+        stats = [
+          { label: 'Exits logged', value: '341', note: 'July 2026' },
+          { label: 'Returns logged', value: '318', note: 'July 2026' },
+          { label: 'Away on leave', value: '46', note: 'Recorded by the warden' },
+          { label: 'Late entries', value: '22', note: 'Past the due time' },
+        ];
+        cols = ['Student', 'Admission no.', 'Block', 'Room no.', 'Returned from', 'Due time', 'Arrived'];
+        rows = [
+          ['Karthik R', 'ADM-9045', 'C Block', 'C-108', 'Sports camp, Bengaluru', '31 Jul 22:00', '31 Jul 23:10'],
+          ['Harshit Rao', 'ADM-7066', 'D Block', 'D-004', 'Home leave', '01 Aug 20:00', '01 Aug 22:35'],
+          ['Aarav Menon', 'ADM-8114', 'A Block', 'A-212', 'Evening sports', '01 Aug 20:30', '01 Aug 20:05'],
+          ['Meera Pillai', 'ADM-7188', 'B Block', 'B-214', 'Medical review', '30 Jul 18:00', '30 Jul 17:20'],
+          ['Ananya Das', 'ADM-10120', 'B Block', 'B-002', 'Scholarship office', '01 Aug 13:00', '01 Aug 14:40'],
+          ['Nivedha S', 'ADM-10091', 'A Block', 'A-104', 'District quiz finals', '24 Jul 22:00', '24 Jul 21:10'],
+          ['Tanya Joseph', 'ADM-6018', 'D Block', 'D-017', 'Art club field trip', '21 Jul 20:00', '21 Jul 18:05'],
+        ].map(r => {
+          const late = stamp(r[6]) > stamp(r[5]);
+          return { block: r[2], cells: [
+            cell(r[0], { weight: 600 }), cell(r[1]), cell(r[2]), cell(r[3]), cell(r[4], { wrap: 'normal' }), cell(r[5]),
+            cell(r[6], { weight: late ? 700 : 400, color: late ? '#c0201f' : '#101828' }),
+          ]};
+        });
+      } else if (active) {
+        title = 'Exits to record — parent has called the warden';
+        stats = [
+          { label: 'Calls taken today', value: '4', note: 'Incl. 1 emergency' },
+          { label: 'Currently out', value: '14', note: 'All within pass time' },
+          { label: 'Day passes today', value: '31', note: 'Back before 22:00' },
+          { label: 'Exits logged today', value: '54', note: 'By the duty warden' },
+        ];
+        cols = ['Student', 'Admission no.', 'Block', 'Room no.', 'Going to', 'Parent call', 'Return by', 'Action'];
+        rows = s.data.gateOut.map(r => ({ block: r.block, cells: [
+          cell(r.name, { weight: 600 }), cell(r.roll), cell(r.block), cell(r.room), cell(r.going, { wrap: 'normal' }),
+          cell(r.call, { wrap: 'normal' }), cell(r.returnBy),
+          { ...cell(''), isText: false, actions: [
+            A('Record exit', 'btn-primary', () => this.logGate('gateOut', r.name, `Exit logged for ${r.name} — parent call noted in the register.`)),
+            ED('gateOut', r.name),
+          ] },
+        ]}));
+      } else {
+        title = 'Check-out history';
+        stats = [
+          { label: 'Exits logged', value: '341', note: 'July 2026' },
+          { label: 'Returned on time', value: '319', note: '94% of passes' },
+          { label: 'Emergency exits', value: '6', note: 'Warden signed' },
+          { label: 'Refused', value: '9', note: 'Dues or attendance' },
+        ];
+        cols = ['Student', 'Admission no.', 'Block', 'Room no.', 'Purpose', 'Left at', 'Returned at', 'Pass type'];
+        rows = [
+          ['Nivedha S', 'ADM-10091', 'A Block', 'A-104', 'Evening study hall', '01 Aug 20:40', '01 Aug 23:20', 'Late pass'],
+          ['Dev Patel', 'ADM-8077', 'B Block', 'B-305', 'Dental appointment', '01 Aug 10:15', '01 Aug 12:50', 'Day pass'],
+          ['Aarav Menon', 'ADM-8114', 'A Block', 'A-212', 'Evening sports', '01 Aug 17:30', '01 Aug 20:05', 'Day pass'],
+          ['Meera Pillai', 'ADM-7188', 'B Block', 'B-214', 'Orthopaedic review', '29 Jul 08:00', '30 Jul 17:20', 'Home leave'],
+          ['Sneha Kulkarni', 'ADM-11220', 'C Block', 'C-104', 'Science lab visit, main school', '28 Jul 09:10', '28 Jul 17:45', 'Day pass'],
+          ['Tanya Joseph', 'ADM-6018', 'D Block', 'D-017', 'Art club field trip', '20 Jul 07:30', '21 Jul 18:05', 'Home leave'],
+        ].map(r => ({ block: r[2], cells: [
+          cell(r[0], { weight: 600 }), cell(r[1]), cell(r[2]), cell(r[3]), cell(r[4], { wrap: 'normal' }), cell(r[5]), cell(r[6]),
+          tag(r[7], 'ok'),
+        ]}));
+      }
+    }
+
+    if (v === 'fees') {
+      title = 'Fee ledger — 2026–27';
+      stats = [
+        { label: 'Collected', value: '₹2.14 Cr', note: '87% of demand' },
+        { label: 'Outstanding', value: '₹32.4 L', note: '23 defaulters' },
+        { label: 'Due this week', value: '₹6.8 L', note: '41 invoices' },
+        { label: 'Refunds pending', value: '₹1.2 L', note: '6 withdrawals' },
+      ];
+      cols = ['Student', 'Sharing', 'Fee head', 'Amount', 'Due date', 'Status', 'Action'];
+      rows = s.data.fees
+        .filter(r => s.yearFilter === 'All' || (YEAR_OF[r.name] || '') === s.yearFilter)
+        .map(r => ({ block: r.block, cells: [
+          cell(r.name, { weight: 600, sub: r.roomLine }), cell(SHARING_OF[r.name] || 'Double'),
+          cell(r.head, { sub: r.invoice }),
+          cell(r.amount, { align: 'right', weight: 600 }),
+          cell(r.due, { align: 'right' }), tag(r.status, STATUS_TONE[r.status] || 'mute'),
+          { ...cell(''), isText: false, align: 'right', actions: [
+            A('Mark paid', 'btn-primary', () => this.markPaid(r.invoice)),
+            ED('fees', r.invoice),
+          ] },
+        ]}));
+      subTabLabel = 'Class';
+      subTabs = chips(['All', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'], s.yearFilter, t => this.setState({ yearFilter: t }));
+    }
+
+    if (v === 'complaints') {
+      title = 'Issues logged by the warden';
+      stats = [
+        { label: 'Open issues', value: String(s.data.issues.length), note: '4 past the service window' },
+        { label: 'Closed this month', value: '96', note: 'Avg 1.8 days' },
+        { label: 'Mess round notes', value: '12', note: 'From the warden mess round' },
+        { label: 'Escalated', value: '3', note: 'To estate office' },
+      ];
+      cols = ['Issue', 'Category', 'Told to warden by', 'Block', 'Age', 'Priority', 'Action'];
+      hasPriority = true;
+      const rk = { High: 0, Medium: 1, Low: 2 };
+      rows = s.data.issues
+        .filter(r => s.areaFilter === 'All' || r.area === s.areaFilter)
+        .filter(r => s.prFilter === 'All' || r.priority === s.prFilter)
+        .slice()
+        .sort((x, y) => (s.timeSort === 'Priority' ? rk[x.priority] - rk[y.priority]
+          : s.timeSort === 'Oldest' ? parseInt(y.age) - parseInt(x.age) : parseInt(x.age) - parseInt(y.age)))
+        .map(r => ({ block: r.block, owner: r.told.split(' · ')[0], cells: [
+          cell(r.title, { weight: 600, wrap: 'normal', sub: r.id }), cell(r.area, { sub: r.category }),
+          cell(r.told), cell(r.block), cell(r.age), tag(r.priority, PR_TONE[r.priority] || 'mute'),
+          { ...cell(''), isText: false, align: 'right', actions: [
+            A('Resolve', 'btn-primary', () => this.resolveIssue(r.id)),
+            ED('issues', r.id),
+          ] },
+        ]}));
+      subTabLabel = 'Area';
+      subTabs = chips(['All', 'Mess', 'Hostel', 'Amenities'], s.areaFilter, t => this.setState({ areaFilter: t }));
+    }
+
+    if (v === 'reports') {
+      title = 'Reports and statements';
+      stats = [
+        { label: 'Scheduled reports', value: '9', note: 'Weekly and monthly' },
+        { label: 'Generated this month', value: '41', note: '12 shared with principal' },
+        { label: 'Data through', value: '01 Aug', note: 'Synced 21:40' },
+        { label: 'Retention', value: '5 yrs', note: 'Per school policy' },
+      ];
+      cols = ['Report', 'Period', 'Covers', 'Format', 'Generated', 'Status', 'Action'];
+      rows = [
+        ['Occupancy and vacancy statement', 'RPT-monthly-occ', 'Jul 2026', 'All four hostels', 'PDF + XLSX', '01 Aug 06:00', ['Ready', 'ok']],
+        ['Attendance defaulters (<75%)', 'RPT-weekly-att', 'W-30', '687 residents', 'PDF', '31 Jul 22:30', ['Ready', 'ok']],
+        ['Fee collection and arrears', 'RPT-monthly-fee', 'Jul 2026', 'Ledger 2026–27', 'XLSX', '01 Aug 06:05', ['Ready', 'ok']],
+        ['Leave and gate movement audit', 'RPT-monthly-gate', 'Jul 2026', 'Gate register', 'PDF', 'Queued', ['Generating', 'warn']],
+        ['Issue and repair log', 'RPT-monthly-cmp', 'Jul 2026', '114 entries', 'PDF', '01 Aug 06:10', ['Ready', 'ok']],
+      ].map(r => ({ cells: [
+        cell(r[0], { weight: 600, wrap: 'normal', sub: r[1] }), cell(r[2]), cell(r[3]), cell(r[4]), cell(r[5], { align: 'right' }),
+        tag(r[6][0], r[6][1]),
+        { ...cell(''), isText: false, align: 'right', actions: [A('Download', 'btn-primary', () => this.note(`${r[0]} downloaded.`)), A('Share', 'btn-ghost', () => this.note(`${r[0]} shared with the principal's office.`))] },
+      ]}));
+    }
+
+    if (['students', 'leave', 'gate', 'fees', 'complaints'].includes(v)) {
+      const wb = this.wingBlocks();
+      if (v !== 'students') rows = rows.filter(r => this.inWing(r.owner || nameOfCell(r)));
+      hasBlockSelect = true;
+      if (s.reqBlock !== 'All' && v !== 'students') rows = rows.filter(r => r.block === s.reqBlock);
+    }
+    if (q) {
+      rows = rows.filter(r => r.cells.some(c => `${c.text} ${c.sub || ''}`.toLowerCase().includes(q)));
+    }
+    return {
+      tableTitle: title,
+      tableStats: stats.map(k => ({ cursor: 'default', bg: '#fff', bd: LINE, go: null, ...k })),
+      hasStats: stats.length > 0,
+      tableCols: cols.map(label => ({ label, align: 'center' })),
+      tableRows: rows.map(r => ({ ...r, cells: r.cells.map(c => ({ ...c, align: 'center' })) })),
+      tableCount: `${rows.length} records`,
+      tableEmpty: rows.length === 0,
+      emptyNote: q ? 'Nothing matches this search.'
+        : v === 'students' ? `No students match this filter in ${s.reqBlock === 'All' ? 'any block' : s.reqBlock} right now.`
+        : v === 'gate' ? `No ${s.gateTab.toLowerCase()} records in this view.`
+        : 'Nothing recorded here yet.',
+      subTabs, subTabLabel, hasSubTabs: subTabs.length > 0,
+      subTabs2, subTab2Label, hasSubTabs2: subTabs2.length > 0,
+      subTabs3, subTab3Label, hasSubTabs3: subTabs3.length > 0,
+      hasBlockSelect,
+      hasSubTabsRow: subTabs.length > 0 || hasBlockSelect || v === 'gate' || v === 'leave',
+      hasStageSelect: v === 'gate' || v === 'leave',
+      stageValue: v === 'leave' ? s.leaveStage : s.gateStage,
+      onStageChange: e => this.setState(v === 'leave' ? { leaveStage: e.target.value } : { gateStage: e.target.value }),
+    };
+  }
+
+  renderVals() {
+    const s = this.state, v = s.view;
+    const wingQueue = s.queue.filter(r => this.inWing(r.name));
+    const pending = wingQueue.length;
+    const [title, sub] = TITLES[v] || TITLES.dashboard;
+    const showBadges = this.props.showQueueBadges ?? true;
+
+    const navGroups = NAV.map(g => ({
+      label: g.g,
+      items: g.items.map(n => {
+        const active = n.id === v;
+        return {
+          label: n.label, d: n.d,
+          bg: active ? TINT : 'transparent',
+          fg: active ? BLUE_DK : '#3d4754',
+          icon: active ? BLUE : '#6b7580',
+          badge: showBadges && n.id === 'approvals' ? String(pending) : '',
+          go: () => this.set(n.id),
+        };
+      }),
+    }));
+
+    const MOVE = ['Home leave', 'Local outing', 'Medical', 'School event'];
+    const wingNames = this.wingBlocks();
+    const urgentAll = s.queue.filter(r => MOVE.includes(r.type) && this.inWing(r.name) && (s.reqBlock === 'All' || r.block === s.reqBlock));
+    const prF = s.prFilter, tmF = s.timeSort;
+    const rank = { High: 0, Medium: 1, Low: 2 };
+    const urgent = urgentAll
+      .slice()
+      .sort((a, b) => ageOf(a.when) - ageOf(b.when))
+      .slice(0, 6)
+      .map(r => this.queueRow(r));
+    const tabs = ['All', 'Home leave', 'Local outing', 'Medical', 'School event'];
+    const filtered = s.queue
+      .filter(r => (s.tab === 'All' || r.type === s.tab) && this.inWing(r.name) && (s.reqBlock === 'All' || r.block === s.reqBlock))
+      .filter(r => {
+        const needle2 = s.query.trim().toLowerCase();
+        return !needle2 || `${r.name} ${r.roll} ${r.room} ${r.reason} ${r.outType} ${r.type} ${r.id}`.toLowerCase().includes(needle2);
+      })
+      .map(r => this.queueRow(r));
+
+    const wingHostels = s.hostels.filter(h => wingNames.includes(h.name));
+    const isBoys = s.wing === 'Boys';
+    const totalCap = wingHostels.reduce((a, h) => a + Number(h.capacity || 0), 0);
+    const totalOcc = wingHostels.reduce((a, h) => a + Number(h.occupied || 0), 0);
+
+    const chipSet = (list, current, pick) => list.map(t => ({
+      label: t, go: () => pick(t),
+      bg: current === t ? BLUE : '#fff', fg: current === t ? '#fff' : '#3d4754',
+      bd: current === t ? BLUE : LINE,
+    }));
+
+    const needle = s.query.trim().toLowerCase();
+    const needleStudy = needle;
+    const blockSquares = s.hostels
+      .filter(h => wingNames.includes(h.name))
+      .filter(h => !needle || `${h.name} ${h.code} ${h.warden}`.toLowerCase().includes(needle))
+      .map(h => {
+      const b = { name: h.name, beds: Number(h.capacity) || 0, occupied: Number(h.occupied) || 0, warden: h.warden };
+      const vacant = b.beds - b.occupied;
+      const vacRate = b.beds ? vacant / b.beds : 1;
+      const band = vacRate >= 0.35 ? 0 : vacRate >= 0.15 ? 1 : vacRate >= 0.05 ? 2 : 3;
+      return {
+        name: b.name, warden: b.warden,
+        vacant: String(vacant),
+        roomCount: String(h.rooms),
+        beds: `${b.occupied} of ${b.beds} beds occupied`,
+        bar: b.beds ? `${Math.round((b.occupied / b.beds) * 100)}%` : '0%',
+        pct: b.beds ? `${Math.round((b.occupied / b.beds) * 100)}% full` : '0% full',
+        ring: 'none',
+        selBg: s.openBlock === b.name ? '#eef2fe' : '#fff',
+        selBd: s.openBlock === b.name ? BLUE_DK : '#e6e9ee',
+        open: () => this.setState({ openBlock: s.openBlock === b.name ? null : b.name, flash: '' }),
+      };
+    });
+
+    const EMPTY_SH = { bg: '#ffffff', fg: BLUE_DK, bd: '#dde2e8' };
+    const PART_SH = { bg: '#c3d0fb', fg: BLUE_DK, bd: '#c3d0fb' };
+    const FULL_SH = { bg: BLUE, fg: '#ffffff', bd: BLUE };
+    const openHostel = s.hostels.find(h => h.name === s.openBlock) || s.hostels[0] || { code: 'A', rooms: 24 };
+    const openLetter = ((openHostel.code || 'A').split('-')[1] || 'A').charAt(0);
+    const heatRooms = [];
+    const heatCount = Math.min(Number(openHostel.rooms) || 0, 36);
+    for (let i = 1; i <= heatCount; i++) {
+      const cap = [3, 2, 3, 4, 2, 3, 1, 2, 3, 4][(i * 7 + openLetter.charCodeAt(0)) % 10];
+      const filled = Math.min([3, 3, 2, 3, 1, 3, 0, 2, 3, 3][(i * 3 + openLetter.charCodeAt(0)) % 10], cap);
+      const sh = filled === 0 ? EMPTY_SH : (filled >= cap ? FULL_SH : PART_SH);
+      heatRooms.push({
+        no: `${openLetter}-${String(i).padStart(3, '0')}`,
+        beds: `${filled}/${cap} beds filled`,
+        sharing: { 1: 'Single sharing', 2: 'Double sharing', 3: 'Triple sharing', 4: 'Four sharing' }[cap],
+        bg: sh.bg, fg: sh.fg, bd: sh.bd,
+      });
+    }
+
+    return {
+      hostelName: 'Pavakie Public School',
+      prChips: chipSet(['All', 'High', 'Medium', 'Low'], s.prFilter, t => this.setState({ prFilter: t })),
+      timeChips: chipSet(['Priority', 'Newest', 'Oldest'], s.timeSort, t => this.setState({ timeSort: t })),
+      filterOpen: s.filterOpen,
+      toggleFilter: () => this.setState(st => ({ filterOpen: !st.filterOpen })),
+      blockSquares,
+      heatRooms,
+      blocksOverview: v === 'rooms',
+      blockOpen: v === 'rooms' && !!s.openBlock,
+      openBlockTitle: `${s.openBlock || ''} — bed allocation heat map`,
+      closeBlock: () => this.setState({ openBlock: null }),
+      navGroups,
+      viewTitle: this.props.pageTitle && v === 'dashboard' ? this.props.pageTitle : title,
+      viewSub: sub,
+      query: s.query,
+      onQuery: e => this.setState({ query: e.target.value }),
+      primaryActionLabel: PRIMARY[v] || 'New record',
+      onPrimaryAction: () => (v === 'hostels' ? this.newHostelFn() : this.note(`${PRIMARY[v]} — form opened.`)),
+      pendingCount: String(pending),
+      goApprovals: () => this.set('approvals'),
+      flash: s.flash,
+      clearFlash: () => this.setState({ flash: '' }),
+
+      isDashboard: v === 'dashboard',
+      isApprovals: v === 'approvals',
+      isHostels: v === 'hostels',
+      isReports: v === 'reports',
+      reportFrom: s.rptFrom,
+      reportTo: s.rptTo,
+      reportOptions: [
+        ['fees', 'Students with pending fees', 'Outstanding and overdue invoices'],
+        ['arrears', 'Students with arrears', 'Pending term work on record'],
+        ['occupancy', 'Occupancy', 'Block, room and bed allocation'],
+        ['complaints', 'Complaints', 'Tickets raised and resolved'],
+        ['feedback', 'Feedback', 'Mess, hostel and amenities feedback'],
+      ].map(([k, label, note]) => ({
+        label, note,
+        on: !!s.rptOn[k],
+        bd: s.rptOn[k] ? '#2a52d8' : '#e6e9ee',
+        bg: s.rptOn[k] ? '#eef2fe' : '#fff',
+        toggle: () => this.setState(st => ({ rptOn: { ...st.rptOn, [k]: !st.rptOn[k] } })),
+      })),
+      reportSummary: `${Object.values(s.rptOn).filter(Boolean).length} section(s) · ${s.wing} hostel`,
+      onReportFrom: e => this.setState({ rptFrom: e.target.value }),
+      onReportTo: e => this.setState({ rptTo: e.target.value }),
+      downloadReport: () => {
+        const picked = Object.values(s.rptOn).filter(Boolean).length;
+        if (!picked) return this.note('Pick at least one section to include in the report.');
+        if (!s.rptFrom || !s.rptTo || s.rptFrom > s.rptTo) return this.note('Choose a valid start and end date.');
+        this.note(`Report with ${picked} section(s) for ${s.rptFrom} to ${s.rptTo} downloaded.`);
+      },
+      isRooms: v === 'rooms',
+      isTable: ['students', 'leave', 'gate', 'fees', 'complaints', 'reports'].includes(v),
+
+      greeting: 'Good evening, R. Krishnan',
+      dashLine: `Saturday, 01 August 2026 · ${s.wing.toLowerCase()} hostel · ${isBoys ? '379' : '308'} students on roll · roll call at 22:00`,
+      goRecordExit: () => this.setState({ view: 'approvals', exitOpen: true, flash: '' }),
+      goGate: () => this.set('gate'),
+      flagCount: '5 flags',
+      dashStats: [
+        { label: 'Present in hostel', value: isBoys ? '344' : '283', deltaStrong: isBoys ? '379' : '308', deltaText: 'students on roll',
+          barStyle: 'height: 100%; border-radius: 99px; background: #2a52d8; width: 91%;',
+          note: `${isBoys ? 25 : 17} away on leave · ${isBoys ? 10 : 8} out on a pass`,
+          d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.9', go: () => this.set('students') },
+        { label: 'Roll-call attendance', value: '94.2%', deltaStrong: '+1.4', deltaText: 'vs last week',
+          barStyle: 'height: 100%; border-radius: 99px; background: #2a52d8; width: 94%;',
+          note: 'term average 92.8% · 4 unaccounted last night',
+          d: 'M20 6 9 17l-5-5', go: () => this.set('students') },
+        { label: 'Out of the hostel now', value: String(pending), deltaStrong: '5', deltaText: 'past the return time',
+          barStyle: 'height: 100%; border-radius: 99px; background: #2a52d8; width: 45%;',
+          note: 'every exit logged after a parent call',
+          d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3', go: () => this.set('approvals') },
+        { label: 'Beds occupied', value: `${Math.round((totalOcc / totalCap) * 100)}%`, deltaStrong: String(totalCap - totalOcc), deltaText: 'beds vacant',
+          barStyle: `height: 100%; border-radius: 99px; background: #2a52d8; width: ${Math.round((totalOcc / totalCap) * 100)}%;`,
+          note: `${totalOcc} of ${totalCap} beds taken · ${s.wing.toLowerCase()} hostel`,
+          d: 'M3 3h18v18H3zM3 9h18M9 21V9', go: () => this.set('rooms') },
+      ],
+      outNow: wingQueue.slice(0, 5).map(r => ({
+        ...this.queueRow(r),
+        outLine: `${r.outType} · ${r.room} · back by ${r.returnBy}`,
+      })),
+      attention: [
+        { title: '5 overdue returns', note: 'Parents called; entries still open in the log', go: () => this.set('approvals') },
+        { title: '4 students unaccounted at roll call', note: 'Escalated to security last night', go: () => this.set('students') },
+        { title: '23 fee defaulters', note: '₹32.4 L outstanding · 12 overdue past 05 Aug', go: () => this.set('fees') },
+        { title: '18 complaints open', note: '4 past their service window', go: () => this.set('complaints') },
+        { title: `${totalCap - totalOcc} beds vacant`, note: 'Ready to allot this week', go: () => this.set('rooms') },
+      ],
+      kpis: [
+        { label: 'Students on roll', value: isBoys ? '379' : '308', note: `${s.wing} hostel · blocks A to D`, d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.9', go: () => this.set('students') },
+        { label: 'Present in hostel', value: isBoys ? '344' : '283', note: 'Counted at the 22:00 roll call', d: 'M20 6 9 17l-5-5', go: () => this.set('students') },
+        { label: 'Away on leave', value: isBoys ? '25' : '17', note: '5 past their return time', d: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', go: () => this.set('leave') },
+        { label: 'Out on a pass', value: isBoys ? '10' : '8', note: 'Due back by 22:00 tonight', d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3', go: () => this.set('gate') },
+        { label: 'Beds occupied', value: `${Math.round((totalOcc / totalCap) * 100)}%`, note: `${totalOcc} of ${totalCap} beds taken`, d: 'M3 3h18v18H3zM3 9h18M9 21V9', go: () => this.set('rooms') },
+        { label: 'Beds vacant', value: String(totalCap - totalOcc), note: 'Ready to allot this week', d: 'M2 9V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3M2 11h20v9H2zM7 15h4', go: () => this.set('rooms') },
+        { label: 'Out of the hostel now', value: String(pending), note: 'Logged exits yet to return', d: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11', go: () => this.set('approvals') },
+        { label: 'Complaints open', value: isBoys ? '11' : '7', note: '4 past their service window', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM12 8v4M12 14h.01', go: () => this.set('complaints') },
+      ],
+      approvalsAsList: true,
+      urgent, urgentCount: String(pending),
+      queueEmpty: urgent.length === 0,
+      blocks: wingHostels.map(h => ({
+        name: h.name, ratio: `${h.occupied}/${h.capacity}`,
+        pct: `${Math.round((Number(h.occupied) / Math.max(1, Number(h.capacity))) * 100)}%`,
+      })),
+      movements: [
+        { blk: 'A Block', time: '21:15', text: 'Rahul Iyer · A-118 exit logged — father called at 20:45', kind: 'Out', bg: BLUE, fg: '#fff' },
+        { blk: 'B Block', time: '20:40', text: 'Nivedha S · B-104 checked out — study hall', kind: 'Out', bg: BLUE, fg: '#fff' },
+        { blk: 'A Block', time: '20:05', text: 'Aarav Menon · A-212 checked in from sports', kind: 'In', bg: TINT, fg: '#2447c4' },
+        { blk: 'B Block', time: '17:45', text: 'Meera Pillai · B-214 checked in from medical review', kind: 'In', bg: TINT, fg: '#2447c4' },
+        { blk: 'B Block', time: '14:40', text: 'Ananya Das · B-002 returned 1 h 40 m late', kind: 'Late', bg: '#fdecec', fg: '#a02020' },
+        { blk: 'D Block', time: '13:20', text: 'Ishan Verma · D-011 checked out — town library', kind: 'Out', bg: BLUE, fg: '#fff' },
+        { blk: 'C Block', time: '11:05', text: 'Zoya Rahman · C-112 checked in from lab visit', kind: 'In', bg: TINT, fg: '#2447c4' },
+      ].filter(m => sexOf(m.text.split(' · ')[0]) === s.wing),
+
+      approvalTabs: tabs.map(t => ({
+        label: t === 'All' ? `All (${wingQueue.length})` : t,
+        go: () => this.setState({ tab: t }),
+        bg: s.tab === t ? BLUE : '#fff',
+        fg: s.tab === t ? '#fff' : '#3d4754',
+        bd: s.tab === t ? BLUE : LINE,
+      })),
+      filteredQueue: filtered,
+      filteredCount: String(filtered.length),
+      filterEmpty: filtered.length === 0,
+      approveAllLow: () => this.setState(st => ({
+        queue: st.queue.filter(r => r.priority !== 'Low'),
+        flash: 'All low-risk requests approved — gate passes issued.',
+      })),
+
+      studentOpen: !!s.student,
+      closeStudent: () => this.setState({ student: null }),
+      student: s.student ? {
+        name: s.student.name, roll: s.student.roll, course: s.student.course, year: s.student.year,
+        initials: s.student.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+        photoId: `photo-${s.student.roll}`,
+        fatherPhotoId: `photo-father-${s.student.roll}`,
+        motherPhotoId: `photo-mother-${s.student.roll}`,
+        sections: [
+          { title: 'Personal', items: [
+            { label: 'Full name', value: s.student.name },
+            { label: 'Admission number', value: s.student.roll },
+            { label: 'Date of birth', value: s.student.dob },
+            { label: 'Blood group', value: s.student.blood },
+            { label: 'Student contact', value: s.student.phone },
+            { label: 'Email', value: `${s.student.roll.toLowerCase()}@pavakie.edu` },
+            { label: 'Home address', value: s.student.home },
+            { label: 'Aadhaar / ID', value: `XXXX XXXX ${s.student.roll.slice(-4)}` },
+          ]},
+          { title: 'School', items: [
+            { label: 'Class', value: s.student.course },
+            { label: 'Section', value: s.student.year },
+            { label: 'Class teacher', value: CLASS_TEACHERS[s.student.course] || 'Mrs. Meenakshi R' },
+            { label: 'Admitted on', value: s.student.admitted },
+          ]},
+          { title: 'Hostel', items: [
+            { label: 'Block', value: `${s.student.room.charAt(0)} Block` },
+            { label: 'Room', value: s.student.room },
+            { label: 'Sharing', value: `${s.student.sharing} sharing` },
+            { label: 'Warden in charge', value: WARDENS[s.student.room.charAt(0)] },
+            { label: 'Mess plan', value: s.student.room.charAt(0) === 'C' ? 'Pure veg' : 'Veg + non-veg' },
+            { label: 'Fees', value: s.student.fee[0] },
+            { label: 'Current status', value: s.student.state[0] },
+            { label: 'Last gate movement', value: s.student.state[0] === 'In hostel' ? 'Checked in · 01 Aug' : 'Checked out · 01 Aug' },
+          ]},
+          { title: 'Guardian', items: [
+            { label: 'Guardian', value: s.student.guardian },
+            { label: 'Guardian contact', value: s.student.gphone },
+            { label: 'Second contact', value: s.student.phone },
+            { label: 'Emergency line', value: 'Warden office · 0487 220 1100' },
+          ]},
+        ],
+      } : { name: '', roll: '', course: '', year: '', initials: '', photoId: 'photo-none', fatherPhotoId: 'photo-f-none', motherPhotoId: 'photo-m-none', sections: [] },
+      blockOptions: ['All', ...this.wingBlocks()].map(b => ({ value: b, label: b === 'All' ? 'All blocks' : b })),
+      blockValue: s.reqBlock,
+      onBlockChange: e => this.setState({ reqBlock: e.target.value, openBlock: null }),
+      wingChips: ['Boys', 'Girls'].map(w => ({
+        label: `${w} hostel`,
+        bg: s.wing === w ? '#2a52d8' : 'transparent',
+        fg: s.wing === w ? '#fff' : '#6b7580',
+        go: () => this.setState({ wing: w, reqBlock: 'All', openBlock: null, student: null, flash: `Showing ${w.toLowerCase()} hostel data only.` }),
+      })),
+      hostelStats: [
+        { label: 'Blocks on register', value: String(wingHostels.length), note: `${wingHostels.reduce((a, h) => a + Number(h.blockCount || 0), 0)} wings in all` },
+        { label: 'Rooms', value: String(wingHostels.reduce((a, h) => a + Number(h.rooms || 0), 0)), note: '6 under repair' },
+        { label: 'Beds occupied', value: `${totalOcc} / ${totalCap}`, note: `${Math.round((totalOcc / Math.max(1, totalCap)) * 100)}% of capacity` },
+        { label: 'Beds vacant', value: String(totalCap - totalOcc), note: 'Allotable this week' },
+      ],
+      hostelCount: `${wingHostels.length} blocks`,
+      isStudy: v === 'study',
+      ...(() => {
+        const wl = this.wingLetters();
+        const isAll = s.reqBlock === 'All';
+        const roster = s.data.students
+          .filter(st => (st.wing || sexOf(st.name)) === s.wing)
+          .filter(st => wl.includes(st.room.charAt(0)))
+          .filter(st => isAll || st.room.charAt(0) === s.reqBlock.charAt(0))
+          .filter(st => !needleStudy || `${st.name} ${st.roll} ${st.room}`.toLowerCase().includes(needleStudy));
+        const away = st => st.state[0] === 'On leave' || st.state[0] === 'Checked out';
+        const markOf = st => s.studyMarks[this.studyKey(s.studySession, st.roll)] || (away(st) ? 'E' : '');
+        const rows = roster.map(st => {
+          const mark = markOf(st);
+          const opt = (code, label) => ({
+            label,
+            set: () => this.setMark(st.roll, code),
+            bg: mark === code ? (code === 'P' ? '#2a52d8' : code === 'A' ? '#c0201f' : '#eef2fe') : '#fff',
+            fg: mark === code ? (code === 'E' ? '#2447c4' : '#fff') : '#6b7580',
+            bd: mark === code ? (code === 'E' ? '#c3d0fb' : 'transparent') : '#e6e9ee',
+          });
+          return {
+            name: st.name,
+            meta: `${st.roll} · ${st.course} ${st.year} · ${st.room}`,
+            note: away(st) ? `${st.state[0]} — excused from the study hall` : `Study hall ${st.room.charAt(0)} · seat ${st.roll.slice(-2)}`,
+            initials: st.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+            options: [opt('P', 'Present'), opt('A', 'Absent'), opt('E', 'Excused')],
+          };
+        });
+        const count = code => roster.filter(st => markOf(st) === code).length;
+        const marked = roster.filter(st => markOf(st)).length;
+        return {
+          studyRoster: rows,
+          studyEmpty: rows.length === 0,
+          studySessionChips: [['Morning', '05:30 – 07:00'], ['Evening', '19:00 – 21:30']].map(([k, t]) => ({
+            label: k, time: t,
+            go: () => this.setState({ studySession: k, flash: '' }),
+            bg: s.studySession === k ? '#2a52d8' : '#fff',
+            fg: s.studySession === k ? '#fff' : '#3d4754',
+            sub: s.studySession === k ? '#c3d0fb' : '#9aa4b0',
+            bd: s.studySession === k ? '#2a52d8' : '#e6e9ee',
+          })),
+          studyHeading: `${s.studySession} study hour · ${s.studySession === 'Morning' ? '05:30 – 07:00' : '19:00 – 21:30'}`,
+          studyDateLine: `Saturday, 01 August 2026 · ${s.wing.toLowerCase()} hostel · ${isAll ? 'all blocks' : s.reqBlock} · marked by R. Krishnan`,
+          studyStats: [
+            { label: 'On the roll for this session', value: String(roster.length), note: isAll ? 'All blocks in this wing' : s.reqBlock },
+            { label: 'Present in the hall', value: String(count('P')), note: `${marked} of ${roster.length} marked so far` },
+            { label: 'Absent', value: String(count('A')), note: 'Followed up with the block warden' },
+            { label: 'Excused', value: String(count('E')), note: 'Away on recorded leave or a pass' },
+          ],
+          markAll: () => this.markAllPresent(roster.map(st => st.roll)),
+          saveStudy: () => this.note(`${s.studySession} study hour roll saved — ${count('P')} present, ${count('A')} absent, ${count('E')} excused.`),
+          studyProgress: `${marked} of ${roster.length} marked`,
+        };
+      })(),
+      entryOpen: s.entry.open,
+      entryTitle: s.entry.open ? `${s.entry.key != null ? 'Edit' : 'New'} ${ENTRY[s.entry.view].title}` : '',
+      entryNote: 'Every field here is entered by the warden — students and parents have no login.',
+      entrySaveLabel: s.entry.key != null ? 'Save changes' : 'Save record',
+      entryFields: s.entry.open ? ENTRY[s.entry.view].fields.map(([k, label, ph]) => ({
+        label, ph, value: s.entry.draft[k] || '', set: ev => this.setDraft(k, ev.target.value),
+      })) : [],
+      saveEntry: () => this.saveEntry(),
+      closeEntry: () => this.closeEntry(),
+      canAddEntry: !!ENTRY_FOR_VIEW[v] || v === 'gate',
+      addEntryLabel: v === 'students' ? '+ Add student'
+        : v === 'leave' ? '+ Record leave'
+        : v === 'fees' ? '+ Raise invoice'
+        : v === 'complaints' ? '+ Log an issue'
+        : v === 'gate' ? (s.gateTab === 'Check-in' ? '+ Record a return' : '+ Record an exit') : '+ New record',
+      openEntryNew: () => this.openEntry(v === 'gate' ? (s.gateTab === 'Check-in' ? 'gateIn' : 'gateOut') : ENTRY_FOR_VIEW[v], null),
+      exitOpen: s.exitOpen,
+      exitButtonLabel: s.exitOpen ? 'Close entry form' : '+ Record exit',
+      toggleExit: () => this.setState(st => ({ exitOpen: !st.exitOpen, flash: '' })),
+      exitForm: s.exit,
+      setExitName: e => this.exitField('name', e.target.value),
+      setExitRoom: e => this.exitField('room', e.target.value),
+      setExitPurpose: e => this.exitField('purpose', e.target.value),
+      setExitCaller: e => this.exitField('caller', e.target.value),
+      setExitPhone: e => this.exitField('phone', e.target.value),
+      setExitCallAt: e => this.exitField('callAt', e.target.value),
+      setExitOutAt: e => this.exitField('outAt', e.target.value),
+      setExitReturnBy: e => this.exitField('returnBy', e.target.value),
+      saveExit: () => this.saveExitFn(),
+      formOpen: s.formOpen,
+      closeForm: () => this.setState({ formOpen: false, editingId: null }),
+      setPhone: e => this.field('phone', e.target.value),
+      hostels: s.hostels
+        .filter(h => wingNames.includes(h.name))
+        .filter(h => s.reqBlock === 'All' || h.name === s.reqBlock)
+        .filter(h => !needle || `${h.name} ${h.code} ${h.warden} ${h.type}`.toLowerCase().includes(needle))
+        .map(h => ({
+        ...h,
+        vacant: String((Number(h.capacity) || 0) - (Number(h.occupied) || 0)),
+        pct: `${Math.round(((Number(h.occupied) || 0) / Math.max(1, Number(h.capacity) || 0)) * 100)}%`,
+        edit: () => this.setState({ editingId: h.id, formOpen: true, form: { ...h, blockCount: String(h.blockCount), rooms: String(h.rooms), capacity: String(h.capacity) } }),
+        remove: () => this.setState(st => ({ hostels: st.hostels.filter(x => x.id !== h.id), flash: `${h.name} deleted from the hostel register.` })),
+      })),
+      formTitle: s.editingId ? 'Edit block record' : 'New block record',
+      saveLabel: s.editingId ? 'Save changes' : 'Create block',
+      form: s.form,
+      setName: e => this.field('name', e.target.value),
+      setCode: e => this.field('code', e.target.value),
+      setType: e => this.field('type', e.target.value),
+      setBlocks: e => this.field('blockCount', e.target.value),
+      setRooms: e => this.field('rooms', e.target.value),
+      setCapacity: e => this.field('capacity', e.target.value),
+      setWarden: e => this.field('warden', e.target.value),
+      saveHostel: () => this.saveHostelFn(),
+      resetForm: () => this.newHostelFn(),
+      newHostel: () => this.newHostelFn(),
+
+
+      ...this.buildTable(),
+    };
+  }
+
+  entryDefFor(view) { return ENTRY[view]; }
+  openEntry(view, key) {
+    const def = ENTRY[view];
+    const rec = key == null ? null : (this.state.data[def.coll] || []).find(r => r[def.key] === key);
+    const draft = {};
+    def.fields.forEach(([k]) => { draft[k] = rec ? (rec[k] == null ? '' : String(rec[k])) : ''; });
+    if (rec && view === 'students') { draft.feeText = rec.fee[0]; draft.stateText = rec.state[0]; }
+    this.setState({ entry: { open: true, view, key: key == null ? null : key, draft }, flash: '' });
+  }
+  closeEntry() { this.setState({ entry: { open: false, view: '', key: null, draft: {} } }); }
+  setDraft(k, val) { this.setState(st => ({ entry: { ...st.entry, draft: { ...st.entry.draft, [k]: val } } })); }
+  saveEntry() {
+    const e = this.state.entry, def = ENTRY[e.view];
+    if (!def) return;
+    const first = def.fields[0][0];
+    if (!String(e.draft[first] || '').trim()) return this.note(`Fill in "${def.fields[0][1]}" before saving.`);
+    const rec = { ...e.draft };
+    if (rec.name) WING_OF[String(rec.name).trim()] = this.state.wing;
+    if (e.view === 'issues' && rec.told) WING_OF[String(rec.told).split(' · ')[0].trim()] = this.state.wing;
+    if (e.view === 'students') {
+      const feeText = rec.feeText || 'Paid';
+      const amt = Number((feeText.match(/[\d,]+/) || ['0'])[0].replace(/,/g, ''));
+      rec.fee = [feeText, /paid/i.test(feeText) ? 'ok' : amt >= 20000 ? 'bad' : 'warn'];
+      const st = rec.stateText || 'In hostel';
+      rec.state = [st, st === 'In hostel' ? 'ok' : /leave|checked out/i.test(st) ? 'warn' : 'mute'];
+      delete rec.feeText; delete rec.stateText;
+    }
+    this.setState(st => {
+      const list = st.data[def.coll] || [];
+      const exists = e.key != null && list.some(r => r[def.key] === e.key);
+      if (rec.name) WING_OF[String(rec.name).trim()] = st.wing;
+      if (!exists) rec.wing = st.wing;
+      const next = exists
+        ? list.map(r => (r[def.key] === e.key ? { ...r, ...rec } : r))
+        : [{ ...(def.coll === 'students' ? { att: '—', home: '—', blood: '—', admitted: '—', dob: '—' } : {}), ...rec }, ...list];
+      return {
+        data: { ...st.data, [def.coll]: next },
+        entry: { open: false, view: '', key: null, draft: {} },
+    studySession: 'Morning', studyMarks: {}, studySaved: '',
+        flash: exists ? `${def.title.charAt(0).toUpperCase() + def.title.slice(1)} updated.` : `New ${def.label} recorded by R. Krishnan.`,
+      };
+    });
+  }
+  studyKey(session, roll) { return session + '|' + roll; }
+  setMark(roll, mark) {
+    const k = this.studyKey(this.state.studySession, roll);
+    this.setState(st => ({ studyMarks: { ...st.studyMarks, [k]: mark }, flash: '' }));
+  }
+  markAllPresent(rolls) {
+    const session = this.state.studySession;
+    this.setState(st => {
+      const next = { ...st.studyMarks };
+      rolls.forEach(r => { next[this.studyKey(session, r)] = 'P'; });
+      return { studyMarks: next, flash: `All ${rolls.length} students marked present for the ${session.toLowerCase()} study hour.` };
+    });
+  }
+  closeLeave(name) {
+    this.setState(st => ({
+      data: { ...st.data, leave: st.data.leave.filter(r => r.name !== name) },
+      flash: `Return logged for ${name} — leave entry closed.`,
+    }));
+  }
+  logGate(coll, name, msg) {
+    this.setState(st => ({ data: { ...st.data, [coll]: st.data[coll].filter(r => r.name !== name) }, flash: msg }));
+  }
+  markPaid(invoice) {
+    this.setState(st => ({
+      data: { ...st.data, fees: st.data.fees.map(r => (r.invoice === invoice ? { ...r, status: 'Paid' } : r)) },
+      flash: `${invoice} marked paid — receipt printed for the parent.`,
+    }));
+  }
+  resolveIssue(id) {
+    this.setState(st => ({ data: { ...st.data, issues: st.data.issues.filter(r => r.id !== id) }, flash: `${id} marked resolved.` }));
+  }
+  field(k, val) { this.setState(s => ({ form: { ...s.form, [k]: val } })); }
+  exitField(k, val) { this.setState(s => ({ exit: { ...s.exit, [k]: val } })); }
+  saveExitFn() {
+    const f = this.state.exit;
+    if (!f.name.trim()) return this.note('Enter the student name before saving the exit.');
+    if (!f.caller.trim() || !f.phone.trim()) return this.note('Record who called and the number they called from.');
+    const room = f.room || 'Room not set';
+    const rec = {
+      id: 'LOG-' + Math.floor(4413 + Math.random() * 80),
+      type: f.purpose || 'Local outing',
+      call: `${f.caller} · ${f.phone}${f.callAt ? ' · called ' + f.callAt : ''}`,
+      name: f.name, roll: '—', room, block: `${room.charAt(0)} Block`,
+      outType: f.purpose || 'Local outing',
+      outWhen: f.outAt || 'Today',
+      returnBy: f.returnBy || 'Not stated',
+      reason: `Parent called the warden office and asked for the student to be let out.`,
+      when: 'just now',
+    };
+    this.setState(st => ({
+      queue: [rec, ...st.queue], exitOpen: false,
+      exit: { name: '', room: '', purpose: '', caller: '', phone: '', callAt: '', outAt: '', returnBy: '' },
+      flash: `Exit logged for ${rec.name} · ${room} — parent call noted against ${rec.id}.`,
+    }));
+  }
+  newHostelFn() {
+    this.setState({ view: 'hostels', editingId: null, formOpen: true, form: { name: '', code: '', type: 'Boys', blockCount: '2', rooms: '', capacity: '', warden: '', phone: '' } });
+  }
+  saveHostelFn() {
+    const f = this.state.form;
+    if (!f.name.trim()) { this.note('Give the hostel a name before saving.'); return; }
+    const rec = {
+      name: f.name, code: f.code || 'NEW-E', type: f.type || 'Boys',
+      blockCount: Number(f.blockCount) || 1, rooms: Number(f.rooms) || 0,
+      capacity: Number(f.capacity) || 0, occupied: 0, warden: f.warden || 'Unassigned',
+      phone: f.phone || '—', mess: f.mess || 'Not started', established: 2026,
+    };
+    this.setState(s => s.editingId
+      ? { hostels: s.hostels.map(h => (h.id === s.editingId ? { ...h, ...rec, occupied: h.occupied } : h)), editingId: null, formOpen: false, flash: `${rec.name} updated — rooms & occupancy refreshed.` }
+      : { hostels: [...s.hostels, { ...rec, id: Date.now() }], formOpen: false, flash: `${rec.name} added — it now appears in Rooms & occupancy.` });
+  }
+}
+
+</script>
+</body>
+</html>

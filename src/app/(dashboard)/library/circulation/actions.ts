@@ -1,14 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createIssue, markIssueLost, renewIssue, returnIssue } from "@/lib/library-api";
+import { createIssue, markCopyDamaged, markIssueLost, renewIssue, returnIssue } from "@/lib/library-api";
 
 export interface FormActionState {
   error?: string;
 }
 
-/** The Circulation page's own "Issue a book" form -- copyId/memberId come from the
- * IssueBookForm's two search-selects (see ../search-actions.ts), not typed IDs. */
+/** The Issue books page's own form -- copyId/memberId come from
+ * IssueBooksClient's two live-search cards (see ../search-actions.ts), not
+ * typed IDs. */
 export async function issueBookAction(_prev: FormActionState, formData: FormData): Promise<FormActionState> {
   const copyId = String(formData.get("copyId") ?? "");
   const memberId = String(formData.get("memberId") ?? "");
@@ -19,6 +20,7 @@ export async function issueBookAction(_prev: FormActionState, formData: FormData
     return { error: err instanceof Error ? err.message : "Issue failed." };
   }
   revalidatePath("/library/circulation");
+  revalidatePath("/library/returns");
   revalidatePath("/library/books");
   return {};
 }
@@ -41,24 +43,38 @@ export async function issueCopyAction(
   }
   revalidatePath(`/library/books/${bookId}`);
   revalidatePath("/library/circulation");
+  revalidatePath("/library/returns");
   return {};
 }
 
 export async function returnIssueAction(id: string): Promise<void> {
   await returnIssue(id);
-  revalidatePath("/library/circulation");
+  revalidatePath("/library/returns");
   revalidatePath("/library/books");
   revalidatePath("/library/members");
 }
 
 export async function renewIssueAction(id: string): Promise<void> {
   await renewIssue(id);
-  revalidatePath("/library/circulation");
+  revalidatePath("/library/returns");
 }
 
 export async function markIssueLostAction(id: string): Promise<void> {
   await markIssueLost(id);
-  revalidatePath("/library/circulation");
+  revalidatePath("/library/returns");
+  revalidatePath("/library/books");
+  revalidatePath("/library/fines");
+}
+
+/** The design's own "Damaged" row action on an active loan -- real backend
+ * has no loan-level "mark damaged," only a per-COPY one
+ * (markCopyDamaged(copyId)); an issue's own copyId is the real join between
+ * the two, so this is a thin, real wrapper, same shape as markIssueLostAction
+ * above (which similarly wraps a copy-level effect: LOST just also flips the
+ * issue's own status). */
+export async function markIssueDamagedAction(copyId: string): Promise<void> {
+  await markCopyDamaged(copyId);
+  revalidatePath("/library/returns");
   revalidatePath("/library/books");
   revalidatePath("/library/fines");
 }

@@ -1,0 +1,147 @@
+/*
+ * Design tokens for the Library portal rebuild, measured verbatim (by literal
+ * usage-count) from brain/SIS LIBRARY/School Library Module.dc.html -- a
+ * separate design spec from sitewide globals.css's @theme block (Plus Jakarta
+ * Sans / #2b6fe0 / different radii) and from the Faculty rebuild's own
+ * --fac-* tokens (Outfit / #1d4ed8 too, but different navy/tint/radii and a
+ * different mono face -- JetBrains Mono here, not IBM Plex Mono).
+ *
+ * Scoped deliberately: every variable is --lib-* and only takes effect inside
+ * .library-scope, which LibraryShell applies once to its own outermost
+ * wrapper. No other role loads this file or sees these values.
+ */
+
+.library-scope {
+  /* Text */
+  --lib-primary: #1d4ed8;
+  --lib-navy: #1e3a8a;
+  --lib-ink: #0f172a;
+  --lib-body: #334155;
+  --lib-body-muted: #64748b;
+  --lib-tertiary: #94a3b8;
+
+  /* Surfaces */
+  --lib-white: #ffffff;
+  --lib-tint: #eef2ff;
+  --lib-panel: #f8fafc;
+  --lib-divider: #f1f5f9;
+
+  /* Borders / outlines */
+  --lib-border: #e2e8f0;
+  --lib-field-border: #c7d2e4;
+  --lib-outline-hover: #1d4ed8;
+
+  /* Status -- blue = positive/neutral (returned/clear/published/accepted),
+     amber = pending/overdue, red = negative (lost/damaged/rejected). Matches
+     the design's own pillBg/pillFg switch verbatim. */
+  --lib-red: #dc2626;
+  --lib-red-bg: #fef2f2;
+  --lib-red-border: #fecaca;
+  --lib-amber-text: #b45309;
+  --lib-amber-bg: #fff7ed;
+  --lib-green-text: #166534;
+  --lib-green-bg: #dcfce7;
+
+  /* Radii */
+  --lib-radius-card: 14px;
+  --lib-radius-table: 12px;
+  --lib-radius-input: 10px;
+  --lib-radius-btn: 11px;
+  --lib-radius-btn-sm: 9px;
+  --lib-radius-pill: 999px;
+  --lib-radius-modal: 16px;
+
+  /* Shadows -- resting cards/tables are flat; elevation is hover-lift only. */
+  --lib-shadow-card-hover: 0 12px 26px rgba(29, 78, 216, 0.14);
+  --lib-shadow-row-hover: 0 8px 20px rgba(29, 78, 216, 0.14);
+  --lib-shadow-modal: 0 24px 60px rgba(15, 23, 42, 0.22);
+  --lib-shadow-toast: 0 12px 34px rgba(15, 23, 42, 0.3);
+  --lib-scrim: rgba(15, 23, 42, 0.35);
+
+  /* Fonts -- Outfit + JetBrains Mono are loaded only by this route group (see
+     LibraryShell.tsx). */
+  --lib-font-sans: var(--font-outfit-lib), ui-sans-serif, system-ui, sans-serif;
+  --lib-font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  font-family: var(--lib-font-sans);
+  color: var(--lib-ink);
+  background: var(--lib-white);
+}
+
+.library-scope input,
+.library-scope select,
+.library-scope textarea,
+.library-scope button {
+  font-family: var(--lib-font-sans);
+}
+
+.library-scope ::placeholder {
+  color: var(--lib-tertiary);
+}
+
+.library-scope .lib-font-mono {
+  font-family: var(--lib-font-mono);
+}
+
+/* Card hover-lift -- translateY(-4px) + primary border + soft blue shadow,
+   the .18s ease transition used on every stat card / panel / settings
+   section / report card in the source. */
+.lib-card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.lib-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--lib-primary);
+  box-shadow: var(--lib-shadow-card-hover);
+}
+
+/* Table row hover-lift -- translateY(-2px) + panel background + inset primary
+   outline + soft blue shadow, the .16s ease transition used on every table
+   row in the source. */
+.lib-row-hover {
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+.lib-row-hover:hover {
+  transform: translateY(-2px);
+  background: var(--lib-panel);
+  outline: 1.5px solid var(--lib-primary);
+  outline-offset: -1.5px;
+  box-shadow: var(--lib-shadow-row-hover);
+}
+
+/* Plain surface hover (icon buttons, secondary buttons, sidebar sign-out). */
+.lib-surface-hover:hover {
+  background: var(--lib-panel);
+}
+
+/* Primary CTA hover -- navy -> primary blue, e.g. "+ Add book" / "Issue book". */
+.lib-btn-primary:hover {
+  background: var(--lib-primary);
+}
+
+/* Danger icon-button hover (Delete book, Delete subject, Delete rack row
+   actions) -- red tint bg + red border + red icon. */
+.lib-danger-icon-hover:hover {
+  background: var(--lib-red-bg);
+  border-color: var(--lib-red-border) !important;
+  color: var(--lib-red) !important;
+}
+
+/* Primary icon-button hover (Edit book row action) -- blue tint bg + primary
+   border + primary icon. */
+.lib-edit-icon-hover:hover {
+  background: var(--lib-tint);
+  border-color: var(--lib-primary) !important;
+  color: var(--lib-primary) !important;
+}
+
+/* Link hover (a:hover, "View" links). */
+.lib-link-hover:hover {
+  color: var(--lib-navy);
+}
+
+/* Search-result hit hover (borrower/book picker rows on Issue books). */
+.lib-hit-hover:hover {
+  background: var(--lib-tint);
+  border-color: var(--lib-primary) !important;
+}

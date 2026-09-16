@@ -1,32 +1,15 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import { LibraryShell } from "@/components/library-ui/LibraryShell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 // logoutAction is genuinely shared across Admin/Finance/Library -- see finance/layout.tsx's
 // own comment for why it lives under admin/ rather than a since-removed placeholder route.
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
+import { nowMs } from "@/lib/library-time";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
-
-// Library's own operational shell -- same Shell component Admin/Finance use, only
-// the nav items/role label differ. This route group is LIBRARY-only: Admin's
-// oversight of Library lives in its own separate, much smaller /admin/library page
-// (see src/app/(dashboard)/admin/library/page.tsx), not by "viewing as" Library here
-// -- Admin must never become an alternative Library operator interface.
-const LIBRARY_NAV_ITEMS: ShellNavItem[] = [
-  { href: "/library", label: "Dashboard", icon: "dashboard" },
-  { href: "/library/books", label: "Books", icon: "academics" },
-  { href: "/library/members", label: "Members", icon: "students" },
-  { href: "/library/circulation", label: "Circulation", icon: "requests" },
-  { href: "/library/reservations", label: "Reservations", icon: "calendar" },
-  { href: "/library/fines", label: "Fines", icon: "finance" },
-  { href: "/library/lost-damaged", label: "Lost & Damaged", icon: "maintenance" },
-  { href: "/library/reports", label: "Reports", icon: "reports" },
-  { href: "/library/configuration", label: "Configuration", icon: "settings" },
-  { href: "/library/audit", label: "Audit / History", icon: "audit" },
-];
 
 interface MeResponse {
   data: {
@@ -58,16 +41,17 @@ export default async function LibraryLayout({ children }: { children: ReactNode 
   const me = meRes.ok ? ((await meRes.json()) as MeResponse) : null;
   const personName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
 
+  // Display-only "2026–27"-style label for the topbar pill -- same derivation
+  // as the Faculty rebuild's own layout.tsx (India's academic year runs
+  // June-May), since there's no LIBRARY-authorized academic-year label
+  // endpoint either.
+  const now = new Date(nowMs());
+  const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
+  const academicYear = `${startYear}–${String(startYear + 1).slice(-2)}`;
+
   return (
-    <Shell
-      personName={personName}
-      roleLabel="Library"
-      onSignOut={logoutAction}
-      navItems={LIBRARY_NAV_ITEMS}
-      requestsHref="/library/fines"
-      showGlobalSearch={false}
-    >
+    <LibraryShell personName={personName} academicYear={academicYear} onSignOut={logoutAction}>
       {children}
-    </Shell>
+    </LibraryShell>
   );
 }

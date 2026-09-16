@@ -1,0 +1,102 @@
+/*
+ * Design tokens for the Faculty portal rebuild, measured verbatim (by literal
+ * usage-count) from brain/SIS Class teacher/Class Teacher Portal.dc.html --
+ * a separate, newer design spec than the one sitewide globals.css's @theme
+ * block already implements (Plus Jakarta Sans / #2b6fe0 / different radii).
+ *
+ * Scoped deliberately: every variable is --fac-* (never reusing a --color-
+ * or --radius- name) and only takes effect inside .faculty-scope, which
+ * FacultyShell applies once to its own outermost wrapper. Admin/Principal/
+ * Finance/etc. never load this file and never see these values -- the two
+ * design systems coexist in the same app without conflict.
+ */
+
+.faculty-scope {
+  /* Text */
+  --fac-primary: #1d4ed8;
+  --fac-navy: #12275c;
+  --fac-ink: #0f172a;
+  --fac-body: #334155;
+  --fac-body-muted: #64748b;
+  --fac-tertiary: #94a3b8;
+
+  /* Surfaces */
+  --fac-white: #ffffff;
+  --fac-tint: #eff6ff;
+  --fac-panel: #f8fafc;
+  --fac-divider: #f1f5f9;
+  --fac-chip: #eef2f7;
+
+  /* Borders / outlines */
+  --fac-border: #e2e8f0;
+  --fac-border-hover: #dbeafe;
+  --fac-border-focus: #bfdbfe;
+  --fac-outline-hover: #93b4f5;
+
+  /* Status -- blue = positive/neutral (present/paid/signed/approved/completed),
+     red = negative (absent/overdue/rejected/declined). No amber/warning tier. */
+  --fac-red: #dc2626;
+  --fac-red-bg: #fee2e2;
+  --fac-red-text: #b91c1c;
+  --fac-green-text: #15803d;
+  --fac-green-bg: #f0fdf4;
+  --fac-fee-pending-bg: #fef2f2;
+  --fac-amber: #fbbf24;
+  --fac-live-dot: #34d399;
+
+  /* Dark UI (video-call live-class overlay only) */
+  --fac-dark-root: #0b1220;
+  --fac-dark-panel: #111c30;
+  --fac-dark-chip: #1e293b;
+
+  /* Radii */
+  --fac-radius-card: 12px;
+  --fac-radius-input: 10px;
+  --fac-radius-btn-sm: 9px;
+  --fac-radius-pill: 20px;
+  --fac-radius-composer: 11px;
+  --fac-radius-icon-btn: 8px;
+  --fac-radius-modal: 16px;
+  --fac-radius-full: 999px;
+
+  /* Shadows -- used ONLY on the two popover/dropdown overlays in the whole
+     design; resting cards are flat (elevation = hover-lift, see below). */
+  --fac-shadow-popover: 0 18px 40px rgba(15, 23, 42, 0.12);
+  --fac-shadow-popover-strong: 0 18px 40px rgba(15, 23, 42, 0.14);
+  --fac-scrim: rgba(15, 23, 42, 0.45);
+
+  /* Fonts -- Outfit is loaded only by this route group (see layout.tsx);
+     IBM Plex Mono reuses the root layout's shared loader (weight extended
+     to include 400, the one deliberate shared-file touch this rebuild makes). */
+  --fac-font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --fac-font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  font-family: var(--fac-font-sans);
+  color: var(--fac-ink);
+  background: var(--fac-white);
+}
+
+.faculty-scope .fac-font-mono {
+  font-family: var(--fac-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The design's signature elevation language: flat cards that lift 3-5px and
+   gain a soft blue outline ring on hover, instead of a resting shadow. This
+   replaces the source .dc.html's non-standard style-hover/style-active
+   attributes (a design-tool compiler artifact, not real CSS) with real
+   :hover/:active rules. */
+.fac-hover-lift {
+  transition: transform 0.14s ease, outline-color 0.14s ease, border-color 0.14s ease;
+  outline: 1.5px solid transparent;
+  outline-offset: -2px;
+}
+.fac-hover-lift:hover {
+  transform: translateY(-3px);
+  outline-color: var(--fac-outline-hover);
+  border-color: var(--fac-border-hover) !important;
+}
+.fac-hover-lift:active {
+  transform: translateY(-1px);
+  transition-duration: 0.12s;
+}

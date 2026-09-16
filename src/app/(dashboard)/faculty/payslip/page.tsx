@@ -1,11 +1,14 @@
+// Pixel-rebuilt to match Class Teacher Portal.dc.html's "isEmpPayslip"
+// screen (nav label "Payslip"). Reuses EXISTING real
+// getPayslipRequestStatus/listPayslips/requestPayslipAccessAction unchanged.
+
 import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
-import { ApprovalTrail } from "@/components/faculty/ApprovalTrail";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { formatMoneyDetail } from "@/lib/format";
 import { getPayslipRequestStatus, listPayslips } from "@/lib/faculty-staff-api";
-import { RequestAccessButton } from "./RequestAccessButton";
+import { formatMoneyDetail } from "@/lib/format";
+import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
+import { RequestAccessButtonPixel } from "./RequestAccessButtonPixel";
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -14,39 +17,37 @@ export default async function PayslipPage() {
     const status = await getPayslipRequestStatus();
 
     return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-extrabold text-text">Payslip</h1>
-          <p className="mt-1 text-sm text-text-muted">Gated by request — Principal, then Finance. Once approved, access stays granted.</p>
-        </div>
+      <div>
+        <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Payslip request</h1>
+        <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
+          Gated by request -- Principal, then Finance. Once approved, access stays granted.
+        </p>
 
         {!status.hasAccess ? (
-          <>
-            <div className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
-              <p className="text-sm font-bold text-text">Payslip access required</p>
-              <p className="mt-1.5 text-sm text-text-muted">Request access to view your payslips. This goes to the Principal, then Finance for approval.</p>
-              {!status.requests.some((r) => r.state === "PENDING") ? (
-                <div className="mt-4">
-                  <RequestAccessButton />
+          <div style={{ marginTop: 22 }}>
+            <div style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: 22 }}>
+              <p style={{ font: "700 16px/1.3 var(--fac-font-sans)" }}>Payslip access required</p>
+              <p style={{ font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-body-muted)", marginTop: 6 }}>
+                Request access to view your payslips. This goes to the Principal, then Finance for approval.
+              </p>
+              {!status.requests.some((r) => r.state === "PENDING") && (
+                <div style={{ marginTop: 16 }}>
+                  <RequestAccessButtonPixel />
                 </div>
-              ) : null}
+              )}
             </div>
 
-            {status.requests.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                <h2 className="text-sm font-extrabold text-text">My requests</h2>
+            {status.requests.length > 0 && (
+              <div className="flex flex-col gap-3.5" style={{ marginTop: 18 }}>
                 {status.requests.map((r) => (
-                  <div key={r.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-sm font-bold text-text">{r.subject}</p>
-                      <StatusPill state={r.state} />
-                    </div>
-                    <ApprovalTrail steps={r.approvalTrail} />
+                  <div key={r.id} className="fac-hover-lift flex items-center justify-between gap-3" style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "16px 20px" }}>
+                    <span style={{ font: "600 14.5px/1.3 var(--fac-font-sans)" }}>{r.subject}</span>
+                    <span style={{ font: "600 11.5px/1 var(--fac-font-sans)", letterSpacing: ".06em", borderRadius: 20, padding: "7px 13px", background: "var(--fac-divider)", color: "var(--fac-body)" }}>{r.state}</span>
                   </div>
                 ))}
               </div>
-            ) : null}
-          </>
+            )}
+          </div>
         ) : (
           <PayslipList />
         )}
@@ -54,30 +55,31 @@ export default async function PayslipPage() {
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load your payslip access. Nothing was changed — try again." />;
+    return <ErrorState message="Couldn't load your payslip access. Nothing was changed -- try again." />;
   }
 }
 
 async function PayslipList() {
   const payslips = await listPayslips();
   if (payslips.length === 0) {
-    return <EmptyState title="No payslips yet" body="Access is approved — no payslip has been processed yet." />;
+    return (
+      <div style={{ marginTop: 22 }}>
+        <FacultyEmptyState message="Access is approved -- no payslip has been processed yet." />
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3" style={{ marginTop: 22 }}>
       {payslips.map((p) => (
-        <details key={p.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-            <span className="text-sm font-bold text-text">{MONTH_NAMES[p.month - 1]} {p.year}</span>
-            <span className="font-mono text-sm font-bold text-success-text">{formatMoneyDetail(p.netPaise)}</span>
+        <details key={p.id} className="fac-hover-lift" style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "18px 20px" }}>
+          <summary className="flex cursor-pointer items-center justify-between gap-4" style={{ listStyle: "none" }}>
+            <span style={{ font: "700 16px/1.3 var(--fac-font-sans)" }}>{MONTH_NAMES[p.month - 1]} {p.year}</span>
+            <span className="fac-font-mono" style={{ font: "600 15px/1 var(--fac-font-mono)", color: "var(--fac-green-text)" }}>{formatMoneyDetail(p.netPaise)}</span>
           </summary>
-          <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-sm">
-            <div className="flex justify-between"><span className="text-text-muted">Gross</span><span className="font-mono text-text">{formatMoneyDetail(p.grossPaise)}</span></div>
-            <div className="flex justify-between"><span className="text-text-muted">Deductions</span><span className="font-mono text-text">{formatMoneyDetail(p.deductionsPaise)}</span></div>
-            {p.breakdown ? Object.entries(p.breakdown).map(([key, value]) => (
-              <div key={key} className="flex justify-between"><span className="text-text-muted">{key}</span><span className="font-mono text-text">₹{value}</span></div>
-            )) : null}
+          <div className="flex flex-col gap-1.5" style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--fac-divider)" }}>
+            <div className="flex justify-between"><span style={{ color: "var(--fac-body-muted)" }}>Gross</span><span className="fac-font-mono">{formatMoneyDetail(p.grossPaise)}</span></div>
+            <div className="flex justify-between"><span style={{ color: "var(--fac-body-muted)" }}>Deductions</span><span className="fac-font-mono">{formatMoneyDetail(p.deductionsPaise)}</span></div>
           </div>
         </details>
       ))}

@@ -1,191 +1,140 @@
-// Book catalog -- search/filter/paginate, same shape as Admin's Inventory items
-// list (src/app/(dashboard)/admin/inventory/page.tsx): Library's own pages are
-// siblings of that one, not a new visual language.
+// Books catalogue -- pixel-rebuilt from the design's own Books screen. Two of
+// its filter controls (Grade band, Rack) are dropped, not faked -- neither
+// exists on library_book (grade-band) or library_book has no rack at all,
+// only library_book_copy.shelfLocation (a per-copy fact, not filterable at
+// the title level the design's own filter row implies). "Available only" IS
+// real (copiesSummary.available > 0) but the backend has no query param for
+// it, so it's applied as a real post-filter here rather than skipped.
+// ISBN/Accession's own column shows the real ISBN -- accession numbers don't
+// exist at the book-title level either (see CreateBookModal's comment).
 
+import type { CSSProperties } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { StatusPill } from "@/components/dashboard/StatusPill";
-import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { AuthExpiredError } from "@/lib/api";
 import { listBooks, listCategories } from "@/lib/library-api";
-import { statusLabel, statusTone } from "@/lib/format";
+import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
+import { AutoSubmitCheckbox } from "@/components/library-ui/AutoSubmitCheckbox";
+import { Breadcrumb, EmptyRow, Pill, TableShell, Td, Th } from "@/components/library-ui/primitives";
 import { CreateBookModal } from "./CreateBookModal";
+import { EditBookModal } from "./[id]/EditBookModal";
+import { DeleteBookButton } from "./DeleteBookButton";
 
-const STATUS_OPTIONS = ["ACTIVE", "WITHDRAWN"];
+const fieldStyle: CSSProperties = { padding: "12px 14px", border: "1px solid var(--lib-border)", borderRadius: 10, font: "400 15px/1.2 var(--lib-font-sans)", color: "var(--lib-ink)", background: "var(--lib-white)" };
 
 export default async function LibraryBooksPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; categoryId?: string; author?: string; publisher?: string; status?: string; page?: string }>;
+  searchParams: Promise<{ search?: string; categoryId?: string; availableOnly?: string; page?: string }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page ?? "1") || 1;
+  const availableOnly = params.availableOnly === "true";
 
   try {
-    const [{ data: books, meta }, categories] = await Promise.all([
-      listBooks({
-        search: params.search || undefined,
-        categoryId: params.categoryId || undefined,
-        author: params.author || undefined,
-        publisher: params.publisher || undefined,
-        status: params.status || undefined,
-        page,
-        limit: 50,
-      }),
+    const [{ data: rawBooks, meta }, categories] = await Promise.all([
+      listBooks({ search: params.search || undefined, categoryId: params.categoryId || undefined, page, limit: 100 }),
       listCategories(),
     ]);
+    const books = availableOnly ? rawBooks.filter((b) => b.copiesSummary.available > 0) : rawBooks;
     const total = meta?.total ?? books.length;
-    const limit = meta?.limit ?? 50;
-    const totalPages = Math.max(1, Math.ceil(total / limit));
-
-    function hrefWith(overrides: Record<string, string | undefined>) {
-      const next = new URLSearchParams();
-      if (params.search) next.set("search", params.search);
-      if (params.categoryId) next.set("categoryId", params.categoryId);
-      if (params.author) next.set("author", params.author);
-      if (params.publisher) next.set("publisher", params.publisher);
-      if (params.status) next.set("status", params.status);
-      next.set("page", String(page));
-      for (const [key, value] of Object.entries(overrides)) {
-        if (value === undefined) next.delete(key);
-        else next.set(key, value);
-      }
-      return `/library/books?${next.toString()}`;
-    }
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-[28px] font-bold leading-[34px] text-text">Books</h1>
-            <p className="mt-1 text-sm text-text-muted">{total} titles in the catalog</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+        <Breadcrumb label="Books" />
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 24, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 260, display: "flex", flexDirection: "column", gap: 6 }}>
+            <h1 style={{ margin: 0, font: "700 38px/1.15 var(--lib-font-sans)" }}>Books</h1>
+            <div style={{ font: "400 16px/1.5 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>Every physical title with its live copy position.</div>
           </div>
           <CreateBookModal categories={categories} />
         </div>
 
-        <form action="/library/books" className="mt-6 flex flex-wrap items-end gap-3">
-          <AutoSubmitSearchInput
-            type="search"
-            name="search"
-            defaultValue={params.search ?? ""}
-            placeholder="Search by title, author, or ISBN…"
-            className="w-full max-w-md rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
-          />
-          <AutoSubmitSelect
-            name="categoryId"
-            defaultValue={params.categoryId ?? ""}
-            className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text"
-          >
-            <option value="">Category: All</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </AutoSubmitSelect>
-          <AutoSubmitSearchInput
-            type="search"
-            name="author"
-            defaultValue={params.author ?? ""}
-            placeholder="Author…"
-            className="w-40 rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
-          />
-          <AutoSubmitSearchInput
-            type="search"
-            name="publisher"
-            defaultValue={params.publisher ?? ""}
-            placeholder="Publisher…"
-            className="w-40 rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
-          />
-          <AutoSubmitSelect
-            name="status"
-            defaultValue={params.status ?? ""}
-            className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text"
-          >
-            <option value="">Status: All</option>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>{statusLabel(s)}</option>
-            ))}
-          </AutoSubmitSelect>
-          <button type="submit" className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg">
-            Filter
-          </button>
-          <Link href="/library/books" className="text-xs font-bold text-text-muted hover:text-text">
-            Clear
-          </Link>
+        <form action="/library/books" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ maxWidth: 480, display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", border: "1px solid var(--lib-border)", borderRadius: 11 }}>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+              <circle cx="9" cy="9" r="5.6" />
+              <path d="M13.2 13.2L17 17" />
+            </svg>
+            <AutoSubmitSearchInput
+              type="search"
+              name="search"
+              defaultValue={params.search ?? ""}
+              placeholder="Title, author, ISBN or publisher"
+              style={{ flex: 1, border: 0, outline: "none", font: "400 15px/1.2 var(--lib-font-sans)", color: "var(--lib-ink)", background: "transparent" }}
+            />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", padding: "18px 20px", border: "1px solid var(--lib-border)", borderRadius: 12 }}>
+            <AutoSubmitSelect name="categoryId" defaultValue={params.categoryId ?? ""} style={{ ...fieldStyle, minWidth: 190 }}>
+              <option value="">All subjects</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </AutoSubmitSelect>
+            <label style={{ display: "flex", alignItems: "center", gap: 9, font: "400 15px/1.2 var(--lib-font-sans)", color: "var(--lib-ink)" }}>
+              <AutoSubmitCheckbox name="availableOnly" value="true" defaultChecked={availableOnly} style={{ width: 17, height: 17, accentColor: "var(--lib-primary)" }} />
+              Available only
+            </label>
+          </div>
         </form>
 
-        <div className="mt-6 overflow-x-auto rounded-[16px] border border-border bg-surface">
-          <table className="w-full min-w-[980px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-                <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3">Author</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Publisher</th>
-                <th className="px-4 py-3">ISBN</th>
-                <th className="px-4 py-3 text-right">Total</th>
-                <th className="px-4 py-3 text-right">Available</th>
-                <th className="px-4 py-3 text-right">Issued</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {books.length === 0 && (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-text-muted">
-                    No books match this filter.
-                  </td>
-                </tr>
-              )}
-              {books.map((book) => (
-                <tr key={book.id}>
-                  <td className="px-4 py-3 font-semibold text-text">{book.title}</td>
-                  <td className="px-4 py-3 text-text-muted">{book.author}</td>
-                  <td className="px-4 py-3 text-text-muted">{book.categoryName ?? "—"}</td>
-                  <td className="px-4 py-3 text-text-muted">{book.publisher ?? "—"}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-muted">{book.isbn ?? "—"}</td>
-                  <td className="px-4 py-3 text-right font-mono text-text-muted">{book.copiesSummary.total}</td>
-                  <td className="px-4 py-3 text-right font-mono text-text-muted">{book.copiesSummary.available}</td>
-                  <td className="px-4 py-3 text-right font-mono text-text-muted">{book.copiesSummary.issued}</td>
-                  <td className="px-4 py-3">
-                    <StatusPill tone={statusTone(book.status)} label={statusLabel(book.status)} />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/library/books/${book.id}`} className="text-[13px] font-semibold text-primary">
-                      View
+        <TableShell>
+          <thead>
+            <tr style={{ background: "var(--lib-panel)" }}>
+              <Th>Book</Th>
+              <Th>ISBN</Th>
+              <Th>Subject</Th>
+              <Th>Copies</Th>
+              <Th>Status</Th>
+              <th style={{ padding: "14px 18px" }} />
+            </tr>
+          </thead>
+          <tbody>
+            {books.length === 0 && <EmptyRow colSpan={6} />}
+            {books.map((b) => (
+              <tr key={b.id} className="lib-row-hover">
+                <Td>
+                  <div style={{ font: "500 15px/1.4 var(--lib-font-sans)", color: "var(--lib-ink)" }}>{b.title}</div>
+                  <div style={{ font: "400 13px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>{b.author}</div>
+                </Td>
+                <Td mono>{b.isbn ?? "—"}</Td>
+                <Td>{b.categoryName ?? "—"}</Td>
+                <Td mono>{b.copiesSummary.available} / {b.copiesSummary.total}</Td>
+                <Td>
+                  <Pill label={b.status === "ACTIVE" ? "Active" : "Withdrawn"} tone={b.status === "ACTIVE" ? "green" : "red"} />
+                </Td>
+                <Td align="right" style={{ whiteSpace: "nowrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
+                    <Link
+                      href={`/library/books/${b.id}`}
+                      title="View copies"
+                      className="lib-surface-hover"
+                      style={{ width: 34, height: 34, display: "grid", placeItems: "center", border: "1px solid var(--lib-border)", borderRadius: 9, background: "var(--lib-white)", color: "#475569" }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6}>
+                        <path d="M2.5 10s2.8-5.3 7.5-5.3S17.5 10 17.5 10s-2.8 5.3-7.5 5.3S2.5 10 2.5 10z" />
+                        <circle cx="10" cy="10" r="2.3" />
+                      </svg>
                     </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <EditBookModal book={b} categories={categories} />
+                    {b.status === "ACTIVE" && <DeleteBookButton bookId={b.id} title={b.title} />}
+                  </div>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </TableShell>
+        <div style={{ font: "400 14px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>
+          Showing 1–{books.length} of {total} titles
         </div>
-
-        {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between text-sm text-text-muted">
-            <span>Page {page} of {totalPages}</span>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link href={hrefWith({ page: String(page - 1) })} className="font-semibold text-primary">
-                  Previous
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link href={hrefWith({ page: String(page + 1) })} className="font-semibold text-primary">
-                  Next
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return (
-      <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
-        <p className="text-[15px] font-extrabold leading-[20px] text-text">Couldn&apos;t load the catalog</p>
-        <p className="mt-1.5 text-sm text-text-muted">Nothing was changed — try refreshing the page.</p>
+      <div style={{ border: "1px solid var(--lib-border)", borderRadius: "var(--lib-radius-card)", background: "var(--lib-white)", padding: 32, textAlign: "center" }}>
+        <p style={{ font: "600 15px/1.3 var(--lib-font-sans)" }}>Couldn&apos;t load the catalogue</p>
+        <p style={{ marginTop: 6, font: "400 14px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>Nothing was changed — try refreshing the page.</p>
       </div>
     );
   }

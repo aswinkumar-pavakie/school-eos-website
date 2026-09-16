@@ -1,11 +1,13 @@
+// Pixel-rebuilt to match Class Teacher Portal.dc.html's "isEmpPayroll"
+// screen (nav label "HR payroll"). Reuses EXISTING real listHrRequests/
+// createHrRequestAction unchanged.
+
 import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
-import { ApprovalTrail } from "@/components/faculty/ApprovalTrail";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 import { listHrRequests } from "@/lib/faculty-staff-api";
-import { RequestModal } from "./RequestModal";
+import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
+import { HrRequestForm } from "./HrRequestForm";
 
 const CATEGORY_LABELS: Record<string, string> = {
   SALARY_QUERY: "Salary query",
@@ -22,38 +24,54 @@ export default async function HrRequestsPage() {
     const requests = await listHrRequests();
 
     return (
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">HR Payroll</h1>
-            <p className="mt-1 text-sm text-text-muted">Two-step approval — Principal, then Finance.</p>
-          </div>
-          <RequestModal />
-        </div>
+      <div>
+        <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>HR payroll</h1>
+        <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>Payroll and HR queries</p>
 
-        {requests.length === 0 ? (
-          <EmptyState title="No requests yet" body="Submit your first HR request above." />
-        ) : (
-          <div className="flex flex-col gap-3">
-            {requests.map((r) => (
-              <div key={r.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-bold text-text">{r.subject}</p>
-                    <p className="text-xs text-text-muted">{CATEGORY_LABELS[r.category] ?? r.category} · {formatDate(r.createdAt)}</p>
-                  </div>
-                  <StatusPill state={r.state} />
-                </div>
-                {r.description ? <p className="mt-2 text-sm text-text">{r.description}</p> : null}
-                <ApprovalTrail steps={r.approvalTrail} />
+        <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[1fr_1.15fr]" style={{ marginTop: 22, alignItems: "start" }}>
+          <HrRequestForm />
+          <div>
+            <div style={{ font: "600 11px/1 var(--fac-font-sans)", letterSpacing: ".09em", color: "var(--fac-tertiary)", marginBottom: 12 }}>REQUEST STATUS</div>
+            {requests.length === 0 ? (
+              <FacultyEmptyState message="Submit your first HR request." />
+            ) : (
+              <div className="flex flex-col gap-3.5">
+                {requests.map((r) => {
+                  const inReview = r.state !== "PENDING";
+                  const resolved = r.state === "APPROVED" || r.state === "RESOLVED" || r.state === "REJECTED";
+                  return (
+                    <div key={r.id} className="fac-hover-lift" style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "20px 22px" }}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="fac-font-mono" style={{ font: "500 13px/1 var(--fac-font-mono)", color: "var(--fac-tertiary)" }}>{r.id.slice(0, 8).toUpperCase()}</div>
+                        <span style={{ font: "600 11.5px/1 var(--fac-font-sans)", letterSpacing: ".06em", borderRadius: 20, padding: "7px 13px", background: resolved ? "var(--fac-tint)" : "var(--fac-divider)", color: resolved ? "var(--fac-primary)" : "var(--fac-body)" }}>
+                          {r.state}
+                        </span>
+                      </div>
+                      <div style={{ font: "700 18px/1.3 var(--fac-font-sans)", marginTop: 12 }}>{r.subject}</div>
+                      <div style={{ font: "400 13.5px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 4 }}>{CATEGORY_LABELS[r.category] ?? r.category}</div>
+                      <div className="grid grid-cols-3 gap-3" style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--fac-divider)" }}>
+                        {[
+                          { label: "SUBMITTED", on: true },
+                          { label: "IN REVIEW", on: inReview },
+                          { label: "RESOLVED", on: resolved },
+                        ].map((s) => (
+                          <div key={s.label}>
+                            <span style={{ display: "block", width: 10, height: 10, borderRadius: "50%", background: "var(--fac-primary)", opacity: s.on ? 1 : 0.25 }} />
+                            <div style={{ font: "600 10.5px/1 var(--fac-font-sans)", letterSpacing: ".08em", color: "var(--fac-tertiary)", marginTop: 10 }}>{s.label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            )}
           </div>
-        )}
+        </div>
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load HR requests. Nothing was changed — try again." />;
+    return <ErrorState message="Couldn't load HR requests. Nothing was changed -- try again." />;
   }
 }

@@ -1,60 +1,77 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
-import { ApprovalTrail } from "@/components/faculty/ApprovalTrail";
-import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
-import { listStaffLeave } from "@/lib/faculty-staff-api";
-import { RequestModal } from "./RequestModal";
+// Pixel-rebuilt to match Class Teacher Portal.dc.html's "isEmpLeave" screen.
+// Reuses EXISTING real listStaffLeave/createStaffLeaveAction unchanged.
 
-const LEAVE_LABELS: Record<string, string> = { CASUAL: "Casual", MEDICAL: "Medical", EARNED: "Earned", ON_DUTY: "On duty" };
+import { redirect } from "next/navigation";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { AuthExpiredError } from "@/lib/api";
+import { listStaffLeave } from "@/lib/faculty-staff-api";
+import { Tabs } from "@/components/faculty-ui/Tabs";
+import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
+import { StaffLeaveForm } from "./StaffLeaveForm";
+
+const LEAVE_LABELS: Record<string, string> = { CASUAL: "Casual leave", MEDICAL: "Medical leave", EARNED: "Earned leave" };
 
 export default async function StaffLeavePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   try {
     const { tab } = await searchParams;
-    const odOnly = tab === "od";
-    const requests = await listStaffLeave();
-    const filtered = requests.filter((r) => (odOnly ? r.leaveType === "ON_DUTY" : r.leaveType !== "ON_DUTY"));
+    const activeTab = tab === "History" ? "History" : "Apply";
+    const requests = (await listStaffLeave()).filter((r) => r.leaveType !== "ON_DUTY");
 
     return (
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+      <div>
+        <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
-            <h1 className="text-2xl font-extrabold text-text">Leave &amp; OD</h1>
-            <p className="mt-1 text-sm text-text-muted">Approval auto-marks your real attendance record for every date covered.</p>
+            <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Staff leave</h1>
+            <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
+              Requests are routed to the academic coordinator, then the Principal&rsquo;s office
+            </p>
           </div>
-          <RequestModal />
+          <Tabs
+            items={[
+              { key: "Apply", label: "Apply", href: "/faculty/staff-leave?tab=Apply" },
+              { key: "History", label: "History", href: "/faculty/staff-leave?tab=History" },
+            ]}
+            activeKey={activeTab}
+          />
         </div>
 
-        <div className="flex gap-2 border-b border-border">
-          <Link href="/faculty/staff-leave" className={`px-3 py-2 text-sm font-bold ${!odOnly ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}>Leave</Link>
-          <Link href="/faculty/staff-leave?tab=od" className={`px-3 py-2 text-sm font-bold ${odOnly ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}>On duty</Link>
-        </div>
-
-        {filtered.length === 0 ? (
-          <EmptyState title={`No ${odOnly ? "OD" : "leave"} requests`} body="Nothing has been submitted yet." />
+        {activeTab === "Apply" ? (
+          <StaffLeaveForm />
+        ) : requests.length === 0 ? (
+          <div style={{ marginTop: 18 }}>
+            <FacultyEmptyState message="Nothing has been submitted yet." />
+          </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {filtered.map((r) => (
-              <div key={r.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-bold text-text">{LEAVE_LABELS[r.leaveType] ?? r.leaveType}</p>
-                    <p className="text-xs text-text-muted">{formatDate(r.fromDate)} – {formatDate(r.toDate)}</p>
+          <div className="flex flex-col gap-3.5" style={{ marginTop: 18 }}>
+            {requests.map((r) => {
+              const lastStep = [...r.approvalTrail].reverse().find((s) => s.decision);
+              return (
+                <div key={r.id} className="fac-hover-lift" style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "20px 22px" }}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="fac-font-mono" style={{ font: "500 13px/1 var(--fac-font-mono)", color: "var(--fac-tertiary)" }}>{r.id.slice(0, 8).toUpperCase()}</div>
+                    <span style={{ font: "600 11.5px/1 var(--fac-font-sans)", letterSpacing: ".06em", borderRadius: 20, padding: "7px 13px", background: r.state === "APPROVED" ? "var(--fac-tint)" : r.state === "REJECTED" ? "var(--fac-red-bg)" : "var(--fac-divider)", color: r.state === "APPROVED" ? "var(--fac-primary)" : r.state === "REJECTED" ? "var(--fac-red-text)" : "var(--fac-body)" }}>
+                      {r.state}
+                    </span>
                   </div>
-                  <StatusPill state={r.state} />
+                  <div style={{ font: "700 19px/1.3 var(--fac-font-sans)", marginTop: 12 }}>{LEAVE_LABELS[r.leaveType] ?? r.leaveType}</div>
+                  <div style={{ font: "500 14.5px/1.4 var(--fac-font-sans)", color: "var(--fac-body)", marginTop: 6 }}>
+                    {new Date(r.fromDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} &ndash; {new Date(r.toDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                  </div>
+                  <div style={{ font: "400 14.5px/1.5 var(--fac-font-sans)", color: "var(--fac-body-muted)", marginTop: 6 }}>{r.reason}</div>
+                  {lastStep && (
+                    <div style={{ font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--fac-divider)" }}>
+                      {lastStep.decision === "APPROVED" ? "Approved" : "Rejected"} by {lastStep.decidedByName ?? lastStep.approverRoleCode}
+                    </div>
+                  )}
                 </div>
-                <p className="mt-2 text-sm text-text">{r.reason}</p>
-                <ApprovalTrail steps={r.approvalTrail} />
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load your requests. Nothing was changed — try again." />;
+    return <ErrorState message="Couldn't load your requests. Nothing was changed -- try again." />;
   }
 }

@@ -1,19 +1,18 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { PlainButton } from "@/components/ui/Button";
-import { AuthExpiredError } from "@/lib/api";
-import { formatDateTime, orDash } from "@/lib/format";
-import { listAdvisorSections, listAnnouncements, listMyAnnouncements, listTeachingOfferings, type Announcement } from "@/lib/faculty-api";
-import { AnnouncementModal } from "./AnnouncementModal";
-import { deleteAnnouncementAction } from "./actions";
+// Pixel-rebuilt to match Class Teacher Portal.dc.html's "isNotice" screen
+// (nav label "Notice"). Reuses EXISTING real
+// listAnnouncements/listMyAnnouncements/create/update/delete unchanged. The
+// design's own noticeTabs markup was empty (a bug in the source -- verified
+// during research) even though it had real sample data; this rebuild gives
+// it working real tabs (All / My posts) backed by the two real list calls.
 
-const PRIORITY_TONE: Record<string, string> = {
-  URGENT: "bg-critical-bg text-critical-text",
-  HIGH: "bg-pending-bg text-pending-text",
-  NORMAL: "bg-field text-text-muted",
-  LOW: "bg-field text-text-muted",
-};
+import { redirect } from "next/navigation";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { AuthExpiredError } from "@/lib/api";
+import { listAdvisorSections, listAnnouncements, listMyAnnouncements, listTeachingOfferings, type Announcement } from "@/lib/faculty-api";
+import { Tabs } from "@/components/faculty-ui/Tabs";
+import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
+import { NoticeFormModal } from "./NoticeFormModal";
+import { deleteAnnouncementAction } from "./actions";
 
 export default async function AnnouncementsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   try {
@@ -32,47 +31,78 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
     const classes = [...classMap.entries()].map(([sectionId, label]) => ({ sectionId, label }));
 
     return (
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+      <div>
+        <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
-            <h1 className="text-2xl font-extrabold text-text">Announcements</h1>
-            <p className="mt-1 text-sm text-text-muted">Post to the classes you advise or teach.</p>
+            <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Notice</h1>
+            <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
+              Notices from the school and posts you publish to your classes
+            </p>
           </div>
-          <AnnouncementModal classes={classes} />
+          <NoticeFormModal
+            classes={classes}
+            trigger={
+              <button type="button" style={{ border: 0, background: "var(--fac-primary)", color: "#fff", cursor: "pointer", font: "600 14.5px/1 var(--fac-font-sans)", borderRadius: 9, padding: "13px 20px" }}>
+                + Post a notice
+              </button>
+            }
+          />
         </div>
 
-        <div className="flex gap-2 border-b border-border">
-          <Link href="/faculty/announcements" className={`px-3 py-2 text-sm font-bold ${!mineOnly ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}>All</Link>
-          <Link href="/faculty/announcements?tab=mine" className={`px-3 py-2 text-sm font-bold ${mineOnly ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}>My posts</Link>
+        <div style={{ marginTop: 22 }}>
+          <Tabs
+            items={[
+              { key: "all", label: "All notices", href: "/faculty/announcements" },
+              { key: "mine", label: "Posted by me", href: "/faculty/announcements?tab=mine" },
+            ]}
+            activeKey={mineOnly ? "mine" : "all"}
+          />
         </div>
 
         {announcements.length === 0 ? (
-          <EmptyState title="No announcements" body={mineOnly ? "You haven't posted anything yet." : "Nothing has been posted to your classes yet."} />
+          <div style={{ marginTop: 18 }}>
+            <FacultyEmptyState message={mineOnly ? "You haven't posted anything yet." : "Nothing has been posted to your classes yet."} />
+          </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3.5" style={{ marginTop: 18 }}>
             {announcements.map((a: Announcement) => (
-              <div key={a.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-text">{a.title}</p>
-                    <p className="mt-0.5 text-xs text-text-muted">{formatDateTime(a.createdAt)}{a.category ? ` · ${a.category}` : ""}</p>
-                  </div>
-                  <span className={`shrink-0 rounded-[7px] px-2 py-0.5 text-xs font-bold uppercase ${PRIORITY_TONE[a.priority] ?? PRIORITY_TONE.NORMAL}`}>
-                    {a.isEmergency ? "Emergency" : a.priority}
+              <div key={a.id} className="fac-hover-lift" style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "18px 22px" }}>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--fac-tint)", color: "var(--fac-primary)", display: "flex", alignItems: "center", justifyContent: "center", font: "600 12px/1 var(--fac-font-sans)" }}>
+                    PP
+                  </span>
+                  <span style={{ font: "600 14.5px/1.2 var(--fac-font-sans)" }}>{a.canEdit ? "You" : "School"}</span>
+                  <span style={{ font: "400 13px/1.2 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
+                    {new Date(a.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                  </span>
+                  <span style={{ flex: 1 }} />
+                  <span style={{ font: "600 11.5px/1 var(--fac-font-sans)", color: "var(--fac-primary)", background: "var(--fac-tint)", borderRadius: 20, padding: "6px 11px" }}>
+                    {a.isEmergency ? "EMERGENCY" : a.category ?? "NOTICE"}
                   </span>
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-text">{a.body}</p>
-                <p className="mt-2 text-xs text-text-muted">
-                  Expires {orDash(a.expiresAt ? formatDateTime(a.expiresAt) : null)}
-                </p>
-                {a.canEdit ? (
-                  <div className="mt-3 flex gap-2">
-                    <AnnouncementModal classes={classes} announcement={a} />
+                <div style={{ font: "700 19px/1.3 var(--fac-font-sans)", marginTop: 13 }}>{a.title}</div>
+                <div style={{ font: "400 14.5px/1.55 var(--fac-font-sans)", color: "#475569", marginTop: 6, maxWidth: "78ch" }}>{a.body}</div>
+                <div style={{ font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 10 }}>
+                  {a.expiresAt ? `Expires ${new Date(a.expiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : "No expiry"}
+                </div>
+                {a.canEdit && (
+                  <div className="flex gap-2.5" style={{ marginTop: 14 }}>
+                    <NoticeFormModal
+                      classes={classes}
+                      announcement={a}
+                      trigger={
+                        <button type="button" style={{ border: "1px solid var(--fac-border)", background: "var(--fac-white)", color: "var(--fac-body)", cursor: "pointer", font: "600 13px/1 var(--fac-font-sans)", borderRadius: 9, padding: "9px 16px" }}>
+                          Edit
+                        </button>
+                      }
+                    />
                     <form action={deleteAnnouncementAction.bind(null, a.id)}>
-                      <PlainButton type="submit" variant="danger">Delete</PlainButton>
+                      <button type="submit" style={{ border: "1px solid var(--fac-red-bg)", background: "var(--fac-white)", color: "var(--fac-red-text)", cursor: "pointer", font: "600 13px/1 var(--fac-font-sans)", borderRadius: 9, padding: "9px 16px" }}>
+                        Delete
+                      </button>
                     </form>
                   </div>
-                ) : null}
+                )}
               </div>
             ))}
           </div>
@@ -81,6 +111,6 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load announcements. Nothing was changed — try again." />;
+    return <ErrorState message="Couldn't load notices. Nothing was changed -- try again." />;
   }
 }
