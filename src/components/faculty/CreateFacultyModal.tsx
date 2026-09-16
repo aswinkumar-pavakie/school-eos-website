@@ -10,6 +10,15 @@
 // into browser history, server access logs, and the Referer header. It's shown here
 // once and is not retrievable again after the modal closes.
 //
+// Fields are controlled (value/onChange into a local `values` object) rather than
+// plain uncontrolled inputs -- a Server Action's own <form action=...> submission
+// resets uncontrolled fields once the action completes, even on failure, which was
+// wiping every field the admin had already typed just because one field failed
+// validation. Controlled inputs aren't touched by that reset, so a failed
+// submission only shows an inline error under the specific bad field (fieldErrors,
+// from the backend's own per-property validation messages -- see
+// lib/form-errors.ts) while everything else stays exactly as typed.
+//
 // Designation is genuinely free text on the backend (staff.designation is a plain
 // column, not an FK to a lookup table -- see staff.service.ts's own
 // listDesignations(), which runs a DISTINCT query over existing values rather than
@@ -56,6 +65,30 @@ const STAGES: [string, string][] = [
   ["HIGHER_SECONDARY", "Higher secondary"],
 ];
 
+const emptyValues = {
+  firstName: "",
+  lastName: "",
+  gender: "",
+  identifierType: "EMAIL",
+  identifierValue: "",
+  initialPassword: "",
+  addressLine1: "",
+  addressLine2: "",
+  city: "",
+  state: "",
+  pincode: "",
+  employeeNo: "",
+  dateOfJoining: "",
+  designation: "",
+  teacherCategory: "",
+  postType: "",
+  stateTeacherId: "",
+  experienceYears: "",
+  extraRoleScopeStage: "",
+  extraRoleScopeGradeId: "",
+  extraRoleSectionId: "",
+};
+
 export function CreateFacultyModal({
   designations,
   grades,
@@ -66,14 +99,25 @@ export function CreateFacultyModal({
   sections: Section[];
 }) {
   const [open, setOpen] = useState(false);
+  const [values, setValues] = useState(emptyValues);
   const [state, formAction, isPending] = useActionState(createFacultyAction, initialState);
   const created = Boolean(state.staffId);
+  const fieldErrors = state.fieldErrors ?? {};
   const [extraRole, setExtraRole] = useState<"" | "ACADEMIC_COORDINATOR" | "SPORTS_FACULTY" | "CLASS_ADVISOR">("");
   const [coordScopeKind, setCoordScopeKind] = useState<"STAGE" | "GRADE">("STAGE");
   const gradeById = new Map(grades.map((g) => [g.id, g.name]));
 
+  function handleChange(name: keyof typeof emptyValues) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setValues((v) => ({ ...v, [name]: e.target.value }));
+    };
+  }
+
   function handleClose() {
     setOpen(false);
+    setValues(emptyValues);
+    setExtraRole("");
+    setCoordScopeKind("STAGE");
   }
 
   return (
@@ -125,7 +169,7 @@ export function CreateFacultyModal({
                   <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New faculty account</h2>
                   <button
                     type="button"
-                    onClick={handleClose}
+                    onClick={() => setOpen(false)}
                     aria-label="Close"
                     className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:bg-bg"
                   >
@@ -147,182 +191,311 @@ export function CreateFacultyModal({
                 )}
 
                 <form action={formAction} className="mt-4 flex flex-col gap-4" noValidate>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="First name" name="firstName" required disabled={isPending} />
-                <Field label="Last name" name="lastName" disabled={isPending} />
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field
+                      label="First name"
+                      name="firstName"
+                      required
+                      disabled={isPending}
+                      value={values.firstName}
+                      onChange={handleChange("firstName")}
+                      error={fieldErrors.firstName}
+                    />
+                    <Field
+                      label="Last name"
+                      name="lastName"
+                      disabled={isPending}
+                      value={values.lastName}
+                      onChange={handleChange("lastName")}
+                      error={fieldErrors.lastName}
+                    />
+                  </div>
 
-              <SelectField
-                label="Gender"
-                name="gender"
-                disabled={isPending}
-                options={[
-                  ["", "Select"],
-                  ["MALE", "Male"],
-                  ["FEMALE", "Female"],
-                  ["OTHER", "Other"],
-                  ["UNDISCLOSED", "Prefer not to say"],
-                ]}
-              />
-
-              <div className="grid grid-cols-[auto_1fr] gap-4">
-                <SelectField
-                  label="Login via"
-                  name="identifierType"
-                  disabled={isPending}
-                  options={[
-                    ["EMAIL", "Email"],
-                    ["MOBILE", "Mobile"],
-                  ]}
-                />
-                <Field
-                  label="Email or mobile"
-                  name="identifierValue"
-                  required
-                  disabled={isPending}
-                  placeholder="name@school.in or 10-digit mobile"
-                />
-              </div>
-
-              <Field label="Address line 1" name="addressLine1" required disabled={isPending} />
-              <Field label="Address line 2 (optional)" name="addressLine2" disabled={isPending} />
-              <div className="grid grid-cols-3 gap-4">
-                <Field label="City" name="city" required disabled={isPending} />
-                <Field label="State" name="state" required disabled={isPending} />
-                <Field label="Pincode" name="pincode" required disabled={isPending} placeholder="6 digits" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Employee no." name="employeeNo" required disabled={isPending} />
-                <Field label="Date of joining" name="dateOfJoining" type="date" required disabled={isPending} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Field
-                  label="Designation"
-                  name="designation"
-                  disabled={isPending}
-                  placeholder="e.g. Tamil Teacher"
-                  listOptions={designations}
-                />
-                <Field label="Teacher category" name="teacherCategory" disabled={isPending} />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <SelectField
-                  label="Post type"
-                  name="postType"
-                  disabled={isPending}
-                  options={[
-                    ["", "Select"],
-                    ["GOVERNMENT", "Government"],
-                    ["AIDED", "Aided"],
-                    ["MANAGEMENT", "Management"],
-                  ]}
-                />
-                <Field label="State teacher ID" name="stateTeacherId" disabled={isPending} />
-                <Field
-                  label="Experience (years, optional)"
-                  name="experienceYears"
-                  type="number"
-                  disabled={isPending}
-                  placeholder="After reviewing certificates"
-                />
-              </div>
-
-              <label className="flex items-center gap-2 text-[13px] text-text">
-                <input
-                  type="checkbox"
-                  name="isTeaching"
-                  defaultChecked
-                  disabled={isPending}
-                  className="h-4 w-4 rounded border-border"
-                />
-                Teaching staff
-              </label>
-
-              <div className="flex flex-col gap-3 border-t border-border pt-4">
-                <div>
-                  <h3 className="text-[13px] font-bold text-text">Extra responsibility role (optional)</h3>
-                  <p className="text-xs text-text-muted">
-                    If this scope already has someone else assigned, they&apos;ll be moved off it automatically.
-                  </p>
-                </div>
-                <select
-                  name="extraRole"
-                  value={extraRole}
-                  onChange={(e) => setExtraRole(e.target.value as typeof extraRole)}
-                  disabled={isPending}
-                  className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
-                >
-                  <option value="">None</option>
-                  <option value="ACADEMIC_COORDINATOR">Academic Coordinator</option>
-                  <option value="SPORTS_FACULTY">Sports Faculty</option>
-                  <option value="CLASS_ADVISOR">Class Advisor</option>
-                </select>
-
-                {(extraRole === "ACADEMIC_COORDINATOR" || extraRole === "SPORTS_FACULTY") && (
-                  <>
-                    <div className="flex gap-4 text-sm">
-                      <label className="flex items-center gap-1.5">
-                        <input
-                          type="radio"
-                          name="extraRoleScopeKind"
-                          checked={coordScopeKind === "STAGE"}
-                          onChange={() => setCoordScopeKind("STAGE")}
-                          disabled={isPending}
-                        />
-                        By stage
-                      </label>
-                      <label className="flex items-center gap-1.5">
-                        <input
-                          type="radio"
-                          name="extraRoleScopeKind"
-                          checked={coordScopeKind === "GRADE"}
-                          onChange={() => setCoordScopeKind("GRADE")}
-                          disabled={isPending}
-                        />
-                        By standard
-                      </label>
-                    </div>
-                    {coordScopeKind === "STAGE" ? (
-                      <SelectField
-                        label="Stage covered"
-                        name="extraRoleScopeStage"
-                        disabled={isPending}
-                        options={[["", "Select"], ...STAGES]}
-                      />
-                    ) : (
-                      <SelectField
-                        label="Standard covered"
-                        name="extraRoleScopeGradeId"
-                        disabled={isPending}
-                        options={[["", "Select"], ...grades.map((g) => [g.id, g.name] as [string, string])]}
-                      />
-                    )}
-                  </>
-                )}
-
-                {extraRole === "CLASS_ADVISOR" && (
                   <SelectField
-                    label="Section"
-                    name="extraRoleSectionId"
+                    label="Gender"
+                    name="gender"
                     disabled={isPending}
+                    value={values.gender}
+                    onChange={handleChange("gender")}
+                    error={fieldErrors.gender}
                     options={[
                       ["", "Select"],
-                      ...sections.map((s) => [s.id, `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`] as [string, string]),
+                      ["MALE", "Male"],
+                      ["FEMALE", "Female"],
+                      ["OTHER", "Other"],
+                      ["UNDISCLOSED", "Prefer not to say"],
                     ]}
                   />
-                )}
-              </div>
 
-              <button
-                type="submit"
-                disabled={isPending}
-                className="mt-2 rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isPending ? "Creating…" : "Create faculty account"}
-              </button>
+                  <div className="grid grid-cols-[auto_1fr] gap-4">
+                    <SelectField
+                      label="Login via"
+                      name="identifierType"
+                      disabled={isPending}
+                      value={values.identifierType}
+                      onChange={handleChange("identifierType")}
+                      error={fieldErrors.identifierType}
+                      options={[
+                        ["EMAIL", "Email"],
+                        ["MOBILE", "Mobile"],
+                      ]}
+                    />
+                    <Field
+                      label="Email or mobile"
+                      name="identifierValue"
+                      required
+                      disabled={isPending}
+                      placeholder="name@school.in or 10-digit mobile"
+                      value={values.identifierValue}
+                      onChange={handleChange("identifierValue")}
+                      error={fieldErrors.identifierValue}
+                    />
+                  </div>
+
+                  <Field
+                    label="Set password (optional)"
+                    name="initialPassword"
+                    disabled={isPending}
+                    placeholder="Leave blank to auto-generate one"
+                    minLength={8}
+                    value={values.initialPassword}
+                    onChange={handleChange("initialPassword")}
+                    error={fieldErrors.initialPassword}
+                  />
+                  <p className="-mt-2 text-[13px] text-text-muted">
+                    Leave blank and one is generated for you — either way, the
+                    password is shown once on the next screen so you can pass it on
+                    to the faculty member yourself.
+                  </p>
+
+                  <Field
+                    label="Address line 1"
+                    name="addressLine1"
+                    required
+                    disabled={isPending}
+                    value={values.addressLine1}
+                    onChange={handleChange("addressLine1")}
+                    error={fieldErrors.addressLine1}
+                  />
+                  <Field
+                    label="Address line 2 (optional)"
+                    name="addressLine2"
+                    disabled={isPending}
+                    value={values.addressLine2}
+                    onChange={handleChange("addressLine2")}
+                    error={fieldErrors.addressLine2}
+                  />
+                  <div className="grid grid-cols-3 gap-4">
+                    <Field
+                      label="City"
+                      name="city"
+                      required
+                      disabled={isPending}
+                      value={values.city}
+                      onChange={handleChange("city")}
+                      error={fieldErrors.city}
+                    />
+                    <Field
+                      label="State"
+                      name="state"
+                      required
+                      disabled={isPending}
+                      value={values.state}
+                      onChange={handleChange("state")}
+                      error={fieldErrors.state}
+                    />
+                    <Field
+                      label="Pincode"
+                      name="pincode"
+                      required
+                      disabled={isPending}
+                      placeholder="6 digits"
+                      value={values.pincode}
+                      onChange={handleChange("pincode")}
+                      error={fieldErrors.pincode}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field
+                      label="Employee no."
+                      name="employeeNo"
+                      required
+                      disabled={isPending}
+                      value={values.employeeNo}
+                      onChange={handleChange("employeeNo")}
+                      error={fieldErrors.employeeNo}
+                    />
+                    <Field
+                      label="Date of joining"
+                      name="dateOfJoining"
+                      type="date"
+                      required
+                      disabled={isPending}
+                      value={values.dateOfJoining}
+                      onChange={handleChange("dateOfJoining")}
+                      error={fieldErrors.dateOfJoining}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field
+                      label="Designation"
+                      name="designation"
+                      disabled={isPending}
+                      placeholder="e.g. Tamil Teacher"
+                      listOptions={designations}
+                      value={values.designation}
+                      onChange={handleChange("designation")}
+                      error={fieldErrors.designation}
+                    />
+                    <Field
+                      label="Teacher category"
+                      name="teacherCategory"
+                      disabled={isPending}
+                      value={values.teacherCategory}
+                      onChange={handleChange("teacherCategory")}
+                      error={fieldErrors.teacherCategory}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <SelectField
+                      label="Post type"
+                      name="postType"
+                      disabled={isPending}
+                      value={values.postType}
+                      onChange={handleChange("postType")}
+                      error={fieldErrors.postType}
+                      options={[
+                        ["", "Select"],
+                        ["GOVERNMENT", "Government"],
+                        ["AIDED", "Aided"],
+                        ["MANAGEMENT", "Management"],
+                      ]}
+                    />
+                    <Field
+                      label="State teacher ID"
+                      name="stateTeacherId"
+                      disabled={isPending}
+                      value={values.stateTeacherId}
+                      onChange={handleChange("stateTeacherId")}
+                      error={fieldErrors.stateTeacherId}
+                    />
+                    <Field
+                      label="Experience (years, optional)"
+                      name="experienceYears"
+                      type="number"
+                      disabled={isPending}
+                      placeholder="After reviewing certificates"
+                      value={values.experienceYears}
+                      onChange={handleChange("experienceYears")}
+                      error={fieldErrors.experienceYears}
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2 text-[13px] text-text">
+                    <input
+                      type="checkbox"
+                      name="isTeaching"
+                      defaultChecked
+                      disabled={isPending}
+                      className="h-4 w-4 rounded border-border"
+                    />
+                    Teaching staff
+                  </label>
+
+                  <div className="flex flex-col gap-3 border-t border-border pt-4">
+                    <div>
+                      <h3 className="text-[13px] font-bold text-text">Extra responsibility role (optional)</h3>
+                      <p className="text-xs text-text-muted">
+                        If this scope already has someone else assigned, they&apos;ll be moved off it automatically.
+                      </p>
+                    </div>
+                    <select
+                      name="extraRole"
+                      value={extraRole}
+                      onChange={(e) => setExtraRole(e.target.value as typeof extraRole)}
+                      disabled={isPending}
+                      className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+                    >
+                      <option value="">None</option>
+                      <option value="ACADEMIC_COORDINATOR">Academic Coordinator</option>
+                      <option value="SPORTS_FACULTY">Sports Faculty</option>
+                      <option value="CLASS_ADVISOR">Class Advisor</option>
+                    </select>
+
+                    {(extraRole === "ACADEMIC_COORDINATOR" || extraRole === "SPORTS_FACULTY") && (
+                      <>
+                        <div className="flex gap-4 text-sm">
+                          <label className="flex items-center gap-1.5">
+                            <input
+                              type="radio"
+                              name="extraRoleScopeKind"
+                              checked={coordScopeKind === "STAGE"}
+                              onChange={() => setCoordScopeKind("STAGE")}
+                              disabled={isPending}
+                            />
+                            By stage
+                          </label>
+                          <label className="flex items-center gap-1.5">
+                            <input
+                              type="radio"
+                              name="extraRoleScopeKind"
+                              checked={coordScopeKind === "GRADE"}
+                              onChange={() => setCoordScopeKind("GRADE")}
+                              disabled={isPending}
+                            />
+                            By standard
+                          </label>
+                        </div>
+                        {coordScopeKind === "STAGE" ? (
+                          <SelectField
+                            label="Stage covered"
+                            name="extraRoleScopeStage"
+                            disabled={isPending}
+                            value={values.extraRoleScopeStage}
+                            onChange={handleChange("extraRoleScopeStage")}
+                            error={fieldErrors.extraRoleScopeStage}
+                            options={[["", "Select"], ...STAGES]}
+                          />
+                        ) : (
+                          <SelectField
+                            label="Standard covered"
+                            name="extraRoleScopeGradeId"
+                            disabled={isPending}
+                            value={values.extraRoleScopeGradeId}
+                            onChange={handleChange("extraRoleScopeGradeId")}
+                            error={fieldErrors.extraRoleScopeGradeId}
+                            options={[["", "Select"], ...grades.map((g) => [g.id, g.name] as [string, string])]}
+                          />
+                        )}
+                      </>
+                    )}
+
+                    {extraRole === "CLASS_ADVISOR" && (
+                      <SelectField
+                        label="Section"
+                        name="extraRoleSectionId"
+                        disabled={isPending}
+                        value={values.extraRoleSectionId}
+                        onChange={handleChange("extraRoleSectionId")}
+                        error={fieldErrors.extraRoleSectionId}
+                        options={[
+                          ["", "Select"],
+                          ...sections.map((s) => [s.id, `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`] as [string, string]),
+                        ]}
+                      />
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="mt-2 rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isPending ? "Creating…" : "Create faculty account"}
+                  </button>
                 </form>
               </>
             )}
@@ -341,6 +514,10 @@ function Field({
   disabled,
   placeholder,
   listOptions,
+  minLength,
+  value,
+  onChange,
+  error,
 }: {
   label: string;
   name: string;
@@ -353,6 +530,10 @@ function Field({
    * can't be a strict <select>), this just makes existing values easy to
    * reuse instead of retyping. */
   listOptions?: string[];
+  minLength?: number;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }) {
   const listId = listOptions ? `${name}-options` : undefined;
   return (
@@ -368,7 +549,12 @@ function Field({
         disabled={disabled}
         placeholder={placeholder}
         list={listId}
-        className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+        minLength={minLength}
+        value={value}
+        onChange={onChange}
+        className={`rounded-[11px] border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:bg-surface disabled:opacity-60 ${
+          error ? "border-critical-text focus:border-critical-text" : "border-border focus:border-primary"
+        }`}
       />
       {listOptions && (
         <datalist id={listId}>
@@ -377,6 +563,7 @@ function Field({
           ))}
         </datalist>
       )}
+      {error && <span className="text-xs text-critical-text">{error}</span>}
     </label>
   );
 }
@@ -386,11 +573,17 @@ function SelectField({
   name,
   disabled,
   options,
+  value,
+  onChange,
+  error,
 }: {
   label: string;
   name: string;
   disabled?: boolean;
   options: [string, string][];
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  error?: string;
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
@@ -398,8 +591,11 @@ function SelectField({
       <select
         name={name}
         disabled={disabled}
-        defaultValue={options[0][0]}
-        className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+        value={value}
+        onChange={onChange}
+        className={`rounded-[11px] border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:bg-surface disabled:opacity-60 ${
+          error ? "border-critical-text focus:border-critical-text" : "border-border focus:border-primary"
+        }`}
       >
         {options.map(([value, text]) => (
           <option key={value} value={value}>
@@ -407,6 +603,7 @@ function SelectField({
           </option>
         ))}
       </select>
+      {error && <span className="text-xs text-critical-text">{error}</span>}
     </label>
   );
 }

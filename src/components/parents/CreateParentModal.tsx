@@ -1,11 +1,23 @@
 "use client";
 
-// Create-parent modal -- Design Architecture v0.1 component 13 (Modal, 480px web).
-// Parent needs a real login (like Faculty) but no subtype step (unlike Faculty) --
-// one call to POST /persons. On success the modal shows its own Confirmation-dialog
-// state (component 22) with the one-time temporary password, then links to the new
-// parent's profile. The generated password is never put in a URL -- same corrected
-// pattern as CreateFacultyModal.tsx.
+// Create-parent modal -- Design Architecture v0.1 component 13 (Modal, web).
+// Widened to 760px with a multi-column grid, same treatment CreateStudentModal
+// and CreateFacultyModal already got. Parent needs a real login (like Faculty)
+// but no subtype step (unlike Faculty) -- one call to POST /persons. On success
+// the modal shows its own Confirmation-dialog state (component 22) with the
+// one-time temporary password, then links to the new parent's profile. The
+// generated password is never put in a URL -- same corrected pattern as
+// CreateFacultyModal.tsx.
+//
+// Fields are controlled (value/onChange into a local `values` object) rather
+// than plain uncontrolled inputs -- a Server Action's own <form action=...>
+// submission resets uncontrolled fields once the action completes, even on
+// failure, which was wiping every field the admin had already typed just
+// because one field failed validation. Controlled inputs aren't touched by
+// that reset, so a failed submission only shows an inline error under the
+// specific bad field (fieldErrors, from the backend's own per-property
+// validation messages -- see lib/form-errors.ts) while everything else stays
+// exactly as typed.
 //
 // Rendered via createPortal into document.body rather than inline: this modal's
 // "Not found -- create new parent" trigger is used from inside GuardiansSection's
@@ -25,6 +37,15 @@ import { LinkNewParentToStudentForm } from "./LinkNewParentToStudentForm";
 
 const initialState: FormActionState = {};
 
+const emptyValues = {
+  firstName: "",
+  lastName: "",
+  gender: "",
+  identifierType: "EMAIL",
+  identifierValue: "",
+  initialPassword: "",
+};
+
 export function CreateParentModal({
   presetStudent,
   triggerLabel = "+ New parent",
@@ -35,11 +56,20 @@ export function CreateParentModal({
   triggerLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [values, setValues] = useState(emptyValues);
   const [state, formAction, isPending] = useActionState(createParentAction, initialState);
   const created = Boolean(state.personId);
+  const fieldErrors = state.fieldErrors ?? {};
+
+  function handleChange(name: keyof typeof emptyValues) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setValues((v) => ({ ...v, [name]: e.target.value }));
+    };
+  }
 
   function handleClose() {
     setOpen(false);
+    setValues(emptyValues);
   }
 
   return (
@@ -59,7 +89,7 @@ export function CreateParentModal({
       {open &&
         createPortal(
           <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
-            <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
+            <div className="w-full max-w-[760px] rounded-[16px] bg-surface p-6 shadow-lg">
               {created ? (
                 <>
                   <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
@@ -99,7 +129,7 @@ export function CreateParentModal({
                     <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New parent account</h2>
                     <button
                       type="button"
-                      onClick={handleClose}
+                      onClick={() => setOpen(false)}
                       aria-label="Close"
                       className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:bg-bg"
                     >
@@ -122,29 +152,49 @@ export function CreateParentModal({
                   )}
 
                   <form action={formAction} className="mt-4 flex flex-col gap-4" noValidate>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field label="First name" name="firstName" required disabled={isPending} />
-                      <Field label="Last name" name="lastName" disabled={isPending} />
+                    <div className="grid grid-cols-3 gap-4">
+                      <Field
+                        label="First name"
+                        name="firstName"
+                        required
+                        disabled={isPending}
+                        value={values.firstName}
+                        onChange={handleChange("firstName")}
+                        error={fieldErrors.firstName}
+                      />
+                      <Field
+                        label="Last name"
+                        name="lastName"
+                        disabled={isPending}
+                        value={values.lastName}
+                        onChange={handleChange("lastName")}
+                        error={fieldErrors.lastName}
+                      />
+                      <SelectField
+                        label="Gender"
+                        name="gender"
+                        disabled={isPending}
+                        value={values.gender}
+                        onChange={handleChange("gender")}
+                        error={fieldErrors.gender}
+                        options={[
+                          ["", "Select"],
+                          ["MALE", "Male"],
+                          ["FEMALE", "Female"],
+                          ["OTHER", "Other"],
+                          ["UNDISCLOSED", "Prefer not to say"],
+                        ]}
+                      />
                     </div>
-
-                    <SelectField
-                      label="Gender"
-                      name="gender"
-                      disabled={isPending}
-                      options={[
-                        ["", "Select"],
-                        ["MALE", "Male"],
-                        ["FEMALE", "Female"],
-                        ["OTHER", "Other"],
-                        ["UNDISCLOSED", "Prefer not to say"],
-                      ]}
-                    />
 
                     <div className="grid grid-cols-[auto_1fr] gap-4">
                       <SelectField
                         label="Login via"
                         name="identifierType"
                         disabled={isPending}
+                        value={values.identifierType}
+                        onChange={handleChange("identifierType")}
+                        error={fieldErrors.identifierType}
                         options={[
                           ["EMAIL", "Email"],
                           ["MOBILE", "Mobile"],
@@ -156,8 +206,27 @@ export function CreateParentModal({
                         required
                         disabled={isPending}
                         placeholder="name@example.com or 10-digit mobile"
+                        value={values.identifierValue}
+                        onChange={handleChange("identifierValue")}
+                        error={fieldErrors.identifierValue}
                       />
                     </div>
+
+                    <Field
+                      label="Set password (optional)"
+                      name="initialPassword"
+                      disabled={isPending}
+                      placeholder="Leave blank to auto-generate one"
+                      minLength={8}
+                      value={values.initialPassword}
+                      onChange={handleChange("initialPassword")}
+                      error={fieldErrors.initialPassword}
+                    />
+                    <p className="-mt-2 text-[13px] text-text-muted">
+                      Leave blank and one is generated for you — either way, the
+                      password is shown once on the next screen so you can pass it
+                      on to the parent yourself.
+                    </p>
 
                     <button
                       type="submit"
@@ -183,12 +252,20 @@ function Field({
   required,
   disabled,
   placeholder,
+  minLength,
+  value,
+  onChange,
+  error,
 }: {
   label: string;
   name: string;
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  minLength?: number;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
@@ -201,8 +278,14 @@ function Field({
         required={required}
         disabled={disabled}
         placeholder={placeholder}
-        className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+        minLength={minLength}
+        value={value}
+        onChange={onChange}
+        className={`rounded-[11px] border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:bg-surface disabled:opacity-60 ${
+          error ? "border-critical-text focus:border-critical-text" : "border-border focus:border-primary"
+        }`}
       />
+      {error && <span className="text-xs text-critical-text">{error}</span>}
     </label>
   );
 }
@@ -212,11 +295,17 @@ function SelectField({
   name,
   disabled,
   options,
+  value,
+  onChange,
+  error,
 }: {
   label: string;
   name: string;
   disabled?: boolean;
   options: [string, string][];
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  error?: string;
 }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm">
@@ -224,8 +313,11 @@ function SelectField({
       <select
         name={name}
         disabled={disabled}
-        defaultValue={options[0][0]}
-        className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+        value={value}
+        onChange={onChange}
+        className={`rounded-[11px] border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:bg-surface disabled:opacity-60 ${
+          error ? "border-critical-text focus:border-critical-text" : "border-border focus:border-primary"
+        }`}
       >
         {options.map(([value, text]) => (
           <option key={value} value={value}>
@@ -233,6 +325,7 @@ function SelectField({
           </option>
         ))}
       </select>
+      {error && <span className="text-xs text-critical-text">{error}</span>}
     </label>
   );
 }

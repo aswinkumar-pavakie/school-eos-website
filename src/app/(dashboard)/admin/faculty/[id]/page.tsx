@@ -82,6 +82,7 @@ interface StaffDetail {
   pincode: string | null;
   loginIdentifiers: LoginIdentifier[];
   resetAllowanceUsed: boolean;
+  adminVisiblePassword: string | null;
 }
 
 function statusTone(status: string): "success" | "pending" | "critical" {
@@ -234,8 +235,10 @@ export default async function FacultyDetailPage({
           <FacultyLoginSecuritySection
             staffId={staff.id}
             personId={staff.personId}
+            personName={`${staff.firstName} ${staff.lastName ?? ""}`.trim()}
             loginIdentifiers={staff.loginIdentifiers}
             resetAllowanceUsed={staff.resetAllowanceUsed}
+            adminVisiblePassword={staff.adminVisiblePassword}
           />
         </div>
       </section>

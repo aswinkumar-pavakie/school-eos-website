@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { parseApiError } from "@/lib/form-errors";
 
 export interface FormActionState {
   error?: string;
+  fieldErrors?: Record<string, string>;
   temporaryPassword?: string;
   personId?: string;
   staffId?: string;
@@ -35,11 +37,11 @@ export interface ResetPasswordState {
  * own URL is keyed by staffId (/admin/faculty/[id] fetches GET /staff/:id),
  * so that's what needs revalidating, not personId.
  */
-export async function resetFacultyPasswordAction(staffId: string, personId: string): Promise<ResetPasswordState> {
+export async function resetFacultyPasswordAction(staffId: string, personId: string, newPassword?: string): Promise<ResetPasswordState> {
   const res = await apiFetch(`/persons/${personId}/password-reset`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
+    body: JSON.stringify({ newPassword: newPassword || undefined }),
   });
   if (!res.ok) return { error: await readError(res) };
   const { data } = (await res.json()) as { data: { newPassword: string } };
@@ -75,12 +77,13 @@ export async function createFacultyAction(
       pincode: formData.get("pincode") || undefined,
       identifierType,
       identifierValue,
+      initialPassword: formData.get("initialPassword") || undefined,
       initialRole: { roleCode: "FACULTY", scopeType: "SCHOOL" },
     }),
   });
 
   if (!personRes.ok) {
-    return { error: await readError(personRes) };
+    return await parseApiError(personRes);
   }
 
   const { data: personResult } = (await personRes.json()) as {
@@ -113,8 +116,10 @@ export async function createFacultyAction(
   if (!staffRes.ok) {
     // The person (with login) was created successfully -- don't let that fact get
     // lost just because the employment details failed to attach.
+    const staffError = await parseApiError(staffRes);
     return {
-      error: `Faculty account was created (temporary password: ${temporaryPassword}), but the employment details couldn't be saved: ${await readError(staffRes)}. Person ID ${personId} — add the staff record for them from an edit screen once available, or contact engineering.`,
+      error: `Faculty account was created (temporary password: ${temporaryPassword}), but the employment details couldn't be saved: ${staffError.error ?? "see the highlighted field(s) below"}. Person ID ${personId} — add the staff record for them from an edit screen once available, or contact engineering.`,
+      fieldErrors: staffError.fieldErrors,
       temporaryPassword,
       personId,
     };

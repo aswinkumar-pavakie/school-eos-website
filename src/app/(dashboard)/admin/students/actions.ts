@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { parseApiError } from "@/lib/form-errors";
 
 export interface FormActionState {
   error?: string;
+  fieldErrors?: Record<string, string>;
   studentId?: string;
 }
 
@@ -13,6 +15,18 @@ async function readError(res: Response): Promise<string> {
   const body = await res.json().catch(() => null);
   if (Array.isArray(body?.message)) return body.message.join(" ");
   return body?.message ?? "Something went wrong. Nothing was changed.";
+}
+
+/** Suggests the next admission_no (see students.service.ts's own
+ * getNextAdmissionNo -- SMS<year><4-digit seq>, incrementing the highest
+ * sequence already used for the current year). A suggestion only -- the
+ * Admin still sees it in the field and can edit it before submitting. Fails
+ * soft (empty string) so a transient error here never blocks the form. */
+export async function getNextAdmissionNoAction(): Promise<string> {
+  const res = await apiFetch("/students/next-admission-no");
+  if (!res.ok) return "";
+  const { data } = (await res.json()) as { data: { admissionNo: string } };
+  return data.admissionNo;
 }
 
 export async function createStudentAction(
@@ -28,7 +42,7 @@ export async function createStudentAction(
   // happened regardless.
   const sectionId = formData.get("sectionId");
   if (typeof sectionId !== "string" || sectionId.trim() === "") {
-    return { error: "Class is required." };
+    return { fieldErrors: { sectionId: "Class is required." } };
   }
 
   const payload: Record<string, unknown> = {
@@ -72,7 +86,7 @@ export async function createStudentAction(
   });
 
   if (!res.ok) {
-    return { error: await readError(res) };
+    return await parseApiError(res);
   }
 
   const { data } = (await res.json()) as { data: { id: string } };

@@ -8,6 +8,11 @@
 // (resetAllowanceUsed) -- i.e. this is for the *second+* "I forgot my
 // password," not the first, which the faculty member handles themselves via
 // the same public /auth/password-reset/* flow every real login uses.
+//
+// adminVisiblePassword: same real feature/reasoning as
+// ParentLoginSecuritySection.tsx's own header comment -- shown here in the
+// clear only while it's still the password Admin created/last reset;
+// self-service clears it server-side and this switches to a status line.
 
 import { useState, useTransition } from "react";
 import { resetFacultyPasswordAction } from "@/app/(dashboard)/admin/faculty/actions";
@@ -21,28 +26,33 @@ interface LoginIdentifier {
 export function FacultyLoginSecuritySection({
   staffId,
   personId,
+  personName,
   loginIdentifiers,
   resetAllowanceUsed,
+  adminVisiblePassword,
 }: {
   staffId: string;
   personId: string;
+  personName: string;
   // Optional at the type level even though GET /staff/:id always includes
   // both real fields now (staff.service.ts's own get()) -- defensive against
   // a stale backend process that hasn't picked up that change yet, or any
   // other transient shape mismatch, rather than a hard crash on this profile.
   loginIdentifiers?: LoginIdentifier[];
   resetAllowanceUsed?: boolean;
+  adminVisiblePassword?: string | null;
 }) {
   const identifiers = loginIdentifiers ?? [];
   const allowanceUsed = resetAllowanceUsed ?? false;
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState("");
 
   function handleReset() {
     setError(null);
     startTransition(async () => {
-      const result = await resetFacultyPasswordAction(staffId, personId);
+      const result = await resetFacultyPasswordAction(staffId, personId, newPassword || undefined);
       if (result.error) setError(result.error);
       else setTemporaryPassword(result.temporaryPassword ?? null);
     });
@@ -63,6 +73,29 @@ export function FacultyLoginSecuritySection({
         </ul>
       )}
 
+      {!temporaryPassword && (adminVisiblePassword || allowanceUsed) && (
+        <div className="mt-3">
+          {adminVisiblePassword ? (
+            <div>
+              <p className="text-[13px] font-semibold text-text-muted">Current password</p>
+              <p className="mt-1.5 rounded-[11px] bg-field px-3.5 py-2.5 font-mono text-[15px] font-semibold text-text">
+                {adminVisiblePassword}
+              </p>
+              <p className="mt-1.5 text-xs text-text-muted">
+                Set by admin — visible here until {personName} changes it themselves.
+              </p>
+            </div>
+          ) : (
+            // allowanceUsed is true here (the || above guarantees it) -- a
+            // reliable signal they've actually gone through the self-service
+            // flow, not just an older row that predates this column.
+            <p className="text-xs text-text-muted">
+              {personName} has changed this password since — it&apos;s no longer visible to admin.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="mt-4 border-t border-border pt-4">
         {temporaryPassword ? (
           <div>
@@ -81,6 +114,17 @@ export function FacultyLoginSecuritySection({
               This faculty member has already used their one self-service reset — if they&apos;ve forgotten their
               password again, reset it for them here.
             </p>
+            <label className="mt-2 flex flex-col gap-1.5 text-sm">
+              <span className="font-semibold text-text">Set password (optional)</span>
+              <input
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                disabled={isPending}
+                placeholder="Leave blank to auto-generate one"
+                minLength={8}
+                className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
+              />
+            </label>
             <button
               type="button"
               disabled={isPending}

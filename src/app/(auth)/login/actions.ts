@@ -57,7 +57,7 @@ export async function loginAction(
   const password = formData.get("password");
 
   if (typeof identifier !== "string" || identifier.trim() === "") {
-    return { error: "Email is required." };
+    return { error: "Email or mobile number is required." };
   }
   if (typeof password !== "string" || password === "") {
     return { error: "Password is required." };
