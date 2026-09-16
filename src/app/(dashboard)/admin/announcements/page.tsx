@@ -80,7 +80,7 @@ export default async function AnnouncementsPage({
     <div className="mx-auto max-w-[1100px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Announcements</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Announcements</h1>
           <p className="mt-1 text-sm text-text-muted">Send a message to everyone, or to specific roles.</p>
         </div>
         <CreateAnnouncementForm />
@@ -111,7 +111,7 @@ export default async function AnnouncementsPage({
           </li>
         )}
         {announcements.map((a) => (
-          <li key={a.id} className="rounded-[16px] border border-border bg-surface p-[18px]">
+          <li key={a.id} className="card-hover rounded-[16px] border border-border bg-surface p-[18px]">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">

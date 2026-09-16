@@ -35,7 +35,7 @@ export default async function CommunityDetailPage({ params }: { params: Promise<
     <div className="mx-auto max-w-[960px]">
       <BackLink href="/admin/community" label="Communities" />
 
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">{community.name}</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{community.name}</h1>
       <p className="mt-1 text-sm text-text-muted">{community.communityCategory}</p>
 
       <div className="mt-6 flex flex-col gap-6">

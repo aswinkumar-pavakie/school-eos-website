@@ -108,7 +108,7 @@ export default async function TransportManagerReportsPage({
           {["SCHEDULED", "STARTED", "IN_PROGRESS", "COMPLETED", "INTERRUPTED", "CANCELLED"]
             .filter((s) => tripsByState[s])
             .map((state) => (
-              <div key={state} className="rounded-[11px] bg-field p-3 text-center">
+              <div key={state} className="card-hover rounded-[11px] bg-field p-3 text-center">
                 <p className="text-[20px] font-extrabold leading-[26px] text-text">{tripsByState[state]}</p>
                 <p className="mt-0.5 text-[11px] font-semibold text-text-muted">{state}</p>
               </div>
@@ -126,15 +126,15 @@ export default async function TransportManagerReportsPage({
           {events.length} boarding/alighting events between {dateFrom} and {dateTo}
         </p>
         <div className="mt-3 flex flex-wrap gap-2.5">
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-text">{eventsBySource.CARD_TAP ?? 0}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">NFC CARD TAP</p>
           </div>
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-text">{eventsBySource.ATTENDANT_MANUAL ?? 0}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">ATTENDANT MANUAL</p>
           </div>
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-critical-text">{wrongBusCount}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">FLAGGED WRONG BUS</p>
           </div>
@@ -145,19 +145,19 @@ export default async function TransportManagerReportsPage({
         <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Alerts report</h2>
         <p className="mt-1 text-[13px] text-text-muted">{alerts.length} alerts total (not date-filtered — this environment has only 15 seeded alerts)</p>
         <div className="mt-3 flex flex-wrap gap-2.5">
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-critical-text">{alertsBySeverity.CRITICAL ?? 0}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">CRITICAL</p>
           </div>
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-pending-text">{alertsBySeverity.WARNING ?? 0}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">WARNING</p>
           </div>
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-text">{alertsBySeverity.INFO ?? 0}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">INFO</p>
           </div>
-          <div className="rounded-[11px] bg-field p-3 text-center">
+          <div className="card-hover rounded-[11px] bg-field p-3 text-center">
             <p className="text-[20px] font-extrabold leading-[26px] text-text">{unacknowledgedAlerts}</p>
             <p className="mt-0.5 text-[11px] font-semibold text-text-muted">UNACKNOWLEDGED</p>
           </div>
@@ -169,7 +169,7 @@ export default async function TransportManagerReportsPage({
         <p className="mt-1 text-[13px] text-text-muted">Active transport allocations by route</p>
         <ul className="mt-3 flex flex-col divide-y divide-border">
           {routeStudentCounts.map((r) => (
-            <li key={r.route} className="flex items-center justify-between py-2 text-sm">
+            <li key={r.route} className="card-hover flex items-center justify-between rounded-[10px] px-2 py-2 text-sm">
               <span className="text-text">{r.route}</span>
               <span className="font-semibold text-text">{r.active} students</span>
             </li>

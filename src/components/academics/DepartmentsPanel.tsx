@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { createDepartmentAction, updateDepartmentAction, type FormActionState } from "@/app/(dashboard)/admin/academics/actions";
 import { StatusPill } from "@/components/dashboard/StatusPill";
-import { Field, PanelCreateForm, SelectField } from "./shared";
+import { Field, PanelCreateFormRow, PanelHeader, SelectField } from "./shared";
 
 export interface Department {
   id: string;
@@ -21,28 +21,13 @@ export function DepartmentsPanel({ departments }: { departments: Department[] })
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] text-text-muted">{departments.length} departments</p>
-        {!adding && (
-          <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
-            + New department
-          </button>
-        )}
-      </div>
-
-      {adding && (
-        <PanelCreateForm
-          title="New department"
-          onCancel={() => setAdding(false)}
-          formAction={formAction}
-          isPending={isPending}
-          error={state.error}
-          submitLabel="Create"
-        >
-          <Field label="Name" name="name" required disabled={isPending} placeholder="Science" />
-          <Field label="Code" name="code" disabled={isPending} placeholder="SCI" />
-        </PanelCreateForm>
-      )}
+      <PanelHeader
+        title="Departments"
+        subtitle={`${departments.length} department${departments.length === 1 ? "" : "s"}`}
+        actionLabel="+ New department"
+        onAction={() => setAdding(true)}
+        hideAction={adding}
+      />
 
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[480px] text-left text-sm">
@@ -55,7 +40,29 @@ export function DepartmentsPanel({ departments }: { departments: Department[] })
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {departments.length === 0 && (
+            {adding && (
+              <PanelCreateFormRow
+                colSpan={4}
+                onCancel={() => setAdding(false)}
+                formAction={formAction}
+                isPending={isPending}
+                error={state.error}
+              >
+                <Field label="Department name" name="name" required disabled={isPending} placeholder="Science" />
+                <Field label="Code" name="code" disabled={isPending} placeholder="SCI" />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue="ACTIVE"
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                  ]}
+                />
+              </PanelCreateFormRow>
+            )}
+            {departments.length === 0 && !adding && (
               <tr>
                 <td colSpan={4} className="py-6 text-center text-text-muted">
                   No departments yet.

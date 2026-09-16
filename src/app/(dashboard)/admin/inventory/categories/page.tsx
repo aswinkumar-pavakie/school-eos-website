@@ -18,7 +18,7 @@ export default async function InventoryCategoriesPage() {
 
   return (
     <div className="mx-auto max-w-[1280px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Inventory</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Inventory</h1>
       <p className="mt-1 text-sm text-text-muted">Configurable categories used across every inventory item.</p>
 
       <div className="mt-6 flex gap-2 overflow-x-auto border-b border-border">

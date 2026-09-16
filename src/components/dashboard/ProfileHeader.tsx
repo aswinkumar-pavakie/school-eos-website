@@ -49,14 +49,16 @@ export function ProfileHeader({
         <div className="flex items-start gap-4">
           {photo}
           <div>
-            <h1 className="text-[28px] font-bold leading-[34px] text-text">{name}</h1>
-            {subtitle && <p className="mt-1 text-sm text-text-muted">{subtitle}</p>}
+            {/* 40px/700/-0.03em/1.05, checked against Principal Console.dc.html's
+                own isHero markup (sec.name) -- not the generic page-h1 size. */}
+            <h1 className="text-[40px] font-bold leading-[1.05] tracking-[-0.03em] text-text">{name}</h1>
+            {subtitle && <p className="mt-1.5 text-base text-text-muted">{subtitle}</p>}
             {pills && pills.length > 0 && (
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <div className="mt-3.5 flex flex-wrap gap-2.5">
                 {pills.map((pill, i) => (
                   <span
                     key={i}
-                    className={`rounded-[7px] px-2.5 py-1 text-[12px] font-bold ${
+                    className={`rounded-[var(--radius-pill)] px-3.5 py-2 text-[13px] font-semibold ${
                       PILL_TONE_CLASSES[pill.tone ?? "neutral"]
                     }`}
                   >
@@ -77,11 +79,21 @@ export function ProfileHeader({
           className="mt-5 grid gap-3"
           style={{ gridTemplateColumns: `repeat(auto-fit, minmax(160px, 1fr))` }}
         >
+          {/* Filled tile (not bordered card), 12px radius, per isHero's own
+              tile markup (Principal Console.dc.html line 325). */}
           {stats.map((stat, i) => (
-            <div key={i} className="rounded-[14px] border border-border bg-surface p-4">
-              <p className="text-xs font-semibold text-text-muted">{stat.label}</p>
-              <p className="mt-1 text-[22px] font-extrabold leading-[26px] text-text">{stat.value}</p>
-              {stat.hint && <p className="mt-0.5 text-xs text-text-muted">{stat.hint}</p>}
+            <div
+              key={i}
+              className="rounded-[12px] p-4"
+              style={{ background: "var(--color-tile-bg, var(--color-field))" }}
+            >
+              <p className="text-[13px] text-text-muted">{stat.label}</p>
+              <p className="mt-1.5 text-[26px] font-bold leading-none tracking-[-0.02em] text-text">{stat.value}</p>
+              {stat.hint && (
+                <p className="mt-1.5 text-xs" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                  {stat.hint}
+                </p>
+              )}
             </div>
           ))}
         </div>

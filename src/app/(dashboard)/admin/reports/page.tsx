@@ -159,7 +159,7 @@ export default async function ReportsPage() {
       <div className="mx-auto max-w-[1280px]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-[28px] font-bold leading-[34px] text-text">Reports &amp; Analytics</h1>
+            <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Reports &amp; Analytics</h1>
             <p className="mt-1 text-sm text-text-muted">
               Institution-wide figures, straight from each module&apos;s own real data.
             </p>

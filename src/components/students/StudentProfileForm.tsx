@@ -18,6 +18,7 @@ interface StudentDetail {
   admissionNo: string;
   stateStudentId: string | null;
   motherTongue: string | null;
+  languageSubjectChoice: string | null;
   communityCategory: string | null;
   bloodGroup: string | null;
   isFirstGenLearner: boolean;
@@ -25,7 +26,38 @@ interface StudentDetail {
   isHosteller: boolean;
   usesSchoolTransport: boolean;
   commuteMode: string | null;
+  // Real fields collected on the "Enroll students" admission page -- editable
+  // here too. gender/dateOfBirth/district/aadhaarLast4 live on `person`
+  // (saved via the same PATCH /persons/:id call this form already makes for
+  // address); the rest live on `student` directly.
+  gender: string | null;
+  dateOfBirth: string | null;
+  district: string | null;
+  aadhaarLast4: string | null;
+  religion: string | null;
+  nationality: string | null;
+  admissionQuota: string | null;
+  previousSchool: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
 }
+
+const GENDERS: [string, string][] = [
+  ["MALE", "Male"],
+  ["FEMALE", "Female"],
+  ["OTHER", "Other"],
+  ["UNDISCLOSED", "Prefer not to say"],
+];
+
+const COMMUNITY_CATEGORIES: [string, string][] = [
+  ["SC", "SC"],
+  ["ST", "ST"],
+  ["MBC", "MBC"],
+  ["BC", "BC"],
+  ["OBC", "OBC"],
+  ["MINORITY", "Minority"],
+  ["GENERAL", "General"],
+];
 
 const COMMUTE_MODES: [string, string][] = [
   ["WALK", "Walks"],
@@ -101,6 +133,110 @@ export function StudentProfileForm({ student, address }: { student: StudentDetai
               className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
             />
           </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Gender</span>
+            <select
+              name="gender"
+              defaultValue={student.gender ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            >
+              <option value="">Not recorded</option>
+              {GENDERS.map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Date of birth</span>
+            <input
+              name="dateOfBirth"
+              type="date"
+              defaultValue={student.dateOfBirth ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Second language</span>
+            <input
+              name="languageSubjectChoice"
+              defaultValue={student.languageSubjectChoice ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Aadhaar (last 4)</span>
+            <input
+              name="aadhaarLast4"
+              defaultValue={student.aadhaarLast4 ?? ""}
+              placeholder="XXXX"
+              maxLength={4}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 border-t border-border pt-4">
+        <h3 className="text-[13px] font-bold text-text">Admission details</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Religion / Community</span>
+            <input
+              name="religion"
+              defaultValue={student.religion ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Nationality</span>
+            <input
+              name="nationality"
+              defaultValue={student.nationality ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Admission quota</span>
+            <input
+              name="admissionQuota"
+              defaultValue={student.admissionQuota ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Previous school</span>
+            <input
+              name="previousSchool"
+              defaultValue={student.previousSchool ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Community category</span>
+            <select
+              name="communityCategory"
+              defaultValue={student.communityCategory ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            >
+              <option value="">Not recorded</option>
+              {COMMUNITY_CATEGORIES.map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
           <label className="flex items-center gap-2 text-[13px] text-text">
@@ -171,6 +307,42 @@ export function StudentProfileForm({ student, address }: { student: StudentDetai
           <p className="text-xs text-text-muted">Printed on the back of the ID card.</p>
         </div>
         <AddressFields address={address} disabled={isPending} />
+        <label className="flex max-w-xs flex-col gap-1.5 text-sm">
+          <span className="font-semibold text-text">District</span>
+          <input
+            name="district"
+            defaultValue={student.district ?? ""}
+            disabled={isPending}
+            className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+          />
+        </label>
+      </div>
+
+      <div className="flex flex-col gap-4 border-t border-border pt-4">
+        <div>
+          <h3 className="text-[13px] font-bold text-text">Emergency contact</h3>
+          <p className="text-xs text-text-muted">Someone to reach if the parents can&apos;t be.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Name</span>
+            <input
+              name="emergencyContactName"
+              defaultValue={student.emergencyContactName ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Phone</span>
+            <input
+              name="emergencyContactPhone"
+              defaultValue={student.emergencyContactPhone ?? ""}
+              disabled={isPending}
+              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+            />
+          </label>
+        </div>
       </div>
     </form>
   );

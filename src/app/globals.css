@@ -67,9 +67,45 @@ body {
   margin: 0;
 }
 
-/* Tabular figures wherever numbers are compared — money, marks, counts (spec: numerals always tabular-nums). */
+/* Tabular figures wherever numbers are compared — money, marks, counts (spec: numerals always tabular-nums).
+   font-family is set explicitly here too: this unlayered rule otherwise clobbers Tailwind's own
+   @theme-generated .font-mono utility (unlayered CSS always wins over layered utilities, regardless
+   of source order), which silently dropped the mono font-family everywhere this class was used. */
 .font-mono {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* Canonical hover effect for any hoverable card/row/tile (a KPI card, a
+   table/list row, a route/period/document box) -- established this session on
+   RouteRow.tsx and ClassTimetableView.tsx's period tiles, now the one class
+   every feature across Transport Manager/Principal/Vice Principal/Admin
+   should reach for instead of re-typing the spec inline. A real "pop up"
+   (slight lift + outline + shadow), not just a border/outline color toggle --
+   two corrections landed on this class this session: first, the card's own
+   background is NEVER touched (an earlier pass filled the whole card with a
+   light-blue tint on hover, corrected); second, the lift was dropped entirely
+   for one revision (outline+shadow only), which read as a flat color toggle
+   rather than a real pop -- restored per explicit follow-up feedback: cards
+   should visibly lift, not just recolor. Relies on the element already being
+   position:relative-compatible (it sets that itself) and having its own
+   border-radius/background -- this only adds the lift+outline+shadow behavior
+   on top, so it composes with the surface's own card classes. Skip on
+   anything with no single obvious click/hover target (e.g. a card that's
+   just a static display), and skip anything that already has its own bespoke
+   hover. -outline-offset-1 keeps the outline from clipping the card's own
+   border. */
+.card-hover {
+  position: relative;
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+  transition: transform 150ms ease-out, outline-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  outline-color: var(--color-primary);
+  box-shadow: 0 10px 22px rgba(29, 78, 216, 0.14);
+  z-index: 2;
 }
 
 /* Chrome/Edge force a light-blue background on autofilled inputs that no

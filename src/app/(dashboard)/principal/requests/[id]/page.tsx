@@ -67,7 +67,7 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
         </Link>
 
         <div>
-          <h1 className="text-2xl font-extrabold text-text">{request.requestType.replace(/_/g, " ")}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{request.requestType.replace(/_/g, " ")}</h1>
           <p className="mt-1 text-sm text-text-muted">
             Raised by {request.requestedByName ?? request.requestedBy} on {formatDate(request.createdAt)}
           </p>
@@ -107,7 +107,7 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
           <h2 className="text-xs font-bold tracking-wide text-text-muted uppercase">Approval chain</h2>
           <ol className="mt-3 flex flex-col gap-2">
             {steps.map((s) => (
-              <li key={s.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
+              <li key={s.id} className="card-hover flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
                 <span className="font-bold text-text">Step {s.sequenceNo} · {s.approverRoleCode}</span>
                 {s.decision ? (
                   <span className="text-text-muted">

@@ -298,6 +298,250 @@ export async function exitStaffAction(
   return {};
 }
 
+function str(formData: FormData, key: string): string {
+  const v = formData.get(key);
+  return typeof v === "string" ? v.trim() : "";
+}
+
+/** Suggests the next employee_no (see staff.service.ts's own
+ * getNextEmployeeNo -- EMP<4-digit seq>, +1 on the highest existing one).
+ * Same fails-soft-to-empty-string contract as students'
+ * getNextAdmissionNoAction. */
+export async function getNextEmployeeIdAction(): Promise<string> {
+  const res = await apiFetch("/staff/next-employee-id");
+  if (!res.ok) return "";
+  const { data } = (await res.json()) as { data: { employeeNo: string } };
+  return data.employeeNo;
+}
+
+export interface PublishFacultyState {
+  error?: string;
+  fieldErrors?: Record<string, string>;
+  missing?: string[];
+  success?: {
+    staffId: string;
+    employeeNo: string;
+    username: string;
+    temporaryPassword: string;
+    warnings: string[];
+  };
+}
+
+/** Real-work path behind the "Publish" button on the Admit Faculty page
+ * (/admin/faculty/admit). Same two-step orchestration createFacultyAction
+ * above already uses for Faculty's real login (POST /persons, then POST
+ * /staff against the resulting personId) -- reused here, not duplicated,
+ * just fed from the new page's own field set (department/campus/blood
+ * group/employment type/academic credentials/professional info -- see
+ * query.md's "Admit Faculty page" section for the new staff columns behind
+ * them) and restructured around the reference design's own `facReq` list:
+ * Full name, Designation, Department, Joining date, Official email, Phone
+ * number.
+ *
+ * Official email is the one login identifier POST /persons can set
+ * (identifierType=EMAIL, matching the reference's own "Official email
+ * becomes the app username" note); phone number is a second real column on
+ * the same `person` row (person.mobile) that CreatePersonDto has no slot
+ * for, so it's attached with a follow-up PATCH /persons/:id right after --
+ * same two-PATCH-targets-one-button shape updateFacultyProfileAction
+ * already uses for staff+person, just at creation time instead of edit
+ * time. date_of_birth and gender ride along on that same PATCH.
+ *
+ * There is no DRAFT staff status (staff_status_check only allows
+ * ACTIVE/ON_LEAVE/EXITED -- checked directly against the live schema before
+ * building this), so Save as draft/Save on that page are real localStorage
+ * persistence only (see AdmitFacultyForm.tsx) -- nothing server-side until
+ * this action runs.
+ */
+export async function publishFacultyAction(
+  _prev: PublishFacultyState,
+  formData: FormData,
+): Promise<PublishFacultyState> {
+  const fullName = str(formData, "fullName");
+  const designation = str(formData, "designation");
+  const departmentId = str(formData, "departmentId");
+  const dateOfJoining = str(formData, "dateOfJoining");
+  const officialEmail = str(formData, "officialEmail");
+  const phoneNumber = str(formData, "phoneNumber");
+
+  const missing: string[] = [];
+  if (!fullName) missing.push("Full name");
+  if (!designation) missing.push("Designation");
+  if (!departmentId) missing.push("Department");
+  if (!dateOfJoining) missing.push("Joining date");
+  if (!officialEmail) missing.push("Official email");
+  if (!phoneNumber) missing.push("Phone number");
+  if (missing.length > 0) {
+    return { missing, error: `Fill the compulsory columns to publish: ${missing.join(", ")}` };
+  }
+
+  const nameParts = fullName.replace(/\s+/g, " ").trim();
+  const spaceIdx = nameParts.indexOf(" ");
+  const firstName = spaceIdx === -1 ? nameParts : nameParts.slice(0, spaceIdx);
+  const lastName = spaceIdx === -1 ? undefined : nameParts.slice(spaceIdx + 1);
+
+  const tempPassword = str(formData, "temporaryPassword");
+  const confirmPassword = str(formData, "confirmPassword");
+  if (tempPassword && tempPassword !== confirmPassword) {
+    return { error: "Temporary password and confirm password don't match." };
+  }
+
+  // 1. Person + login (official email is the app username, matching the
+  // reference design's own note).
+  const personPayload: Record<string, unknown> = {
+    firstName,
+    identifierType: "EMAIL",
+    identifierValue: officialEmail,
+    initialRole: { roleCode: "FACULTY", scopeType: "SCHOOL" },
+  };
+  if (lastName) personPayload.lastName = lastName;
+  const gender = str(formData, "gender");
+  if (gender) personPayload.gender = gender;
+  const aadhaarLast4 = str(formData, "aadhaarLast4");
+  if (aadhaarLast4) personPayload.aadhaarLast4 = aadhaarLast4;
+  const address = str(formData, "address");
+  if (address) personPayload.addressLine1 = address;
+  const district = str(formData, "district");
+  if (district) personPayload.district = district;
+  if (tempPassword) personPayload.initialPassword = tempPassword;
+
+  const personRes = await apiFetch("/persons", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(personPayload),
+  });
+  if (!personRes.ok) {
+    return await parseApiError(personRes);
+  }
+  const { data: personResult } = (await personRes.json()) as {
+    data: { person: { id: string }; temporaryPassword: string };
+  };
+  const personId = personResult.person.id;
+  const temporaryPassword = personResult.temporaryPassword;
+  const warnings: string[] = [];
+
+  // Staff photograph picked during form-filling (AdmitFacultyForm's own
+  // PhotoDropzone) -- the real personId only exists from here on, so the
+  // upload happens now, reusing the exact same POST /persons/:id/photo
+  // uploadPersonPhotoAction itself calls (not a new upload path). Attached
+  // to the person row directly, so it survives even if the staff (employment)
+  // POST below fails.
+  const staffPhoto = formData.get("staffPhoto");
+  if (staffPhoto instanceof File && staffPhoto.size > 0) {
+    const uploadBody = new FormData();
+    uploadBody.set("photo", staffPhoto);
+    const photoRes = await apiFetch(`/persons/${personId}/photo`, { method: "POST", body: uploadBody });
+    if (!photoRes.ok) {
+      warnings.push(`Staff photograph couldn't be uploaded: ${await readError(photoRes)}. Add it from the profile instead.`);
+    }
+  }
+
+  // Phone number + date of birth ride on a follow-up PATCH -- person.mobile
+  // has no slot in CreatePersonDto (only ONE of email/mobile can be the
+  // login identifier), but is a real column UpdatePersonDto already accepts.
+  const dateOfBirth = str(formData, "dateOfBirth");
+  const patchPayload: Record<string, unknown> = { mobile: phoneNumber };
+  if (dateOfBirth) patchPayload.dateOfBirth = dateOfBirth;
+  const patchRes = await apiFetch(`/persons/${personId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patchPayload),
+  });
+  if (!patchRes.ok) {
+    warnings.push(`Phone number couldn't be saved: ${await readError(patchRes)}. Add it from the profile.`);
+  }
+
+  // 2. Staff (employment) record.
+  const staffPayload: Record<string, unknown> = {
+    personId,
+    employeeNo: str(formData, "employeeNo") || undefined,
+    designation,
+    departmentId,
+    dateOfJoining,
+    isTeaching: formData.get("isTeaching") === "on",
+  };
+  const stringFields: [string, string][] = [
+    ["campusId", "campusId"],
+    ["bloodGroup", "bloodGroup"],
+    ["employmentType", "employmentType"],
+    ["staffRoom", "staffRoom"],
+    ["emergencyContactName", "emergencyContactName"],
+    ["emergencyContactPhone", "emergencyContactPhone"],
+    ["highestQualification", "highestQualification"],
+    ["specialization", "specialization"],
+    ["university", "university"],
+    ["areasOfExpertise", "areasOfExpertise"],
+    ["certifications", "certifications"],
+    ["workshopsTraining", "workshopsTraining"],
+    ["achievementsAwards", "achievementsAwards"],
+  ];
+  for (const [formKey, payloadKey] of stringFields) {
+    const v = str(formData, formKey);
+    if (v) staffPayload[payloadKey] = v;
+  }
+  const experienceYears = str(formData, "experienceYears");
+  if (experienceYears) staffPayload.experienceYears = Number(experienceYears);
+  const yearOfGraduation = str(formData, "yearOfGraduation");
+  if (yearOfGraduation) staffPayload.yearOfGraduation = Number(yearOfGraduation);
+  if (formData.get("tetNetCleared") === "on") staffPayload.tetNetCleared = true;
+
+  const staffRes = await apiFetch("/staff", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(staffPayload),
+  });
+  if (!staffRes.ok) {
+    // The person (with login) already exists -- don't lose track of that
+    // just because the employment details failed, same partial-success
+    // handling createFacultyAction above already has.
+    const staffError = await parseApiError(staffRes);
+    return {
+      error: `Faculty login was created (temporary password: ${temporaryPassword}), but the employment details couldn't be saved: ${staffError.error ?? "see the highlighted field(s) below"}. Person ID ${personId} — add the staff record for them from an edit screen once available, or contact engineering.`,
+      fieldErrors: staffError.fieldErrors,
+    };
+  }
+  const { data: staff } = (await staffRes.json()) as { data: { id: string; employeeNo: string } };
+
+  // Documents picked during form-filling (AdmitFacultyForm's own
+  // MultiFileDropzone/AttachRow) -- the real staffId only exists from here
+  // on, so the uploads happen now, reusing the exact same real
+  // POST /documents/upload endpoint the faculty profile's own
+  // CertificatesSection already uses (ownerDomain PEOPLE, ownerObjectType
+  // "staff", category "STAFF_HR" -- same values that page passes).
+  async function uploadStaffDocument(file: FormDataEntryValue | null, docType: string): Promise<void> {
+    if (!(file instanceof File) || file.size === 0) return;
+    const uploadBody = new FormData();
+    uploadBody.set("file", file);
+    uploadBody.set("ownerDomain", "PEOPLE");
+    uploadBody.set("ownerObjectType", "staff");
+    uploadBody.set("ownerObjectId", staff.id);
+    uploadBody.set("category", "STAFF_HR");
+    uploadBody.set("docType", docType);
+    const docRes = await apiFetch("/documents/upload", { method: "POST", body: uploadBody });
+    if (!docRes.ok) {
+      warnings.push(`${docType.replace(/_/g, " ").toLowerCase()} couldn't be uploaded: ${await readError(docRes)}. Add it from the profile instead.`);
+    }
+  }
+  await uploadStaffDocument(formData.get("aadhaarCopy"), "Aadhaar copy");
+  await uploadStaffDocument(formData.get("experienceLetter"), "Experience letter");
+  await uploadStaffDocument(formData.get("policeVerification"), "Police verification");
+  for (const cert of formData.getAll("qualificationCertificates")) {
+    await uploadStaffDocument(cert, "Qualification certificate");
+  }
+
+  revalidatePath("/admin/faculty");
+
+  return {
+    success: {
+      staffId: staff.id,
+      employeeNo: staff.employeeNo,
+      username: officialEmail,
+      temporaryPassword,
+      warnings,
+    },
+  };
+}
+
 /** Address lives on `person`, not `staff` -- PATCHes /persons/:id (same
  * endpoint EditParentContactForm uses for mobile/email), scoped to just the
  * address fields here. */

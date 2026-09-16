@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
+import { InlineDecisionCard } from "@/components/requests/InlineDecisionCard";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
-import { formatDate, formatMoneySummary } from "@/lib/format";
+import { formatDate, formatMoneySummary, formatRelativeTime } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
 import { listApprovals, type ApprovalRequest } from "@/lib/finance-api";
+import { approveRequestInline, rejectRequestInline, sendBackRequestInline } from "./[id]/actions";
 
-const STATUS_TABS = [
+const STATUS_OPTIONS = [
   { status: "PENDING" as const, label: "Pending" },
   { status: "APPROVED" as const, label: "Approved" },
   { status: "REJECTED" as const, label: "Rejected" },
@@ -64,84 +66,131 @@ export default async function PrincipalRequestsPage({
     const requestsForStatus = byStatus[status];
     const requests = type ? requestsForStatus.filter((r) => r.requestType === type) : requestsForStatus;
 
-    function hrefWith(overrides: { status?: string; type?: string }) {
-      const next = new URLSearchParams();
-      next.set("status", overrides.status ?? status);
-      const nextType = "type" in overrides ? overrides.type : type;
-      if (nextType) next.set("type", nextType);
-      return `/principal/requests?${next.toString()}`;
-    }
+    const pendingCount = byStatus.PENDING.length;
 
     return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-2xl font-extrabold text-text">Requests & Approvals</h1>
-          <p className="mt-1 text-sm text-text-muted">Everything routed to you for a decision, and what you&apos;ve already decided.</p>
+      <div className="mx-auto max-w-[1280px]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            {/* 38px/700/-0.028em, per Principal Console.dc.html's own page.title markup. */}
+            <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Requests &amp; approvals</h1>
+            <p className="mt-1.5 text-sm text-text-muted">
+              Requests routed to administration — approve or reject with a note.
+            </p>
+          </div>
+          <span className="rounded-[var(--radius-pill)] border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary-deep">
+            {pendingCount} awaiting decision
+          </span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href={hrefWith({ type: undefined })}
-            className={`rounded-[7px] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-              !type ? "bg-primary text-white" : "bg-field text-text-muted hover:bg-border"
-            }`}
-          >
-            All types
-          </Link>
-          {types.map((t) => (
-            <Link
-              key={t}
-              href={hrefWith({ type: t })}
-              className={`rounded-[7px] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-                type === t ? "bg-primary text-white" : "bg-field text-text-muted hover:bg-border"
-              }`}
+        {/* STATUS and TYPE as dropdown selects, replacing the previous pill
+            tabs -- both are the same already-real filters (status/type),
+            just a different control widget. */}
+        <form action="/principal/requests" className="mt-6 grid grid-cols-1 gap-[18px] rounded-[14px] border border-border bg-surface p-5 sm:grid-cols-2">
+          <label className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>
+              Status
+            </span>
+            <AutoSubmitSelect
+              name="status"
+              defaultValue={status}
+              className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
             >
-              {humanizeType(t)}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex gap-2 border-b border-border">
-          {STATUS_TABS.map((t) => (
-            <Link
-              key={t.status}
-              href={hrefWith({ status: t.status })}
-              className={`px-3 py-2 text-sm font-bold ${
-                status === t.status ? "border-b-2 border-primary text-text" : "text-text-muted hover:text-text"
-              }`}
+              {STATUS_OPTIONS.map((o) => (
+                <option key={o.status} value={o.status}>
+                  {o.label} ({type ? byStatus[o.status].filter((r) => r.requestType === type).length : byStatus[o.status].length})
+                </option>
+              ))}
+            </AutoSubmitSelect>
+          </label>
+          <label className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>
+              Type
+            </span>
+            <AutoSubmitSelect
+              name="type"
+              defaultValue={type ?? ""}
+              className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
             >
-              {t.label}
-              <span className="ml-1.5 text-xs font-semibold text-text-muted">
-                {type ? byStatus[t.status].filter((r) => r.requestType === type).length : byStatus[t.status].length}
-              </span>
-            </Link>
-          ))}
-        </div>
+              <option value="">All types</option>
+              {types.map((t) => (
+                <option key={t} value={t}>
+                  {humanizeType(t)}
+                </option>
+              ))}
+            </AutoSubmitSelect>
+          </label>
+        </form>
 
         {requests.length === 0 ? (
-          <EmptyState
-            title={`No ${status.toLowerCase()}${type ? ` ${humanizeType(type).toLowerCase()}` : ""} approvals`}
-            body="Nothing here right now."
-          />
+          <div className="mt-6">
+            <EmptyState
+              title={`No ${status.toLowerCase()}${type ? ` ${humanizeType(type).toLowerCase()}` : ""} approvals`}
+              body="Nothing here right now."
+            />
+          </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            {requests.map((r) => (
-              <Link
-                key={r.id}
-                href={`/principal/requests/${r.id}`}
-                className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 hover:bg-field"
-              >
-                <div>
-                  <p className="text-sm font-bold text-text">{humanizeType(r.requestType)}</p>
-                  <p className="text-xs text-text-muted">
-                    {r.requestedByName ?? r.requestedBy} · raised {formatDate(r.createdAt)}
-                    {r.dueAt ? ` · due ${formatDate(r.dueAt)}` : ""}
-                    {r.amountPaise ? ` · ${formatMoneySummary(r.amountPaise)}` : ""}
-                  </p>
+          <div className="mt-6 flex flex-col gap-[14px]">
+            {requests.map((r) => {
+              const dueSoon = r.dueAt ? new Date(r.dueAt).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000 : false;
+              const canDecide = r.state === "PENDING";
+              return (
+                <div key={r.id} className="flex flex-wrap justify-between gap-5 rounded-[14px] border border-border p-5 transition-colors hover:border-primary/40">
+                  <Link href={`/principal/requests/${r.id}`} className="flex min-w-[260px] flex-1 flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-[10px]">
+                      <span
+                        className="rounded-[6px] px-[10px] py-[5px] text-[11px] font-semibold tracking-[0.1em]"
+                        style={{ color: "#1f4fa8", background: "#eef4ff" }}
+                      >
+                        {humanizeType(r.requestType).toUpperCase()}
+                      </span>
+                      <span className="font-mono text-[12px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                        REQ-{r.id.slice(0, 8).toUpperCase()}
+                      </span>
+                      <span className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                        {formatRelativeTime(r.createdAt)}
+                      </span>
+                      {status === "PENDING" && dueSoon && (
+                        <span
+                          className="rounded-[6px] px-[10px] py-[5px] text-[11px] font-semibold tracking-[0.08em]"
+                          style={{ color: "#8a5a00", background: "#fdf3e0" }}
+                        >
+                          DUE SOON
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[19px] font-semibold leading-[24px] tracking-[-0.015em] text-text">{humanizeType(r.requestType)}</p>
+                    <p className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                      Raised by {r.requestedByName ?? r.requestedBy} · {formatDate(r.createdAt)}
+                      {r.dueAt ? ` · due ${formatDate(r.dueAt)}` : ""}
+                      {r.amountPaise ? ` · ${formatMoneySummary(r.amountPaise)}` : ""}
+                    </p>
+                  </Link>
+                  {canDecide ? (
+                    <InlineDecisionCard
+                      approveAction={approveRequestInline.bind(null, r.id)}
+                      rejectAction={rejectRequestInline.bind(null, r.id)}
+                      sendBackAction={sendBackRequestInline.bind(null, r.id)}
+                    />
+                  ) : (
+                    <div className="flex items-start">
+                      <span
+                        className="whitespace-nowrap rounded-[var(--radius-pill)] px-[18px] py-[10px] text-[13px] font-semibold"
+                        style={
+                          r.state === "APPROVED"
+                            ? { background: "#e8f6ee", color: "#1f7a4d" }
+                            : r.state === "REJECTED"
+                              ? { background: "#fdecec", color: "#b3261e" }
+                              : { background: "#eef4ff", color: "#1f4fa8" }
+                        }
+                      >
+                        {r.state.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <StatusPill state={r.state} />
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

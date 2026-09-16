@@ -28,10 +28,14 @@ export function PrincipalHostelTabs({
   hostels,
   allocations,
   years,
+  basePath = "/principal",
 }: {
   hostels: Hostel[];
   allocations: Allocation[];
   years: { id: string; name: string; isCurrent: boolean }[];
+  /** Defaults to Principal's own route so its existing usage is unaffected --
+   * Vice Principal's own oversight page passes its own base path. */
+  basePath?: string;
 }) {
   const [tab, setTab] = useState<Tab>("Hostels");
   const [statusFilter, setStatusFilter] = useState("");
@@ -73,7 +77,7 @@ export function PrincipalHostelTabs({
                   </div>
                   <div className="flex items-center gap-2.5">
                     <StatusPill tone={hostel.status === "ACTIVE" ? "success" : "pending"} label={hostel.status} />
-                    <Link href={`/principal/hostel/${hostel.id}`} className="text-[13px] font-semibold text-primary">
+                    <Link href={`${basePath}/hostel/${hostel.id}`} className="text-[13px] font-semibold text-primary">
                       Open
                     </Link>
                   </div>

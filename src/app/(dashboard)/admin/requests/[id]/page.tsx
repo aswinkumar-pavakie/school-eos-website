@@ -70,7 +70,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
       <BackLink href="/admin/requests" label="Back to Requests & Approvals" />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">
             {REQUEST_TYPE_LABELS[request.requestType] ?? request.requestType}
           </h1>
           <p className="mt-1.5 text-sm text-text-muted">

@@ -50,7 +50,7 @@ export default async function FinancePage({
 
   return (
     <div className="mx-auto max-w-[1024px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Finance &amp; Fees</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Finance &amp; Fees</h1>
       <p className="mt-1 text-sm text-text-muted">
         Fee heads and fee structures — collections, receipts and reconciliation are Accounts operations, not part
         of this view.

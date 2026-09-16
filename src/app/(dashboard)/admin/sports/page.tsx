@@ -41,7 +41,7 @@ export default async function SportsPage() {
 
   return (
     <div className="mx-auto max-w-[1024px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Sports</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Sports</h1>
       <p className="mt-1 text-sm text-text-muted">
         Sports, categories, equipment and coach registration are managed here. Teams, training, tournaments,
         results, achievements, OD requests and equipment issue/return are Faculty (Sports In-Charge) operations run

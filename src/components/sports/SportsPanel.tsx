@@ -218,7 +218,7 @@ function CategoryRow({ category }: { category: SportCategory }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="rounded-[11px] bg-surface p-2.5">
+    <li className="card-hover rounded-[11px] bg-surface p-2.5">
       <div className="flex items-center justify-between gap-2">
         <p className="text-[13px] text-text">
           {category.name}

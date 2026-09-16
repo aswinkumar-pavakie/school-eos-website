@@ -80,7 +80,7 @@ export default async function PrincipalFinancePaymentsPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Finance &amp; Fees</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Finance &amp; Fees</h1>
           <p className="mt-1 text-sm text-text-muted">
             {meta.total} payments — view-only. Collecting, confirming, cancelling or refunding a payment is a
             Finance/Accounts operation, not part of this view.
@@ -118,7 +118,7 @@ export default async function PrincipalFinancePaymentsPage({
               </tr>
             )}
             {payments.map((p) => (
-              <tr key={p.id}>
+              <tr key={p.id} className="card-hover">
                 <td className="px-4 py-3 font-semibold text-text">
                   {p.studentId ? (
                     <Link href={`/principal/students/${p.studentId}`} className="hover:underline">

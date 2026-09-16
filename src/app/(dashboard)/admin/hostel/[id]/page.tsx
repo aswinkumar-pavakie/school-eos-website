@@ -91,7 +91,7 @@ export default async function HostelDetailPage({ params }: { params: Promise<{ i
       <BackLink href="/admin/hostel" label="Back to hostels" />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">{hostel.name}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{hostel.name}</h1>
           <div className="mt-1.5 flex items-center gap-2.5 text-sm text-text-muted">
             <span>{hostel.gender.toLowerCase()}</span>
             {hostel.capacity && <span>capacity {hostel.capacity}</span>}

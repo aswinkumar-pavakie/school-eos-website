@@ -109,7 +109,7 @@ export default async function ExamDetailPage({
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">{exam.name}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{exam.name}</h1>
           <p className="mt-1.5 text-sm text-text-muted">
             {exam.examType.replace(/_/g, " ").toLowerCase()}
             {exam.term ? ` · ${exam.term}` : ""} · {exam.academicYearName}

@@ -1,7 +1,9 @@
 // Timetable -- real data from timetable_slot/timetable_period/subject_offering,
 // which already existed fully populated in the database with no API in front of
 // it (see query.md). Pick a Standard + Section, see that section's real weekly
-// grid.
+// grid, rendered through the shared ClassTimetableView (pixel-matched to the
+// SIS mockup's classtt page, and reused as-is by Principal/Vice Principal's own
+// read-only copies of this page).
 //
 // On a fresh page load (neither gradeId nor sectionId in the URL yet) this
 // defaults to the lowest standard's first section instead of an empty
@@ -13,34 +15,35 @@
 // explicit choice always wins -- this default only fills the truly blank
 // first-visit state.
 
-import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
-import { TimetableGrid, type TimetableSlot } from "@/components/academics/TimetableGrid";
+import {
+  ClassTimetableView,
+  type Grade,
+  type Section,
+  type AcademicTerm,
+  type CoordinatorAssignment,
+} from "@/components/academics/ClassTimetableView";
+import { type TimetableSlot } from "@/components/academics/TimetableGrid";
 import { apiFetch } from "@/lib/api";
-
-interface Grade {
-  id: string;
-  name: string;
-}
-
-interface Section {
-  id: string;
-  gradeId: string;
-  name: string;
-}
 
 export default async function TimetablePage({
   searchParams,
 }: {
-  searchParams: Promise<{ gradeId?: string; sectionId?: string }>;
+  searchParams: Promise<{ gradeId?: string; sectionId?: string; termId?: string }>;
 }) {
   const params = await searchParams;
 
-  const [gradesRes, sectionsRes] = await Promise.all([
+  const [gradesRes, sectionsRes, termsRes, coordinatorsRes] = await Promise.all([
     apiFetch("/grades"),
     apiFetch("/sections?status=ACTIVE"),
+    apiFetch("/academic-terms"),
+    apiFetch("/role-assignments?roleCode=ACADEMIC_COORDINATOR&status=ACTIVE"),
   ]);
   const grades: Grade[] = gradesRes.ok ? ((await gradesRes.json()) as { data: Grade[] }).data : [];
   const sections: Section[] = sectionsRes.ok ? ((await sectionsRes.json()) as { data: Section[] }).data : [];
+  const terms: AcademicTerm[] = termsRes.ok ? ((await termsRes.json()) as { data: AcademicTerm[] }).data : [];
+  const coordinatorAssignments: CoordinatorAssignment[] = coordinatorsRes.ok
+    ? ((await coordinatorsRes.json()) as { data: CoordinatorAssignment[] }).data
+    : [];
   const gradeById = new Map(grades.map((g) => [g.id, g.name]));
 
   const isFreshLoad = !params.gradeId && !params.sectionId;
@@ -70,63 +73,21 @@ export default async function TimetablePage({
     if (res.ok) slots = ((await res.json()) as { data: TimetableSlot[] }).data;
   }
 
-  const selectedSection = sections.find((s) => s.id === effectiveSectionId);
-  const selectedSectionLabel = selectedSection
-    ? `${gradeById.get(selectedSection.gradeId) ?? "—"} · Section ${selectedSection.name}`
-    : null;
+  const effectiveTermId = params.termId ?? terms.find((t) => t.isCurrent)?.id;
 
   return (
-    <div className="mx-auto max-w-[1100px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Timetable</h1>
-      <p className="mt-1 text-sm text-text-muted">Real weekly schedule, by class and section.</p>
-
-      <form action="/admin/timetable" className="mt-6 flex flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-semibold text-text">Standard</span>
-          <AutoSubmitSelect
-            name="gradeId"
-            defaultValue={effectiveGradeId ?? ""}
-            className="min-w-[180px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
-          >
-            <option value="">Select a standard</option>
-            {grades.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </AutoSubmitSelect>
-        </label>
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-semibold text-text">Section</span>
-          <AutoSubmitSelect
-            name="sectionId"
-            defaultValue={effectiveSectionId ?? ""}
-            className="min-w-[160px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
-          >
-            <option value="">Select a section</option>
-            {visibleSections.map((s) => (
-              <option key={s.id} value={s.id}>
-                {effectiveGradeId ? s.name : `${gradeById.get(s.gradeId) ?? "—"} · ${s.name}`}
-              </option>
-            ))}
-          </AutoSubmitSelect>
-        </label>
-      </form>
-
-      <div className="mt-6">
-        {!effectiveSectionId ? (
-          <p className="text-sm text-text-muted">Pick a standard and section to see its timetable.</p>
-        ) : (
-          <>
-            <h2 className="text-[17px] font-extrabold leading-[22px] text-text">
-              {selectedSectionLabel ?? "Timetable"}
-            </h2>
-            <div className="mt-3">
-              <TimetableGrid slots={slots} />
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <ClassTimetableView
+      formAction="/admin/timetable"
+      subtitle="Published by the academic co-ordinators · real weekly schedule, by class and section."
+      grades={grades}
+      visibleSections={visibleSections}
+      gradeId={effectiveGradeId}
+      sectionId={effectiveSectionId}
+      gradeById={gradeById}
+      terms={terms}
+      termId={effectiveTermId}
+      slots={slots}
+      coordinatorAssignments={coordinatorAssignments}
+    />
   );
 }

@@ -41,6 +41,9 @@ async function runMutation(
 export async function createAcademicYearAction(_prev: FormActionState, formData: FormData) {
   return runMutation("/academic-years", "POST", collect(formData, ["name", "startDate", "endDate"]));
 }
+export async function updateAcademicYearAction(id: string, _prev: FormActionState, formData: FormData) {
+  return runMutation(`/academic-years/${id}`, "PATCH", collect(formData, ["name", "startDate", "endDate", "status"]));
+}
 export async function setCurrentAcademicYearAction(id: string): Promise<void> {
   await apiFetch(`/academic-years/${id}/set-current`, { method: "POST" });
   revalidatePath("/admin/academics");
@@ -52,7 +55,7 @@ export async function closeAcademicYearAction(id: string): Promise<void> {
 
 // Grades
 export async function createGradeAction(_prev: FormActionState, formData: FormData) {
-  return runMutation("/grades", "POST", collect(formData, ["name", "levelNo", "stage"]));
+  return runMutation("/grades", "POST", collect(formData, ["name", "levelNo", "stage", "status"]));
 }
 export async function updateGradeAction(id: string, _prev: FormActionState, formData: FormData) {
   return runMutation(`/grades/${id}`, "PATCH", collect(formData, ["name", "levelNo", "stage", "status"]));
@@ -63,7 +66,7 @@ export async function createSectionAction(_prev: FormActionState, formData: Form
   return runMutation(
     "/sections",
     "POST",
-    collect(formData, ["academicYearId", "gradeId", "mediumId", "name", "capacity"]),
+    collect(formData, ["academicYearId", "gradeId", "mediumId", "name", "capacity", "status"]),
   );
 }
 export async function updateSectionAction(id: string, _prev: FormActionState, formData: FormData) {
@@ -72,7 +75,11 @@ export async function updateSectionAction(id: string, _prev: FormActionState, fo
 
 // Subjects
 export async function createSubjectAction(_prev: FormActionState, formData: FormData) {
-  return runMutation("/subjects", "POST", collect(formData, ["name", "code", "subjectType", "appliesToStage"]));
+  return runMutation(
+    "/subjects",
+    "POST",
+    collect(formData, ["name", "code", "subjectType", "appliesToStage", "status"]),
+  );
 }
 export async function updateSubjectAction(id: string, _prev: FormActionState, formData: FormData) {
   return runMutation(
@@ -84,7 +91,7 @@ export async function updateSubjectAction(id: string, _prev: FormActionState, fo
 
 // Departments
 export async function createDepartmentAction(_prev: FormActionState, formData: FormData) {
-  return runMutation("/departments", "POST", collect(formData, ["name", "code"]));
+  return runMutation("/departments", "POST", collect(formData, ["name", "code", "status"]));
 }
 export async function updateDepartmentAction(id: string, _prev: FormActionState, formData: FormData) {
   return runMutation(`/departments/${id}`, "PATCH", collect(formData, ["name", "code", "status"]));

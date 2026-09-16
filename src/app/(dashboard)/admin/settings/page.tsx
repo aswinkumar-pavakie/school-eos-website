@@ -2,8 +2,10 @@ import { SettingsTabs } from "@/components/settings/SettingsTabs";
 import { apiFetch } from "@/lib/api";
 
 export default async function SettingsPage() {
-  const [schoolRes, rolesRes, policiesRes, terminalsRes, vehiclesRes] = await Promise.all([
+  const [schoolRes, campusesRes, departmentsRes, rolesRes, policiesRes, terminalsRes, vehiclesRes] = await Promise.all([
     apiFetch("/school"),
+    apiFetch("/campuses"),
+    apiFetch("/departments"),
     apiFetch("/roles"),
     apiFetch("/document-retention-policies"),
     apiFetch("/terminals"),
@@ -20,6 +22,8 @@ export default async function SettingsPage() {
   }
 
   const { data: school } = await schoolRes.json();
+  const { data: campuses } = campusesRes.ok ? await campusesRes.json() : { data: [] };
+  const { data: departments } = departmentsRes.ok ? await departmentsRes.json() : { data: [] };
   const { data: roles } = rolesRes.ok ? await rolesRes.json() : { data: [] };
   const { data: policies } = policiesRes.ok ? await policiesRes.json() : { data: [] };
   const { data: terminals } = terminalsRes.ok ? await terminalsRes.json() : { data: [] };
@@ -27,12 +31,20 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-[1024px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Settings, Master Data & Audit</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Settings, Master Data & Audit</h1>
       <p className="mt-1 text-sm text-text-muted">
-        School profile, roles catalog, document retention policies and terminal registration.
+        School profile, campuses, departments, roles catalog, document retention policies and terminal registration.
       </p>
       <div className="mt-6">
-        <SettingsTabs school={school} roles={roles} policies={policies} terminals={terminals} vehicles={vehicles} />
+        <SettingsTabs
+          school={school}
+          campuses={campuses}
+          departments={departments}
+          roles={roles}
+          policies={policies}
+          terminals={terminals}
+          vehicles={vehicles}
+        />
       </div>
     </div>
   );

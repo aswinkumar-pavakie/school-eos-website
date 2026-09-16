@@ -582,6 +582,8 @@ export interface LibraryOverview {
   readyReservationsCount: number;
   pendingFinesAmountPaise: string | number;
   sentToFinanceFinesAmountPaise: string | number;
+  todayIssuedCount: number;
+  todayReturnedCount: number;
   recentActivity: LibraryRecentActivity[];
 }
 

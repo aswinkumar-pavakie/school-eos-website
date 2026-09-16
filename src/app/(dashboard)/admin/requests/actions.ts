@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
+import { approveRequest, rejectRequest, sendBackRequest } from "@/lib/finance-api";
 
 export interface FormActionState {
   error?: string;
@@ -73,6 +74,30 @@ export async function createApprovalRequestAction(
   return runMutation("/approval-requests", payload);
 }
 
+// (id, formData) => result wrappers for InlineDecisionCard's list-card
+// actions. Approve's comment is optional (a plain click with no reason still
+// works); Reject's comment is ALSO optional on this module specifically
+// (DecideApprovalRequestDto.comment) -- Admin's own reject doesn't require a
+// reason, unlike Principal's /approvals module -- but still accepts one when
+// typed, since the shared InlineDecisionCard offers the box either way for a
+// consistent interaction. Send back's comment is required
+// (SendBackApprovalRequestDto) -- enforced here and by the backend.
+export async function approveApprovalRequestInline(id: string, formData: FormData): Promise<FormActionState> {
+  const comment = String(formData.get("comment") ?? "").trim();
+  return runMutation(`/approval-requests/${id}/approve`, comment ? { comment } : {}, id);
+}
+
+export async function rejectApprovalRequestInline(id: string, formData: FormData): Promise<FormActionState> {
+  const comment = String(formData.get("comment") ?? "").trim();
+  return runMutation(`/approval-requests/${id}/reject`, comment ? { comment } : {}, id);
+}
+
+export async function sendBackApprovalRequestInline(id: string, formData: FormData): Promise<FormActionState> {
+  const comment = String(formData.get("comment") ?? "").trim();
+  if (!comment) return { error: "Reason/comment · required" };
+  return runMutation(`/approval-requests/${id}/send-back`, { comment }, id);
+}
+
 export async function approveApprovalRequestAction(id: string, _prev: FormActionState, formData: FormData) {
   const comment = formData.get("comment");
   const payload: Record<string, unknown> = {};
@@ -98,4 +123,51 @@ export async function resubmitApprovalRequestAction(id: string, _prev: FormActio
   const comment = formData.get("comment");
   if (typeof comment === "string" && comment.trim() !== "") payload.comment = comment;
   return runMutation(`/approval-requests/${id}/resubmit`, payload, id);
+}
+
+// Wiring fix: this module (/approval-requests) is deliberately scoped to only
+// the 6 ADMIN_REQUEST_TYPES Admin authors itself (see admin-request-types.ts's
+// own comment) -- but the generic approvals engine (approval_policy /
+// GET /approvals, the same one Principal's own Requests page reads) can also
+// legitimately route a request to ADMIN as approver (e.g. STAFF_LEAVE_REQUEST
+// when the Principal is the one on leave -- self-approval is blocked, so it
+// routes to Admin instead). Before this, such a request existed, was real,
+// and was correctly assigned to Admin -- but Admin's UI had no surface that
+// ever queried the generic engine at all, so it was permanently invisible
+// here regardless of how correctly it routed. These wrappers reuse the exact
+// same finance-api.ts client functions Principal's own /principal/requests
+// page already uses against the same real /approvals/:id/approve|reject|
+// send-back endpoints -- not a new engine, not a duplicate approval system.
+export async function approveGenericApprovalInline(id: string, formData: FormData): Promise<FormActionState> {
+  try {
+    await approveRequest(id, String(formData.get("comment") ?? "").trim() || undefined);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Approve failed." };
+  }
+  revalidatePath("/admin/requests");
+  return {};
+}
+
+export async function rejectGenericApprovalInline(id: string, formData: FormData): Promise<FormActionState> {
+  const comment = String(formData.get("comment") ?? "").trim();
+  if (!comment) return { error: "Reason · required" };
+  try {
+    await rejectRequest(id, comment);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Reject failed." };
+  }
+  revalidatePath("/admin/requests");
+  return {};
+}
+
+export async function sendBackGenericApprovalInline(id: string, formData: FormData): Promise<FormActionState> {
+  const comment = String(formData.get("comment") ?? "").trim();
+  if (!comment) return { error: "Reason/comment · required" };
+  try {
+    await sendBackRequest(id, comment);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Send back failed." };
+  }
+  revalidatePath("/admin/requests");
+  return {};
 }

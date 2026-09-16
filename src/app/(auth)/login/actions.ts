@@ -8,9 +8,14 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
 // Admin, Principal (web half), Finance/Accounts, Library, Media Room, Community
-// (Phase 1: login only), Transport Manager, Faculty, Parent -- the web logins
-// in the system. Vice Principal moved to mobile-only per updated plan
-// (2026-09-03) -- see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts.
+// (Phase 1: login only), Transport Manager, Faculty, Parent, Vice Principal --
+// the web logins in the system. Vice Principal was mobile-only from
+// 2026-09-03 until explicitly reversed by direct request -- see
+// src/app/(dashboard)/vice-principal's own layout.tsx for why its nav is NOT
+// a copy of Principal's: real backend @Roles audit across every controller
+// found genuine differences (VP has real Attendance Sessions + Examinations
+// oversight Principal's own web console doesn't; VP lacks the per-student
+// Transport/Fees sub-views and vehicle documents/maintenance Principal has).
 // Faculty was mobile-only too until the product decision on 2026-09-08 to
 // bring the same module to the web (see src/app/(dashboard)/faculty); Parent
 // got the same treatment right after (see src/app/(dashboard)/parent). FACULTY
@@ -25,6 +30,7 @@ const API_BASE_URL =
 const WEB_ALLOWED_ROLES = [
   "ADMIN",
   "PRINCIPAL",
+  "VICE_PRINCIPAL",
   "FINANCE",
   "LIBRARY",
   "MEDIA_ROOM",
@@ -110,6 +116,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("PRINCIPAL")) {
     redirect("/principal");
+  }
+  if (roleCodes.includes("VICE_PRINCIPAL")) {
+    redirect("/vice-principal");
   }
   if (roleCodes.includes("LIBRARY")) {
     redirect("/library");

@@ -18,10 +18,12 @@ export function StaffPersonPicker({
   disabled,
   onSelect,
   name = "personId",
+  label = "Staff member",
 }: {
   disabled?: boolean;
   onSelect?: (staff: StaffHit | null) => void;
   name?: string;
+  label?: string;
 }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<StaffHit | null>(null);
@@ -62,7 +64,7 @@ export function StaffPersonPicker({
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-1.5 text-sm">
-      <span className="font-semibold text-text">Staff member *</span>
+      <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">{label} *</span>
       <input type="hidden" name={name} value={selected?.personId ?? ""} required />
       <input
         value={selected ? `${selected.firstName} ${selected.lastName ?? ""} (${selected.employeeNo})` : query}

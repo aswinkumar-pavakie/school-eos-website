@@ -9,7 +9,6 @@ import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { StudentsFilterBar } from "@/components/students/StudentsFilterBar";
 import { apiFetch } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 
 interface StudentRow {
   id: string;
@@ -25,6 +24,8 @@ interface StudentRow {
   sectionName: string | null;
   rollNo: number | null;
   photoUrl: string | null;
+  guardianFirstName: string | null;
+  guardianLastName: string | null;
 }
 
 interface Grade {
@@ -117,9 +118,12 @@ export default async function PrincipalStudentsPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Students</h1>
-          <p className="mt-1 text-sm text-text-muted">{meta.total} student records</p>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Students</h1>
+          <p className="mt-1 text-sm text-text-muted">Every student on the roll. Open a record for the full personal file.</p>
         </div>
+        <span className="rounded-[var(--radius-pill)] border border-border bg-field px-3.5 py-1.5 text-[13px] font-bold text-text">
+          {meta.total} student{meta.total === 1 ? "" : "s"}
+        </span>
       </div>
 
       <StudentsFilterBar
@@ -151,20 +155,22 @@ export default async function PrincipalStudentsPage({
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-[16px] border border-border bg-surface">
-        <table className="w-full min-w-[720px] text-left text-sm">
+        <table className="w-full min-w-[880px] text-left text-sm">
           <thead>
             <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Student</th>
               <th className="px-4 py-3">Admission no.</th>
               <th className="px-4 py-3">Class</th>
-              <th className="px-4 py-3">Admitted</th>
+              <th className="px-4 py-3">Roll</th>
+              <th className="px-4 py-3">Guardian</th>
+              <th className="px-4 py-3">Residence</th>
               <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {students.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
+                <td colSpan={7} className="px-4 py-10 text-center text-text-muted">
                   No students match this filter.
                 </td>
               </tr>
@@ -179,22 +185,27 @@ export default async function PrincipalStudentsPage({
                       size={28}
                     />
                     {student.firstName} {student.lastName ?? ""}
-                    {student.isHosteller && (
-                      <span className="text-xs font-normal text-text-muted">(Hosteller)</span>
-                    )}
                   </Link>
                 </td>
                 <td className="px-4 py-3 font-mono text-[13px] text-text">{student.admissionNo}</td>
-                <td className="px-4 py-3 text-text-muted">
+                <td className="px-4 py-3 font-semibold text-text">
                   {student.gradeName ? (
                     <>
                       {student.gradeName} · {student.sectionName}
                     </>
                   ) : (
-                    "Unassigned"
+                    <span className="font-normal text-text-muted">Unassigned</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-text-muted">{formatDate(student.admissionDate)}</td>
+                <td className="px-4 py-3 font-mono text-[13px] text-text-muted">{student.rollNo ?? "—"}</td>
+                <td className="px-4 py-3 text-text-muted">
+                  {student.guardianFirstName
+                    ? `${student.guardianFirstName} ${student.guardianLastName ?? ""}`
+                    : "—"}
+                </td>
+                <td className="px-4 py-3 text-text-muted">
+                  {student.isHosteller ? "Hosteller" : "Day scholar"}
+                </td>
                 <td className="px-4 py-3">
                   <StatusPill tone={statusTone(student.status)} label={student.status.replace(/_/g, " ")} />
                 </td>

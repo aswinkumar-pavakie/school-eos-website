@@ -70,12 +70,20 @@ export function TransportTabs({
             assignments={vehicleAssignments}
             routeNameById={routeNameById}
             driverNameById={driverNameById}
+            detailBasePath="/admin/transport/vehicles"
           />
         )}
         {tab === "Routes" && (
           <RoutesPanel routes={routes} assignments={routeAssignments} vehicleRegNoById={vehicleRegNoById} />
         )}
-        {tab === "Drivers" && <DriversPanel drivers={drivers} vehicles={vehicles} assignments={driverAssignments} />}
+        {tab === "Drivers" && (
+          <DriversPanel
+            drivers={drivers}
+            vehicles={vehicles}
+            assignments={driverAssignments}
+            detailBasePath="/admin/transport/drivers"
+          />
+        )}
       </div>
     </div>
   );

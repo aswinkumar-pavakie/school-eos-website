@@ -104,7 +104,7 @@ export default async function PrincipalAuditPage({
   return (
     <div className="mx-auto max-w-[1280px]">
       {returnTo && <BackLink href={returnTo} label="‹ Back" />}
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Audit Log</h1>
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Audit Log</h1>
       <p className="mt-1 text-sm text-text-muted">{meta.total} recorded actions</p>
 
       <form action="/principal/audit" className="mt-6 flex flex-wrap items-end gap-3">
@@ -170,7 +170,7 @@ export default async function PrincipalAuditPage({
               </tr>
             )}
             {rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} className="card-hover">
                 <td className="px-4 py-3 text-text">
                   {row.actorName ?? row.actorRoleCode ?? "System"}
                   {row.actorPersonId && (
