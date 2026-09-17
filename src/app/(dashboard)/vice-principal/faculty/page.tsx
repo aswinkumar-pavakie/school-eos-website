@@ -182,7 +182,7 @@ export default async function PrincipalFacultyPage({
             <Link
               key={member.id}
               href={`/vice-principal/faculty/${member.id}`}
-              className="rounded-[16px] border border-border bg-surface p-[18px] transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+              className="card-hover rounded-[16px] border border-border bg-surface p-[18px]"
             >
               <div className="flex items-center gap-3">
                 <PersonAvatar photoUrl={member.photoUrl} name={`${member.firstName} ${member.lastName ?? ""}`} size={44} />

@@ -12,13 +12,16 @@ import { AuthExpiredError } from "@/lib/api";
 import { getLibraryOverview, listIssues } from "@/lib/library-api";
 
 export default async function AdminLibraryOverviewPage() {
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let overview: Awaited<ReturnType<typeof getLibraryOverview>>;
+  let overdueRes: Awaited<ReturnType<typeof listIssues>>;
   try {
-    const [overview, overdueRes] = await Promise.all([
+    [overview, overdueRes] = await Promise.all([
       getLibraryOverview(),
       listIssues({ overdueOnly: true, limit: 20 }),
     ]);
-
-    return <LibraryOverviewView overview={overview} overdueIssues={overdueRes.data} financeHref="/finance/library" />;
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return (
@@ -28,4 +31,6 @@ export default async function AdminLibraryOverviewPage() {
       </div>
     );
   }
+
+  return <LibraryOverviewView overview={overview} overdueIssues={overdueRes.data} financeHref="/finance/library" />;
 }

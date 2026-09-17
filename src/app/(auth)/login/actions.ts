@@ -36,7 +36,6 @@ const WEB_ALLOWED_ROLES = [
   "FINANCE",
   "LIBRARY",
   "MEDIA_ROOM",
-  "COMMUNITY",
   "TRANSPORT_MANAGER",
   "FACULTY",
   "PARENT",
@@ -48,6 +47,15 @@ const WEB_ALLOWED_ROLES = [
   // this entry to matter here (FACULTY already covers them; see the redirect
   // branch below).
   "ACADEMIC_COORDINATOR",
+  // A genuinely new, separate real login (own person/login_identifier/
+  // user_credential/role_assignment rows -- see backend query.md's
+  // "Correspondent role" entry), not a second role on an existing Principal
+  // account. Its web console (src/app/(dashboard)/correspondent/) is
+  // Principal's own layout/pages cloned, since the SIS Correspondent
+  // reference design is literally Principal Console.dc.html relabeled --
+  // every backend endpoint Principal's console calls already had its own
+  // @Roles widened to include CORRESPONDENT alongside PRINCIPAL.
+  "CORRESPONDENT",
 ];
 
 export interface LoginState {
@@ -127,6 +135,9 @@ export async function loginAction(
   if (roleCodes.includes("PRINCIPAL")) {
     redirect("/principal");
   }
+  if (roleCodes.includes("CORRESPONDENT")) {
+    redirect("/correspondent");
+  }
   if (roleCodes.includes("VICE_PRINCIPAL")) {
     redirect("/vice-principal");
   }
@@ -135,9 +146,6 @@ export async function loginAction(
   }
   if (roleCodes.includes("MEDIA_ROOM")) {
     redirect("/media");
-  }
-  if (roleCodes.includes("COMMUNITY")) {
-    redirect("/community");
   }
   if (roleCodes.includes("TRANSPORT_MANAGER")) {
     redirect("/transport-manager");

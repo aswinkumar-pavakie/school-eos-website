@@ -118,10 +118,7 @@ export function KpiCard({ eyebrow, value, detail, href, pctBadge, bar, icon }: K
     return (
       <Link
         href={href}
-        // Hover per the mockup's own inline style-hover on this exact block:
-        // translateY(-4px), full-opacity primary border, and this specific
-        // shadow -- distinct from the generic "Card hover" values elsewhere.
-        className="block rounded-[14px] border border-border bg-surface p-[20px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary hover:shadow-[0_10px_22px_rgba(29,78,216,0.14)]"
+        className="card-hover block rounded-[14px] border border-border bg-surface p-[20px]"
       >
         {content}
       </Link>

@@ -465,24 +465,26 @@ export function AdmitFacultyForm({
 
         <div className="flex flex-col gap-4">
           <Card title="Photograph & documents" hint={`Employee ID ${suggestedEmployeeNo}`}>
-            <p className="text-[13px] text-text-muted">
-              The staff photograph appears on the teacher profile and the ID card. Certificates are verified before
-              the record is activated.
-            </p>
-            <div className="mt-3 grid grid-cols-1 gap-2.5">
-              <PhotoDropzone name="staffPhoto" label="Staff photograph" hint="35 × 45 mm · JPG" file={staffPhoto} onFile={setStaffPhoto} />
-              <MultiFileDropzone
-                name="qualificationCertificates"
-                label="Qualification certificates"
-                hint="PDF · multiple"
-                files={qualificationCertificates}
-                onFiles={setQualificationCertificates}
-              />
-            </div>
-            <div className="mt-3 flex flex-col divide-y divide-border border-t border-border">
-              <AttachRow name="aadhaarCopy" label="Aadhaar copy" file={aadhaarCopy} onFile={setAadhaarCopy} />
-              <AttachRow name="experienceLetter" label="Experience letter" file={experienceLetter} onFile={setExperienceLetter} />
-              <AttachRow name="policeVerification" label="Police verification" file={policeVerification} onFile={setPoliceVerification} />
+            <div className="flex flex-col sm:col-span-2">
+              <p className="text-[13px] text-text-muted">
+                The staff photograph appears on the teacher profile and the ID card. Certificates are verified before
+                the record is activated.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-2.5">
+                <PhotoDropzone name="staffPhoto" label="Staff photograph" hint="35 × 45 mm · JPG" file={staffPhoto} onFile={setStaffPhoto} />
+                <MultiFileDropzone
+                  name="qualificationCertificates"
+                  label="Qualification certificates"
+                  hint="PDF · multiple"
+                  files={qualificationCertificates}
+                  onFiles={setQualificationCertificates}
+                />
+              </div>
+              <div className="mt-3 flex flex-col divide-y divide-border border-t border-border">
+                <AttachRow name="aadhaarCopy" label="Aadhaar copy" file={aadhaarCopy} onFile={setAadhaarCopy} />
+                <AttachRow name="experienceLetter" label="Experience letter" file={experienceLetter} onFile={setExperienceLetter} />
+                <AttachRow name="policeVerification" label="Police verification" file={policeVerification} onFile={setPoliceVerification} />
+              </div>
             </div>
           </Card>
 
@@ -639,7 +641,7 @@ function MultiFileDropzone({
   onFiles: (files: File[]) => void;
 }) {
   return (
-    <label className="flex cursor-pointer flex-col gap-1.5 rounded-[11px] border border-dashed border-border bg-field px-3 py-3 transition-colors hover:bg-bg">
+    <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[11px] border-[1.5px] border-dashed border-[#c3d3ea] bg-[#f9fbfe] px-3 py-5 text-center transition-colors hover:border-primary hover:bg-[#f4f9ff]">
       <input
         type="file"
         name={name}
@@ -648,19 +650,15 @@ function MultiFileDropzone({
         className="hidden"
         onChange={(e) => onFiles(Array.from(e.target.files ?? []))}
       />
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface text-lg text-text-muted">↑</span>
-        <span className="flex-1 text-left">
-          <span className="block text-[13px] font-semibold text-text">{label}</span>
-          <span className="block text-xs text-text-muted">
-            {files.length > 0 ? `${files.length} file${files.length === 1 ? "" : "s"} chosen` : hint}
-          </span>
-        </span>
-      </div>
+      <span className="text-xl text-primary">⬆</span>
+      <span className="text-[13.5px] font-bold text-[#1e3a8a]">{label}</span>
+      <span className="font-mono text-[11.5px] text-text-muted">
+        {files.length > 0 ? `${files.length} file${files.length === 1 ? "" : "s"} chosen` : hint}
+      </span>
       {files.length > 0 && (
-        <ul className="ml-14 flex flex-col gap-0.5">
+        <ul className="flex flex-col gap-0.5">
           {files.map((f, i) => (
-            <li key={`${f.name}-${i}`} className="truncate text-xs text-text-muted">
+            <li key={`${f.name}-${i}`} className="max-w-[200px] truncate text-xs text-text-muted">
               {f.name}
             </li>
           ))}
@@ -744,7 +742,7 @@ function PhotoDropzone({
   }, [file]);
 
   return (
-    <label className="flex cursor-pointer items-center gap-3 rounded-[11px] border border-dashed border-border bg-field px-3 py-3 transition-colors hover:bg-bg">
+    <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[11px] border-[1.5px] border-dashed border-[#c3d3ea] bg-[#f9fbfe] px-3 py-5 text-center transition-colors hover:border-primary hover:bg-[#f4f9ff]">
       <input
         type="file"
         name={name}
@@ -756,14 +754,10 @@ function PhotoDropzone({
         // eslint-disable-next-line @next/next/no-img-element -- local blob: preview of a just-picked file, not backend-hosted
         <img src={preview} alt={label} className="h-11 w-11 shrink-0 rounded-full border border-border object-cover" />
       ) : (
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface text-lg text-text-muted">
-          ↑
-        </span>
+        <span className="text-xl text-primary">⬆</span>
       )}
-      <span className="flex-1 text-left">
-        <span className="block text-[13px] font-semibold text-text">{label}</span>
-        <span className="block text-xs text-text-muted">{file ? file.name : hint}</span>
-      </span>
+      <span className="text-[13.5px] font-bold text-[#1e3a8a]">{label}</span>
+      <span className="font-mono text-[11.5px] text-text-muted">{file ? file.name : hint}</span>
     </label>
   );
 }

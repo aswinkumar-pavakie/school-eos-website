@@ -126,6 +126,36 @@ export function EnrollStudentForm({
   const [fatherExisting, setFatherExisting] = useState<ExistingParentHit | null>(null);
   const [motherExisting, setMotherExisting] = useState<ExistingParentHit | null>(null);
 
+  // Real children count for an existing guardian (1 parent -> many children,
+  // one real login -- already-built behaviour) -- fetched when that guardian
+  // is picked so the "Access" line below can honestly say "Parent app · N
+  // children" (their existing children + this new admission) instead of
+  // guessing or omitting the count entirely.
+  const [fatherChildrenCount, setFatherChildrenCount] = useState<number | null>(null);
+  const [motherChildrenCount, setMotherChildrenCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!fatherExisting) {
+      setFatherChildrenCount(null);
+      return;
+    }
+    fetch(`/api/parent-children-count?parentId=${fatherExisting.id}`)
+      .then((res) => res.json())
+      .then((body) => setFatherChildrenCount(body.count ?? 0))
+      .catch(() => setFatherChildrenCount(0));
+  }, [fatherExisting]);
+
+  useEffect(() => {
+    if (!motherExisting) {
+      setMotherChildrenCount(null);
+      return;
+    }
+    fetch(`/api/parent-children-count?parentId=${motherExisting.id}`)
+      .then((res) => res.json())
+      .then((body) => setMotherChildrenCount(body.count ?? 0))
+      .catch(() => setMotherChildrenCount(0));
+  }, [motherExisting]);
+
   // Real, admin-settable credentials for a NEW guardian's parent-app login --
   // kept as their own state, deliberately NOT part of `values` (never written
   // to the localStorage draft, so a plaintext password never sits in browser
@@ -134,6 +164,11 @@ export function EnrollStudentForm({
   // when an existing parent is picked, since that account already has one.
   const [fatherPassword, setFatherPassword] = useState("");
   const [motherPassword, setMotherPassword] = useState("");
+  // Confirm boxes are local-only (never sent to the server) -- they just
+  // catch a typo before Publish by comparing against the real password state
+  // above client-side.
+  const [fatherPasswordConfirm, setFatherPasswordConfirm] = useState("");
+  const [motherPasswordConfirm, setMotherPasswordConfirm] = useState("");
 
   // Photographs picked during form-filling (before any real personId exists).
   // Held as real File objects for the "N of 3 uploaded" counter and local
@@ -246,7 +281,11 @@ export function EnrollStudentForm({
           <button
             type="submit"
             form="enroll-student-form"
-            disabled={isPending}
+            disabled={
+              isPending ||
+              (fatherPassword !== "" && fatherPassword !== fatherPasswordConfirm) ||
+              (motherPassword !== "" && motherPassword !== motherPasswordConfirm)
+            }
             className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(43,111,224,.25)] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPending ? "Publishing…" : "Publish"}
@@ -462,16 +501,6 @@ export function EnrollStudentForm({
             />
             <Field label="Aadhaar (last 4)" name="fatherAadhaarLast4" maxLength={4} disabled={Boolean(fatherExisting)} value={values.fatherAadhaarLast4} onChange={set("fatherAadhaarLast4")} />
             <Field label="Annual income (₹)" name="fatherIncome" type="number" value={values.fatherIncome} onChange={set("fatherIncome")} />
-            <Field
-              label="Set password (optional)"
-              name="fatherPassword"
-              type="password"
-              minLength={8}
-              placeholder={fatherExisting ? "Account already exists" : "Leave blank to auto-generate one"}
-              disabled={Boolean(fatherExisting)}
-              value={fatherExisting ? "" : fatherPassword}
-              onChange={(e) => setFatherPassword(e.target.value)}
-            />
           </Card>
 
           <Card title="Mother" hint="">
@@ -504,16 +533,6 @@ export function EnrollStudentForm({
               onChange={set("motherEmail")}
             />
             <Field label="Aadhaar (last 4)" name="motherAadhaarLast4" maxLength={4} disabled={Boolean(motherExisting)} value={values.motherAadhaarLast4} onChange={set("motherAadhaarLast4")} />
-            <Field
-              label="Set password (optional)"
-              name="motherPassword"
-              type="password"
-              minLength={8}
-              placeholder={motherExisting ? "Account already exists" : "Leave blank to auto-generate one"}
-              disabled={Boolean(motherExisting)}
-              value={motherExisting ? "" : motherPassword}
-              onChange={(e) => setMotherPassword(e.target.value)}
-            />
           </Card>
 
           <Card title="Emergency & address" hint="">
@@ -528,73 +547,142 @@ export function EnrollStudentForm({
 
         <div className="flex flex-col gap-4">
           <Card title="Photographs" hint={`${photosPicked} of 3 uploaded`}>
-            <p className="text-[13px] text-text-muted">
-              Upload the student and guardian photographs. These print on the ID card and appear on the student
-              profile.
-            </p>
-            <div className="mt-3 grid grid-cols-1 gap-2.5">
-              <PhotoDropzone
-                name="studentPhoto"
-                label="Student photograph"
-                hint="35 × 45 mm · JPG"
-                file={studentPhoto}
-                onFile={setStudentPhoto}
-              />
-              <PhotoDropzone
-                name="fatherPhoto"
-                label="Father / guardian photo"
-                hint="JPG or PNG"
-                file={fatherPhoto}
-                onFile={setFatherPhoto}
-              />
-              <PhotoDropzone
-                name="motherPhoto"
-                label="Mother photo"
-                hint="JPG or PNG"
-                file={motherPhoto}
-                onFile={setMotherPhoto}
-              />
-            </div>
-            <div className="mt-3 flex flex-col divide-y divide-border border-t border-border">
-              <AttachRow name="aadhaarCopyDoc" label="Aadhaar copy" file={aadhaarCopyDoc} onFile={setAadhaarCopyDoc} />
-              <AttachRow name="transferCertificate" label="Transfer certificate" file={transferCertificate} onFile={setTransferCertificate} />
-              <AttachRow name="birthCertificate" label="Birth certificate" file={birthCertificate} onFile={setBirthCertificate} />
+            <div className="flex flex-col sm:col-span-2">
+              <p className="text-[13px] text-text-muted">
+                Upload the student and guardian photographs. These print on the ID card and appear on the student
+                profile.
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-2.5">
+                <PhotoDropzone
+                  name="studentPhoto"
+                  label="Student photograph"
+                  hint="35 × 45 mm · JPG"
+                  file={studentPhoto}
+                  onFile={setStudentPhoto}
+                />
+                <PhotoDropzone
+                  name="fatherPhoto"
+                  label="Father / guardian photo"
+                  hint="JPG or PNG"
+                  file={fatherPhoto}
+                  onFile={setFatherPhoto}
+                />
+                <PhotoDropzone
+                  name="motherPhoto"
+                  label="Mother photo"
+                  hint="JPG or PNG"
+                  file={motherPhoto}
+                  onFile={setMotherPhoto}
+                />
+              </div>
+              <div className="mt-3 flex flex-col divide-y divide-border border-t border-border">
+                <AttachRow name="aadhaarCopyDoc" label="Aadhaar copy" file={aadhaarCopyDoc} onFile={setAadhaarCopyDoc} />
+                <AttachRow name="transferCertificate" label="Transfer certificate" file={transferCertificate} onFile={setTransferCertificate} />
+                <AttachRow name="birthCertificate" label="Birth certificate" file={birthCertificate} onFile={setBirthCertificate} />
+              </div>
             </div>
           </Card>
 
           <Card title="Parent login" hint="">
-            <p className="text-[13px] text-text-muted">
-              Each guardian entered above gets their own real login. There is no single shared "admission number as
-              username" login in this app's real schema — logins are per person, by phone/email — so the username
-              below is whichever contact you enter for that guardian. A temporary password is generated (or the one
-              you set above) and shown once, right here, when you Publish.
-            </p>
-            <div className="mt-3 flex flex-col gap-2.5">
-              {values.fatherName || fatherExisting ? (
-                <div className="rounded-[11px] border border-border bg-field px-3.5 py-2.5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Father / guardian username</p>
-                  <p className="mt-1 font-mono text-sm font-semibold text-text">
-                    {fatherExisting ? fatherExisting.mobile || fatherExisting.email || "—" : values.fatherPhone || values.fatherEmail || "Enter a phone or email above"}
-                  </p>
+            <div className="flex flex-col gap-4 sm:col-span-2">
+              <p className="text-[13px] text-text-muted">
+                Each guardian entered above gets their own real login. There is no single shared "admission number as
+                username" login in this app's real schema — logins are per person, by phone/email — so the username
+                below is whichever contact you enter for that guardian.
+              </p>
+
+              {(values.fatherName || fatherExisting) && (
+                <div className={values.motherName || motherExisting ? "flex flex-col gap-3 border-b border-border pb-4" : "flex flex-col gap-3"}>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Father / guardian</p>
+                  <Field
+                    label="Username"
+                    auto
+                    value={fatherExisting ? fatherExisting.mobile || fatherExisting.email || "—" : values.fatherPhone || values.fatherEmail || "Enter a phone or email above"}
+                  />
+                  <Field
+                    label="Temporary password"
+                    name="fatherPassword"
+                    type="password"
+                    minLength={8}
+                    placeholder={fatherExisting ? "Account already exists" : "Leave blank to auto-generate one"}
+                    disabled={Boolean(fatherExisting)}
+                    value={fatherExisting ? "" : fatherPassword}
+                    onChange={(e) => setFatherPassword(e.target.value)}
+                  />
+                  <Field
+                    label="Confirm password"
+                    type="password"
+                    placeholder="Re-enter the password"
+                    disabled={Boolean(fatherExisting) || !fatherPassword}
+                    value={fatherExisting ? "" : fatherPasswordConfirm}
+                    onChange={(e) => setFatherPasswordConfirm(e.target.value)}
+                  />
+                  {fatherPassword && fatherPasswordConfirm && fatherPassword !== fatherPasswordConfirm && (
+                    <p className="text-xs font-semibold text-critical-text">Passwords don&apos;t match.</p>
+                  )}
                 </div>
-              ) : null}
-              {values.motherName || motherExisting ? (
-                <div className="rounded-[11px] border border-border bg-field px-3.5 py-2.5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Mother username</p>
-                  <p className="mt-1 font-mono text-sm font-semibold text-text">
-                    {motherExisting ? motherExisting.mobile || motherExisting.email || "—" : values.motherPhone || values.motherEmail || "Enter a phone or email above"}
-                  </p>
+              )}
+
+              {(values.motherName || motherExisting) && (
+                <div className="flex flex-col gap-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Mother</p>
+                  <Field
+                    label="Username"
+                    auto
+                    value={motherExisting ? motherExisting.mobile || motherExisting.email || "—" : values.motherPhone || values.motherEmail || "Enter a phone or email above"}
+                  />
+                  <Field
+                    label="Temporary password"
+                    name="motherPassword"
+                    type="password"
+                    minLength={8}
+                    placeholder={motherExisting ? "Account already exists" : "Leave blank to auto-generate one"}
+                    disabled={Boolean(motherExisting)}
+                    value={motherExisting ? "" : motherPassword}
+                    onChange={(e) => setMotherPassword(e.target.value)}
+                  />
+                  <Field
+                    label="Confirm password"
+                    type="password"
+                    placeholder="Re-enter the password"
+                    disabled={Boolean(motherExisting) || !motherPassword}
+                    value={motherExisting ? "" : motherPasswordConfirm}
+                    onChange={(e) => setMotherPasswordConfirm(e.target.value)}
+                  />
+                  {motherPassword && motherPasswordConfirm && motherPassword !== motherPasswordConfirm && (
+                    <p className="text-xs font-semibold text-critical-text">Passwords don&apos;t match.</p>
+                  )}
                 </div>
-              ) : null}
-            </div>
-            <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted">Delivery</span>
-                <span className="font-semibold text-text">SMS + email</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-text-muted">Access</span>
-                <span className="font-semibold text-text">Parent app</span>
+              )}
+
+              <div className="flex flex-col gap-1.5 border-t border-border pt-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-text-muted">Delivery</span>
+                  <span className="font-semibold text-text">SMS + email</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-text-muted">Access</span>
+                  <span className="font-semibold text-text">
+                    {(() => {
+                      // Real "1 parent -> many children, one login" access
+                      // count -- an existing guardian's real current children
+                      // (fetched above) plus this new admission; a brand-new
+                      // guardian's account starts at exactly 1 child (this
+                      // one). Still loading (fetch in flight) shows neither
+                      // guardian's count yet rather than a wrong number.
+                      const existingCount = fatherExisting
+                        ? fatherChildrenCount
+                        : motherExisting
+                          ? motherChildrenCount
+                          : null;
+                      if ((fatherExisting || motherExisting) && existingCount === null) {
+                        return "Parent app";
+                      }
+                      const totalChildren = (existingCount ?? 0) + 1;
+                      return `Parent app · ${totalChildren} child${totalChildren === 1 ? "" : "ren"}`;
+                    })()}
+                  </span>
+                </div>
               </div>
             </div>
           </Card>
@@ -724,7 +812,7 @@ function PhotoDropzone({
   }, [file]);
 
   return (
-    <label className="flex cursor-pointer items-center gap-3 rounded-[11px] border border-dashed border-border bg-field px-3 py-3 transition-colors hover:bg-bg">
+    <label className="group flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[11px] border-[1.5px] border-dashed border-[#c3d3ea] bg-[#f9fbfe] px-3 py-5 text-center transition-colors hover:border-primary hover:bg-[#f4f9ff]">
       <input
         type="file"
         name={name}
@@ -736,14 +824,10 @@ function PhotoDropzone({
         // eslint-disable-next-line @next/next/no-img-element -- local blob: preview of a just-picked file, not backend-hosted
         <img src={preview} alt={label} className="h-11 w-11 shrink-0 rounded-full border border-border object-cover" />
       ) : (
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface text-lg text-text-muted">
-          ↑
-        </span>
+        <span className="text-xl text-primary">⬆</span>
       )}
-      <span className="flex-1 text-left">
-        <span className="block text-[13px] font-semibold text-text">{label}</span>
-        <span className="block text-xs text-text-muted">{file ? file.name : hint}</span>
-      </span>
+      <span className="text-[13.5px] font-bold text-[#1e3a8a]">{label}</span>
+      <span className="font-mono text-[11.5px] text-text-muted">{file ? file.name : hint}</span>
     </label>
   );
 }

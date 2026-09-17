@@ -265,7 +265,7 @@ export default async function TransportManagerBusesPage({
             return (
               <div
                 key={r.vehicle.id}
-                className="rounded-[16px] border border-border bg-surface p-[18px] transition-[transform,box-shadow,border-color] hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_-16px_rgba(29,78,216,0.35)]"
+                className="card-hover rounded-[16px] border border-border bg-surface p-[18px]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">

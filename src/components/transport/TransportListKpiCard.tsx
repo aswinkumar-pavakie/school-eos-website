@@ -50,8 +50,7 @@ export function TransportListKpiCard({ label, value, unit, badge, bar, subA, sub
     </>
   );
 
-  const className =
-    "block rounded-[14px] border border-border bg-surface p-[18px_20px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary hover:shadow-[0_12px_26px_rgba(29,78,216,0.14)]";
+  const className = "card-hover block rounded-[14px] border border-border bg-surface";
 
   if (href) {
     return (

@@ -14,10 +14,12 @@ import { AuthExpiredError } from "@/lib/api";
 import { getLibraryOverview } from "@/lib/library-api";
 
 export default async function VicePrincipalLibraryOverviewPage() {
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let overview: Awaited<ReturnType<typeof getLibraryOverview>>;
   try {
-    const overview = await getLibraryOverview();
-
-    return <LibraryOverviewView overview={overview} />;
+    overview = await getLibraryOverview();
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return (
@@ -27,4 +29,6 @@ export default async function VicePrincipalLibraryOverviewPage() {
       </div>
     );
   }
+
+  return <LibraryOverviewView overview={overview} />;
 }

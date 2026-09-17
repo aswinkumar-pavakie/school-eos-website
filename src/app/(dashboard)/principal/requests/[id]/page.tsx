@@ -48,19 +48,30 @@ function humanizeKey(key: string): string {
 
 export default async function PrincipalRequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let request: Awaited<ReturnType<typeof getApproval>>["request"];
+  let steps: Awaited<ReturnType<typeof getApproval>>["steps"];
+  let actor: Awaited<ReturnType<typeof getCurrentActor>>;
   try {
-    const [{ request, steps }, actor] = await Promise.all([getApproval(id), getCurrentActor()]);
-    const currentStep = steps.find((s) => s.sequenceNo === request.currentStep);
-    const isOpen = request.state === "PENDING" || request.state === "RETROSPECTIVE_PENDING";
-    const canDecide = isOpen && !!currentStep && actor.roles.includes(currentStep.approverRoleCode) && request.requestedBy !== actor.personId;
-    const isRequester = isOpen && request.requestedBy === actor.personId;
-    const subjectHref = SUBJECT_LINKS[request.subjectObjectType]?.(request.subjectObjectId);
-    const payloadEntries = Object.entries(request.payload ?? {}).filter(
-      ([key, value]) => !HIDDEN_PAYLOAD_KEYS.has(key) && !/Id$/.test(key) && isDisplayableValue(value),
-    ) as [string, string | number | boolean][];
-    const hasDetails = !!request.amountPaise || payloadEntries.length > 0;
+    [{ request, steps }, actor] = await Promise.all([getApproval(id), getCurrentActor()]);
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load this approval. Nothing was submitted — try again." />;
+  }
 
-    return (
+  const currentStep = steps.find((s) => s.sequenceNo === request.currentStep);
+  const isOpen = request.state === "PENDING" || request.state === "RETROSPECTIVE_PENDING";
+  const canDecide = isOpen && !!currentStep && actor.roles.includes(currentStep.approverRoleCode) && request.requestedBy !== actor.personId;
+  const isRequester = isOpen && request.requestedBy === actor.personId;
+  const subjectHref = SUBJECT_LINKS[request.subjectObjectType]?.(request.subjectObjectId);
+  const payloadEntries = Object.entries(request.payload ?? {}).filter(
+    ([key, value]) => !HIDDEN_PAYLOAD_KEYS.has(key) && !/Id$/.test(key) && isDisplayableValue(value),
+  ) as [string, string | number | boolean][];
+  const hasDetails = !!request.amountPaise || payloadEntries.length > 0;
+
+  return (
       <div className="mx-auto flex max-w-2xl flex-col gap-6">
         <Link href="/principal/requests" className="text-xs font-bold text-text-muted hover:text-text">
           ← Back to Approvals
@@ -134,8 +145,4 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
         <DecisionForms id={id} canDecide={canDecide} isRequester={isRequester} />
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load this approval. Nothing was submitted — try again." />;
-  }
 }

@@ -232,7 +232,7 @@ export default async function FacultyPage({
           {staff.map((member) => (
             <div
               key={member.id}
-              className="relative rounded-[16px] border border-border bg-surface p-[18px] transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+              className="relative rounded-[16px] border border-border bg-surface p-[18px] card-hover"
             >
               <div className="absolute right-3 top-3 z-10">
                 <RowCheckbox id={member.id} />

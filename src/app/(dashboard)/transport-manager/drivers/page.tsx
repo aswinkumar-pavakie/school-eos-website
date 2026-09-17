@@ -159,7 +159,7 @@ export default async function TransportManagerDriversPage({
             return (
               <div
                 key={driver.id}
-                className="flex flex-col gap-[14px] rounded-[16px] border border-border bg-surface p-[18px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_26px_rgba(29,78,216,0.14)]"
+                className="card-hover flex flex-col gap-[14px] rounded-[16px] border border-border bg-surface p-[18px]"
               >
                 <div className="flex items-center gap-3">
                   <span

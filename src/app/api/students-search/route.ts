@@ -21,7 +21,14 @@ export async function GET(request: NextRequest) {
   }
 
   const body = (await res.json()) as {
-    data: { id: string; firstName: string; lastName: string | null; admissionNo: string }[];
+    data: {
+      id: string;
+      firstName: string;
+      lastName: string | null;
+      admissionNo: string;
+      gradeName: string | null;
+      sectionName: string | null;
+    }[];
   };
 
   return NextResponse.json({
@@ -30,6 +37,8 @@ export async function GET(request: NextRequest) {
       firstName: s.firstName,
       lastName: s.lastName,
       admissionNo: s.admissionNo,
+      gradeName: s.gradeName,
+      sectionName: s.sectionName,
     })),
   });
 }

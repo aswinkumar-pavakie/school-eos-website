@@ -13,12 +13,23 @@ function thisMonth(): string {
 }
 
 export default async function PrincipalMyAttendancePage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
-  try {
-    const { month } = await searchParams;
-    const selectedMonth = month || thisMonth();
-    const { monthlySummary, allTimeSummary, days } = await getMyAttendanceHistory(selectedMonth);
+  const { month } = await searchParams;
+  const selectedMonth = month || thisMonth();
 
-    return (
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let monthlySummary: Awaited<ReturnType<typeof getMyAttendanceHistory>>["monthlySummary"];
+  let allTimeSummary: Awaited<ReturnType<typeof getMyAttendanceHistory>>["allTimeSummary"];
+  let days: Awaited<ReturnType<typeof getMyAttendanceHistory>>["days"];
+  try {
+    ({ monthlySummary, allTimeSummary, days } = await getMyAttendanceHistory(selectedMonth));
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load your attendance. Nothing was changed — try again." />;
+  }
+
+  return (
       <div className="flex flex-col gap-6">
         <div>
           <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">My Attendance</h1>
@@ -80,8 +91,4 @@ export default async function PrincipalMyAttendancePage({ searchParams }: { sear
         )}
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load your attendance. Nothing was changed — try again." />;
-  }
 }

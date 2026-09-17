@@ -10,10 +10,18 @@ import { WithdrawButton } from "./WithdrawButton";
 const LEAVE_LABELS: Record<string, string> = { CASUAL: "Casual", MEDICAL: "Medical", EARNED: "Earned", ON_DUTY: "On duty" };
 
 export default async function PrincipalMyLeavePage() {
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let requests: Awaited<ReturnType<typeof listMyLeaveRequests>>;
   try {
-    const requests = await listMyLeaveRequests();
+    requests = await listMyLeaveRequests();
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load your requests. Nothing was changed — try again." />;
+  }
 
-    return (
+  return (
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
@@ -49,8 +57,4 @@ export default async function PrincipalMyLeavePage() {
         )}
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load your requests. Nothing was changed — try again." />;
-  }
 }

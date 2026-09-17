@@ -54,35 +54,46 @@ function greeting(): string {
 }
 
 export default async function VicePrincipalDashboardPage() {
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does), so the boundary here
+  // is drawn around the one thing that genuinely can throw: the real network
+  // calls below.
+  let summary: Awaited<ReturnType<typeof getPrincipalDashboardSummary>>;
+  let personRes: Response, eventsRes: Response, announcementsRes: Response;
   try {
     const today = new Date().toISOString().slice(0, 10);
-    const [summary, personRes, eventsRes, announcementsRes] = await Promise.all([
+    [summary, personRes, eventsRes, announcementsRes] = await Promise.all([
       getPrincipalDashboardSummary(),
       apiFetch("/auth/me"),
       apiFetch(`/calendar-events?fromDate=${today}`),
       apiFetch("/announcements?limit=2"),
     ]);
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load the dashboard. Nothing was changed — try refreshing the page." />;
+  }
 
-    const person = personRes.ok
-      ? ((await personRes.json()) as { data: { person: { firstName: string } } }).data.person
-      : null;
-    const events: CalendarEventRow[] = eventsRes.ok
-      ? ((await eventsRes.json()) as { data: CalendarEventRow[] }).data.slice(0, 4)
-      : [];
-    const notices: AnnouncementRow[] = announcementsRes.ok
-      ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 2)
-      : [];
+  const person = personRes.ok
+    ? ((await personRes.json()) as { data: { person: { firstName: string } } }).data.person
+    : null;
+  const events: CalendarEventRow[] = eventsRes.ok
+    ? ((await eventsRes.json()) as { data: CalendarEventRow[] }).data.slice(0, 4)
+    : [];
+  const notices: AnnouncementRow[] = announcementsRes.ok
+    ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 2)
+    : [];
 
-    const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
-    const yearDetail = summary.currentAcademicYear
-      ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
-      : "Set by Admin in Academics";
+  const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
+  const yearDetail = summary.currentAcademicYear
+    ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
+    : "Set by Admin in Academics";
 
-    const hostelPct = summary.hostelOccupancy.totalBeds
-      ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
-      : 0;
+  const hostelPct = summary.hostelOccupancy.totalBeds
+    ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
+    : 0;
 
-    return (
+  return (
       <div className="mx-auto max-w-[1280px]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -219,8 +230,4 @@ export default async function VicePrincipalDashboardPage() {
         </div>
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load the dashboard. Nothing was changed — try refreshing the page." />;
-  }
 }

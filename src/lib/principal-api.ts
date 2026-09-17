@@ -32,6 +32,18 @@ export interface PrincipalDashboardSummary {
   staffSplit: { teaching: number; support: number };
   studentResidence: { hostellers: number; dayScholars: number };
   activeSectionsCount: number;
+  // Correspondent Phase 5 addition -- real operational KPIs, each read from
+  // that module's own existing overview service on the backend (see
+  // principal-dashboard.service.ts's own comment).
+  inventoryLowStockCount: number;
+  inventoryDamagedCount: number;
+  maintenanceOpenRequestsCount: number;
+  sportsUpcomingFixturesCount: number;
+  libraryOverdueCount: number;
+  // Correspondent Phase 8 addition -- real vehicle_document/driver_document
+  // expiry counts (see principal-dashboard.service.ts).
+  complianceExpiringCount: number;
+  complianceOverdueCount: number;
   generatedAt: string;
 }
 

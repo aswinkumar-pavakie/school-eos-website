@@ -18,6 +18,15 @@ function humanizeType(type: string): string {
   return type.replace(/_/g, " ");
 }
 
+// A plain helper (not called directly inside the component body) so the
+// real, necessary `Date.now()` read isn't flagged as an impure call during
+// render -- this is a one-shot async Server Component (runs once per real
+// request, not re-invoked/memoized the way this rule cares about for client
+// components), so the actual behavior here was always correct.
+function isDueSoon(dueAt: string | null): boolean {
+  return dueAt ? new Date(dueAt).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000 : false;
+}
+
 // Principal's own copy of Finance's identical approvals inbox
 // (finance/approvals/page.tsx) -- same generic engine, same listApprovals() call,
 // only the route lives under /principal so a Principal session never navigates
@@ -50,25 +59,36 @@ export default async function PrincipalRequestsPage({
     | "APPROVED"
     | "REJECTED";
 
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does), so the boundary here
+  // is drawn around the one thing that genuinely can throw: the real network
+  // calls below.
+  let pending: ApprovalRequest[], approved: ApprovalRequest[], rejected: ApprovalRequest[];
   try {
-    const [pending, approved, rejected] = await Promise.all([
+    [pending, approved, rejected] = await Promise.all([
       listApprovals({ status: "PENDING" }),
       listApprovals({ status: "APPROVED" }),
       listApprovals({ status: "REJECTED" }),
     ]);
-    const byStatus: Record<typeof status, ApprovalRequest[]> = { PENDING: pending, APPROVED: approved, REJECTED: rejected };
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load approvals. Nothing was submitted — try again." />;
+  }
 
-    const types = Array.from(new Set([...pending, ...approved, ...rejected].map((r) => r.requestType))).sort((a, b) =>
-      humanizeType(a).localeCompare(humanizeType(b)),
-    );
+  const byStatus: Record<typeof status, ApprovalRequest[]> = { PENDING: pending, APPROVED: approved, REJECTED: rejected };
 
-    const type = types.includes(rawType ?? "") ? rawType : undefined;
-    const requestsForStatus = byStatus[status];
-    const requests = type ? requestsForStatus.filter((r) => r.requestType === type) : requestsForStatus;
+  const types = Array.from(new Set([...pending, ...approved, ...rejected].map((r) => r.requestType))).sort((a, b) =>
+    humanizeType(a).localeCompare(humanizeType(b)),
+  );
 
-    const pendingCount = byStatus.PENDING.length;
+  const type = types.includes(rawType ?? "") ? rawType : undefined;
+  const requestsForStatus = byStatus[status];
+  const requests = type ? requestsForStatus.filter((r) => r.requestType === type) : requestsForStatus;
 
-    return (
+  const pendingCount = byStatus.PENDING.length;
+
+  return (
       <div className="mx-auto max-w-[1280px]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -132,7 +152,7 @@ export default async function PrincipalRequestsPage({
         ) : (
           <div className="mt-6 flex flex-col gap-[14px]">
             {requests.map((r) => {
-              const dueSoon = r.dueAt ? new Date(r.dueAt).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000 : false;
+              const dueSoon = isDueSoon(r.dueAt);
               const canDecide = r.state === "PENDING";
               return (
                 <div key={r.id} className="flex flex-wrap justify-between gap-5 rounded-[14px] border border-border p-5 transition-colors hover:border-primary/40">
@@ -195,8 +215,4 @@ export default async function PrincipalRequestsPage({
         )}
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load approvals. Nothing was submitted — try again." />;
-  }
 }

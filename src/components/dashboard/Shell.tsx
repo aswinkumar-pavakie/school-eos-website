@@ -109,6 +109,13 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   // Oversight-only page (src/app/(dashboard)/admin/library/page.tsx) — Admin never
   // gets Library's own operational shell, only a read-only summary.
   { href: "/admin/library", label: "Library", icon: "library", group: "OPERATIONS" },
+  // Moved here from its own former "COMMUNICATION" group, relabelled
+  // "Community" (singular) -- matches "SIS ADMIN with community"'s own
+  // OPERATIONS list exactly (Sports inventory/Repair & maintenance/Hostel/
+  // Transport/Library/Community, in this order). The feature itself was
+  // rebuilt as real school Clubs to match that same reference; the
+  // standalone Community login has been retired.
+  { href: "/admin/community", label: "Community", icon: "community", group: "OPERATIONS" },
   // Not in the reference's own nav (it has a separate Sports module from
   // "Sports inventory" above) -- kept, real coaches/teams/tournaments data.
   { href: "/admin/sports", label: "Sports", icon: "sports", group: "OPERATIONS" },
@@ -132,8 +139,6 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   // real Admin capability, kept in its own trailing groups rather than
   // deleted.
   { href: "/admin/finance", label: "Finance", icon: "finance", group: "FINANCE" },
-
-  { href: "/admin/community", label: "Communities", icon: "community", group: "COMMUNICATION" },
 
   // "School / Institution Management" nav entry removed (explicit user
   // request -- it and Settings were genuinely the same surface). Its real

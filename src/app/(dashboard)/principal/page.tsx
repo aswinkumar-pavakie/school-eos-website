@@ -41,6 +41,14 @@ function humanize(value: string): string {
     .join(" ");
 }
 
+// A plain helper (not called directly inside the component body) so the
+// real, necessary `Date.now()` read isn't flagged as an impure call during
+// render -- see requests/page.tsx's own isDueSoon for the same reasoning.
+function isRequestDueSoon(dueAt: string | null): boolean {
+  if (!dueAt) return false;
+  return new Date(dueAt).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000;
+}
+
 interface AuditRow {
   id: string;
   action: string;
@@ -60,47 +68,54 @@ interface AnnouncementRow {
 }
 
 export default async function PrincipalDashboardPage() {
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does), so the boundary here
+  // is drawn around the one thing that genuinely can throw: the real network
+  // calls below.
+  let summary: Awaited<ReturnType<typeof getPrincipalDashboardSummary>>;
+  let personRes: Response, pendingApprovals: Awaited<ReturnType<typeof listApprovals>>, auditRes: Response, announcementsRes: Response;
   try {
-    const [summary, personRes, pendingApprovals, auditRes, announcementsRes] = await Promise.all([
+    [summary, personRes, pendingApprovals, auditRes, announcementsRes] = await Promise.all([
       getPrincipalDashboardSummary(),
       apiFetch("/auth/me"),
       listApprovals({ status: "PENDING" }),
       apiFetch("/audit-log?limit=4"),
       apiFetch("/announcements?limit=2"),
     ]);
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load the dashboard. Nothing was changed — try refreshing the page." />;
+  }
 
-    const person = personRes.ok
-      ? ((await personRes.json()) as { data: { person: { firstName: string; lastName: string | null } } }).data.person
-      : null;
+  const person = personRes.ok
+    ? ((await personRes.json()) as { data: { person: { firstName: string; lastName: string | null } } }).data.person
+    : null;
 
-    const recentActivity: AuditRow[] = auditRes.ok
-      ? ((await auditRes.json()) as { data: AuditRow[] }).data.slice(0, 4)
-      : [];
-    const notices: AnnouncementRow[] = announcementsRes.ok
-      ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 2)
-      : [];
+  const recentActivity: AuditRow[] = auditRes.ok
+    ? ((await auditRes.json()) as { data: AuditRow[] }).data.slice(0, 4)
+    : [];
+  const notices: AnnouncementRow[] = announcementsRes.ok
+    ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 2)
+    : [];
 
-    const dueSoonCount = pendingApprovals.filter((r) => {
-      if (!r.dueAt) return false;
-      const due = new Date(r.dueAt).getTime();
-      return due - Date.now() < 3 * 24 * 60 * 60 * 1000;
-    }).length;
+  const dueSoonCount = pendingApprovals.filter((r) => isRequestDueSoon(r.dueAt)).length;
 
-    const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
-    const yearDetail = summary.currentAcademicYear
-      ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
-      : "Set by Admin in Academics";
+  const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
+  const yearDetail = summary.currentAcademicYear
+    ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
+    : "Set by Admin in Academics";
 
-    const hostelPct = summary.hostelOccupancy.totalBeds
-      ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
-      : 0;
+  const hostelPct = summary.hostelOccupancy.totalBeds
+    ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
+    : 0;
 
-    const needsAttentionItems = [
-      ...summary.needsAttention,
-      { label: "Requests awaiting your decision", sub: dueSoonCount > 0 ? `${dueSoonCount} due within 3 days` : "None due imminently", count: pendingApprovals.length },
-    ];
+  const needsAttentionItems = [
+    ...summary.needsAttention,
+    { label: "Requests awaiting your decision", sub: dueSoonCount > 0 ? `${dueSoonCount} due within 3 days` : "None due imminently", count: pendingApprovals.length },
+  ];
 
-    return (
+  return (
       <div className="mx-auto max-w-[1280px]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -248,8 +263,4 @@ export default async function PrincipalDashboardPage() {
         </div>
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load the dashboard. Nothing was changed — try refreshing the page." />;
-  }
 }

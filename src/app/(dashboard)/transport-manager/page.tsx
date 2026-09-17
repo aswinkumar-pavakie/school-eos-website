@@ -404,7 +404,7 @@ export default async function TransportOverviewPage({
       <div className="mt-[14px] grid grid-cols-1 gap-[14px] lg:grid-cols-3">
         <Link
           href="/transport-manager/buses"
-          className="block rounded-[16px] border border-border bg-surface p-[18px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary hover:shadow-[0_12px_26px_rgba(29,78,216,0.14)]"
+          className="card-hover block rounded-[16px] border border-border bg-surface p-[18px]"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-[17px] font-bold leading-[22px] text-text">Transport command centre</h2>
@@ -441,7 +441,7 @@ export default async function TransportOverviewPage({
 
         <Link
           href="/transport-manager/compliance"
-          className="block rounded-[16px] border border-border bg-surface p-[18px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary hover:shadow-[0_12px_26px_rgba(29,78,216,0.14)]"
+          className="card-hover block rounded-[16px] border border-border bg-surface p-[18px]"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-[17px] font-bold leading-[22px] text-text">Needs attention</h2>
@@ -471,7 +471,7 @@ export default async function TransportOverviewPage({
           )}
         </Link>
 
-        <section className="rounded-[16px] border border-border bg-surface p-[18px] transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-1 hover:border-primary hover:shadow-[0_12px_26px_rgba(29,78,216,0.14)]">
+        <section className="card-hover rounded-[16px] border border-border bg-surface p-[18px]">
           <div className="flex items-center justify-between">
             <h2 className="text-[17px] font-bold leading-[22px] text-text">Notices</h2>
             <PostNoticeForm vehicles={vehicles} routes={routes} triggerClassName="rounded-[10px] bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-primary-deep" />
