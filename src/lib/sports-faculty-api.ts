@@ -57,6 +57,11 @@ export async function listMyTeams(): Promise<SportsTeam[]> {
   return (await parseOrThrow<ApiEnvelope<SportsTeam[]>>(res)).data;
 }
 
+export async function getTeam(id: string): Promise<SportsTeam> {
+  const res = await apiFetch(`/sports/teams/${id}`);
+  return (await parseOrThrow<ApiEnvelope<SportsTeam>>(res)).data;
+}
+
 export async function createTeam(input: {
   sportId: string;
   sportCategoryId?: string;
@@ -279,7 +284,7 @@ export async function listAchievements(): Promise<SportsAchievement[]> {
   return (await parseOrThrow<ApiEnvelope<SportsAchievement[]>>(res)).data;
 }
 
-export async function createAchievement(input: { studentId: string; teamId?: string; tournamentId?: string; placement: string; awardedOn: string; title?: string }): Promise<SportsAchievement> {
+export async function createAchievement(input: { studentId: string; teamId?: string; tournamentId?: string; placement: string; level?: string; awardedOn: string; title?: string }): Promise<SportsAchievement> {
   const res = await apiFetch("/sports/achievements", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   return (await parseOrThrow<ApiEnvelope<SportsAchievement>>(res)).data;
 }

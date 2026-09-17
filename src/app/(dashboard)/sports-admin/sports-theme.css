@@ -1,0 +1,61 @@
+/* Sports Admin design tokens -- pixel-matched to
+   brain/Copy of Sports admin school dashboard design/Sports Admin School.dc.html.
+   Scoped to .sports-scope so it never leaks into any other role's pages,
+   same isolation convention as media-theme.css/parent-theme.css. */
+
+.sports-scope {
+  --sport-primary: #2563EB;
+  --sport-primary-hover: #1D4ED8;
+  --sport-navy: #0E2A47;
+  --sport-ink: #10233B;
+  --sport-heading: #0E2A47;
+  --sport-body: #3C4A5B;
+  --sport-body-muted: #4E5D70;
+  --sport-muted: #5B6A7D;
+  --sport-muted-2: #6B7A8D;
+  --sport-tertiary: #7B8796;
+  --sport-tertiary-2: #8B96A5;
+  --sport-tertiary-3: #98A3B2;
+  --sport-border: #E6E9EE;
+  --sport-border-soft: #EEF0F4;
+  --sport-divider: #F0F2F6;
+  --sport-input-border: #DDE3EB;
+  --sport-menu-border: #E1E6ED;
+  --sport-tint: #EEF3FF;
+  --sport-panel: #F1F3F7;
+  --sport-green-bg: #E8F6EE;
+  --sport-green: #137A48;
+  --sport-amber-bg: #FDF3E3;
+  --sport-amber: #9A6212;
+  --sport-red-bg: #FDECEC;
+  --sport-red: #B3261E;
+  --sport-mono: "JetBrains Mono", monospace;
+  --sport-radius-card: 14px;
+  --sport-radius-btn: 10px;
+  --sport-radius-pill: 20px;
+  --sport-radius-modal: 16px;
+  --sport-scrollbar: #D5DAE2;
+}
+
+.sports-scope .sport-card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.sports-scope .sport-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.14);
+  border-color: var(--sport-primary);
+}
+.sports-scope .sport-row-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sports-scope .sport-row-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+}
+.sports-scope .sport-btn-hover-primary:hover {
+  background: var(--sport-primary-hover) !important;
+}
+.sports-scope .sport-btn-hover-ghost:hover {
+  background: var(--sport-tint) !important;
+  border-color: var(--sport-primary) !important;
+}
