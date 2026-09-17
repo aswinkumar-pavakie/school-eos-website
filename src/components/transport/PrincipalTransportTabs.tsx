@@ -41,11 +41,15 @@ export function PrincipalTransportTabs({
   routes,
   drivers,
   assignments,
+  basePath = "/principal",
 }: {
   vehicles: Vehicle[];
   routes: Route[];
   drivers: Driver[];
   assignments: (VehicleAssignment | RouteAssignment | DriverVehicleAssignment)[];
+  /** Defaults to Principal's own route so its existing usage is unaffected --
+   * Vice Principal's own oversight page passes its own base path. */
+  basePath?: string;
 }) {
   const [tab, setTab] = useState<Tab>("Vehicles");
   const [statusFilter, setStatusFilter] = useState("");
@@ -172,7 +176,7 @@ export function PrincipalTransportTabs({
                       </div>
                       <div className="flex items-center gap-2.5">
                         <StatusPill tone={route.status === "ACTIVE" ? "success" : "pending"} label={route.status} />
-                        <Link href={`/principal/transport/routes/${route.id}`} className="text-[13px] font-semibold text-primary">
+                        <Link href={`${basePath}/transport/routes/${route.id}`} className="text-[13px] font-semibold text-primary">
                           View route
                         </Link>
                       </div>

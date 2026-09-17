@@ -1,16 +1,14 @@
+// Current term -- subject detail. Pixel-rebuilt companion to
+// /parent/term. Real folder/file/lesson-plan data
+// (getSubjectDetail/getFolderFiles/getSubjectFileUrl).
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { formatBytes, formatDate, formatDateTime, orDash } from "@/lib/format";
-import {
-  getFolderFiles,
-  getSubjectDetail,
-  getSubjectFileUrl,
-  listChildren,
-  resolveSelectedChild,
-} from "@/lib/parent-api";
+import { getFolderFiles, getSubjectDetail, getSubjectFileUrl, listChildren, resolveSelectedChild } from "@/lib/parent-api";
 
 export default async function ParentSubjectDetailPage({
   params,
@@ -24,133 +22,95 @@ export default async function ParentSubjectDetailPage({
     const { studentId: requestedStudentId, folderId } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
-
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
     const detail = await getSubjectDetail(selected.studentId, subjectOfferingId);
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Link href={`/parent/term?studentId=${selected.studentId}`} className="text-xs font-semibold text-primary hover:underline">
-              ← Current Term
-            </Link>
-            <h1 className="mt-1 text-2xl font-extrabold text-text">{detail.offering.subjectName}</h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {orDash(detail.offering.teacherName)}
-              {detail.offering.weeklyPeriods !== null ? ` · ${detail.offering.weeklyPeriods} periods/week` : ""}
-            </p>
-          </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
+      <div className="parent-scope">
+        <Link href={`/parent/term?studentId=${selected.studentId}`} style={{ fontSize: 13, fontWeight: 700, color: "var(--par-primary)" }}>
+          ‹ Current term
+        </Link>
+        <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.01em", marginTop: 10, marginBottom: 4, color: "var(--par-ink)" }}>{detail.offering.subjectName}</div>
+        <div style={{ fontSize: 14, color: "var(--par-body-muted)", marginBottom: 24 }}>
+          {orDash(detail.offering.teacherName)}
+          {detail.offering.weeklyPeriods !== null ? ` · ${detail.offering.weeklyPeriods} periods/week` : ""}
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-[15px] font-extrabold text-text">Materials</h2>
-          {detail.folders.length === 0 ? (
-            <div className="mt-3">
-              <EmptyState title="No materials yet" body="This subject has no shared folders yet." />
-            </div>
-          ) : (
-            <div className="mt-3 flex flex-col gap-3">
-              {detail.folders.map((folder) => {
-                const isOpen = folderId === folder.id;
-                return (
-                  <div key={folder.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-text">{folder.title}</p>
-                        {folder.description ? <p className="mt-1 text-xs text-text-muted">{folder.description}</p> : null}
-                      </div>
-                      <Link
-                        href={
-                          isOpen
-                            ? `/parent/term/${subjectOfferingId}?studentId=${selected.studentId}`
-                            : `/parent/term/${subjectOfferingId}?studentId=${selected.studentId}&folderId=${folder.id}`
-                        }
-                        className="shrink-0 text-xs font-semibold text-primary hover:underline"
-                      >
-                        {isOpen ? "Hide files" : `${folder.fileCount} file${folder.fileCount === 1 ? "" : "s"}`}
-                      </Link>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--par-ink)", marginBottom: 12 }}>Materials</div>
+        {detail.folders.length === 0 ? (
+          <EmptyPanel label="This subject has no shared folders yet." />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 28 }}>
+            {detail.folders.map((folder) => {
+              const isOpen = folderId === folder.id;
+              return (
+                <div key={folder.id} style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-card-sm)", padding: "16px 20px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--par-ink)" }}>{folder.title}</div>
+                      {folder.description && <div style={{ fontSize: 12.5, color: "var(--par-body-muted)", marginTop: 2 }}>{folder.description}</div>}
                     </div>
-                    {isOpen ? (
-                      <FolderFiles studentId={selected.studentId} subjectOfferingId={subjectOfferingId} folderId={folder.id} />
-                    ) : null}
+                    <Link
+                      href={isOpen ? `/parent/term/${subjectOfferingId}?studentId=${selected.studentId}` : `/parent/term/${subjectOfferingId}?studentId=${selected.studentId}&folderId=${folder.id}`}
+                      style={{ fontSize: 12.5, fontWeight: 700, color: "var(--par-primary)", flexShrink: 0 }}
+                    >
+                      {isOpen ? "Hide files" : `${folder.fileCount} file${folder.fileCount === 1 ? "" : "s"}`}
+                    </Link>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  {isOpen && <FolderFiles studentId={selected.studentId} subjectOfferingId={subjectOfferingId} folderId={folder.id} />}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-        <div className="mt-8">
-          <h2 className="text-[15px] font-extrabold text-text">Lesson plans</h2>
-          {detail.lessonPlans.length === 0 ? (
-            <div className="mt-3">
-              <EmptyState title="No lesson plans yet" body="Lesson plans will appear here once posted." />
-            </div>
-          ) : (
-            <ul className="mt-3 flex flex-col gap-3">
-              {detail.lessonPlans.map((lp) => (
-                <li key={lp.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm font-bold text-text">{lp.title}</p>
-                    {lp.weekStart ? <span className="text-xs text-text-muted">Week of {formatDate(lp.weekStart)}</span> : null}
-                  </div>
-                  {lp.content ? <p className="mt-2 whitespace-pre-wrap text-sm text-text">{lp.content}</p> : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--par-ink)", marginBottom: 12 }}>Lesson plans</div>
+        {detail.lessonPlans.length === 0 ? (
+          <EmptyPanel label="Lesson plans will appear here once posted." />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {detail.lessonPlans.map((lp) => (
+              <div key={lp.id} style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-card-sm)", padding: "16px 20px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--par-ink)" }}>{lp.title}</div>
+                  {lp.weekStart && <div style={{ fontSize: 12, color: "var(--par-tertiary-2)" }}>Week of {formatDate(lp.weekStart)}</div>}
+                </div>
+                {lp.content && <div style={{ fontSize: 14, color: "var(--par-body)", marginTop: 8, whiteSpace: "pre-wrap" }}>{lp.content}</div>}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load this subject. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load this subject."} />;
   }
 }
 
-async function FolderFiles({
-  studentId,
-  subjectOfferingId,
-  folderId,
-}: {
-  studentId: string;
-  subjectOfferingId: string;
-  folderId: string;
-}) {
+async function FolderFiles({ studentId, subjectOfferingId, folderId }: { studentId: string; subjectOfferingId: string; folderId: string }) {
   const files = await getFolderFiles(studentId, subjectOfferingId, folderId);
-
   if (files.length === 0) {
-    return <p className="mt-3 text-sm text-text-muted">No files in this folder yet.</p>;
+    return <div style={{ fontSize: 13.5, color: "var(--par-tertiary)", marginTop: 12 }}>No files in this folder yet.</div>;
   }
-
-  const withUrls = await Promise.all(
-    files.map(async (file) => ({ file, url: await getSubjectFileUrl(studentId, subjectOfferingId, file.id).catch(() => null) })),
-  );
+  const withUrls = await Promise.all(files.map(async (file) => ({ file, url: await getSubjectFileUrl(studentId, subjectOfferingId, file.id).catch(() => null) })));
 
   return (
-    <ul className="mt-3 flex flex-col divide-y divide-border rounded-[var(--radius-input)] border border-border bg-field">
+    <div style={{ marginTop: 12, border: "1px solid var(--par-border)", borderRadius: 10, overflow: "hidden" }}>
       {withUrls.map(({ file, url }) => (
-        <li key={file.id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm">
-          <div className="min-w-0">
-            <p className="truncate font-semibold text-text">{file.fileName}</p>
-            <p className="text-xs text-text-muted">
-              {formatBytes(file.sizeBytes)} · {formatDateTime(file.uploadedAt)}
-            </p>
+        <div key={file.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 14px", borderBottom: "1px solid var(--par-divider)", background: "var(--par-panel-2)" }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--par-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.fileName}</div>
+            <div style={{ fontSize: 12, color: "var(--par-tertiary-2)" }}>{formatBytes(file.sizeBytes)} · {formatDateTime(file.uploadedAt)}</div>
           </div>
           {url ? (
-            <a href={url} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-primary hover:underline">
-              Open
-            </a>
+            <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: 12.5, fontWeight: 700, color: "var(--par-primary)", flexShrink: 0 }}>Open</a>
           ) : (
-            <span className="shrink-0 text-xs text-text-muted">Unavailable</span>
+            <span style={{ fontSize: 12.5, color: "var(--par-tertiary)", flexShrink: 0 }}>Unavailable</span>
           )}
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

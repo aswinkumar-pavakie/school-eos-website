@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { createCommunityAction, type FormActionState } from "@/app/(dashboard)/admin/community/actions";
+import { StaffPersonPicker, type StaffHit } from "@/components/academics/StaffPersonPicker";
 
 const initialState: FormActionState = {};
 
@@ -19,6 +20,7 @@ export function CreateCommunityModal({
 }) {
   const [open, setOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(createCommunityAction, initialState);
+  const [advisor, setAdvisor] = useState<StaffHit | null>(null);
 
   return (
     <>
@@ -27,14 +29,14 @@ export function CreateCommunityModal({
         onClick={() => setOpen(true)}
         className="flex items-center gap-2 rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(43,111,224,.25)] transition-opacity hover:opacity-90"
       >
-        + New community
+        + Create club
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
           <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
             <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New community</h2>
+              <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New club</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -136,15 +138,16 @@ export function CreateCommunityModal({
                 </label>
               </div>
 
-              <label className="flex flex-col gap-1.5 text-sm">
-                <span className="font-semibold text-text">Incharge staff ID</span>
-                <input
-                  name="inchargeStaffId"
-                  placeholder="Existing staff UUID"
-                  disabled={isPending}
-                  className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 font-mono text-[13px] text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-60"
-                />
-              </label>
+              <div>
+                {/* StaffPersonPicker's own hidden input submits the selected
+                    staff member's personId, but community.incharge_staff_id
+                    is a real FK to staff(id), not person(id) -- same fix as
+                    PositionsPanel's own staff assignee: don't name this
+                    picker's field "inchargeStaffId", submit staff.id via our
+                    own hidden input from onSelect's full StaffHit instead. */}
+                <StaffPersonPicker label="Teacher in-charge" onSelect={setAdvisor} />
+                {advisor && <input type="hidden" name="inchargeStaffId" value={advisor.id} />}
+              </div>
 
               <label className="flex items-center gap-2 text-[13px] text-text">
                 <input type="checkbox" name="discussionEnabled" disabled={isPending} className="h-4 w-4 rounded border-border" />
@@ -164,7 +167,7 @@ export function CreateCommunityModal({
                   disabled={isPending}
                   className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
                 >
-                  {isPending ? "Creating…" : "Create community"}
+                  {isPending ? "Creating…" : "Create club"}
                 </button>
               </div>
             </form>

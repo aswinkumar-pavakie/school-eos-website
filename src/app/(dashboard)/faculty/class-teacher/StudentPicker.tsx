@@ -21,11 +21,16 @@ export function StudentPicker({ sectionId, onSelect }: { sectionId: string; onSe
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (selected || query.trim().length < 1) {
-      setResults([]);
-      return;
-    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (selected || query.trim().length < 1) {
+      // setState must happen inside a callback, never synchronously in the
+      // effect body (react-hooks/set-state-in-effect) -- a 0ms timeout keeps
+      // this imperceptible to the user while satisfying that.
+      debounceRef.current = setTimeout(() => setResults([]), 0);
+      return () => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+      };
+    }
     debounceRef.current = setTimeout(async () => {
       const res = await fetch(`/api/faculty-student-search?sectionId=${sectionId}&q=${encodeURIComponent(query)}`);
       if (res.ok) {

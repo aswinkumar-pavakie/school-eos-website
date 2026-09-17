@@ -1,7 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createMediaInventoryItem, updateMediaInventoryItem } from "@/lib/media-api";
+import {
+  createMediaInventoryItem,
+  getMediaInventoryItemHistory,
+  issueMediaInventoryItem,
+  markMediaInventoryItemAvailable,
+  markMediaInventoryItemDamaged,
+  markMediaInventoryItemLost,
+  retireMediaInventoryItem,
+  returnMediaInventoryItem,
+  updateMediaInventoryItem,
+  type MediaInventoryHistoryEntry,
+} from "@/lib/media-api";
 
 export interface FormState {
   error?: string;
@@ -24,6 +35,70 @@ export async function createMediaInventoryItemAction(_prev: FormState, formData:
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Could not add the asset." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function loadInventoryHistoryAction(id: string): Promise<MediaInventoryHistoryEntry[]> {
+  return getMediaInventoryItemHistory(id);
+}
+
+export async function issueAssetAction(id: string, assignedToPersonId: string): Promise<{ error?: string }> {
+  try {
+    await issueMediaInventoryItem(id, { assignedToPersonId });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not issue this asset." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function returnAssetAction(id: string): Promise<{ error?: string }> {
+  try {
+    await returnMediaInventoryItem(id);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not mark this asset returned." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function sendToServiceAction(id: string): Promise<{ error?: string }> {
+  try {
+    await markMediaInventoryItemDamaged(id, "Sent for service from Inventory");
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not send this asset to service." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function markAvailableAction(id: string): Promise<{ error?: string }> {
+  try {
+    await markMediaInventoryItemAvailable(id, "Repair/service completed from Inventory");
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not mark this asset available." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function markLostAction(id: string): Promise<{ error?: string }> {
+  try {
+    await markMediaInventoryItemLost(id, "Marked lost from Inventory");
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not mark this asset lost." };
+  }
+  revalidatePath("/media/inventory");
+  return {};
+}
+
+export async function retireAssetAction(id: string): Promise<{ error?: string }> {
+  try {
+    await retireMediaInventoryItem(id, "Retired from Inventory");
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not retire this asset." };
   }
   revalidatePath("/media/inventory");
   return {};

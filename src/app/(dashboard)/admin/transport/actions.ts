@@ -60,6 +60,134 @@ export async function createRouteStopAction(routeId: string, _prev: FormActionSt
   return runMutation(`/routes/${routeId}/stops`, "POST", collect(formData, ["stopName", "sequenceNo", "scheduledTime"]));
 }
 
+// Route detail page (the reference-design rebuild) -- real write actions that
+// revalidate that specific route's own path rather than runMutation's generic
+// "/admin/transport" (the landing page), since these all show up inline on
+// /admin/transport/routes/[id]. Admin has genuine ADMIN-only access on every
+// one of these (route-stop hard delete, vehicle-document hard delete, vehicle
+// spec/master edit, crew reassignment) -- broader than Transport Manager's own
+// grant, which routes the delete-equivalents through the approvals engine
+// instead (see routes.controller.ts's own comment on why route-stop DELETE
+// stays ADMIN-only).
+export async function updateRouteDetailAction(routeId: string, _prev: FormActionState, formData: FormData) {
+  const res = await apiFetch(`/routes/${routeId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collect(formData, ["name", "code", "direction", "distanceKm", "status"])),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  revalidatePath("/admin/transport");
+  return {};
+}
+
+export async function updateRouteStopAdminAction(
+  stopId: string,
+  routeId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/route-stops/${stopId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collect(formData, ["stopName", "sequenceNo", "scheduledTime"])),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  return {};
+}
+
+export async function createRouteStopAdminAction(routeId: string, _prev: FormActionState, formData: FormData) {
+  const res = await apiFetch(`/routes/${routeId}/stops`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collect(formData, ["stopName", "sequenceNo", "scheduledTime"])),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  return {};
+}
+
+/** Real hard delete -- DELETE /route-stops/:id stays ADMIN-only on the
+ * backend (the one entity in Transport with a genuine hard-delete today).
+ * Transport Manager's own equivalent is a request routed through the
+ * approvals engine; Admin acts directly. */
+export async function deleteRouteStopAdminAction(stopId: string, routeId: string): Promise<void> {
+  await apiFetch(`/route-stops/${stopId}`, { method: "DELETE" });
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+}
+
+export async function updateVehicleMasterAdminAction(
+  vehicleId: string,
+  routeId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/vehicles/${vehicleId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collect(formData, ["registrationNo", "model", "capacity", "ownership", "operationalStatus"])),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  revalidatePath("/admin/transport");
+  return {};
+}
+
+export async function updateVehicleSpecAdminAction(
+  vehicleId: string,
+  routeId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/vehicles/${vehicleId}/spec`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(
+      collect(formData, [
+        "bodyType",
+        "yearOfManufacture",
+        "chassisNo",
+        "engineNo",
+        "engineDesc",
+        "wheelbaseMm",
+        "tyreSize",
+        "tyreCount",
+        "fuelTankLitres",
+        "rtoOffice",
+        "parkingBay",
+      ]),
+    ),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  return {};
+}
+
+export async function updateAssignmentCrewAdminAction(
+  assignmentId: string,
+  vehicleId: string,
+  routeId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/vehicle-route-assignments/${assignmentId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(collect(formData, ["driverId", "attendantId"])),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+  return {};
+}
+
+/** Real hard delete -- DELETE /vehicle-documents/:id stays ADMIN-only on the
+ * backend, same reasoning as deleteRouteStopAdminAction above. */
+export async function deleteVehicleDocumentAdminAction(documentId: string, routeId: string): Promise<void> {
+  await apiFetch(`/vehicle-documents/${documentId}`, { method: "DELETE" });
+  revalidatePath(`/admin/transport/routes/${routeId}`);
+}
+
 // Drivers
 export async function createDriverAction(_prev: FormActionState, formData: FormData) {
   return runMutation("/drivers", "POST", collect(formData, ["fullName", "phone", "licenceNo", "licenceExpiry"]));
@@ -76,18 +204,19 @@ export async function updateAttendantAction(id: string, _prev: FormActionState, 
   return runMutation(`/attendants/${id}`, "PATCH", collect(formData, ["fullName", "phone", "status"]));
 }
 
-// Vehicle-route assignments -- shared by Admin's own Transport tabs AND
-// Transport Manager's Bus Allocation page (the backend already permits
-// TRANSPORT_MANAGER on this endpoint), so this one revalidates both pages'
-// paths rather than only the Admin one runMutation defaults to.
+// Vehicle-route assignments -- Admin's own Transport tabs use this directly;
+// Transport Manager's own crew/route reassignment now lives on the bus
+// detail page instead (buses/[id]/page.tsx's own EditCrewForm/EditRouteForm,
+// via transport-manager/actions.ts's own updateAssignmentCrewAction/
+// updateAssignmentRouteAction) -- there's no more standalone "Bus Allocation"
+// page for this to revalidate, so this only ever touches Admin's own path
+// now (runMutation's own default).
 export async function createAssignmentAction(_prev: FormActionState, formData: FormData) {
-  const result = await runMutation(
+  return runMutation(
     "/vehicle-route-assignments",
     "POST",
     collect(formData, ["vehicleId", "routeId", "driverId", "attendantId", "effectiveFrom"]),
   );
-  if (!result.error) revalidatePath("/transport-manager/allocation");
-  return result;
 }
 
 // Route -> assigned students (Route detail page)
@@ -139,6 +268,143 @@ export async function changeStudentTransportStopAction(
 export async function cancelStudentTransportAllocationAction(routeId: string, allocationId: string): Promise<void> {
   await apiFetch(`/student-transport-allocations/${allocationId}/cancel`, { method: "POST" });
   revalidatePath(`/admin/transport/routes/${routeId}`);
+}
+
+// Driver documents (driver detail page) -- same endpoints Transport Manager
+// uses in transport-manager/actions.ts, kept as separate actions here only so
+// each revalidates its own page path (/admin/transport/... vs
+// /transport-manager/...). No delete action: DELETE stays ADMIN-only on the
+// backend but isn't offered from this detail page either, to keep both
+// surfaces' UI identical -- deleting a document, if ever needed, can be added
+// later as its own explicit action.
+export async function createDriverDocumentAdminAction(
+  driverId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/drivers/${driverId}/documents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      docType: formData.get("docType"),
+      docNo: formData.get("docNo") || undefined,
+      validFrom: formData.get("validFrom") || undefined,
+      validTo: formData.get("validTo"),
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/drivers/${driverId}`);
+  return {};
+}
+
+export async function updateDriverDocumentAdminAction(
+  driverId: string,
+  documentId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/drivers/documents/${documentId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      docType: formData.get("docType") || undefined,
+      docNo: formData.get("docNo") || undefined,
+      validFrom: formData.get("validFrom") || undefined,
+      validTo: formData.get("validTo") || undefined,
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/drivers/${driverId}`);
+  return {};
+}
+
+// Vehicle documents + maintenance (vehicle detail page) -- same pairing as above.
+export async function createVehicleDocumentAdminAction(
+  vehicleId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/vehicles/${vehicleId}/documents`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      docType: formData.get("docType"),
+      docNo: formData.get("docNo") || undefined,
+      validFrom: formData.get("validFrom") || undefined,
+      validTo: formData.get("validTo"),
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/vehicles/${vehicleId}`);
+  return {};
+}
+
+export async function updateVehicleDocumentAdminAction(
+  vehicleId: string,
+  documentId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const res = await apiFetch(`/vehicle-documents/${documentId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      docType: formData.get("docType") || undefined,
+      docNo: formData.get("docNo") || undefined,
+      validFrom: formData.get("validFrom") || undefined,
+      validTo: formData.get("validTo") || undefined,
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/vehicles/${vehicleId}`);
+  return {};
+}
+
+export async function createVehicleMaintenanceAdminAction(
+  vehicleId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const costRupees = formData.get("costRupees");
+  const res = await apiFetch(`/vehicles/${vehicleId}/maintenance`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      maintenanceType: formData.get("maintenanceType"),
+      performedOn: formData.get("performedOn"),
+      odometerKm: formData.get("odometerKm") || undefined,
+      costPaise: typeof costRupees === "string" && costRupees.trim() !== "" ? Math.round(Number(costRupees) * 100) : undefined,
+      vendor: formData.get("vendor") || undefined,
+      notes: formData.get("notes") || undefined,
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/vehicles/${vehicleId}`);
+  return {};
+}
+
+export async function updateVehicleMaintenanceAdminAction(
+  vehicleId: string,
+  maintenanceId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const costRupees = formData.get("costRupees");
+  const res = await apiFetch(`/vehicle-maintenance/${maintenanceId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      maintenanceType: formData.get("maintenanceType") || undefined,
+      performedOn: formData.get("performedOn") || undefined,
+      odometerKm: formData.get("odometerKm") || undefined,
+      costPaise: typeof costRupees === "string" && costRupees.trim() !== "" ? Math.round(Number(costRupees) * 100) : undefined,
+      vendor: formData.get("vendor") || undefined,
+      notes: formData.get("notes") || undefined,
+    }),
+  });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/transport/vehicles/${vehicleId}`);
+  return {};
 }
 
 /**

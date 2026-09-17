@@ -4,17 +4,21 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BackLink } from "@/components/dashboard/BackLink";
 import { CertificatesSection, type CertificateDocument } from "@/components/dashboard/CertificatesSection";
 import { HeaderButtonSlot } from "@/components/dashboard/HeaderButtonPortal";
 import { PersonPhotoEditor } from "@/components/dashboard/PersonPhotoEditor";
-import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/dashboard/ProfileHeader";
-import { StatusPill } from "@/components/dashboard/StatusPill";
 import { EnrolmentsSection } from "@/components/students/EnrolmentsSection";
 import { GuardiansSection } from "@/components/students/GuardiansSection";
 import { LeaveStudentDialog } from "@/components/students/LeaveStudentDialog";
 import { StudentFeesSection, type StudentFeeSummary } from "@/components/students/StudentFeesSection";
 import { StudentProfileForm, STUDENT_SAVE_BUTTON_SLOT } from "@/components/students/StudentProfileForm";
+import {
+  StudentProfileView,
+  type StudentProfileInfoCard,
+  type StudentProfilePill,
+  type StudentProfileSection,
+  type StudentProfileStat,
+} from "@/components/students/StudentProfileView";
 import { StudentTransportSection } from "@/components/students/StudentTransportSection";
 import { StudentWalletSection, type StudentWallet } from "@/components/students/StudentWalletSection";
 import { apiFetch } from "@/lib/api";
@@ -51,6 +55,23 @@ interface StudentDetail {
   city: string | null;
   state: string | null;
   pincode: string | null;
+  // Collected on the real "Enroll students" admission page -- shown here too
+  // and editable, per explicit instruction ("the students collected data
+  // while enrolling a student should be displayed on the student profile
+  // view and editable by the admin"). gender/dateOfBirth/district/
+  // aadhaarLast4 live on `person` (GET /students/:id already joins and
+  // returns them); religion/nationality/admissionQuota/previousSchool/
+  // emergencyContact* live on `student` directly.
+  gender: string | null;
+  dateOfBirth: string | null;
+  district: string | null;
+  aadhaarLast4: string | null;
+  religion: string | null;
+  nationality: string | null;
+  admissionQuota: string | null;
+  previousSchool: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
 }
 
 interface EnrolmentRow {
@@ -202,13 +223,13 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
     NO_ASSIGNMENT: "Not assigned",
   };
 
-  const pills: ProfilePill[] = [
+  const pills: StudentProfilePill[] = [
     { label: student.admissionNo, tone: "neutral" },
     { label: student.status.replace(/_/g, " "), tone: statusTone(student.status) },
     ...(student.isHosteller ? [{ label: "Hosteller", tone: "primary" as const }] : []),
     ...(wallet?.status === "FROZEN" ? [{ label: "Wallet frozen", tone: "critical" as const }] : []),
   ];
-  const stats: ProfileStat[] = [
+  const stats: StudentProfileStat[] = [
     {
       label: "Attendance",
       value: attendanceSummary.percentage !== null ? `${attendanceSummary.percentage}%` : "—",
@@ -221,53 +242,49 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
     },
   ];
 
-  return (
-    <div className="mx-auto max-w-[960px]">
-      <BackLink href="/admin/students" label="Back to students" />
-      <ProfileHeader
-        photo={
-          <PersonPhotoEditor
-            personId={student.personId}
-            photoUrl={student.photoUrl}
-            name={`${student.firstName} ${student.lastName ?? ""}`}
-            revalidatePaths={["/admin/students", `/admin/students/${student.id}`]}
-            size={112}
-            shape="square"
-          />
-        }
-        name={`${student.firstName} ${student.lastName ?? ""}`}
-        subtitle={
-          student.gradeName
-            ? `${student.gradeName} · Section ${student.sectionName}${student.rollNo != null ? ` · Roll ${student.rollNo}` : ""}`
-            : "Not enrolled in a class yet"
-        }
-        pills={pills}
-        stats={stats}
-        actions={
-          <>
-            <Link
-              href={`/print/students/${student.id}/id-card`}
-              className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
-            >
-              Print ID card
-            </Link>
-            {isActive && <LeaveStudentDialog studentId={student.id} />}
-          </>
-        }
-        belowActions={<HeaderButtonSlot id={STUDENT_SAVE_BUTTON_SLOT} />}
-      />
+  // Admin's own fetched StudentDetail doesn't include dateOfBirth/gender
+  // (only Principal's does) -- Profile card shows what this page actually
+  // fetches, same rule VP's page follows.
+  const infoCards: StudentProfileInfoCard[] = [
+    {
+      title: "Profile",
+      rows: [
+        student.bloodGroup && ["Blood group", student.bloodGroup],
+        student.languageSubjectChoice && ["Second language", student.languageSubjectChoice],
+        student.motherTongue && ["Mother tongue", student.motherTongue],
+        student.communityCategory && ["Community category", student.communityCategory],
+        student.stateStudentId && ["State student ID", student.stateStudentId],
+      ],
+    },
+    {
+      title: "Contact",
+      rows: [
+        [
+          "Address",
+          [student.addressLine1, student.addressLine2, student.city, student.state, student.pincode]
+            .filter(Boolean)
+            .join(", ") || "—",
+        ],
+      ],
+    },
+    {
+      title: "Academic details",
+      note: `Admitted ${formatDate(student.admissionDate)}`,
+      rows: [
+        ["Admission no", student.admissionNo],
+        student.gradeName && ["Class", student.gradeName],
+        student.sectionName && ["Section", student.sectionName],
+        student.rollNo != null && ["Roll no", String(student.rollNo)],
+      ],
+    },
+  ];
 
-      {!isActive && student.dateOfLeaving && (
-        <p className="mt-3 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm text-critical-text">
-          Left on {formatDate(student.dateOfLeaving)}.
-        </p>
-      )}
-
-      <section className="mt-8 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Profile &amp; address</h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          Admitted {formatDate(student.admissionDate)}. Name, mobile and email aren&apos;t editable here.
-        </p>
+  const profileSections: StudentProfileSection[] = [
+    {
+      key: "edit-profile",
+      title: "Edit profile & address",
+      subtitle: `Admitted ${formatDate(student.admissionDate)}. Name, mobile and email aren't editable here.`,
+      content: (
         <StudentProfileForm
           student={student}
           address={{
@@ -278,10 +295,12 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             pincode: student.pincode,
           }}
         />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Enrolment history</h2>
+      ),
+    },
+    {
+      key: "enrolment",
+      title: "Enrolment history",
+      content: (
         <EnrolmentsSection
           studentId={student.id}
           enrolments={enrolments}
@@ -289,45 +308,48 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           sections={sections}
           grades={grades}
         />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Fees</h2>
+      ),
+    },
+    {
+      key: "fees",
+      title: "Fees",
+      content: (
         <div className="mt-3">
           <StudentFeesSection summary={feeSummary} />
         </div>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Wallet</h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          Canteen / ID-card balance. Freeze it if the card is lost so the balance can&apos;t be spent.
-        </p>
+      ),
+    },
+    {
+      key: "wallet",
+      title: "Wallet",
+      subtitle: "Canteen / ID-card balance. Freeze it if the card is lost so the balance can't be spent.",
+      content: (
         <div className="mt-3">
           <StudentWalletSection studentId={student.id} wallet={wallet} />
         </div>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Transport</h2>
+      ),
+    },
+    {
+      key: "transport",
+      title: "Transport",
+      content: (
         <StudentTransportSection
           usesSchoolTransport={student.usesSchoolTransport}
           commuteMode={student.commuteMode}
           allocations={transportAllocations}
         />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Guardians</h2>
-        <GuardiansSection studentId={student.id} guardians={guardians} />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Certificates</h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          Certificates received at admission or any time after — Transfer Certificate, Birth Certificate, and the
-          like.
-        </p>
+      ),
+    },
+    {
+      key: "guardians",
+      title: "Guardians",
+      content: <GuardiansSection studentId={student.id} guardians={guardians} />,
+    },
+    {
+      key: "certificates",
+      title: "Certificates",
+      subtitle: "Certificates received at admission or any time after — Transfer Certificate, Birth Certificate, and the like.",
+      content: (
         <div className="mt-3">
           <CertificatesSection
             ownerObjectType="student"
@@ -337,7 +359,55 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
             revalidatePaths={[`/admin/students/${student.id}`]}
           />
         </div>
-      </section>
-    </div>
+      ),
+    },
+  ];
+
+  return (
+    <StudentProfileView
+      backHref="/admin/students"
+      photo={
+        // 188x188 square, matching Teacher/Faculty's own photo footprint
+        // exactly (explicit user request for size parity across profiles).
+        <PersonPhotoEditor
+          personId={student.personId}
+          photoUrl={student.photoUrl}
+          name={`${student.firstName} ${student.lastName ?? ""}`}
+          revalidatePaths={["/admin/students", `/admin/students/${student.id}`]}
+          size={188}
+          shape="square"
+        />
+      }
+      name={`${student.firstName} ${student.lastName ?? ""}`}
+      subtitle={
+        student.gradeName
+          ? `${student.gradeName} · Section ${student.sectionName}${student.rollNo != null ? ` · Roll ${student.rollNo}` : ""}`
+          : "Not enrolled in a class yet"
+      }
+      pills={pills}
+      stats={stats}
+      headerActions={
+        <>
+          <Link
+            href={`/print/students/${student.id}/id-card`}
+            className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-semibold text-text hover:bg-bg"
+          >
+            Print ID card
+          </Link>
+          {isActive && <LeaveStudentDialog studentId={student.id} />}
+        </>
+      }
+      belowHeaderActions={<HeaderButtonSlot id={STUDENT_SAVE_BUTTON_SLOT} />}
+      leavingNote={
+        !isActive &&
+        student.dateOfLeaving && (
+          <p className="mt-3 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm text-critical-text">
+            Left on {formatDate(student.dateOfLeaving)}.
+          </p>
+        )
+      }
+      infoCards={infoCards}
+      sections={profileSections}
+    />
   );
 }

@@ -132,9 +132,12 @@ export default async function PrincipalFacultyPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Faculty &amp; Staff</h1>
-          <p className="mt-1 text-sm text-text-muted">{meta.total} staff records</p>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Faculty &amp; Staff</h1>
+          <p className="mt-1 text-sm text-text-muted">Every teacher and staff member in the school.</p>
         </div>
+        <span className="rounded-[var(--radius-pill)] border border-border bg-field px-3.5 py-1.5 text-[13px] font-bold text-text">
+          {meta.total} staff record{meta.total === 1 ? "" : "s"}
+        </span>
       </div>
 
       <FacultyFilterBar
@@ -169,51 +172,37 @@ export default async function PrincipalFacultyPage({
         })}
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-[16px] border border-border bg-surface">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Employee no.</th>
-              <th className="px-4 py-3">Designation</th>
-              <th className="px-4 py-3">Joined</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {staff.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
-                  No staff match this filter.
-                </td>
-              </tr>
-            )}
-            {staff.map((member) => (
-              <tr key={member.id} className="hover:bg-field">
-                <td className="px-4 py-3 font-semibold text-text">
-                  <Link href={`/principal/faculty/${member.id}`} className="flex items-center gap-2.5 hover:text-primary hover:underline">
-                    <PersonAvatar
-                      photoUrl={member.photoUrl}
-                      name={`${member.firstName} ${member.lastName ?? ""}`}
-                      size={28}
-                    />
+      {staff.length === 0 ? (
+        <div className="mt-6 rounded-[16px] border border-border bg-surface px-4 py-10 text-center text-text-muted">
+          No staff match this filter.
+        </div>
+      ) : (
+        <div className="mt-6 grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
+          {staff.map((member) => (
+            <Link
+              key={member.id}
+              href={`/principal/faculty/${member.id}`}
+              className="card-hover rounded-[16px] border border-border bg-surface p-[18px]"
+            >
+              <div className="flex items-center gap-3">
+                <PersonAvatar photoUrl={member.photoUrl} name={`${member.firstName} ${member.lastName ?? ""}`} size={44} />
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-bold text-text">
                     {member.firstName} {member.lastName ?? ""}
-                    {!member.isTeaching && (
-                      <span className="text-xs font-normal text-text-muted">(Non-teaching)</span>
-                    )}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 font-mono text-[13px] text-text">{member.employeeNo}</td>
-                <td className="px-4 py-3 text-text-muted">{member.designation ?? "—"}</td>
-                <td className="px-4 py-3 text-text-muted">{formatDate(member.dateOfJoining)}</td>
-                <td className="px-4 py-3">
-                  <StatusPill tone={statusTone(member.status)} label={member.status.replace(/_/g, " ")} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  </p>
+                  <p className="truncate text-xs text-text-muted">
+                    {member.employeeNo} · {member.designation ?? (member.isTeaching ? "Teacher" : "Staff")}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                <span className="text-xs text-text-muted">Joined {formatDate(member.dateOfJoining)}</span>
+                <StatusPill tone={statusTone(member.status)} label={member.status.replace(/_/g, " ")} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between text-sm text-text-muted">

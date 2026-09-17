@@ -48,26 +48,37 @@ function humanizeKey(key: string): string {
 
 export default async function PrincipalRequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // Data fetching kept in its own try/catch, separate from the JSX below --
+  // React doesn't actually catch render errors via a JS try/catch around
+  // constructed JSX (only a real error boundary does).
+  let request: Awaited<ReturnType<typeof getApproval>>["request"];
+  let steps: Awaited<ReturnType<typeof getApproval>>["steps"];
+  let actor: Awaited<ReturnType<typeof getCurrentActor>>;
   try {
-    const [{ request, steps }, actor] = await Promise.all([getApproval(id), getCurrentActor()]);
-    const currentStep = steps.find((s) => s.sequenceNo === request.currentStep);
-    const isOpen = request.state === "PENDING" || request.state === "RETROSPECTIVE_PENDING";
-    const canDecide = isOpen && !!currentStep && actor.roles.includes(currentStep.approverRoleCode) && request.requestedBy !== actor.personId;
-    const isRequester = isOpen && request.requestedBy === actor.personId;
-    const subjectHref = SUBJECT_LINKS[request.subjectObjectType]?.(request.subjectObjectId);
-    const payloadEntries = Object.entries(request.payload ?? {}).filter(
-      ([key, value]) => !HIDDEN_PAYLOAD_KEYS.has(key) && !/Id$/.test(key) && isDisplayableValue(value),
-    ) as [string, string | number | boolean][];
-    const hasDetails = !!request.amountPaise || payloadEntries.length > 0;
+    [{ request, steps }, actor] = await Promise.all([getApproval(id), getCurrentActor()]);
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load this approval. Nothing was submitted — try again." />;
+  }
 
-    return (
+  const currentStep = steps.find((s) => s.sequenceNo === request.currentStep);
+  const isOpen = request.state === "PENDING" || request.state === "RETROSPECTIVE_PENDING";
+  const canDecide = isOpen && !!currentStep && actor.roles.includes(currentStep.approverRoleCode) && request.requestedBy !== actor.personId;
+  const isRequester = isOpen && request.requestedBy === actor.personId;
+  const subjectHref = SUBJECT_LINKS[request.subjectObjectType]?.(request.subjectObjectId);
+  const payloadEntries = Object.entries(request.payload ?? {}).filter(
+    ([key, value]) => !HIDDEN_PAYLOAD_KEYS.has(key) && !/Id$/.test(key) && isDisplayableValue(value),
+  ) as [string, string | number | boolean][];
+  const hasDetails = !!request.amountPaise || payloadEntries.length > 0;
+
+  return (
       <div className="mx-auto flex max-w-2xl flex-col gap-6">
         <Link href="/principal/requests" className="text-xs font-bold text-text-muted hover:text-text">
           ← Back to Approvals
         </Link>
 
         <div>
-          <h1 className="text-2xl font-extrabold text-text">{request.requestType.replace(/_/g, " ")}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{request.requestType.replace(/_/g, " ")}</h1>
           <p className="mt-1 text-sm text-text-muted">
             Raised by {request.requestedByName ?? request.requestedBy} on {formatDate(request.createdAt)}
           </p>
@@ -107,7 +118,7 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
           <h2 className="text-xs font-bold tracking-wide text-text-muted uppercase">Approval chain</h2>
           <ol className="mt-3 flex flex-col gap-2">
             {steps.map((s) => (
-              <li key={s.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
+              <li key={s.id} className="card-hover flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-surface px-4 py-3 text-sm">
                 <span className="font-bold text-text">Step {s.sequenceNo} · {s.approverRoleCode}</span>
                 {s.decision ? (
                   <span className="text-text-muted">
@@ -134,8 +145,4 @@ export default async function PrincipalRequestDetailPage({ params }: { params: P
         <DecisionForms id={id} canDecide={canDecide} isRequester={isRequester} />
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load this approval. Nothing was submitted — try again." />;
-  }
 }

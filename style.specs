@@ -1,0 +1,99 @@
+Font family :
+Outfit, sans-serif                        — all UI text
+'JetBrains Mono', monospace               — IDs, registrations, phone, amounts, times
+
+
+Colors
+Text
+
+#10243f   primary ink (titles, values, names)
+#44536b   body text in bubbles
+#5c6b82   secondary text, meta lines
+#7d8ca3   tertiary / roles, idle sidebar icon
+#8593a8   muted meta, dates, counts, placeholders
+#9aa7ba   faintest meta
+#6b7a91   uppercase micro-labels
+#b6c0cf   disabled day numbers
+#1f4fa8   dark blue accent text, chips, avatar initials
+#1f6feb   primary blue (links, active icon, "View →")
+#ffffff   on-blue text
+#1f7a4d   success text ("added by you")
+
+Surfaces
+
+#ffffff   page + card background
+#fbfcfe   subtle panel (message thread area)
+#f8fafc   inset chip background
+#f4f7fc   soft grey fill (icon tiles, buttons)
+#f6f8fb   Sunday cell
+#eef4ff   blue tint (avatars, badges, icon tiles)
+#dbe7ff   selected calendar day
+#f3f8ff   selected radio row
+#f6faff   row hover tint
+#0f2342   dark bar fill (occupancy meter)
+#e8f6ee   success pill background
+rgba(12,24,44,0.5)   modal scrim
+Borders
+
+#e4e9f2   card border (default)
+#eef1f6   inner divider / row top border
+#e9edf4   bubble border
+#dfe5ef   input border
+#f0f3f8   Sunday cell border
+#c4cedd   idle radio ring
+#1f6feb   focus / hover / selected border
+Type scale
+34px/700  bus registration (mono)
+30px/700  metric value (mono)
+27px/700  calendar month
+26px/700  modal title
+24px/700  split value
+23px/700  from/to labels
+22px/700  thread header name
+21px/600  panel title
+19px/700  route student count · stop tile day
+19px/600  route name
+18px/600  driver name
+17px/600  stop group name
+17px/400  message bubble text
+16px/600  list item titles, spec values, inputs
+15px/600  buttons
+15px/400  input text, secondary body
+14px/600  chips, "View →"
+13px/400  meta lines
+12px/600  pills, category chips
+11px/600  uppercase labels, letter-spacing 0.11em
+10px/600  date tile weekday, letter-spacing 0.1em
+Headings use letter-spacing: -0.015em to -0.02em; uppercase labels 0.11em.
+
+Geometry
+Card:      border-radius 16px; padding 22px; gap 16px; 1px solid #e4e9f2
+Stat card: border-radius 14px; padding 20px; gap 12px
+Modal:     border-radius 18px; padding 30px; max-width 640px
+Inputs:    border-radius 12px; padding 15px
+Buttons:   border-radius 12px; padding 14px 26px; min-height 48px
+Pills:     border-radius 999px; padding 8px 14px
+Avatars:   999px circle — 34 / 38 / 44 / 48px
+Grid gap:  18px between cards; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr))
+Sidebar:   padding 18px 14px; item gap 18px; icon 20px
+Interaction
+Card hover:   transform: translateY(-4px);
+              border-color: #1f6feb;
+              box-shadow: 0 14px 30px rgba(31,111,235,0.13);
+              transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease
+
+Row hover:    background: #f6faff;
+              box-shadow: 0 0 0 1.5px #1f6feb;
+              transition: box-shadow 130ms ease, background 130ms ease
+              (no lift — outline + tint only)
+
+Button hover: primary #1f6feb → #1a5cc8 · ghost #ffffff → #f4f7fc
+Disabled CTA: background #9dc0f5, white text, no pointer
+Dropdown:     box-shadow 0 22px 48px rgba(12,24,44,0.16); radius 14px; item hover #f4f8ff
+Modal:        box-shadow 0 24px 70px rgba(12,24,44,0.28)
+Icons
+20×20 inline SVG, viewBox="0 0 24 24", fill: none, stroke-linecap/linejoin: round. Active: stroke #1f6feb, width 1.7. Idle: stroke #7d8ca3, width 1.6.
+
+Rules
+All styling is inline (no CSS classes). Only @font-face/font links and body resets live in the style block. One blue accent, one grey scale, no gradients, no emoji, no shadows on resting cards.
+

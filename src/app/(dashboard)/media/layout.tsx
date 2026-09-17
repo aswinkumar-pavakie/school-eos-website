@@ -1,30 +1,15 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import { MediaShell } from "@/components/media-ui/MediaShell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
+import { getMediaDashboard, getMediaInventoryOverview } from "@/lib/media-api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
-
-// Same Shell as Admin/Finance (src/components/dashboard/Shell.tsx) -- one design
-// system, not a second one invented for Media Room. Only the nav items and role
-// label differ per role; the sidebar/top-bar chrome itself is shared code.
-const NAV_ITEMS: ShellNavItem[] = [
-  { href: "/media", label: "Dashboard", icon: "dashboard" },
-  { href: "/media/social-publishing", label: "Social Media Publishing", icon: "announcements" },
-  { href: "/media/shoot-assignments", label: "Shoot Assignments", icon: "calendar" },
-  { href: "/media/inventory", label: "Inventory", icon: "inventory" },
-  { href: "/media/raise-indent", label: "Raise Indent", icon: "requests" },
-  { href: "/media/team", label: "Media Team", icon: "faculty" },
-];
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
 interface MeResponse {
-  data: {
-    person: { id: string; firstName: string; lastName: string | null };
-    roles: { role_code: string }[];
-  };
+  data: { person: { id: string; firstName: string; lastName: string | null; email: string | null } };
 }
 
 export default async function MediaLayout({ children }: { children: ReactNode }) {
@@ -33,10 +18,7 @@ export default async function MediaLayout({ children }: { children: ReactNode })
   if (!accessToken) redirect("/login");
 
   const actor = await getCurrentActor().catch(() => null);
-  if (!actor) redirect("/login");
-  // Matches every other role's layout (Admin/Finance/Principal/Library) --
-  // without this, any authenticated login could open /media by URL.
-  if (!actor.roles.includes("MEDIA_ROOM")) redirect("/login");
+  if (!actor || !actor.roles.includes("MEDIA_ROOM")) redirect("/login");
 
   const meRes = await fetch(`${API_BASE_URL}/auth/me`, {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -44,18 +26,28 @@ export default async function MediaLayout({ children }: { children: ReactNode })
   });
   const me = meRes.ok ? ((await meRes.json()) as MeResponse) : null;
   const personName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
+  const personEmail = me?.data.person.email ?? "";
+
+  // Real counts for the sidebar badges -- never the design's own hardcoded
+  // "4" placeholders.
+  const [dashboard, inventoryOverview] = await Promise.all([
+    getMediaDashboard().catch(() => null),
+    getMediaInventoryOverview().catch(() => null),
+  ]);
+
+  const now = new Date();
+  const academicYearLabel = now.getMonth() >= 5 ? `${now.getFullYear()}-${String(now.getFullYear() + 1).slice(2)}` : `${now.getFullYear() - 1}-${String(now.getFullYear()).slice(2)}`;
 
   return (
-    <Shell
+    <MediaShell
       personName={personName}
-      roleLabel="Media Room Head"
+      personEmail={personEmail}
+      academicYearLabel={academicYearLabel}
+      inventoryCount={inventoryOverview?.total ?? 0}
+      indentCount={dashboard?.pendingIndents ?? 0}
       onSignOut={logoutAction}
-      pendingRequestsCount={0}
-      navItems={NAV_ITEMS}
-      requestsHref="/media/raise-indent"
-      showGlobalSearch={false}
     >
       {children}
-    </Shell>
+    </MediaShell>
   );
 }

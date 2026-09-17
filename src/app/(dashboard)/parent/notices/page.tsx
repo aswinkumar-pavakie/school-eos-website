@@ -1,75 +1,57 @@
-// Notices -- the full Announcements feed for the selected child (SCHOOL +
-// ROLE=PARENT + the child's own section), the same real feed the Home
-// dashboard's own "View all" link points into.
+// Notices -- pixel-rebuilt from the design's own isNotices screen. Real
+// AnnouncementsService data (same feed the Home page's own "Notices" panel
+// summarizes), scoped to this child's real school/role/section audience.
 
 import { redirect } from "next/navigation";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
-import { StatusPill } from "@/components/dashboard/StatusPill";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 import { listAnnouncements, listChildren, resolveSelectedChild } from "@/lib/parent-api";
 
-export default async function ParentNoticesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ studentId?: string }>;
-}) {
+export default async function ParentNoticesPage({ searchParams }: { searchParams: Promise<{ studentId?: string }> }) {
   try {
     const { studentId: requestedStudentId } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
-
-    const announcements = await listAnnouncements(selected.studentId);
+    const notices = await listAnnouncements(selected.studentId);
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="parent-scope">
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
           <div>
-            <h1 className="text-2xl font-extrabold text-text">Notices</h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join(" ")}
-            </p>
+            <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Notices</div>
+            <div style={{ fontSize: 15, color: "var(--par-body-muted)" }}>Notices from the school for {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join("-")}</div>
           </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
         </div>
 
-        <div className="mt-6">
-          {announcements.length === 0 ? (
-            <EmptyState title="No notices yet" body="Nothing has been posted for this child yet." />
-          ) : (
-            <ul className="flex flex-col gap-3">
-              {announcements.map((a) => (
-                <li
-                  key={a.id}
-                  className={`rounded-[16px] border-y border-r border-border bg-surface p-[18px] ${
-                    a.isEmergency ? "border-l-4 border-l-critical-text" : "border-l border-l-border"
-                  }`}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <p className="text-[15px] font-extrabold leading-[20px] text-text">{a.title}</p>
-                      {a.isEmergency ? <StatusPill tone="critical" label="Emergency" /> : null}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {a.category ? <span className="text-xs font-semibold text-primary">{a.category}</span> : null}
-                      <span className="shrink-0 text-xs text-text-muted">{formatDate(a.createdAt)}</span>
-                    </div>
+        {notices.length === 0 ? (
+          <EmptyPanel label="No notices yet." />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {notices.map((n) => (
+              <div key={n.id} style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, padding: "20px 24px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--par-tint)", color: "var(--par-primary)", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>PP</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--par-ink)" }}>Pavakie Public School</div>
+                    <div style={{ fontSize: 14, color: "var(--par-tertiary)" }}>{new Date(n.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</div>
                   </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-text">{a.body}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, background: n.isEmergency ? "var(--par-red-bg)" : "var(--par-tint)", color: n.isEmergency ? "var(--par-red)" : "var(--par-primary)", padding: "5px 12px", borderRadius: 20 }}>
+                    {n.category ?? n.priority}
+                  </span>
+                </div>
+                <div style={{ fontSize: 19, fontWeight: 700, marginBottom: 6, color: "var(--par-ink)" }}>{n.title}</div>
+                <div style={{ fontSize: 14, color: "var(--par-body)", lineHeight: 1.6, marginBottom: 12 }}>{n.body}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load notices. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load notices."} />;
   }
 }

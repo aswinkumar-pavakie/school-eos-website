@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#12172B;">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;">
+      <div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Good morning, Suresh Kumar S</div>
+        <div style="font-size:15px;color:#6B7280;">Thursday, 3 September 2026 &middot; {{ activeChild.name }} &middot; {{ activeChild.classLabel }}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0;">
+        <button onClick="{{ goFees }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:9px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;color:#12172B;">Pay fees</button>
+        <button onClick="{{ goMessages }}" style="background:#3B5BDB;color:#fff;border:none;border-radius:9px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;">Message teacher</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:24px;">
+      <div onClick="{{ goStat0 }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;position:relative;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;{{ stat0Style }}" style-hover="transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+          <div style="font-size:15px;font-weight:600;color:#12172B;">Attendance</div>
+        </div>
+        <div style="font-size:40px;font-weight:800;color:#0B0F19;line-height:1;margin-bottom:14px;">94%</div>
+        <div style="font-size:14px;margin-bottom:16px;"><span style="font-weight:700;color:#3B5BDB;">86</span><span style="color:#6B7280;"> present today</span></div>
+        <div style="height:8px;background:#EEF0F5;border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="width:94%;height:100%;background:#3B5BDB;"></div></div>
+        <div style="font-size:13px;color:#9AA1B2;">92 days &middot; 94% present</div>
+      </div>
+      <div onClick="{{ goStat1 }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;position:relative;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;{{ stat1Style }}" style-hover="transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+          <div style="font-size:15px;font-weight:600;color:#12172B;">Fees pending</div>
+        </div>
+        <div style="font-size:40px;font-weight:800;color:#0B0F19;line-height:1;margin-bottom:14px;">&#8377;27,200</div>
+        <div style="font-size:14px;margin-bottom:16px;"><span style="font-weight:700;color:#E94D4D;">Due in 7 days</span></div>
+        <div style="height:8px;background:#EEF0F5;border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="width:29%;height:100%;background:#3B5BDB;"></div></div>
+        <div style="font-size:13px;color:#9AA1B2;">&#8377;11,200 paid of &#8377;38,400</div>
+      </div>
+      <div onClick="{{ goStat2 }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;position:relative;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;{{ stat2Style }}" style-hover="transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+          <div style="font-size:15px;font-weight:600;color:#12172B;">Homework pending</div>
+        </div>
+        <div style="font-size:40px;font-weight:800;color:#0B0F19;line-height:1;margin-bottom:14px;">3</div>
+        <div style="font-size:14px;margin-bottom:16px;"><span style="font-weight:700;color:#0B0F19;">1</span><span style="color:#6B7280;"> due today</span></div>
+        <div style="height:8px;background:#EEF0F5;border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="width:60%;height:100%;background:#3B5BDB;"></div></div>
+        <div style="font-size:13px;color:#9AA1B2;">Across 3 subjects</div>
+      </div>
+      <div onClick="{{ goStat3 }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;position:relative;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;{{ stat3Style }}" style-hover="transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+          <div style="font-size:15px;font-weight:600;color:#12172B;">Mid term average</div>
+        </div>
+        <div style="font-size:40px;font-weight:800;color:#0B0F19;line-height:1;margin-bottom:14px;">84.6%</div>
+        <div style="font-size:14px;margin-bottom:16px;"><span style="font-weight:700;color:#3B5BDB;">Rank 7</span><span style="color:#6B7280;"> of 42</span></div>
+        <div style="height:8px;background:#EEF0F5;border-radius:4px;overflow:hidden;margin-bottom:10px;"><div style="width:84.6%;height:100%;background:#3B5BDB;"></div></div>
+        <div style="font-size:13px;color:#9AA1B2;">Grade A &middot; 423/500</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:18px;font-weight:700;color:#0B0F19;">Today's timetable</div>
+          <a href="#" onClick="{{ goTimetable }}" style="font-size:13px;font-weight:700;">Full week</a>
+        </div>
+        <sc-for list="{{ periods }}" as="p" hint-placeholder-count="4">
+          <div onClick="{{ goTimetable }}" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F0F2FA;cursor:pointer;{{ p.rowStyle }}">
+            <div style="width:56px;flex-shrink:0;">
+              <div style="font-size:13px;font-weight:700;color:#0B0F19;">{{ p.time }}</div>
+              <div style="font-size:11px;color:#9AA1B2;">{{ p.period }}</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:700;color:#0B0F19;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.subject }}</div>
+              <div style="font-size:12px;color:#6B7280;">{{ p.teacher }}</div>
+            </div>
+            <sc-if value="{{ p.now }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;background:#3B5BDB;color:#fff;padding:3px 9px;border-radius:16px;flex-shrink:0;">NOW</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:18px;font-weight:700;color:#0B0F19;">Needs attention</div>
+          <span style="font-size:12px;font-weight:700;background:#EEF1FF;color:#3B5BDB;padding:4px 10px;border-radius:20px;">4 flags</span>
+        </div>
+        <sc-for list="{{ attentionItems }}" as="a" hint-placeholder-count="4">
+          <div onClick="{{ a.go }}" style="display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #F0F2FA;cursor:pointer;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#3B5BDB;flex-shrink:0;margin-top:6px;"></span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ a.title }}</div>
+              <div style="font-size:12px;color:#6B7280;">{{ a.subtitle }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:18px;font-weight:700;color:#0B0F19;">Notices</div>
+          <button onClick="{{ goNotices }}" style="background:#3B5BDB;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;">View all</button>
+        </div>
+        <sc-for list="{{ homeNotices }}" as="n" hint-placeholder-count="3">
+          <div onClick="{{ goNotices }}" style="padding:11px 0;border-bottom:1px solid #F0F2FA;cursor:pointer;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:10px;font-weight:700;background:#EEF1FF;color:#3B5BDB;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.03em;">{{ n.tag }}</span>
+              <span style="font-size:11px;color:#9AA1B2;">{{ n.date }}</span>
+            </div>
+            <div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ n.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isNotices }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Notices</div>
+        <div style="font-size:15px;color:#6B7280;">Notices from the school for {{ activeChild.name }} &middot; {{ activeChild.classLabel }}</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <sc-for list="{{ noticesList }}" as="n" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px 24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#EEF1FF;color:#3B5BDB;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">PP</div>
+              <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ n.from }}</div>
+              <div style="font-size:14px;color:#9AA1B2;">{{ n.date }}</div>
+            </div>
+            <span style="font-size:12px;font-weight:700;background:#EEF1FF;color:#3B5BDB;padding:5px 12px;border-radius:20px;">{{ n.tag }}</span>
+          </div>
+          <div style="font-size:19px;font-weight:700;margin-bottom:6px;color:#0B0F19;">{{ n.title }}</div>
+          <div style="font-size:14px;color:#374151;line-height:1.6;margin-bottom:12px;">{{ n.body }}</div>
+          <div style="font-size:13px;color:#9AA1B2;">Audience &middot; {{ n.audience }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Academic Calendar</div>
+        <div style="font-size:15px;color:#6B7280;">Academic year 2026&ndash;27 &middot; term dates, exams and school events</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <button style="width:32px;height:32px;border-radius:8px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#6B7280;">&#8249;</button>
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:800;color:#0B0F19;">September 2026</div>
+            <div style="font-size:12px;color:#9AA1B2;">4 events</div>
+          </div>
+          <button style="width:32px;height:32px;border-radius:8px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#6B7280;">&#8250;</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px;">
+          <sc-for list="{{ weekDayLabels }}" as="w" hint-placeholder-count="7">
+            <div style="text-align:center;font-size:12px;font-weight:700;color:#9AA1B2;padding:6px 0;">{{ w }}</div>
+          </sc-for>
+          <sc-for list="{{ calendarCells }}" as="c" hint-placeholder-count="32">
+            <sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}"><div></div></sc-if>
+            <sc-if value="{{ c.day }}" hint-placeholder-val="{{ true }}">
+              <div style="aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;{{ c.hasEvent }}">{{ c.day }}</div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;color:#0B0F19;">Events in September</div>
+        <sc-for list="{{ calendarEvents }}" as="e" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #F0F2FA;">
+            <div style="width:44px;height:44px;border-radius:10px;background:#EEF1FF;color:#3B5BDB;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="font-size:15px;font-weight:800;">{{ e.day }}</div>
+              <div style="font-size:9px;font-weight:700;">SEP</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ e.title }}</div>
+              <div style="font-size:12px;color:#6B7280;">{{ e.sub }}</div>
+            </div>
+            <span style="font-size:11px;font-weight:700;background:#EEF1FF;color:#3B5BDB;padding:4px 10px;border-radius:20px;flex-shrink:0;">{{ e.tag }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAcademics }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <sc-if value="{{ isSubjectDetail }}" hint-placeholder-val="{{ false }}">
+      <div style="width:100%;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+          <button onClick="{{ backToAcademics }}" style="width:36px;height:36px;border-radius:9px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#374151;font-size:16px;">&#8249;</button>
+          <div>
+            <div style="font-size:26px;font-weight:800;color:#0B0F19;">{{ selectedSubject.name }}</div>
+            <div style="font-size:14px;color:#6B7280;">{{ selectedSubject.teacher }} &middot; {{ activeChild.classLabel }}</div>
+          </div>
+        </div>
+
+        <div style="background:#EEF1FF;border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;color:#3B5BDB;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Current unit</div>
+          <div style="font-size:17px;font-weight:700;color:#0B0F19;margin-bottom:4px;">{{ selectedSubject.unit }}</div>
+          <div style="font-size:13px;color:#374151;">{{ selectedSubject.meta }}</div>
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:#9AA1B2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;">Lesson plan</div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div style="flex:1;height:8px;background:#EEF0F5;border-radius:4px;overflow:hidden;margin-right:14px;"><div style="height:100%;background:#3B5BDB;{{ selectedSubject.barStyle }}"></div></div>
+            <div style="font-size:14px;font-weight:700;color:#0B0F19;white-space:nowrap;">{{ selectedSubject.progress }}% syllabus</div>
+          </div>
+          <sc-for list="{{ selectedSubject.weeks }}" as="w" hint-placeholder-count="4">
+            <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #F0F2FA;">
+              <div style="width:56px;flex-shrink:0;font-size:13px;font-weight:700;{{ w.labelStyle }}">{{ w.label }}</div>
+              <div style="font-size:14px;{{ w.textStyle }}">{{ w.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:#9AA1B2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;">Pending homework</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+          <sc-for list="{{ selectedSubject.homework }}" as="h" hint-placeholder-count="1">
+            <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+              <div><div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ h.title }}</div><div style="font-size:12px;color:#6B7280;">{{ h.due }}</div></div>
+              <span style="font-size:11px;font-weight:700;background:#F0F2FA;color:#374151;padding:4px 10px;border-radius:20px;">{{ h.status }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:#9AA1B2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;">Pending assignments</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ selectedSubject.assignments }}" as="a" hint-placeholder-count="1">
+            <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+              <div><div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ a.title }}</div><div style="font-size:12px;color:#6B7280;">{{ a.due }}</div></div>
+              <div style="font-size:13px;font-weight:700;color:#3B5BDB;">{{ a.marks }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showSubjectList }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Academics</div>
+        <div style="font-size:14px;color:#6B7280;margin-bottom:24px;">{{ activeChild.classLabel }} &middot; Term 2 &middot; subject-wise work</div>
+        <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+          <sc-for list="{{ subjectsWithOpen }}" as="s" hint-placeholder-count="5">
+            <div onClick="{{ s.open }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;">
+              <div style="width:38px;height:38px;border-radius:9px;background:#EEF1FF;color:#3B5BDB;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ s.code }}</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:700;">{{ s.name }}</div>
+                <div style="font-size:12px;color:#6B7280;">{{ s.teacher }} &middot; {{ s.summary }}</div>
+              </div>
+              <span style="font-size:11px;font-weight:700;background:#FFF1E6;color:#B5590C;padding:4px 10px;border-radius:20px;flex-shrink:0;">{{ s.pending }} pending</span>
+              <span style="color:#9AA1B2;">&#8250;</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAttendance }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Attendance</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:24px;">Term 1 &middot; 2026&ndash;27</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;align-items:start;">
+
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;">
+          <div style="font-size:44px;font-weight:800;color:#2F55E8;line-height:1;">94%</div>
+          <div style="text-align:right;">
+            <div style="font-size:20px;font-weight:800;color:#0B0F19;">86<span style="font-size:14px;font-weight:600;color:#8A90A0;"> / 92</span></div>
+            <div style="font-size:13px;color:#8A90A0;">days present</div>
+          </div>
+        </div>
+        <div style="font-size:14px;color:#374151;margin-bottom:12px;">Term 1 &middot; 12 Jun &ndash; 3 Sept</div>
+        <div style="position:relative;height:10px;background:#EEF0F5;border-radius:5px;overflow:hidden;margin-bottom:10px;">
+          <div style="width:94%;height:100%;background:#2F55E8;border-radius:5px;"></div>
+          <div style="position:absolute;top:0;left:85%;width:3px;height:100%;background:#fff;"></div>
+        </div>
+        <div style="font-size:13px;color:#8A90A0;">Marker shows the 85% requirement</div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px;">
+          <sc-for list="{{ attendanceStats }}" as="s" hint-placeholder-count="3">
+            <div style="background:#F6F7FB;border-radius:12px;padding:14px;">
+              <div style="font-size:20px;font-weight:800;color:#0B0F19;">{{ s.value }}</div>
+              <div style="font-size:12px;color:#8A90A0;">{{ s.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;">
+          <div onClick="{{ attPrevMonth }}" style="width:38px;height:38px;border-radius:50%;background:#F0F4FF;color:#2F55E8;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;">&#8249;</div>
+          <div style="text-align:center;">
+            <div style="font-size:19px;font-weight:800;color:#0B0F19;">{{ attMonthLabel }}</div>
+            <div style="font-size:13px;color:#8A90A0;">{{ attMonthSummary }}</div>
+          </div>
+          <div onClick="{{ attNextMonth }}" style="width:38px;height:38px;border-radius:50%;background:#F0F4FF;color:#2F55E8;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;">&#8250;</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-bottom:8px;">
+          <sc-for list="{{ attWeekLabels }}" as="w" hint-placeholder-count="7">
+            <div style="text-align:center;font-size:12px;font-weight:700;color:#9AA1B2;">{{ w }}</div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;">
+          <sc-for list="{{ attCells }}" as="c" hint-placeholder-count="35">
+            <div onClick="{{ c.select }}" style="aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;{{ c.style }}">{{ c.label }}</div>
+          </sc-for>
+        </div>
+
+        <div style="text-align:center;font-size:14px;font-weight:600;color:#0B0F19;margin:18px 0 16px;">{{ attDayRecord }}</div>
+
+        <div style="border-top:1px solid #F0F2FA;padding-top:16px;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:16px;height:16px;border-radius:5px;background:#fff;border:1px solid #D8DCE8;"></span>
+            <span style="font-size:13px;color:#374151;">Present</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:16px;height:16px;border-radius:5px;background:#2F55E8;"></span>
+            <span style="font-size:13px;color:#374151;">Absent</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:16px;height:16px;border-radius:5px;background:#E9EDF6;"></span>
+            <span style="font-size:13px;color:#374151;">Holiday</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isPerformance }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Performance</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px;">Report card &middot; {{ activeChild.classLabel }}</div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px;">
+      <sc-for list="{{ perfTabs }}" as="t" hint-placeholder-count="4">
+        <div onClick="{{ t.select }}" style="border-radius:12px;padding:12px;cursor:pointer;text-align:center;{{ t.tabStyle }}">
+          <div style="font-size:13px;font-weight:700;">{{ t.label }}</div>
+          <div style="font-size:15px;font-weight:800;margin-top:2px;">{{ t.pct }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ perfHasData }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-size:12px;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Total marks</div>
+            <div><span style="font-size:30px;font-weight:800;color:#0B0F19;">{{ perfData.total }}</span><span style="font-size:14px;color:#6B7280;"> / 500</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Rank</div>
+            <div style="font-size:28px;font-weight:800;color:#3B5BDB;">{{ perfData.rank }}</div>
+            <div style="font-size:12px;color:#6B7280;">of 42 in class</div>
+          </div>
+        </div>
+        <div style="height:8px;background:#F0F2FA;border-radius:4px;overflow:hidden;margin-bottom:14px;"><div style="height:100%;background:#3B5BDB;{{ perfData.barStyle }}"></div></div>
+        <span style="font-size:12px;font-weight:700;background:#EEF1FF;color:#3B5BDB;padding:5px 12px;border-radius:20px;">Grade A &middot; {{ perfData.pct }} average</span>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+        <sc-for list="{{ perfData.subjects }}" as="p" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #F0F2FA;">
+            <div style="width:36px;height:36px;border-radius:9px;background:#EEF1FF;color:#3B5BDB;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ p.name }}</div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:14px;font-weight:700;color:#0B0F19;">{{ p.name }}</span>
+                <sc-if value="{{ p.flagVisible }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;font-weight:700;background:#F0F2FA;color:#6B7280;padding:2px 8px;border-radius:10px;">{{ p.flag }}</span></sc-if>
+              </div>
+              <div style="font-size:12px;color:#6B7280;">{{ p.teacher }}</div>
+            </div>
+            <div style="text-align:right;">
+              <div><span style="font-size:16px;font-weight:800;color:#0B0F19;">{{ p.score }}</span><span style="font-size:12px;color:#6B7280;">/100</span></div>
+              <div style="font-size:12px;font-weight:700;color:#3B5BDB;">{{ p.grade }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#EEF1FF;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#3B5BDB;margin-bottom:6px;">Class teacher's remark</div>
+        <div style="font-size:14px;color:#12172B;line-height:1.5;">{{ perfData.remark }}</div>
+      </div>
+
+      <button style="width:100%;background:#3B5BDB;color:#fff;border:none;border-radius:10px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">&#8681; Download report card (PDF)</button>
+      <div style="font-size:12px;color:#9AA1B2;">{{ perfData.file }}</div>
+    </sc-if>
+
+    <sc-if value="{{ perfNoData }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:40px;text-align:center;color:#9AA1B2;font-size:14px;">Results not published yet.</div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isFees }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <sc-if value="{{ isFeesStep }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Fees</div>
+        <div style="font-size:14px;color:#6B7280;margin-bottom:24px;">Term 2 &middot; 2026&ndash;27</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;">
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;">
+            <div style="font-size:13px;color:#6B7280;margin-bottom:4px;">Pending this term</div>
+            <div style="font-size:30px;font-weight:700;margin-bottom:4px;">&#8377;27,200</div>
+            <div style="font-size:13px;color:#6B7280;margin-bottom:16px;">&#8377;11,200 paid of &#8377;38,400 billed</div>
+            <sc-for list="{{ feeItemsWithState }}" as="f" hint-placeholder-count="5">
+              <div onClick="{{ f.toggle }}" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F0F2FA;cursor:pointer;">
+                <div style="width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;{{ f.boxStyle }}">
+                  <sc-if value="{{ f.checked }}" hint-placeholder-val="{{ false }}"><span style="color:#fff;font-size:12px;font-weight:900;">&#10003;</span></sc-if>
+                </div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:600;">{{ f.name }}</div><div style="font-size:12px;color:#6B7280;">{{ f.note }}</div></div>
+                <div style="display:flex;align-items:center;gap:4px;border-radius:8px;padding:6px 10px;flex-shrink:0;{{ f.inputWrapStyle }}">
+                  <span style="font-size:14px;font-weight:700;color:#0B0F19;">&#8377;</span>
+                  <input type="text" inputmode="numeric" value="{{ f.payValue }}" oninput="{{ f.setAmount }}" onClick="{{ f.stop }}" style="width:72px;border:none;background:transparent;font-size:14px;font-weight:700;color:#0B0F19;outline:none;text-align:right;font-family:inherit;">
+                </div>
+                <div style="font-size:11px;color:#9AA1B2;width:74px;flex-shrink:0;text-align:right;">of &#8377;{{ f.amountFmt }}</div>
+              </div>
+            </sc-for>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;">
+              <div style="font-size:12px;color:#6B7280;">{{ selectedFeeCount }} fees selected<br/><span style="font-size:16px;font-weight:700;color:#0B0F19;">&#8377;{{ selectedFeeTotal }}</span></div>
+              <button onClick="{{ goToPayment }}" style="background:#3B5BDB;color:#fff;border:none;border-radius:10px;padding:13px 24px;font-size:14px;font-weight:700;cursor:pointer;">Pay &#8377;{{ selectedFeeTotal }}</button>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;">
+            <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Term-wise split</div>
+            <sc-for list="{{ termSplit }}" as="t" hint-placeholder-count="3">
+              <div style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px;"><span>{{ t.term }}</span><span>&#8377;{{ t.total }}</span></div>
+                <div style="height:6px;background:#F0F2FA;border-radius:3px;overflow:hidden;"><div style="height:100%;background:#3B5BDB;{{ t.barStyle }}"></div></div>
+                <div style="font-size:11px;color:#E94D4D;margin-top:4px;">&#8377;{{ t.pending }} pending</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMethodStep }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:440px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <button onClick="{{ backToFees }}" style="width:36px;height:36px;border-radius:9px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#374151;font-size:16px;">&#8249;</button>
+          <div>
+            <div style="font-size:22px;font-weight:800;color:#0B0F19;">Payment</div>
+            <div style="font-size:13px;color:#6B7280;">Secure checkout</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+          <div style="font-size:13px;color:#6B7280;margin-bottom:8px;">Amount payable</div>
+          <div style="display:flex;align-items:center;gap:8px;border:1px solid #E7E9F0;background:#F6F7FB;border-radius:12px;padding:12px 16px;margin-bottom:8px;">
+            <span style="font-size:24px;font-weight:800;color:#0B0F19;">&#8377;</span>
+            <input type="text" inputmode="numeric" value="{{ payAmountValue }}" oninput="{{ handlePayAmount }}" style="flex:1;min-width:0;border:none;background:transparent;font-size:24px;font-weight:800;color:#0B0F19;outline:none;font-family:inherit;">
+            <div onClick="{{ payFullAmount }}" style="font-size:12px;font-weight:700;color:#2F55E8;cursor:pointer;flex-shrink:0;">Full amount</div>
+          </div>
+          <div style="font-size:12px;margin-bottom:14px;{{ payHintStyle }}">{{ payHint }}</div>
+          <sc-for list="{{ selectedFeeLines }}" as="l" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;color:#374151;"><span>{{ l.name }}</span><span style="font-weight:700;">&#8377;{{ l.amountFmt }}</span></div>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Payment method</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+          <sc-for list="{{ paymentMethods }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.select }}" style="border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;{{ m.rowStyle }}">
+              <div style="width:18px;height:18px;border-radius:50%;border:2px solid;{{ m.dotStyle }}display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <sc-if value="{{ m.filled }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:#3B5BDB;"></span></sc-if>
+              </div>
+              <div><div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ m.name }}</div><div style="font-size:12px;color:#6B7280;">{{ m.sub }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ confirmPayment }}" style="width:100%;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;{{ payButtonStyle }}">Pay &#8377;{{ payAmountFmt }}</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSuccessStep }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:440px;">
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:32px;text-align:center;margin-bottom:16px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:#EEF1FF;color:#3B5BDB;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;">&#10003;</div>
+          <div style="font-size:17px;font-weight:700;color:#0B0F19;margin-bottom:8px;">Payment successful</div>
+          <div style="font-size:28px;font-weight:800;color:#3B5BDB;margin-bottom:4px;">&#8377;{{ payAmountFmt }}</div>
+          <div style="font-size:13px;color:#9AA1B2;">16 Sept 2026 &middot; UPI</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F2FA;font-size:13px;"><span style="color:#6B7280;">Receipt no.</span><span style="font-weight:700;">PPS/R/2026/2873</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F2FA;font-size:13px;"><span style="color:#6B7280;">Term</span><span style="font-weight:700;">Term 2 &middot; 2026-27</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;gap:16px;"><span style="color:#6B7280;flex-shrink:0;">Paid towards</span><span style="font-weight:700;text-align:right;">{{ paidTowardsText }}</span></div>
+        </div>
+        <button style="width:100%;background:#EEF1FF;color:#3B5BDB;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">&#8681; Download receipt (PDF)</button>
+        <button onClick="{{ backToFees }}" style="width:100%;background:#fff;color:#12172B;border:1px solid #E7E9F0;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">Back to fees</button>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isTimetable }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;">
+      <div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Timetable</div>
+        <div style="font-size:15px;color:#6B7280;">{{ activeChild.name }} &middot; {{ activeChild.classLabel }}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onClick="{{ showToday }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ todayBtnStyle }}">Today</button>
+        <button onClick="{{ showFullWeek }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ fullWeekBtnStyle }}">Full week</button>
+      </div>
+    </div>
+
+    <sc-if value="{{ isTodayView }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="background:#3B5BDB;border-radius:16px;padding:22px 24px;margin-bottom:20px;">
+          <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:14px;">Thursday, 3 September 2026</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;">
+            <sc-for list="{{ weekDaysForStrip }}" as="d" hint-placeholder-count="6">
+              <div onClick="{{ d.select }}" style="border-radius:12px;padding:12px 0;text-align:center;cursor:pointer;{{ d.cellStyle }}">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.04em;opacity:0.8;">{{ d.key }}</div>
+                <div style="font-size:18px;font-weight:800;">{{ d.date }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px;">
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px;">
+            <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:10px;">Periods today</div>
+            <div style="font-size:28px;font-weight:800;color:#0B0F19;">6</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px;">
+            <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:10px;">Free periods</div>
+            <div style="font-size:28px;font-weight:800;color:#0B0F19;">0</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px;">
+            <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:10px;">Total hours</div>
+            <div style="font-size:28px;font-weight:800;color:#0B0F19;">6</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px;">
+            <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:10px;">Now</div>
+            <div style="font-size:20px;font-weight:800;color:#3B5BDB;">Science</div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;overflow:hidden;">
+          <sc-for list="{{ selectedDayPeriods }}" as="p" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid #F0F2FA;{{ p.rowStyle }}">
+              <div style="width:70px;flex-shrink:0;">
+                <div style="font-size:14px;font-weight:700;color:#3B5BDB;">{{ p.time }}</div>
+                <div style="font-size:11px;color:#9AA1B2;">{{ p.period }}</div>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ p.subject }}</div>
+                <div style="font-size:12px;color:#6B7280;">{{ p.teacher }}</div>
+              </div>
+              <sc-if value="{{ p.now }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;background:#3B5BDB;color:#fff;padding:4px 10px;border-radius:20px;flex-shrink:0;">NOW</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isFullWeekView }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:760px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;padding:16px 20px;border-bottom:1px solid #E7E9F0;">Period</th>
+              <sc-for list="{{ weekDayHeaders }}" as="h" hint-placeholder-count="6">
+                <th style="text-align:left;font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;padding:16px 20px;border-bottom:1px solid #E7E9F0;">{{ h }}</th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ fullWeekRows }}" as="row" hint-placeholder-count="6">
+              <tr onClick="{{ row.select }}" style="cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,outline-color .16s ease;outline:1.5px solid transparent;outline-offset:-1px;{{ row.selStyle }}" style-hover="transform:translateY(-4px);outline-color:#2F55E8;box-shadow:0 8px 20px rgba(47,85,232,0.12);">
+                <td style="padding:16px 20px;border-bottom:1px solid #F0F2FA;">
+                  <div style="font-size:13px;font-weight:700;color:#3B5BDB;">{{ row.period }}</div>
+                  <div style="font-size:11px;color:#9AA1B2;">{{ row.time }}</div>
+                </td>
+                <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="6">
+                  <td style="padding:16px 20px;border-bottom:1px solid #F0F2FA;">
+                    <div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ cell.subject }}</div>
+                    <div style="font-size:12px;color:#6B7280;">{{ cell.teacher }}</div>
+                  </td>
+                </sc-for>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isMeetings }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+
+    <sc-if value="{{ isMeetingsList }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Meetings</div>
+        <div style="font-size:14px;color:#6B7280;margin-bottom:24px;">Parent&ndash;teacher slots</div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Upcoming</div>
+          <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">
+            <div style="width:52px;height:52px;border-radius:12px;background:#3B5BDB;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="font-size:10px;font-weight:700;">SEP</div><div style="font-size:18px;font-weight:800;">12</div>
+            </div>
+            <div>
+              <div style="font-size:17px;font-weight:700;color:#0B0F19;">Parent&ndash;Teacher Meeting</div>
+              <div style="font-size:13px;color:#6B7280;">Sat, 12 September &middot; 12:00 PM &ndash; 3:00 PM</div>
+            </div>
+          </div>
+          <button onClick="{{ openMeetingDetails }}" style="background:none;border:none;color:#3B5BDB;font-size:14px;font-weight:700;cursor:pointer;padding:0;">View slots</button>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:20px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Agenda</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;font-size:14px;color:#12172B;"><span style="width:6px;height:6px;border-radius:50%;background:#3B5BDB;margin-top:7px;flex-shrink:0;"></span>Term 2 progress by subject</div>
+            <div style="display:flex;gap:10px;font-size:14px;color:#12172B;"><span style="width:6px;height:6px;border-radius:50%;background:#3B5BDB;margin-top:7px;flex-shrink:0;"></span>Reading and writing targets</div>
+            <div style="display:flex;gap:10px;font-size:14px;color:#12172B;"><span style="width:6px;height:6px;border-radius:50%;background:#3B5BDB;margin-top:7px;flex-shrink:0;"></span>Support for Mathematics revision</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Previous meetings</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ previousMeetings }}" as="m" hint-placeholder-count="3">
+            <div onClick="{{ m.open }}" style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;">
+              <div style="width:44px;height:44px;border-radius:10px;background:#F0F2FA;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="font-size:9px;font-weight:700;color:#6B7280;">{{ m.date }}</div>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ m.title }}</div>
+                <div style="font-size:12px;color:#6B7280;">{{ m.time }}</div>
+              </div>
+              <span style="color:#9AA1B2;">&#8250;</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMeetingDetails }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <button onClick="{{ backToMeetingsList }}" style="width:36px;height:36px;border-radius:9px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#374151;font-size:16px;">&#8249;</button>
+          <div>
+            <div style="font-size:22px;font-weight:800;color:#0B0F19;">Meeting details</div>
+            <div style="font-size:13px;color:#6B7280;">Slots and preparation</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+          <div style="font-size:16px;font-weight:700;color:#0B0F19;margin-bottom:6px;">Parent&ndash;Teacher Meeting</div>
+          <div style="font-size:12px;font-weight:700;color:#3B5BDB;margin-bottom:4px;">TERM 2 &middot; 2026-27</div>
+          <div style="font-size:13px;color:#374151;">Saturday, 12 September 2026</div>
+          <div style="font-size:13px;color:#374151;">12:00 PM &ndash; 3:00 PM &middot; Online &middot; in app</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Your slots</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ meetingSlotsWithState }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.select }}" style="border-radius:14px;padding:16px 18px;cursor:pointer;{{ m.cardStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+                <div style="font-size:15px;font-weight:700;">{{ m.teacher }}</div>
+                <div style="font-size:13px;font-weight:700;">{{ m.time }}</div>
+              </div>
+              <div style="font-size:13px;margin-bottom:2px;">{{ m.subject }}</div>
+              <div style="font-size:12px;{{ m.subStyle }}">{{ m.mode }}</div>
+              <sc-if value="{{ m.locked }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;font-weight:700;margin-top:6px;{{ m.subStyle }}">Opens in the app at slot time</div></sc-if>
+              <sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ openMeetingCall }}" style="width:100%;background:#fff;color:#3B5BDB;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;margin-top:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;"><path d="M3.5 7.8h10.2v8.4H3.5zM13.7 11.2l6.8-3.2v8.4l-6.8-3.2"></path></svg><span>Join meeting</span></button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMeetingCall }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <button onClick="{{ backToMeetingDetails }}" style="width:36px;height:36px;border-radius:9px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#374151;font-size:16px;">&#8249;</button>
+          <div>
+            <div style="font-size:20px;font-weight:800;color:#0B0F19;">Meeting</div>
+            <div style="font-size:13px;color:#6B7280;">Parent&ndash;teacher &middot; online</div>
+          </div>
+        </div>
+        <div style="background:#0B0F19;border-radius:20px;padding:32px;text-align:center;position:relative;min-height:420px;display:flex;flex-direction:column;">
+          <div style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.1);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#3DD56D;"></span>{{ meetingElapsed }}</div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="width:80px;height:80px;border-radius:50%;background:#3B5BDB;color:#fff;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">RV</div>
+            <div style="font-size:19px;font-weight:700;color:#fff;margin-bottom:4px;">{{ selectedSlot.teacher }}</div>
+            <div style="font-size:13px;color:#9AA1B2;">{{ selectedSlot.subject }}</div>
+          </div>
+          <sc-if value="{{ meetingCamNoteVisible }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;bottom:100px;right:24px;width:110px;height:80px;background:rgba(255,255,255,0.06);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#9AA1B2;font-size:12px;text-align:center;padding:8px;">Your camera<br/>is off</div>
+          </sc-if>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:20px;">
+            <div onClick="{{ toggleMeetingMic }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+              <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M12 4a2.6 2.6 0 0 1 2.6 2.6v4.3a2.6 2.6 0 0 1-5.2 0V6.6A2.6 2.6 0 0 1 12 4M6.6 11.2a5.4 5.4 0 0 0 10.8 0M12 16.7V20M9.2 20h5.6"></path></svg></div>
+              <span style="font-size:11px;color:#fff;">{{ meetingMuteLabel }}</span>
+            </div>
+            <div onClick="{{ toggleMeetingCam }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+              <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M3.5 7.8h10.2v8.4H3.5zM13.7 11.2l6.8-3.2v8.4l-6.8-3.2"></path></svg></div>
+              <span style="font-size:11px;color:#fff;">{{ meetingCamLabel }}</span>
+            </div>
+            <div onClick="{{ leaveMeeting }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+              <div style="width:48px;height:48px;border-radius:50%;background:#E94D4D;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4.4 9.6c3.6-3.4 11.6-3.4 15.2 0l-2.7 2.7-2.4-.8-.5-2.2a11.4 11.4 0 0 0-4 0l-.5 2.2-2.4.8zM4.6 19.6L19.6 4.4"></path></svg></div>
+              <span style="font-size:11px;color:#fff;">Leave</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMeetingRecord }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <button onClick="{{ backToMeetingsList }}" style="width:36px;height:36px;border-radius:9px;border:1px solid #E7E9F0;background:#fff;cursor:pointer;color:#374151;font-size:16px;">&#8249;</button>
+          <div>
+            <div style="font-size:20px;font-weight:800;color:#0B0F19;">Meeting record</div>
+            <div style="font-size:13px;color:#6B7280;">Notes and agreed actions</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+          <div style="font-size:16px;font-weight:700;color:#0B0F19;margin-bottom:6px;">{{ selectedRecord.title }}</div>
+          <div style="font-size:12px;font-weight:700;color:#3B5BDB;margin-bottom:4px;">{{ selectedRecord.term }}</div>
+          <div style="font-size:13px;color:#374151;">{{ selectedRecord.dateLong }}</div>
+          <div style="font-size:13px;color:#374151;">{{ selectedRecord.time }}</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Teachers you met</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+          <sc-for list="{{ selectedRecord.teachersMet }}" as="t" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
+              <div><div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ t.name }}</div><div style="font-size:12px;color:#6B7280;">{{ t.subject }}</div></div>
+              <div style="font-size:13px;font-weight:700;color:#3B5BDB;">{{ t.time }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Discussion notes</div>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;">
+          <sc-for list="{{ selectedRecord.notes }}" as="n" hint-placeholder-count="3">
+            <div style="display:flex;gap:10px;font-size:14px;color:#12172B;line-height:1.5;margin-bottom:12px;"><span style="width:6px;height:6px;border-radius:50%;background:#3B5BDB;margin-top:7px;flex-shrink:0;"></span>{{ n }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isMessages }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Messages</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:24px;">Conversations with school &amp; teachers</div>
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:0;background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;min-height:480px;">
+      <div style="border-right:1px solid #F0F2FA;">
+        <div style="padding:14px 16px;border-bottom:1px solid #F0F2FA;position:relative;">
+          <input type="text" value="{{ msgSearch }}" oninput="{{ handleMsgSearch }}" placeholder="Search subject or teacher" style="width:100%;box-sizing:border-box;border:1px solid #E7E9F0;background:#F6F7FB;border-radius:20px;padding:9px 14px 9px 34px;font-size:13px;outline:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9AA1B2" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:26px;top:24px;width:15px;height:15px;"><path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13M15.4 15.4L20 20"></path></svg>
+        </div>
+        <sc-if value="{{ noThreadMatches }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px 16px;font-size:13px;color:#9AA1B2;">No teacher matches that subject.</div>
+        </sc-if>
+        <sc-for list="{{ threadsWithState }}" as="t" hint-placeholder-count="4">
+          <div onClick="{{ t.select }}" style="padding:14px 16px;border-bottom:1px solid #F0F2FA;cursor:pointer;{{ t.rowStyle }}">
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px;">{{ t.name }}</div>
+            <div style="font-size:11px;color:#9AA1B2;margin-bottom:4px;">{{ t.sub }}</div>
+            <div style="font-size:12px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ t.preview }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;min-height:0;">
+        <div style="padding:14px 20px;border-bottom:1px solid #F0F2FA;">
+          <div style="font-size:14px;font-weight:700;">{{ activeThread.name }}</div>
+          <div style="font-size:12px;color:#6B7280;">{{ activeThread.sub }}</div>
+        </div>
+        <div style="flex:1;padding:20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+          <sc-for list="{{ activeThreadMessages }}" as="m" hint-placeholder-count="2">
+            <div style="border-radius:14px;padding:10px 14px;font-size:13px;max-width:70%;{{ m.bubbleStyle }}">{{ m.text }}</div>
+          </sc-for>
+        </div>
+        <div style="padding:14px 20px;border-top:1px solid #F0F2FA;">
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <sc-for list="{{ quickReplies }}" as="q" hint-placeholder-count="3">
+              <div onClick="{{ q.select }}" style="font-size:12px;font-weight:600;background:#F0F2FA;color:#374151;padding:7px 12px;border-radius:20px;cursor:pointer;">{{ q.text }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <input type="text" value="{{ replyDraft }}" oninput="{{ handleReplyInput }}" placeholder="Write a reply" style="flex:1;border:1px solid #E7E9F0;border-radius:10px;padding:11px 14px;font-size:13px;outline:none;"/>
+            <button onClick="{{ sendReply }}" style="width:42px;height:42px;border-radius:10px;background:#3B5BDB;color:#fff;border:none;cursor:pointer;font-size:16px;flex-shrink:0;">&#10148;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isOnline }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <sc-if value="{{ isOnlineWaiting }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:420px;margin:0 auto;">
+        <div style="background:#12172B;border-radius:20px;padding:40px 32px;text-align:center;">
+          <div style="width:72px;height:72px;border-radius:50%;background:#3B5BDB;color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">{{ waitingSession.initials }}</div>
+          <div style="font-size:19px;font-weight:700;color:#fff;margin-bottom:6px;">{{ waitingSession.teacher }}</div>
+          <div style="font-size:13px;color:#9AA1B2;margin-bottom:16px;">{{ waitingSession.subject }} &middot; {{ waitingSession.time }}</div>
+          <div style="display:inline-block;background:rgba(255,255,255,0.1);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px;margin-bottom:16px;">{{ waitingSession.statusText }}</div>
+          <div style="font-size:12px;color:#9AA1B2;margin-bottom:20px;">You are visible &middot; check your mic before joining</div>
+          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px;">
+            <div onClick="{{ toggleWaitingMic }}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;{{ waitingMicStyle }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M12 4a2.6 2.6 0 0 1 2.6 2.6v4.3a2.6 2.6 0 0 1-5.2 0V6.6A2.6 2.6 0 0 1 12 4M6.6 11.2a5.4 5.4 0 0 0 10.8 0M12 16.7V20M9.2 20h5.6"></path></svg></div>
+            <div onClick="{{ toggleWaitingCam }}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;{{ waitingCamStyle }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M3.5 7.8h10.2v8.4H3.5zM13.7 11.2l6.8-3.2v8.4l-6.8-3.2"></path></svg></div>
+          </div>
+          <button onClick="{{ joinCall }}" style="width:100%;background:#3B5BDB;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Join class</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isOnlineCall }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#0B0F19;border-radius:20px;padding:20px;min-height:600px;display:flex;flex-direction:column;position:relative;{{ callFullScreenStyle }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div style="background:rgba(255,255,255,0.1);color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;"><span style="width:7px;height:7px;border-radius:50%;background:#3DD56D;"></span>{{ callElapsed }}</div>
+          <div style="display:flex;gap:10px;">
+            <div onClick="{{ toggleFullScreen }}" style="background:rgba(255,255,255,0.1);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;">{{ callFullScreenLabel }}</div>
+            <div onClick="{{ togglePeoplePanel }}" style="background:rgba(255,255,255,0.1);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:20px;cursor:pointer;">8 in class</div>
+            <sc-if value="{{ callHandsUp }}" hint-placeholder-val="{{ false }}"><div style="background:#3A2A0E;color:#F0B23C;font-size:12px;font-weight:700;padding:8px 14px;border-radius:20px;">{{ callHandsUp }} raised</div></sc-if>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="width:100px;height:100px;border-radius:50%;background:#3B5BDB;color:#fff;font-size:34px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">{{ waitingSession.initials }}</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;">{{ waitingSession.teacher }}</div>
+          <div style="font-size:14px;color:#9AA1B2;margin-bottom:4px;">{{ waitingSession.subject }} &middot; presenting</div>
+          <div style="font-size:13px;color:#6B7280;">{{ waitingSession.topic }}</div>
+        </div>
+
+        <div style="position:absolute;bottom:100px;right:20px;width:120px;height:90px;background:rgba(255,255,255,0.06);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#9AA1B2;font-size:12px;text-align:center;padding:8px;">
+          <span>{{ cameraLabel }}</span>
+        </div>
+
+        <sc-if value="{{ showPeoplePanel }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,0.06);border-radius:16px;padding:16px 20px;margin-bottom:16px;max-height:280px;overflow-y:auto;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-size:15px;font-weight:700;color:#fff;">In this class &middot; 8</div>
+              <div onClick="{{ togglePeoplePanel }}" style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;">&#10005;</div>
+            </div>
+            <sc-for list="{{ callRosterWithState }}" as="r" hint-placeholder-count="7">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:30px;height:30px;border-radius:50%;background:#374151;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ r.name }}</div>
+                  <div><div style="font-size:13px;font-weight:600;color:#fff;">{{ r.name }}</div><div style="font-size:11px;color:#9AA1B2;">{{ r.role }}</div></div>
+                </div>
+                <sc-if value="{{ r.handUpNow }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:700;color:#F0B23C;">Hand up</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showChatPanel }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,0.06);border-radius:16px;padding:16px 20px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div style="font-size:15px;font-weight:700;color:#fff;">Class chat</div>
+              <div onClick="{{ toggleChatPanel }}" style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;">&#10005;</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto;margin-bottom:12px;">
+              <sc-for list="{{ onlineChatMessagesWithStyle }}" as="m" hint-placeholder-count="3">
+                <div style="max-width:75%;border-radius:12px;padding:8px 12px;font-size:13px;{{ m.bubbleStyle }}">{{ m.text }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <input type="text" value="{{ onlineChatDraft }}" oninput="{{ handleOnlineChatInput }}" placeholder="Message the class" style="flex:1;background:rgba(255,255,255,0.08);border:none;border-radius:10px;padding:11px 14px;font-size:13px;color:#fff;outline:none;"/>
+              <button onClick="{{ sendOnlineChat }}" style="background:#3B5BDB;color:#fff;border:none;border-radius:10px;padding:0 18px;font-size:13px;font-weight:700;cursor:pointer;">Send</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;justify-content:center;gap:12px;">
+          <div onClick="{{ toggleMute }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M12 4a2.6 2.6 0 0 1 2.6 2.6v4.3a2.6 2.6 0 0 1-5.2 0V6.6A2.6 2.6 0 0 1 12 4M6.6 11.2a5.4 5.4 0 0 0 10.8 0M12 16.7V20M9.2 20h5.6"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">Mute</span>
+          </div>
+          <div onClick="{{ toggleCamera }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M3.5 7.8h10.2v8.4H3.5zM13.7 11.2l6.8-3.2v8.4l-6.8-3.2"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">Camera</span>
+          </div>
+          <div onClick="{{ toggleHand }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9 11.5V5.6a1.4 1.4 0 0 1 2.8 0v5.9M11.8 11.5V4.9a1.4 1.4 0 0 1 2.8 0v6.6M14.6 11.5V6.2a1.4 1.4 0 0 1 2.8 0v7.6c0 3.5-2.4 6.2-6 6.2s-6.2-2.3-6.2-5.6v-2.9a1.4 1.4 0 0 1 2.8 0"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">Raise hand</span>
+          </div>
+          <div onClick="{{ togglePeoplePanel }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M9.2 11.4a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4M3.4 19.6c0-3.1 2.6-4.9 5.8-4.9s5.8 1.8 5.8 4.9M16.6 6.2a2.9 2.9 0 0 1 0 5.7M18.2 14.9c1.8.8 2.6 2.3 2.6 4.7"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">People</span>
+          </div>
+          <div onClick="{{ toggleChatPanel }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4 5.6h16v9.8H9.2L4 19.4z"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">Chat</span>
+          </div>
+          <div onClick="{{ leaveCall }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#E94D4D;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4.4 9.6c3.6-3.4 11.6-3.4 15.2 0l-2.7 2.7-2.4-.8-.5-2.2a11.4 11.4 0 0 0-4 0l-.5 2.2-2.4.8zM4.6 19.6L19.6 4.4"></path></svg></div>
+            <span style="font-size:11px;color:#fff;">Leave</span>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isOnlineSessions }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Online class</div>
+            <div style="font-size:15px;color:#6B7280;">Live and recorded sessions for {{ activeChild.name }}</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button onClick="{{ showSessionsTab }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ sessionsTabStyle }}">Sessions</button>
+            <button onClick="{{ showRecordingsTab }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ recordingsTabStyle }}">Recordings</button>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#9AA1B2;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:14px;">Today's sessions</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+          <sc-for list="{{ onlineSessionsList }}" as="s" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <div style="font-size:17px;font-weight:700;color:#0B0F19;">{{ s.subject }}</div>
+                <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;{{ s.badgeStyle }}">{{ s.badgeText }}</span>
+              </div>
+              <div style="font-size:12px;color:#6B7280;margin-bottom:14px;">{{ s.time }}</div>
+              <div style="font-size:14px;font-weight:600;color:#0B0F19;margin-bottom:20px;">{{ s.topic }}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:12px;color:#9AA1B2;font-family:monospace;">{{ s.code }}</span>
+                <button onClick="{{ s.join }}" style="border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;{{ s.btnStyle }}">{{ s.btnLabel }}</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isOnlineRecordings }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-size:36px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;color:#0B0F19;">Online class</div>
+            <div style="font-size:15px;color:#6B7280;">Recorded sessions for {{ activeChild.name }}</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button onClick="{{ showSessionsTab }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ sessionsTabStyle }}">Sessions</button>
+            <button onClick="{{ showRecordingsTab }}" style="border-radius:9px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;{{ recordingsTabStyle }}">Recordings</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+          <sc-for list="{{ recordingsList }}" as="r" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+              <div style="width:38px;height:38px;border-radius:50%;background:#EEF1FF;color:#3B5BDB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">&#9654;</div>
+              <div><div style="font-size:14px;font-weight:700;color:#0B0F19;">{{ r.title }}</div><div style="font-size:12px;color:#6B7280;">{{ r.date }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isLibrary }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Library</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px;">2 books issued</div>
+    <div style="display:flex;background:#F0F2FA;border-radius:10px;padding:4px;margin-bottom:20px;gap:4px;">
+      <div onClick="{{ showLibBorrowed }}" style="flex:1;text-align:center;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;{{ libBorrowedTabStyle }}">Borrowed</div>
+      <div onClick="{{ showLibSearch }}" style="flex:1;text-align:center;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;{{ libSearchTabStyle }}">Search</div>
+      <div onClick="{{ showLibHistory }}" style="flex:1;text-align:center;padding:10px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;{{ libHistoryTabStyle }}">History</div>
+    </div>
+
+    <sc-if value="{{ isLibBorrowed }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;">
+        <sc-for list="{{ borrowedBooksWithState }}" as="b" hint-placeholder-count="2">
+          <div style="padding:16px 20px;border-bottom:1px solid #F0F2FA;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ b.title }}</div>
+              <div style="font-size:12px;color:#6B7280;margin-bottom:4px;">{{ b.author }} &middot; {{ b.code }}</div>
+              <div style="font-size:13px;font-weight:600;{{ b.dueColor }}">{{ b.due }}</div>
+            </div>
+            <button onClick="{{ b.renew }}" style="background:#F0F2FA;color:#3B5BDB;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">
+              <span>{{ b.renewLabel }}</span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLibSearch }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <input type="text" value="{{ librarySearch }}" oninput="{{ handleLibrarySearch }}" placeholder="Search title, author or code" style="width:100%;box-sizing:border-box;border:1px solid #E7E9F0;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;margin-bottom:16px;"/>
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;">
+          <sc-for list="{{ searchResults }}" as="b" hint-placeholder-count="6">
+            <div style="padding:16px 20px;border-bottom:1px solid #F0F2FA;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ b.title }}</div>
+                <div style="font-size:12px;color:#6B7280;margin-bottom:4px;">{{ b.author }} &middot; {{ b.code }} &middot; {{ b.shelf }}</div>
+                <div style="font-size:12px;font-weight:700;{{ b.availStyle }}">{{ b.availLabel }}</div>
+              </div>
+              <sc-if value="{{ b.available }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ b.reserve }}" style="background:#F0F2FA;color:#3B5BDB;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">
+                  <span>{{ b.reserveLabel }}</span>
+                </button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isLibHistory }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;">
+        <sc-for list="{{ libraryHistoryList }}" as="h" hint-placeholder-count="3">
+          <div style="padding:16px 20px;border-bottom:1px solid #F0F2FA;">
+            <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ h.title }}</div>
+            <div style="font-size:12px;color:#6B7280;margin-bottom:4px;">{{ h.author }} &middot; {{ h.code }}</div>
+            <div style="font-size:13px;font-weight:600;color:#0B0F19;">{{ h.returned }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDailyTasks }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Daily Tasks</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px;">{{ homeworkHeaderDate }}</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:22px;">
+      <sc-for list="{{ homeworkDayTabsWithState }}" as="d" hint-placeholder-count="6">
+        <div onClick="{{ d.select }}" style="border-radius:10px;padding:10px 0;text-align:center;cursor:pointer;{{ d.tabStyle }}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.04em;opacity:0.8;">{{ d.key }}</div>
+          <div style="font-size:15px;font-weight:800;">{{ d.date }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ hasNoHomework }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:40px;text-align:center;color:#9AA1B2;font-size:14px;">No homework for this day.</div>
+    </sc-if>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <sc-for list="{{ homeworkListForDay }}" as="h" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">
+            <div style="width:36px;height:36px;border-radius:9px;background:#EEF1FF;color:#3B5BDB;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ h.code }}</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ h.subject }}</div>
+              <div style="font-size:12px;color:#6B7280;">{{ h.teacher }} &middot; {{ h.assigned }}</div>
+            </div>
+            <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;{{ h.badgeStyle }}">{{ h.status }}</span>
+          </div>
+          <div style="font-size:14px;color:#374151;line-height:1.5;margin-bottom:12px;">{{ h.desc }}</div>
+          <sc-if value="{{ h.file }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F7FB;border-radius:9px;padding:10px 14px;margin-bottom:12px;">
+              <span style="font-size:13px;font-weight:600;color:#3B5BDB;">&#128196; {{ h.file }}</span>
+              <span style="font-size:13px;font-weight:600;color:#6B7280;">Open</span>
+            </div>
+          </sc-if>
+          <div style="border-top:1px solid #F0F2FA;padding-top:12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;font-weight:600;color:#0B0F19;">{{ h.due }}</span>
+            <sc-if value="{{ h.isPending }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ h.markDone }}" style="background:#3B5BDB;color:#fff;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;">Mark completed</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ hasAssignmentsForDay }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:12px;font-weight:700;color:#9AA1B2;text-transform:uppercase;letter-spacing:0.04em;margin:20px 0 10px;">Assignments</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <sc-for list="{{ assignmentsForDay }}" as="a" hint-placeholder-count="1">
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:18px 20px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">
+              <div style="width:36px;height:36px;border-radius:9px;background:#EEF1FF;color:#3B5BDB;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ a.code }}</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ a.subject }}</div>
+                <div style="font-size:12px;color:#6B7280;">{{ a.teacher }}</div>
+              </div>
+              <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;{{ a.badgeStyle }}">{{ a.status }}</span>
+            </div>
+            <div style="font-size:14px;color:#374151;margin-bottom:12px;">{{ a.desc }}</div>
+            <div style="border-top:1px solid #F0F2FA;padding-top:12px;font-size:13px;font-weight:600;color:#0B0F19;">{{ a.due }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDocuments }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Documents</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px;">Certificates and issued records</div>
+
+    <div style="position:relative;margin-bottom:16px;">
+      <input type="text" value="{{ docSearch }}" oninput="{{ handleDocSearch }}" placeholder="Search documents" style="width:100%;box-sizing:border-box;border:1px solid #E7E9F0;background:#F6F7FB;border-radius:24px;padding:12px 16px 12px 40px;font-size:14px;outline:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#9AA1B2" stroke-width="1.8" stroke-linecap="round" style="position:absolute;left:14px;top:12px;width:17px;height:17px;"><path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13M15.4 15.4L20 20"></path></svg>
+    </div>
+
+    <div onClick="{{ toggleDocRequest }}" style="background:#2F55E8;border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:16px;">
+      <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.22);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0;line-height:1;">+</div>
+      <div style="flex:1;font-size:16px;font-weight:700;color:#fff;">Request a certificate</div>
+      <span style="font-size:13px;color:#fff;">{{ docRequestChevron }}</span>
+    </div>
+
+    <sc-if value="{{ docRequestOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.08em;text-transform:uppercase;padding:16px 20px 10px;">What do you need</div>
+        <sc-for list="{{ requestableDocs }}" as="r" hint-placeholder-count="5">
+          <div onClick="{{ r.request }}" style="display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-top:1px solid #F0F2FA;">
+            <div style="width:34px;height:34px;border-radius:9px;background:#EEF1FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3B5BDB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M6 3h8l4 4v14H6zM14 3v4h4"></path></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ r.name }}</div>
+              <div style="font-size:13px;color:#8A90A0;">{{ r.note }}</div>
+            </div>
+            <span style="font-size:15px;color:#C2C7D4;">›</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;">
+      <sc-for list="{{ issuedDocs }}" as="d" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;{{ d.rowStyle }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3B5BDB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex:none;"><path d="M6 3h8l4 4v14H6zM14 3v4h4"></path></svg>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;color:#0B0F19;">{{ d.name }}</div>
+            <div style="font-size:13px;color:#8A90A0;">{{ d.meta }}</div>
+          </div>
+          <div onClick="{{ d.download }}" style="width:38px;height:38px;border-radius:50%;background:#EEF1FF;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2F55E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M12 4v11M7.5 11l4.5 4.5 4.5-4.5M5 20h14"></path></svg>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ docToast }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:14px;background:#EEF1FF;border-radius:10px;padding:12px 16px;font-size:13px;font-weight:600;color:#2F55E8;">{{ docToast }}</div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Profile</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:20px;">Student &amp; guardian</div>
+
+    <div style="background:#F6F8FF;border:1px solid #E7E9F0;border-radius:16px;padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:16px;">
+      <div style="width:88px;height:88px;border-radius:50%;background:#E3E9FF;color:#2F55E8;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ activeChild.initial }}</div>
+      <div style="min-width:0;">
+        <div style="font-size:26px;font-weight:800;color:#2F55E8;margin-bottom:4px;">{{ activeChild.name }}</div>
+        <div style="font-size:15px;color:#6B7280;margin-bottom:10px;">Class 8 &middot; Section B &middot; Roll 24</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:12px;font-weight:700;background:#E3E9FF;color:#2F55E8;padding:6px 12px;border-radius:8px;">PPS/2019/0472</span>
+          <span style="font-size:12px;font-weight:700;background:#E3E9FF;color:#2F55E8;padding:6px 12px;border-radius:8px;">Emerald House</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E9F0;border-radius:16px;padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px;">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:#2F55E8;">O+</div>
+        <div style="font-size:13px;color:#8A90A0;">Blood group</div>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800;color:#0B0F19;">13 yrs</div>
+        <div style="font-size:13px;color:#8A90A0;">14 Mar 2013</div>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800;color:#0B0F19;">Route 7</div>
+        <div style="font-size:13px;color:#8A90A0;">Stop 4 &middot; Bus</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;align-items:start;">
+      <sc-for list="{{ profileSections }}" as="sec" hint-placeholder-count="5">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#9AA1B2;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">{{ sec.title }}</div>
+          <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;overflow:hidden;">
+            <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;{{ r.rowStyle }}">
+                <span style="font-size:14px;color:#8A90A0;">{{ r.label }}</span>
+                <span style="font-size:14px;font-weight:700;color:#0B0F19;text-align:right;">{{ r.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isFeedback }}" hint-placeholder-val="{{ false }}">
+  <div style="width:100%;">
+    <div style="font-size:24px;font-weight:700;margin-bottom:4px;">Feedback</div>
+    <div style="font-size:14px;color:#6B7280;margin-bottom:18px;">Term 1 · anonymous</div>
+    <div style="font-size:14px;color:#374151;line-height:1.5;margin-bottom:18px;">Rate each subject teacher for Term 1. Responses are anonymous and shared as class averages.</div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <sc-for list="{{ feedbackSubjects }}" as="f" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #E7E9F0;border-radius:14px;padding:16px 20px;">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+            <div style="width:38px;height:38px;border-radius:9px;background:#EEF1FF;color:#2F55E8;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ f.code }}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:16px;font-weight:700;color:#0B0F19;">{{ f.subject }}</div>
+              <div style="font-size:13px;color:#8A90A0;">{{ f.teacher }}</div>
+            </div>
+            <span style="font-size:13px;font-weight:700;flex-shrink:0;{{ f.statusStyle }}">{{ f.status }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <sc-for list="{{ f.stars }}" as="s" hint-placeholder-count="5">
+              <svg onClick="{{ s.rate }}" viewBox="0 0 24 24" fill="{{ s.fill }}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" style="width:22px;height:22px;cursor:pointer;{{ s.style }}"><path d="M12 3.5l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.9l6-.9z"></path></svg>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <button onClick="{{ submitFeedback }}" style="width:100%;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;margin-top:18px;{{ feedbackBtnStyle }}">{{ feedbackBtnLabel }}</button>
+  </div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    timetableView: 'today', selectedDay: 4, calendarMonthIdx: 0,
+    selectedSubjectId: null,
+    performanceTerm: 'midterm',
+    feeSelections: { books: true, tuition: true, transport: true, exam: true, lab: false },
+    paymentStep: 'fees',
+    paymentMethod: 'upi',
+    activeThreadId: 'radhika',
+    replyDraft: '',
+    onlineTab: 'sessions',
+    onlineView: 'sessions',
+    selectedSessionId: null,
+    callMuted: true,
+    callCameraOn: false,
+    handRaised: false,
+    callPanel: null,
+    fullScreen: false,
+    elapsedSec: 2,
+    onlineChatDraft: '',
+    meetingsView: 'list',
+    selectedSlotId: 'radhika-m',
+    meetingCallMuted: true,
+    meetingCallCameraOn: false,
+    meetingElapsedSec: 4,
+    selectedRecordId: null,
+    libraryTab: 'borrowed',
+    librarySearch: '',
+    libraryActions: {},
+    selectedStat: null,
+    attMonthIdx: 3,
+    attSelectedDay: null,
+    msgSearch: '',
+    payAmount: null,
+    feeAmounts: {},
+    selectedWeekRow: null,
+    docRequestOpen: false,
+    docSearch: '',
+    docToast: '',
+    ratings: { en: 5, ma: 4, sc: 5, ss: 0 },
+    feedbackSubmitted: false,
+    homeworkDay: 3,
+    homeworkCompleted: {},
+    onlineChatMessages: [
+      { from: 'Ms. Lakshmi P', text: 'Open the lab sheet on page 42 before we start.', me: false },
+      { from: 'Meera S', text: 'Ma\u2019am, is the friction worksheet due today?', me: false },
+      { from: 'Ms. Lakshmi P', text: 'Submit it by tomorrow 4 PM on the homework tab.', me: false }
+    ],
+    threadMessages: {
+      radhika: [{ from: 'them', text: 'Reported speech worksheet due 8 Sept', time: '09:12' }],
+      lakshmi: [
+        { from: 'them', text: 'Open the lab sheet on page 42 before we start.', time: '09:58' },
+        { from: 'me', text: 'Noted, thank you Ms. Lakshmi.', time: '10:02' }
+      ],
+      transport: [{ from: 'them', text: 'Route 7 timing revised', time: 'Yesterday' }],
+      accounts: [{ from: 'them', text: 'Term 2 fees due on 15 September', time: '30 Aug' }]
+    }
+  };
+
+  weekDays = [
+    { key: 'MON', date: 1 }, { key: 'TUE', date: 2 }, { key: 'WED', date: 3 },
+    { key: 'THU', date: 4, isToday: true }, { key: 'FRI', date: 5 }, { key: 'SAT', date: 6 }
+  ];
+
+  weekSchedule = {
+    MON: [
+      { time: '8:15 AM', period: 'P1', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '9:05 AM', period: 'P2', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '9:55 AM', period: 'P3', subject: 'Science', teacher: 'Ms. Lakshmi P' },
+      { time: '11:00 AM', period: 'P4', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '11:50 AM', period: 'P5', subject: 'Hindi', teacher: 'Ms. Neetu S' },
+      { time: '1:30 PM', period: 'P6', subject: 'Games \u00b7 Ground', teacher: 'Mr. Vikram J' }
+    ],
+    TUE: [
+      { time: '8:15 AM', period: 'P1', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '9:05 AM', period: 'P2', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '9:55 AM', period: 'P3', subject: 'Hindi', teacher: 'Ms. Neetu S' },
+      { time: '11:00 AM', period: 'P4', subject: 'Science', teacher: 'Ms. Lakshmi P' },
+      { time: '11:50 AM', period: 'P5', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '1:30 PM', period: 'P6', subject: 'Computer Science \u00b7 Lab 1', teacher: 'Mr. Faizal A' }
+    ],
+    WED: [
+      { time: '8:15 AM', period: 'P1', subject: 'Science', teacher: 'Ms. Lakshmi P' },
+      { time: '9:05 AM', period: 'P2', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '9:55 AM', period: 'P3', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '11:00 AM', period: 'P4', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '11:50 AM', period: 'P5', subject: 'Games \u00b7 Ground', teacher: 'Mr. Vikram J' },
+      { time: '1:30 PM', period: 'P6', subject: 'Hindi', teacher: 'Ms. Neetu S' }
+    ],
+    THU: [
+      { time: '8:15 AM', period: 'P1', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '9:05 AM', period: 'P2', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '9:55 AM', period: 'P3', subject: 'Science \u00b7 Lab 2', teacher: 'Ms. Lakshmi P', now: true },
+      { time: '11:00 AM', period: 'P4', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '11:50 AM', period: 'P5', subject: 'Hindi', teacher: 'Ms. Neetu S' },
+      { time: '1:30 PM', period: 'P6', subject: 'Games \u00b7 Ground', teacher: 'Mr. Vikram J' }
+    ],
+    FRI: [
+      { time: '8:15 AM', period: 'P1', subject: 'Hindi', teacher: 'Ms. Neetu S' },
+      { time: '9:05 AM', period: 'P2', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '9:55 AM', period: 'P3', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '11:00 AM', period: 'P4', subject: 'Computer Science \u00b7 Lab 1', teacher: 'Mr. Faizal A' },
+      { time: '11:50 AM', period: 'P5', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '1:30 PM', period: 'P6', subject: 'Science', teacher: 'Ms. Lakshmi P' }
+    ],
+    SAT: [
+      { time: '8:15 AM', period: 'P1', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+      { time: '9:05 AM', period: 'P2', subject: 'Hindi', teacher: 'Ms. Neetu S' },
+      { time: '9:55 AM', period: 'P3', subject: 'English', teacher: 'Ms. Radhika V' },
+      { time: '11:00 AM', period: 'P4', subject: 'Science', teacher: 'Ms. Lakshmi P' },
+      { time: '11:50 AM', period: 'P5', subject: 'Social Science', teacher: 'Mr. Anand R' },
+      { time: '1:30 PM', period: 'P6', subject: 'Library', teacher: 'Staff room' }
+    ]
+  };
+
+  onlineSessions = [
+    { id: 's1', subject: 'Science', teacher: 'Ms. Lakshmi P', time: '9:55 \u2013 10:45 AM', topic: 'Friction \u2014 lab walkthrough', code: 'pps-sci-882', status: 'live' },
+    { id: 's2', subject: 'Mathematics', teacher: 'Mr. Suresh K', time: '11:00 \u2013 11:50 AM', topic: 'Square roots by long division', code: 'pps-mat-114', status: 'soon' },
+    { id: 's3', subject: 'English', teacher: 'Ms. Radhika V', time: '1:30 \u2013 2:20 PM', topic: 'Letter writing practice', code: 'pps-eng-507', status: 'scheduled' }
+  ];
+
+  recordingsList = [
+    { title: 'Mathematics \u00b7 Squares and patterns', date: '2 Sept 2026 \u00b7 48 min' },
+    { title: 'Science \u00b7 Force and motion recap', date: '29 Aug 2026 \u00b7 41 min' },
+    { title: 'English \u00b7 The Tiger King discussion', date: '27 Aug 2026 \u00b7 35 min' }
+  ];
+
+  callRoster = [
+    { name: 'Ms. Lakshmi P', role: 'Teacher \u00b7 presenting', muted: false, isTeacher: true },
+    { name: 'Aarav S', role: 'You \u00b7 Class 8-B', muted: true, handUp: false, isMe: true },
+    { name: 'Deepak K', role: 'Class 8-B', muted: true },
+    { name: 'Meera S', role: 'Class 8-B', muted: false, handUp: true },
+    { name: 'Nikhil V', role: 'Class 8-B', muted: true },
+    { name: 'Sara Fathima', role: 'Class 8-B', muted: true },
+    { name: 'Rahul Menon', role: 'Class 8-B', muted: true }
+  ];
+
+  borrowedBooks = [
+    { id: 'b1', title: 'The Story of My Experiments with Truth', author: 'M. K. Gandhi', code: 'BIO-214', due: 'Due 9 Sept 2026', dueSoon: false },
+    { id: 'b2', title: 'Wings of Fire', author: 'A. P. J. Abdul Kalam', code: 'BIO-087', due: 'Due 24 Sept 2026', dueSoon: true }
+  ];
+
+  searchCatalog = [
+    { id: 's1', title: 'The Jungle Book', author: 'Rudyard Kipling', code: 'FIC-021', shelf: 'Shelf B2', available: true },
+    { id: 's2', title: 'Ponniyin Selvan \u00b7 Part 1', author: 'Kalki', code: 'FIC-198', shelf: 'Shelf C1', available: true },
+    { id: 's3', title: 'The Discovery of India', author: 'Jawaharlal Nehru', code: 'HIS-044', shelf: 'Shelf A4', available: false },
+    { id: 's4', title: 'Cosmos', author: 'Carl Sagan', code: 'SCI-101', shelf: 'Shelf D3', available: true },
+    { id: 's5', title: 'Oxford School Atlas', author: 'Oxford', code: 'REF-011', shelf: 'Reference desk', available: false },
+    { id: 's6', title: 'Panchatantra Tales', author: 'Vishnu Sharma', code: 'FIC-006', shelf: 'Shelf B1', available: true }
+  ];
+
+  libraryHistory = [
+    { title: 'Atlas of India', author: 'Oxford', code: 'REF-011', returned: 'Returned 28 Aug 2026' },
+    { title: 'Malgudi Days', author: 'R. K. Narayan', code: 'FIC-142', returned: 'Returned 14 Aug 2026' },
+    { title: 'A Brief History of Time', author: 'Stephen Hawking', code: 'SCI-330', returned: 'Returned 2 Aug 2026' }
+  ];
+
+  homeworkDayTabs = [
+    { key: 'MON', date: 31 }, { key: 'TUE', date: 1 }, { key: 'WED', date: 2 },
+    { key: 'THU', date: 3 }, { key: 'FRI', date: 4 }, { key: 'SAT', date: 5 }
+  ];
+
+  homeworkByDay = {
+    31: { homework: [], assignments: [] },
+    1: {
+      homework: [{ id: 'hw-1-1', code: 'HI', subject: 'Hindi', teacher: 'Ms. Neetu S', assigned: 'assigned 31 Aug', desc: 'Chapter 4 \u2014 answer the comprehension questions in the notebook.', due: 'Due 1 Sept', status: 'Late' }],
+      assignments: [{ id: 'as-1-1', code: 'SC', subject: 'Science', teacher: 'Ms. Lakshmi P \u00b7 assignment', desc: 'Science exhibition poster', due: 'Due 1 Sept', status: 'Submitted' }]
+    },
+    2: {
+      homework: [{ id: 'hw-2-1', code: 'EN', subject: 'English', teacher: 'Ms. Radhika V', assigned: 'assigned 31 Aug', desc: 'Letter to the editor on traffic safety near the school gate.', due: 'Due 2 Sept', status: 'Submitted' }],
+      assignments: []
+    },
+    3: {
+      homework: [
+        { id: 'hw-3-1', code: 'MA', subject: 'Mathematics', teacher: 'Mr. Suresh K', assigned: 'assigned 2 Sept', desc: 'Exercise 6.3, questions 1\u201312 \u2014 squares and square roots.', file: 'Worksheet 6.3.pdf', due: 'Due 4 Sept', status: 'Pending' },
+        { id: 'hw-3-2', code: 'SC', subject: 'Science', teacher: 'Ms. Lakshmi P', assigned: 'assigned 3 Sept', desc: 'Lab record: write up the experiment on friction with observations.', due: 'Due 5 Sept', status: 'Pending' },
+        { id: 'hw-3-3', code: 'SS', subject: 'Social Science', teacher: 'Mr. Anand R', assigned: 'assigned 3 Sept', desc: 'Map work: mark the major rivers of peninsular India.', file: 'India outline map.pdf', due: 'Due 6 Sept', status: 'Pending' }
+      ],
+      assignments: []
+    },
+    4: { homework: [], assignments: [] },
+    5: { homework: [], assignments: [] }
+  };
+
+  calendarEventsByDate = { 5: 'Holiday', 12: 'Meeting', 15: 'Fees', 25: 'Holiday' };
+  calendarEventsList = [
+    { day: 1, title: 'Science Exhibition', sub: 'Tuesday \u00b7 Grades 6\u201310', tag: 'Event' },
+    { day: 12, title: 'Parent\u2013Teacher Meeting', sub: 'Saturday \u00b7 All grades', tag: 'Meeting' },
+    { day: 15, title: 'Term 2 fee due date', sub: 'Tuesday', tag: 'Fees' },
+    { day: 25, title: 'Sports Day', sub: 'Friday \u00b7 Holiday for Grades', tag: 'Holiday' }
+  ];
+
+  homeworkList = [
+    { code: 'MA', subject: 'Mathematics', teacher: 'Mr. Suresh K', due: '4 Sept', status: 'Pending', badgeStyle: 'background:#FFF1E6;color:#B5590C;' },
+    { code: 'SC', subject: 'Science', teacher: 'Ms. Lakshmi P', due: '5 Sept', status: 'Pending', badgeStyle: 'background:#FFF1E6;color:#B5590C;' },
+    { code: 'EN', subject: 'English', teacher: 'Ms. Radhika V', due: '2 Sept', status: 'Submitted', badgeStyle: 'background:#EAF7EE;color:#1F8A4C;' }
+  ];
+
+  noticesList = [
+    { from: 'Principal\'s Office', date: '2 Sept 2026', tag: 'Notice', title: 'Parent\u2013Teacher Meeting \u00b7 12 September', body: 'Grades 1\u20135: 9:00 AM \u2013 11:30 AM. Grades 6\u201310: 12:00 PM \u2013 3:00 PM. Please carry the school diary.', audience: 'All parents' },
+    { from: 'Cultural Committee', date: '1 Sept 2026', tag: 'Event', title: 'Annual Day rehearsals begin', body: 'Grades 6\u201310 report to the auditorium at 3 PM on Tuesday and Thursday until 20 September.', audience: 'Grades 6\u201310 parents' },
+    { from: 'Accounts Office', date: '30 Aug 2026', tag: 'Fees', title: 'Term 2 fees due on 15 September', body: 'Pay through the app or at the counter between 9 AM and 1 PM. Late payment attracts \u20b9200 per week.', audience: 'All parents' },
+    { from: 'Transport Desk', date: '26 Aug 2026', tag: 'Transport', title: 'Route 7 timing revised', body: 'Stop 4 pickup moves from 7:48 AM to 7:42 AM from 1 September because of road work on Thillai Nagar road.', audience: 'Route 7 parents' }
+  ];
+
+  subjects = [
+    { code: 'EN', name: 'English', teacher: 'Ms. Radhika V', summary: '2 homework tasks \u00b7 2 assignments', pending: 1 },
+    { code: 'MA', name: 'Mathematics', teacher: 'Mr. Suresh K', summary: '2 homework tasks \u00b7 1 assignment', pending: 2 },
+    { code: 'SC', name: 'Science', teacher: 'Ms. Lakshmi P', summary: '2 homework tasks \u00b7 2 assignments', pending: 2 },
+    { code: 'SS', name: 'Social Science', teacher: 'Mr. Anand R', summary: '1 homework task \u00b7 1 assignment', pending: 1 },
+    { code: 'HI', name: 'Hindi', teacher: 'Ms. Neetu S', summary: '1 homework task \u00b7 1 assignment', pending: 1 }
+  ];
+
+  subjectDetails = {
+    EN: {
+      unit: 'Unit 5 \u00b7 Prose and letter writing', meta: 'Ms. Radhika V \u00b7 6 periods a week', progress: 62,
+      weeks: [
+        { label: 'Week 1', text: 'The Tiger King \u2014 reading and discussion', done: true },
+        { label: 'Week 2', text: 'Letter to the editor \u2014 format and practice', done: true },
+        { label: 'Week 3', text: 'Grammar: reported speech', done: true },
+        { label: 'Week 4', text: 'Revision and unit test', done: false }
+      ],
+      homework: [{ title: 'Reported speech worksheet', due: 'Due 8 Sept', status: 'Pending' }],
+      assignments: [
+        { title: 'Book review \u00b7 500 words', due: 'Due 18 Sept', marks: '20 marks' },
+        { title: 'Class magazine article', due: 'Due 30 Sept', marks: '15 marks' }
+      ]
+    },
+    MA: {
+      unit: 'Ch. 6 \u00b7 Squares and square roots', meta: 'Mr. Suresh K \u00b7 7 periods a week', progress: 58,
+      weeks: [
+        { label: 'Week 1', text: 'Squares, properties and patterns', done: true },
+        { label: 'Week 2', text: 'Square roots by factorisation', done: true },
+        { label: 'Week 3', text: 'Long division method', done: true },
+        { label: 'Week 4', text: 'Word problems and revision', done: false }
+      ],
+      homework: [
+        { title: 'Exercise 6.3, questions 1\u201312', due: 'Due 4 Sept', status: 'Pending' },
+        { title: 'Exercise 6.4, questions 1\u20138', due: 'Due 9 Sept', status: 'Pending' }
+      ],
+      assignments: [{ title: 'Practice set \u00b7 squares and roots', due: 'Due 16 Sept', marks: '25 marks' }]
+    },
+    SC: {
+      unit: 'Ch. 8 \u00b7 Friction', meta: 'Ms. Lakshmi P \u00b7 6 periods a week', progress: 54,
+      weeks: [
+        { label: 'Week 1', text: 'Force and motion recap', done: true },
+        { label: 'Week 2', text: 'Friction \u2014 lab walkthrough', done: true },
+        { label: 'Week 3', text: 'Applications of friction', done: false },
+        { label: 'Week 4', text: 'Revision and unit test', done: false }
+      ],
+      homework: [{ title: 'Lab record \u00b7 friction experiment', due: 'Due 5 Sept', status: 'Pending' }],
+      assignments: [{ title: 'Science exhibition poster', due: 'Due 1 Sept', marks: '\u2014' }]
+    },
+    SS: {
+      unit: 'Ch. 4 \u00b7 Rivers of peninsular India', meta: 'Mr. Anand R \u00b7 5 periods a week', progress: 47,
+      weeks: [
+        { label: 'Week 1', text: 'Physical features of India', done: true },
+        { label: 'Week 2', text: 'Major river systems', done: false },
+        { label: 'Week 3', text: 'Map work and labelling', done: false },
+        { label: 'Week 4', text: 'Revision', done: false }
+      ],
+      homework: [{ title: 'Map work \u00b7 India outline map', due: 'Due 5 Sept', status: 'Pending' }],
+      assignments: [{ title: 'Project \u00b7 river systems chart', due: 'Due 20 Sept', marks: '20 marks' }]
+    },
+    HI: {
+      unit: 'Ch. 4 \u00b7 \u0917\u0926\u094d\u092f \u0916\u0902\u0921', meta: 'Ms. Neetu S \u00b7 5 periods a week', progress: 60,
+      weeks: [
+        { label: 'Week 1', text: 'Chapter 4 reading', done: true },
+        { label: 'Week 2', text: 'Comprehension questions', done: true },
+        { label: 'Week 3', text: 'Grammar practice', done: false },
+        { label: 'Week 4', text: 'Revision', done: false }
+      ],
+      homework: [{ title: 'Comprehension questions \u00b7 notebook', due: 'Due 1 Sept', status: 'Late' }],
+      assignments: [{ title: 'Essay writing practice', due: 'Due 22 Sept', marks: '15 marks' }]
+    }
+  };
+
+  performanceTerms = {
+    unit1: { label: 'Unit 1', pct: '88.4%' },
+    midterm: {
+      label: 'Mid term', pct: '84.6%', total: 423, rank: 7,
+      subjects: [
+        { name: 'English', teacher: 'Ms. Radhika V', score: 88, grade: 'A' },
+        { name: 'Mathematics', teacher: 'Mr. Suresh K', score: 81, grade: 'A' },
+        { name: 'Science', teacher: 'Ms. Lakshmi P', score: 93, grade: 'A+', flag: 'HIGHEST' },
+        { name: 'Social Science', teacher: 'Mr. Anand R', score: 76, grade: 'B+', flag: 'LOWEST' },
+        { name: 'Hindi', teacher: 'Ms. Neetu S', score: 85, grade: 'A' }
+      ],
+      remark: 'Consistent work in Science and English. Needs steadier revision in Social Science.',
+      file: 'Pavakie_Public_School_Mid-term_Report-Card.pdf'
+    },
+    halfyearly: {
+      label: 'Half yearly', pct: '87.8%', total: 439, rank: 3,
+      subjects: [
+        { name: 'English', teacher: 'Ms. Radhika V', score: 90, grade: 'A+' },
+        { name: 'Mathematics', teacher: 'Mr. Suresh K', score: 88, grade: 'A' },
+        { name: 'Science', teacher: 'Ms. Lakshmi P', score: 91, grade: 'A+', flag: 'HIGHEST' },
+        { name: 'Social Science', teacher: 'Mr. Anand R', score: 83, grade: 'A', flag: 'LOWEST' },
+        { name: 'Hindi', teacher: 'Ms. Neetu S', score: 87, grade: 'A' }
+      ],
+      remark: 'Marked improvement across all subjects. Well prepared for the annual exam.',
+      file: 'Pavakie_Public_School_Half-yearly_Report-Card.pdf'
+    },
+    annual: { label: 'Annual', pct: '\u2014' }
+  };
+
+  feeItems = [
+    { id: 'books', name: 'Books & uniform', note: 'Term 1 \u00b7 Overdue by 103 days', amount: 2000, locked: false },
+    { id: 'tuition', name: 'Tuition fee', note: 'Term 2 \u00b7 Due in 7 days', amount: 18000, locked: false },
+    { id: 'transport', name: 'Transport \u00b7 Route 7', note: 'Term 2 \u00b7 Due in 7 days', amount: 6000, locked: false },
+    { id: 'exam', name: 'Examination fee', note: 'Term 2 \u00b7 Due 30 Sept 2026', amount: 1200, locked: false },
+    { id: 'lab', name: 'Lab & activity fee', note: 'Term 2 \u00b7 Fully paid', amount: 0, locked: true }
+  ];
+
+  termSplitData = [
+    { term: 'Term 1', total: '27,200', pending: '2,000', pct: 93 },
+    { term: 'Term 2', total: '34,200', pending: '25,200', pct: 26 },
+    { term: 'Term 3', total: '31,500', pending: '31,500', pct: 0 }
+  ];
+
+  periodsData = [
+    { time: '8:15 AM', period: 'P1', subject: 'Mathematics', teacher: 'Mr. Suresh K', now: false },
+    { time: '9:05 AM', period: 'P2', subject: 'English', teacher: 'Ms. Radhika V', now: false },
+    { time: '9:55 AM', period: 'P3', subject: 'Science \u00b7 Lab 2', teacher: 'Ms. Lakshmi P', now: true },
+    { time: '11:00 AM', period: 'P4', subject: 'Social Science', teacher: 'Mr. Anand R', now: false },
+    { time: '11:50 AM', period: 'P5', subject: 'Hindi', teacher: 'Ms. Neetu S', now: false },
+    { time: '1:30 PM', period: 'P6', subject: 'Games \u00b7 Ground', teacher: 'Mr. Vikram J', now: false }
+  ];
+
+  attentionItemsData = [
+    { title: 'Fee payment due in 7 days', subtitle: '\u20b927,200 pending \u00b7 Term 2', target: 'fees' },
+    { title: 'Homework due today', subtitle: 'Mathematics \u00b7 Worksheet 6.3', target: 'dailytasks' },
+    { title: '5 consents awaiting signature', subtitle: 'Science Museum field trip overdue', target: 'documents' },
+    { title: 'Report card ready', subtitle: 'Mid term \u00b7 download from Performance', target: 'performance' }
+  ];
+
+  homeNoticesData = [
+    { tag: 'Notice', date: '2 Sept 2026', title: 'Parent\u2013Teacher Meeting \u00b7 12 September' },
+    { tag: 'Event', date: '1 Sept 2026', title: 'Annual Day rehearsals begin' },
+    { tag: 'Fees', date: '30 Aug 2026', title: 'Term 2 fees due on 15 September' }
+  ];
+
+  meetingSlotsData = [
+    { id: 'radhika-m', teacher: 'Ms. Radhika V', subject: 'English', mode: 'Online \u00b7 in app \u00b7 15 min', time: '12:00 \u2013 12:15 PM', online: true },
+    { id: 'suresh-m', teacher: 'Mr. Suresh K', subject: 'Mathematics', mode: 'Block B \u00b7 Room 204 \u00b7 15 min', time: '12:20 \u2013 12:35 PM', online: false },
+    { id: 'lakshmi-m', teacher: 'Ms. Lakshmi P', subject: 'Science', mode: 'Block B \u00b7 Room 209 \u00b7 15 min', time: '12:40 \u2013 12:55 PM', online: false },
+    { id: 'anand-m', teacher: 'Mr. Anand R', subject: 'Social Science', mode: 'Online \u00b7 in app \u00b7 15 min', time: '1:00 \u2013 1:15 PM', online: true, locked: true }
+  ];
+
+  previousMeetingsData = [
+    {
+      id: 'pm1', title: 'Parent\u2013Teacher Meeting', date: 'AUG 8', dateLong: 'Saturday, 8 August 2026', term: 'Term 1 \u00b7 2026-27',
+      time: '12:00 PM \u2013 2:30 PM \u00b7 Online \u00b7 in app',
+      teachersMet: [
+        { name: 'Ms. Radhika V', subject: 'English', time: '12:00 PM' },
+        { name: 'Mr. Suresh K', subject: 'Mathematics', time: '12:20 PM' },
+        { name: 'Ms. Lakshmi P', subject: 'Science', time: '12:40 PM' }
+      ],
+      notes: [
+        'Reading comprehension has improved; Aarav now finishes unseen passages within the time limit.',
+        'Mathematics needs steady revision of algebra word problems, particularly linear equations.',
+        'Participation in the science lab is strong and observations are recorded neatly.'
+      ]
+    },
+    {
+      id: 'pm2', title: 'Mid-term review', date: 'JUL 17', dateLong: 'Friday, 17 July 2026', term: 'Term 1 \u00b7 2026-27',
+      time: '3:00 PM \u2013 3:45 PM \u00b7 Online \u00b7 in app',
+      teachersMet: [{ name: 'Mrs. Meenakshi R', subject: 'Class teacher', time: '3:00 PM' }],
+      notes: ['Overall progress is on track for the mid-term exams.', 'Encouraged more practice on Hindi grammar.']
+    },
+    {
+      id: 'pm3', title: 'Class orientation', date: 'JUN 15', dateLong: 'Monday, 15 June 2026', term: 'Term 1 \u00b7 2026-27',
+      time: '10:00 AM \u2013 11:00 AM \u00b7 On campus \u00b7 Block B',
+      teachersMet: [{ name: 'Mrs. Meenakshi R', subject: 'Class teacher', time: '10:00 AM' }],
+      notes: ['Introduced the term plan, house system and school policies for the year.']
+    }
+  ];
+
+  threadsData = [
+    { id: 'radhika', name: 'Ms. Radhika V', sub: 'English \u00b7 Class 8-B', preview: 'Reported speech worksheet due 8 Sept' },
+    { id: 'lakshmi', name: 'Ms. Lakshmi P', sub: 'Science \u00b7 Class 8-B', preview: 'Submit it by tomorrow 4 PM on the homework tab.' },
+    { id: 'suresh', name: 'Mr. Suresh K', sub: 'Mathematics \u00b7 Class 8-B', preview: 'Worksheet 6.3 due today' },
+    { id: 'anand', name: 'Mr. Anand R', sub: 'Social Science \u00b7 Class 8-B', preview: 'Map work revision on Friday' },
+    { id: 'neetu', name: 'Ms. Neetu S', sub: 'Hindi \u00b7 Class 8-B', preview: 'Chapter 4 comprehension pending' },
+    { id: 'vikram', name: 'Mr. Vikram J', sub: 'Games \u00b7 Class 8-B', preview: 'Sports day trials next week' },
+    { id: 'transport', name: 'Transport Desk', sub: 'School office', preview: 'Route 7 timing revised' },
+    { id: 'accounts', name: 'Accounts Office', sub: 'School office', preview: 'Term 2 fees due on 15 September' }
+  ];
+
+  feeAmountInput(f) {
+    const v = this.state.feeAmounts[f.id];
+    return v === undefined ? String(f.amount) : v;
+  }
+
+  feeAmountNum(f) {
+    return Math.min(parseInt(this.feeAmountInput(f) || '0', 10) || 0, f.amount);
+  }
+
+  selectedTotal() {
+    return this.feeItems.filter(f => this.state.feeSelections[f.id]).reduce((sum, f) => sum + this.feeAmountNum(f), 0);
+  }
+
+  payAmountInput() {
+    return this.state.payAmount === null ? String(this.selectedTotal()) : this.state.payAmount;
+  }
+
+  payAmountNum() {
+    return parseInt(this.payAmountInput() || '0', 10) || 0;
+  }
+
+  payHintText() {
+    const total = this.selectedTotal();
+    const amt = this.payAmountNum();
+    if (amt > total) return 'Cannot exceed the selected fees total of \u20b9' + this.fmtMoney(total);
+    if (amt === 0) return 'Enter the amount you want to pay now';
+    if (amt < total) return 'Part payment \u00b7 \u20b9' + this.fmtMoney(total - amt) + ' will stay pending';
+    return 'Paying the full selected amount';
+  }
+
+  filterThreads() {
+    const q = (this.state.msgSearch || '').trim().toLowerCase();
+    if (!q) return this.threadsData;
+    return this.threadsData.filter(t =>
+      t.name.toLowerCase().includes(q) || t.sub.toLowerCase().includes(q)
+    );
+  }
+
+  attMonths = [
+    { label: 'June 2026', days: 30, firstDow: 1, start: 12, absent: [23], present: 13, total: 14 },
+    { label: 'July 2026', days: 31, firstDow: 3, absent: [9, 17], present: 25, total: 27 },
+    { label: 'August 2026', days: 31, firstDow: 6, absent: [19], present: 25, total: 26 },
+    { label: 'September 2026', days: 30, firstDow: 2, today: 3, absent: [], present: 2, total: 3 }
+  ];
+
+  buildAttCells() {
+    const m = this.attMonths[this.state.attMonthIdx];
+    const cells = [];
+    for (let i = 0; i < m.firstDow; i++) cells.push({ label: '', style: 'visibility:hidden;', select: () => {} });
+    for (let d = 1; d <= m.days; d++) {
+      const dow = (m.firstDow + d - 1) % 7;
+      const future = (m.today && d > m.today) || (m.start && d < m.start);
+      const holiday = dow === 0 && !future;
+      const absent = m.absent.indexOf(d) !== -1;
+      const selected = this.state.attSelectedDay === d;
+      let style;
+      if (future) style = 'color:#D8DCE8;cursor:default;';
+      else if (absent) style = 'background:#2F55E8;color:#fff;cursor:pointer;';
+      else if (holiday) style = 'background:#E9EDF6;color:#9AA1B2;cursor:pointer;';
+      else style = 'background:#fff;border:1px solid #E7E9F0;color:#0B0F19;cursor:pointer;';
+      if (selected) style += 'outline:2px solid #2F55E8;outline-offset:1px;';
+      const status = future ? 'upcoming' : (absent ? 'absent' : (holiday ? 'holiday' : 'present'));
+      cells.push({
+        label: String(d),
+        style,
+        select: future ? () => {} : () => this.setState(s => ({ attSelectedDay: s.attSelectedDay === d ? null : d })),
+        status
+      });
+    }
+    return cells;
+  }
+
+  attDayText() {
+    const d = this.state.attSelectedDay;
+    if (!d) return "Tap a date to see that day's record";
+    const m = this.attMonths[this.state.attMonthIdx];
+    const cell = this.buildAttCells().find(c => c.label === String(d));
+    const date = d + ' ' + m.label.split(' ')[0];
+    if (!cell) return '';
+    if (cell.status === 'holiday') return date + ' · school holiday';
+    if (cell.status === 'absent') return date + ' · marked absent · no reason submitted';
+    return date + ' · present · all 6 periods attended';
+  }
+
+  buildAttendanceDays() {
+    const days = [];
+    const dow = ['S','M','T','W','T','F','S'];
+    for (let i = 0; i < 2; i++) days.push({ label: '', style: 'visibility:hidden;' });
+    for (let d = 1; d <= 30; d++) {
+      const isToday = d === 3;
+      const isPresent = d < 3;
+      const style = isToday ? 'background:#3B5BDB;color:#fff;' : (isPresent ? 'background:#EAF7EE;color:#1F8A4C;' : 'color:#D8DCE8;');
+      days.push({ label: String(d), style });
+    }
+    return days;
+  }
+
+  buildFullWeekRows() {
+    return ['P1','P2','P3','P4','P5','P6'].map((p, i) => ({
+      period: p,
+      time: this.weekSchedule.MON[i].time,
+      cells: this.weekDays.map(d => this.weekSchedule[d.key][i])
+    }));
+  }
+
+  buildCalendarCells() {
+    const cells = [];
+    for (let i = 0; i < 2; i++) cells.push({ blank: true });
+    for (let d = 1; d <= 30; d++) {
+      const has = !!this.calendarEventsByDate[d];
+      cells.push({ day: d, hasEvent: has ? 'background:#EEF1FF;color:#3B5BDB;' : 'color:#12172B;' });
+    }
+    return cells;
+  }
+
+  fmtMoney(n) { return n.toLocaleString('en-IN'); }
+
+  toggleFee(id) {
+    this.setState(s => ({ feeSelections: { ...s.feeSelections, [id]: !s.feeSelections[id] } }));
+  }
+
+  componentDidMount() {
+    this._timer = setInterval(() => {
+      if (this.state.onlineView === 'incall') this.setState(s => ({ elapsedSec: s.elapsedSec + 1 }));
+      if (this.state.meetingsView === 'call') this.setState(s => ({ meetingElapsedSec: s.meetingElapsedSec + 1 }));
+    }, 1000);
+  }
+
+  componentWillUnmount() { clearInterval(this._timer); }
+
+  fmtTime(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  openMeetingDetails() { this.setState({ meetingsView: 'details' }); }
+  openMeetingCall() { this.setState({ meetingsView: 'call', meetingElapsedSec: 0 }); }
+  backToMeetingsList() { this.setState({ meetingsView: 'list' }); }
+  openMeetingRecord(id) { this.setState({ meetingsView: 'record', selectedRecordId: id }); }
+
+  openWaiting(session) { this.setState({ onlineView: 'waiting', selectedSessionId: session.id }); }
+  joinCall() { this.setState({ onlineView: 'incall', elapsedSec: 2 }); }
+  leaveCall() { this.setState({ onlineView: 'sessions', callPanel: null, handRaised: false }); }
+
+  sendOnlineChat() {
+    const text = this.state.onlineChatDraft.trim();
+    if (!text) return;
+    this.setState(s => ({
+      onlineChatMessages: [...s.onlineChatMessages, { from: 'Aarav S', text, me: true }],
+      onlineChatDraft: ''
+    }));
+  }
+
+  sendReply() {
+    const text = this.state.replyDraft.trim();
+    if (!text) return;
+    const id = this.state.activeThreadId;
+    this.setState(s => ({
+      threadMessages: { ...s.threadMessages, [id]: [...s.threadMessages[id], { from: 'me', text, time: 'Now' }] },
+      replyDraft: ''
+    }));
+  }
+
+  requestableDocsList = [
+    { id: 'bonafide', name: 'Bonafide certificate', note: 'Proof of enrolment · ready in 2 working days' },
+    { id: 'conduct', name: 'Conduct certificate', note: 'Signed by the class teacher · 3 working days' },
+    { id: 'character', name: 'Character certificate', note: 'For admissions and scholarships · 3 working days' },
+    { id: 'receipt', name: 'Fee payment receipt', note: 'Duplicate receipt for any paid term · same day' },
+    { id: 'migration', name: 'Migration certificate', note: 'Issued on leaving school · office approval needed' }
+  ];
+
+  issuedDocsList = [
+    { id: 'd1', name: 'Bonafide certificate', meta: 'Issued 12 Aug 2026 · Ref BON/8B/119' },
+    { id: 'd2', name: 'Term 1 report card', meta: 'Issued 2 Sept 2026 · Class 8-B' },
+    { id: 'd3', name: 'Fee payment receipt · Term 1', meta: 'Paid 18 Jun 2026 · ₹18,000' }
+  ];
+
+  feedbackDefs = [
+    { id: 'en', code: 'EN', subject: 'English', teacher: 'Ms. Radhika V' },
+    { id: 'ma', code: 'MA', subject: 'Mathematics', teacher: 'Mr. Suresh K' },
+    { id: 'sc', code: 'SC', subject: 'Science', teacher: 'Ms. Lakshmi P' },
+    { id: 'ss', code: 'SS', subject: 'Social Science', teacher: 'Mr. Anand R' }
+  ];
+
+  navigate(target) {
+    if (target && this.props.onNavigate) this.props.onNavigate(target);
+  }
+
+  renderVals() {
+    const page = this.props.page || 'home';
+    const view = this.state.timetableView;
+    const selectedDay = this.state.selectedDay;
+    const dayKeys = this.weekDays.map(d => d.key);
+
+    return {
+      activeChild: this.props.activeChild || { name: 'Aarav S', classLabel: 'Class 8-B' },
+      isHome: page === 'home',
+      isNotices: page === 'notices',
+      isAcademics: page === 'academics',
+      isAttendance: page === 'attendance',
+      isPerformance: page === 'performance',
+      isFees: page === 'fees',
+      isTimetable: page === 'timetable',
+      isCalendar: page === 'calendar',
+      isMeetings: page === 'meetings',
+      isLibrary: page === 'library',
+      isDailyTasks: page === 'dailytasks',
+      isMessages: page === 'messages',
+
+      isProfile: page === 'profile',
+      profileSections: [
+        { title: 'Student', rows: [
+          ['Date of birth', '14 Mar 2013'], ['Gender', 'Male'], ['Blood group', 'O+'],
+          ['Aadhaar (last 4)', 'XXXX 4187'], ['Mother tongue', 'Tamil'], ['Second language', 'Hindi'],
+          ['House', 'Emerald \u00b7 Green'], ['Date of admission', '12 Jun 2019']
+        ] },
+        { title: 'Father / guardian', rows: [
+          ['Name', 'Suresh Kumar S'], ['Relationship', 'Father'], ['Occupation', 'Bank manager'],
+          ['Phone', '+91 98400 21145'], ['Email', 'suresh.k@email.com']
+        ] },
+        { title: 'Mother', rows: [
+          ['Name', 'Priya Suresh'], ['Occupation', 'Physiotherapist'], ['Phone', '+91 98410 33267']
+        ] },
+        { title: 'Emergency & address', rows: [
+          ['Emergency contact', 'Meena R \u00b7 Aunt'], ['Emergency phone', '+91 90031 55420'],
+          ['Address', '12/4 Third Avenue'], ['City', 'Anna Nagar, Chennai 600040']
+        ] },
+        { title: 'School', rows: [
+          ['Class teacher', 'Ms. Radhika V'], ['Section', '8-B \u00b7 Block B, Room 14'],
+          ['Bus route', 'Route 7 \u00b7 Stop 4'], ['Fee category', 'Regular \u00b7 Term-wise']
+        ] }
+      ].map(s => ({
+        title: s.title,
+        rows: s.rows.map((r, i) => ({
+          label: r[0], value: r[1],
+          rowStyle: i < s.rows.length - 1 ? 'border-bottom:1px solid #F0F2FA;' : ''
+        }))
+      })),
+
+      isDocuments: page === 'documents',
+      docSearch: this.state.docSearch,
+      handleDocSearch: (e) => this.setState({ docSearch: e.target.value }),
+      docRequestOpen: this.state.docRequestOpen,
+      docRequestChevron: this.state.docRequestOpen ? '▲' : '▼',
+      toggleDocRequest: () => this.setState(s => ({ docRequestOpen: !s.docRequestOpen })),
+      docToast: this.state.docToast,
+      requestableDocs: this.requestableDocsList.map(r => ({
+        ...r,
+        request: () => this.setState({ docRequestOpen: false, docToast: r.name + ' requested. The office will confirm shortly.' })
+      })),
+      issuedDocs: this.issuedDocsList
+        .filter(d => d.name.toLowerCase().includes(this.state.docSearch.toLowerCase()))
+        .map((d, i, arr) => ({
+          ...d,
+          rowStyle: i < arr.length - 1 ? 'border-bottom:1px solid #F0F2FA;' : '',
+          download: () => this.setState({ docToast: 'Downloading ' + d.name + '…' })
+        })),
+
+      isFeedback: page === 'feedback',
+      feedbackSubjects: this.feedbackDefs.map(f => {
+        const val = this.state.ratings[f.id] || 0;
+        return {
+          ...f,
+          status: val ? 'Rated' : 'Not rated',
+          statusStyle: val ? 'color:#2F55E8;' : 'color:#0B0F19;',
+          stars: [1, 2, 3, 4, 5].map(n => ({
+            fill: n <= val ? 'currentColor' : 'none',
+            style: n <= val ? 'color:#2F55E8;' : 'color:#DCDFE8;',
+            rate: () => this.setState(s => ({ ratings: { ...s.ratings, [f.id]: n }, feedbackSubmitted: false }))
+          }))
+        };
+      }),
+      feedbackBtnLabel: this.state.feedbackSubmitted
+        ? 'Feedback submitted'
+        : (this.feedbackDefs.every(f => this.state.ratings[f.id]) ? 'Submit feedback' : 'Rate all 4 subjects'),
+      feedbackBtnStyle: this.feedbackDefs.every(f => this.state.ratings[f.id])
+        ? 'background:#2F55E8;color:#fff;cursor:pointer;'
+        : 'background:#AEB8D4;color:#fff;cursor:not-allowed;',
+      submitFeedback: () => {
+        if (this.feedbackDefs.every(f => this.state.ratings[f.id])) this.setState({ feedbackSubmitted: true });
+      },
+
+      homeworkList: this.homeworkList,
+      noticesList: this.noticesList,
+      subjects: this.subjects,
+      perfSubjects: this.perfSubjects,
+      feeItems: this.feeItems,
+      termSplit: this.termSplitData.map(t => ({ ...t, barStyle: `width:${t.pct}%;` })),
+      attendanceDays: this.buildAttendanceDays(),
+      attendanceStats: [
+        { value: '86', label: 'Days present' },
+        { value: '6', label: 'Days absent' },
+        { value: '3', label: 'Late arrivals' }
+      ],
+      attCells: this.buildAttCells(),
+      attWeekLabels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+      attMonthLabel: this.attMonths[this.state.attMonthIdx].label,
+      attMonthSummary: this.attMonths[this.state.attMonthIdx].present + ' / ' + this.attMonths[this.state.attMonthIdx].total + ' days present',
+      attDayRecord: this.attDayText(),
+      attPrevMonth: () => this.setState(s => ({ attMonthIdx: Math.max(0, s.attMonthIdx - 1), attSelectedDay: null })),
+      attNextMonth: () => this.setState(s => ({ attMonthIdx: Math.min(this.attMonths.length - 1, s.attMonthIdx + 1), attSelectedDay: null })),
+      periods: this.periodsData.map(p => ({ ...p, rowStyle: p.now ? 'background:#F6F8FF;' : '' })),
+      attentionItems: this.attentionItemsData.map(a => ({ ...a, go: () => this.navigate(a.target) })),
+      homeNotices: this.homeNoticesData,
+      goStat0: () => this.navigate('attendance'),
+      goStat1: () => this.navigate('fees'),
+      goStat2: () => this.navigate('dailytasks'),
+      goStat3: () => this.navigate('performance'),
+      goTimetable: () => this.navigate('timetable'),
+      goNotices: () => this.navigate('notices'),
+      goFees: () => this.navigate('fees'),
+      goMessages: () => this.navigate('messages'),
+      isMeetingsList: this.state.meetingsView === 'list',
+      isMeetingDetails: this.state.meetingsView === 'details',
+      isMeetingCall: this.state.meetingsView === 'call',
+      isMeetingRecord: this.state.meetingsView === 'record',
+      openMeetingDetails: () => this.openMeetingDetails(),
+      backToMeetingsList: () => this.backToMeetingsList(),
+      backToMeetingDetails: () => this.setState({ meetingsView: 'details' }),
+      previousMeetings: this.previousMeetingsData.map(m => ({ ...m, open: () => this.openMeetingRecord(m.id) })),
+      meetingSlotsWithState: this.meetingSlotsData.map(s => ({
+        ...s,
+        select: () => { if (!s.locked) this.setState({ selectedSlotId: s.id }); },
+        isSelected: this.state.selectedSlotId === s.id,
+        cardStyle: this.state.selectedSlotId === s.id ? 'background:#3B5BDB;color:#fff;' : 'background:#fff;border:1px solid #E7E9F0;color:#12172B;',
+        subStyle: this.state.selectedSlotId === s.id ? 'color:rgba(255,255,255,0.85);' : 'color:#6B7280;',
+        dotStyle: this.state.selectedSlotId === s.id ? 'background:#3B5BDB;border-color:#3B5BDB;' : 'border-color:#D8DCE8;'
+      })),
+      selectedSlot: this.meetingSlotsData.find(s => s.id === this.state.selectedSlotId),
+      meetingWaitingMicStyle: this.state.meetingCallMuted ? 'background:#374151;color:#fff;' : 'background:#3B5BDB;color:#fff;',
+      meetingWaitingCamStyle: this.state.meetingCallCameraOn ? 'background:#3B5BDB;color:#fff;' : 'background:#374151;color:#fff;',
+      toggleMeetingMic: () => this.setState(s => ({ meetingCallMuted: !s.meetingCallMuted })),
+      toggleMeetingCam: () => this.setState(s => ({ meetingCallCameraOn: !s.meetingCallCameraOn })),
+      openMeetingCall: () => this.openMeetingCall(),
+      leaveMeeting: () => this.setState({ meetingsView: 'list' }),
+      meetingElapsed: this.fmtTime(this.state.meetingElapsedSec),
+      meetingMuteLabel: this.state.meetingCallMuted ? 'Unmute' : 'Mute',
+      meetingCamLabel: this.state.meetingCallCameraOn ? 'Camera off' : 'Camera on',
+      meetingCamNoteVisible: !this.state.meetingCallCameraOn,
+      selectedRecord: this.previousMeetingsData.find(m => m.id === this.state.selectedRecordId) || this.previousMeetingsData[0],
+
+      isLibBorrowed: this.state.libraryTab === 'borrowed',
+      isLibSearch: this.state.libraryTab === 'search',
+      isLibHistory: this.state.libraryTab === 'history',
+      libBorrowedTabStyle: this.state.libraryTab === 'borrowed' ? 'background:#3B5BDB;color:#fff;' : 'background:#F0F2FA;color:#374151;',
+      libSearchTabStyle: this.state.libraryTab === 'search' ? 'background:#3B5BDB;color:#fff;' : 'background:#F0F2FA;color:#374151;',
+      libHistoryTabStyle: this.state.libraryTab === 'history' ? 'background:#3B5BDB;color:#fff;' : 'background:#F0F2FA;color:#374151;',
+      showLibBorrowed: () => this.setState({ libraryTab: 'borrowed' }),
+      showLibSearch: () => this.setState({ libraryTab: 'search' }),
+      showLibHistory: () => this.setState({ libraryTab: 'history' }),
+      librarySearch: this.state.librarySearch,
+      handleLibrarySearch: (e) => this.setState({ librarySearch: e.target.value }),
+      borrowedBooksWithState: this.borrowedBooks.map(b => ({
+        ...b,
+        dueColor: b.dueSoon ? 'color:#3B5BDB;' : 'color:#0B0F19;',
+        renewed: !!this.state.libraryActions[b.id],
+        renewLabel: this.state.libraryActions[b.id] ? 'Renewed' : 'Renew',
+        renew: () => this.setState(s => ({ libraryActions: { ...s.libraryActions, [b.id]: true } }))
+      })),
+      searchResults: this.searchCatalog
+        .filter(b => {
+          const q = this.state.librarySearch.trim().toLowerCase();
+          if (!q) return true;
+          return b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.code.toLowerCase().includes(q);
+        })
+        .map(b => ({
+          ...b,
+          reserved: !!this.state.libraryActions[b.id],
+          reserveLabel: this.state.libraryActions[b.id] ? 'Reserved' : 'Reserve',
+          availLabel: b.available ? 'Available' : 'Issued',
+          availStyle: b.available ? 'color:#3B5BDB;' : 'color:#9AA1B2;',
+          reserve: () => this.setState(s => ({ libraryActions: { ...s.libraryActions, [b.id]: true } }))
+        })),
+      libraryHistoryList: this.libraryHistory,
+
+      homeworkDayTabsWithState: this.homeworkDayTabs.map(d => ({
+        ...d,
+        select: () => this.setState({ homeworkDay: d.date }),
+        tabStyle: this.state.homeworkDay === d.date ? 'background:#3B5BDB;color:#fff;border-color:#3B5BDB;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;'
+      })),
+      homeworkHeaderDate: (() => {
+        const d = this.homeworkDayTabs.find(x => x.date === this.state.homeworkDay);
+        const names = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday' };
+        return `${names[d.key]}, ${d.date} ${d.key === 'MON' ? 'August' : 'September'}`;
+      })(),
+      homeworkListForDay: (this.homeworkByDay[this.state.homeworkDay] || { homework: [] }).homework.map(h => {
+        const done = this.state.homeworkCompleted[h.id];
+        const status = done ? 'Submitted' : h.status;
+        const badgeStyle = status === 'Late' ? 'background:#12172B;color:#fff;' : status === 'Submitted' ? 'background:#EEF1FF;color:#3B5BDB;' : 'background:#F0F2FA;color:#374151;';
+        return { ...h, status, badgeStyle, isPending: status === 'Pending' || status === 'Late', markDone: () => this.setState(s => ({ homeworkCompleted: { ...s.homeworkCompleted, [h.id]: true } })) };
+      }),
+      assignmentsForDay: (this.homeworkByDay[this.state.homeworkDay] || { assignments: [] }).assignments.map(a => ({
+        ...a, badgeStyle: a.status === 'Submitted' ? 'background:#EEF1FF;color:#3B5BDB;' : 'background:#F0F2FA;color:#374151;'
+      })),
+      hasAssignmentsForDay: ((this.homeworkByDay[this.state.homeworkDay] || {}).assignments || []).length > 0,
+      hasNoHomework: ((this.homeworkByDay[this.state.homeworkDay] || {}).homework || []).length === 0 && ((this.homeworkByDay[this.state.homeworkDay] || {}).assignments || []).length === 0,
+      meetingSlots: this.meetingSlotsData,
+      threads: this.threadsData.map(t => ({ ...t, rowStyle: t.active ? 'background:#F6F8FF;' : '' })),
+
+      isTodayView: view === 'today',
+      isFullWeekView: view === 'full',
+      todayBtnStyle: view === 'today' ? 'background:#3B5BDB;color:#fff;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;',
+      fullWeekBtnStyle: view === 'full' ? 'background:#3B5BDB;color:#fff;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;',
+      showToday: () => this.setState({ timetableView: 'today' }),
+      showFullWeek: () => this.setState({ timetableView: 'full' }),
+      weekDaysForStrip: this.weekDays.map(d => ({
+        ...d,
+        select: () => this.setState({ selectedDay: d.date }),
+        cellStyle: d.date === selectedDay ? 'background:#fff;color:#12172B;' : 'background:rgba(255,255,255,0.15);color:#fff;'
+      })),
+      selectedDayPeriods: this.weekSchedule[dayKeys[selectedDay - 1]].map(p => ({ ...p, rowStyle: p.now ? 'background:#F6F8FF;' : '' })),
+      fullWeekRows: this.buildFullWeekRows().map((row, i) => ({
+        ...row,
+        select: () => this.setState(s => ({ selectedWeekRow: s.selectedWeekRow === i ? null : i })),
+        selStyle: this.state.selectedWeekRow === i
+          ? 'transform:translateY(-4px);outline-color:#2F55E8;box-shadow:0 8px 20px rgba(47,85,232,0.12);position:relative;z-index:1;'
+          : ''
+      })),
+      selectStat0: () => this.setState(s => ({ selectedStat: s.selectedStat === 0 ? null : 0 })),
+      selectStat1: () => this.setState(s => ({ selectedStat: s.selectedStat === 1 ? null : 1 })),
+      selectStat2: () => this.setState(s => ({ selectedStat: s.selectedStat === 2 ? null : 2 })),
+      selectStat3: () => this.setState(s => ({ selectedStat: s.selectedStat === 3 ? null : 3 })),
+      stat0Style: this.state.selectedStat === 0 ? 'transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);' : '',
+      stat1Style: this.state.selectedStat === 1 ? 'transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);' : '',
+      stat2Style: this.state.selectedStat === 2 ? 'transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);' : '',
+      stat3Style: this.state.selectedStat === 3 ? 'transform:translateY(-6px);border-color:#2F55E8;box-shadow:0 10px 24px rgba(47,85,232,0.14);' : '',
+      weekDayHeaders: this.weekDays.map(d => `${d.key} ${String(d.date).padStart(2,'0')}`),
+      calendarCells: this.buildCalendarCells(),
+      calendarEvents: this.calendarEventsList,
+      weekDayLabels: ['S','M','T','W','T','F','S'],
+
+      subjectsWithOpen: this.subjects.map(s => ({ ...s, open: () => this.setState({ selectedSubjectId: s.code }) })),
+      isSubjectDetail: !!this.state.selectedSubjectId,
+      showSubjectList: !this.state.selectedSubjectId,
+      backToAcademics: () => this.setState({ selectedSubjectId: null }),
+      selectedSubject: (() => {
+        const code = this.state.selectedSubjectId;
+        if (!code) return null;
+        const base = this.subjects.find(s => s.code === code);
+        const detail = this.subjectDetails[code];
+        return {
+          name: base.name, teacher: base.teacher,
+          unit: detail.unit, meta: detail.meta, progress: detail.progress,
+          barStyle: `width:${detail.progress}%;`,
+          weeks: detail.weeks.map(w => ({ ...w, labelStyle: w.done ? 'color:#3B5BDB;' : 'color:#9AA1B2;', textStyle: w.done ? 'color:#0B0F19;' : 'color:#9AA1B2;' })),
+          homework: detail.homework,
+          assignments: detail.assignments
+        };
+      })(),
+
+      perfTabs: Object.keys(this.performanceTerms).map(key => ({
+        key, label: this.performanceTerms[key].label, pct: this.performanceTerms[key].pct,
+        select: () => this.setState({ performanceTerm: key }),
+        tabStyle: this.state.performanceTerm === key ? 'background:#3B5BDB;color:#fff;border-color:#3B5BDB;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;'
+      })),
+      perfHasData: !!this.performanceTerms[this.state.performanceTerm].total,
+      perfNoData: !this.performanceTerms[this.state.performanceTerm].total,
+      perfData: (() => {
+        const t = this.performanceTerms[this.state.performanceTerm];
+        if (!t.total) return null;
+        return {
+          ...t,
+          barStyle: `width:${t.pct};`,
+          subjects: t.subjects.map(s => ({ ...s, flagVisible: !!s.flag }))
+        };
+      })(),
+
+      feeItemsWithState: this.feeItems.map(f => ({
+        ...f,
+        amountFmt: this.fmtMoney(f.amount),
+        checked: !!this.state.feeSelections[f.id],
+        toggle: () => this.toggleFee(f.id),
+        boxStyle: this.state.feeSelections[f.id] ? 'background:#3B5BDB;border-color:#3B5BDB;' : 'background:#fff;border:1.5px solid #D8DCE8;',
+        payValue: this.feeAmountInput(f),
+        inputWrapStyle: this.state.feeSelections[f.id] ? 'background:#F0F4FF;border:1px solid #CBD6FA;' : 'background:#F6F7FB;border:1px solid #E7E9F0;',
+        stop: (e) => e.stopPropagation(),
+        setAmount: (e) => {
+          const raw = e.target.value.replace(/[^0-9]/g, '');
+          const capped = raw === '' ? '' : String(Math.min(parseInt(raw, 10) || 0, f.amount));
+          this.setState(s => ({ feeAmounts: { ...s.feeAmounts, [f.id]: capped }, payAmount: null }));
+        }
+      })),
+      selectedFeeCount: Object.values(this.state.feeSelections).filter(Boolean).length,
+      selectedFeeTotal: this.fmtMoney(this.selectedTotal()),
+      goToPayment: () => this.setState({ paymentStep: 'method', payAmount: null }),
+      payAmountValue: this.payAmountInput(),
+      payAmountFmt: this.fmtMoney(this.payAmountNum()),
+      handlePayAmount: (e) => this.setState({ payAmount: e.target.value.replace(/[^0-9]/g, '') }),
+      payFullAmount: () => this.setState({ payAmount: null }),
+      payHint: this.payHintText(),
+      payHintStyle: this.payAmountNum() > this.selectedTotal() ? 'color:#E94D4D;font-weight:700;' : 'color:#8A90A0;',
+      payButtonStyle: (this.payAmountNum() > 0 && this.payAmountNum() <= this.selectedTotal())
+        ? 'background:#3B5BDB;color:#fff;cursor:pointer;'
+        : 'background:#AEB8D4;color:#fff;cursor:not-allowed;',
+      isFeesStep: this.state.paymentStep === 'fees',
+      isMethodStep: this.state.paymentStep === 'method',
+      isSuccessStep: this.state.paymentStep === 'success',
+      backToFees: () => this.setState({ paymentStep: 'fees' }),
+      confirmPayment: () => {
+        const amt = this.payAmountNum();
+        if (amt > 0 && amt <= this.selectedTotal()) this.setState({ paymentStep: 'success' });
+      },
+      selectedFeeLines: this.feeItems.filter(f => this.state.feeSelections[f.id]).map(f => ({ ...f, amountFmt: this.fmtMoney(this.feeAmountNum(f)) })),
+      paidTowardsText: this.feeItems.filter(f => this.state.feeSelections[f.id]).map(f => f.name).join(', '),
+      paymentMethods: [
+        { id: 'upi', name: 'UPI', sub: 'Google Pay, PhonePe, Paytm' },
+        { id: 'card', name: 'Debit / Credit card', sub: 'Visa, Mastercard, RuPay' },
+        { id: 'netbanking', name: 'Net banking', sub: 'All major banks' },
+        { id: 'wallet', name: 'Wallet', sub: 'All major banks supported' }
+      ].map(m => ({
+        ...m,
+        select: () => this.setState({ paymentMethod: m.id }),
+        dotStyle: this.state.paymentMethod === m.id ? 'border-color:#3B5BDB;' : 'border-color:#D8DCE8;',
+        rowStyle: this.state.paymentMethod === m.id ? 'background:#EEF1FF;border-color:#3B5BDB;' : 'background:#fff;border:1px solid #E7E9F0;',
+        filled: this.state.paymentMethod === m.id
+      })),
+
+      msgSearch: this.state.msgSearch,
+      handleMsgSearch: (e) => this.setState({ msgSearch: e.target.value }),
+      noThreadMatches: this.filterThreads().length === 0,
+      threadsWithState: this.filterThreads().map(t => ({
+        ...t,
+        select: () => this.setState({ activeThreadId: t.id }),
+        rowStyle: this.state.activeThreadId === t.id ? 'background:#EEF1FF;' : ''
+      })),
+      activeThread: this.threadsData.find(t => t.id === this.state.activeThreadId),
+      activeThreadMessages: (this.state.threadMessages[this.state.activeThreadId] || []).map(m => ({
+        ...m,
+        bubbleStyle: m.from === 'me' ? 'align-self:flex-end;background:#3B5BDB;color:#fff;' : 'align-self:flex-start;background:#F0F2FA;color:#12172B;'
+      })),
+      replyDraft: this.state.replyDraft,
+      handleReplyInput: (e) => this.setState({ replyDraft: e.target.value }),
+      quickReplies: ['Noted, thank you', 'Will check and reply', 'Can we talk after class?'].map(t => ({
+        text: t, select: () => this.setState({ replyDraft: t })
+      })),
+      sendReply: () => this.sendReply(),
+
+      isOnline: page === 'online',
+      isOnlineSessions: this.state.onlineTab === 'sessions' && this.state.onlineView === 'sessions',
+      isOnlineRecordings: this.state.onlineTab === 'recordings' && this.state.onlineView === 'sessions',
+      isOnlineWaiting: this.state.onlineView === 'waiting',
+      isOnlineCall: this.state.onlineView === 'incall',
+      showSessionsTab: () => this.setState({ onlineTab: 'sessions' }),
+      showRecordingsTab: () => this.setState({ onlineTab: 'recordings' }),
+      sessionsTabStyle: this.state.onlineTab === 'sessions' ? 'background:#3B5BDB;color:#fff;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;',
+      recordingsTabStyle: this.state.onlineTab === 'recordings' ? 'background:#3B5BDB;color:#fff;' : 'background:#fff;color:#12172B;border:1px solid #E7E9F0;',
+      onlineSessionsList: this.onlineSessions.map(s => {
+        const isLive = s.status === 'live';
+        const isSoon = s.status === 'soon';
+        return {
+          ...s,
+          badgeText: isLive ? 'Live now' : isSoon ? 'Starts in 25 min' : 'Scheduled',
+          badgeStyle: isLive ? 'background:#EAF7EE;color:#1F8A4C;' : isSoon ? 'background:#F0F2FA;color:#374151;' : 'background:#F0F2FA;color:#9AA1B2;',
+          btnLabel: isLive ? 'Join' : isSoon ? 'Join' : 'Not yet',
+          btnStyle: (isLive || isSoon) ? 'background:#3B5BDB;color:#fff;border:none;cursor:pointer;' : 'background:#F0F2FA;color:#9AA1B2;border:none;cursor:not-allowed;',
+          canJoin: isLive || isSoon,
+          join: () => { if (isLive || isSoon) this.openWaiting(s); }
+        };
+      }),
+      recordingsList: this.recordingsList,
+
+      waitingSession: (() => {
+        const s = this.onlineSessions.find(x => x.id === this.state.selectedSessionId) || this.onlineSessions[0];
+        const isLive = s.status === 'live';
+        return {
+          ...s, initials: s.teacher.split(' ').filter(w => w[0] === w[0].toUpperCase()).slice(0,2).map(w=>w[0]).join('').slice(0,2) || 'T',
+          statusText: isLive ? 'Class in progress \u00b7 join now' : 'Waiting for the teacher to start'
+        };
+      })(),
+      waitingMicStyle: this.state.callMuted ? 'background:#374151;color:#fff;' : 'background:#3B5BDB;color:#fff;',
+      waitingCamStyle: this.state.callCameraOn ? 'background:#3B5BDB;color:#fff;' : 'background:#374151;color:#fff;',
+      toggleWaitingMic: () => this.setState(s => ({ callMuted: !s.callMuted })),
+      toggleWaitingCam: () => this.setState(s => ({ callCameraOn: !s.callCameraOn })),
+      joinCall: () => this.joinCall(),
+
+      callElapsed: this.fmtTime(this.state.elapsedSec),
+      callTeacher: this.callRoster.find(r => r.isTeacher),
+      callHandsUp: this.callRoster.filter(r => r.handUp).length + (this.state.handRaised ? 1 : 0),
+      toggleMute: () => this.setState(s => ({ callMuted: !s.callMuted })),
+      toggleCamera: () => this.setState(s => ({ callCameraOn: !s.callCameraOn })),
+      toggleHand: () => this.setState(s => ({ handRaised: !s.handRaised })),
+      togglePeoplePanel: () => this.setState(s => ({ callPanel: s.callPanel === 'people' ? null : 'people' })),
+      toggleChatPanel: () => this.setState(s => ({ callPanel: s.callPanel === 'chat' ? null : 'chat' })),
+      toggleFullScreen: () => this.setState(s => ({ fullScreen: !s.fullScreen })),
+      leaveCall: () => this.leaveCall(),
+      isMuted: this.state.callMuted,
+      isCameraOn: this.state.callCameraOn,
+      cameraLabel: this.state.callCameraOn ? 'You are visible' : 'Your camera is off',
+      isHandRaised: this.state.handRaised,
+      showPeoplePanel: this.state.callPanel === 'people',
+      showChatPanel: this.state.callPanel === 'chat',
+      callFullScreenStyle: this.state.fullScreen ? 'position:fixed;inset:0;z-index:50;border-radius:0;' : '',
+      callFullScreenLabel: this.state.fullScreen ? 'Exit full screen' : 'Full screen',
+      callRosterWithState: this.callRoster.map(r => ({
+        ...r,
+        handUpNow: r.isMe ? this.state.handRaised : r.handUp,
+        mutedNow: r.isMe ? this.state.callMuted : r.muted
+      })),
+      onlineChatMessagesWithStyle: this.state.onlineChatMessages.map(m => ({
+        ...m, bubbleStyle: m.me ? 'align-self:flex-end;background:#3B5BDB;color:#fff;' : 'align-self:flex-start;background:rgba(255,255,255,0.08);color:#fff;'
+      })),
+      onlineChatDraft: this.state.onlineChatDraft,
+      handleOnlineChatInput: (e) => this.setState({ onlineChatDraft: e.target.value }),
+      sendOnlineChat: () => this.sendOnlineChat()
+    };
+  }
+}
+
+</script>
+</body>
+</html>

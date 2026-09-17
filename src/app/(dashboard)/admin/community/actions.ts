@@ -178,9 +178,14 @@ export async function createAnnouncementAction(
   _prev: FormActionState,
   formData: FormData,
 ): Promise<FormActionState> {
+  // The reference design's "+ New post" creates a real, immediately-visible
+  // post to parents -- no separate draft/publish workflow shown -- so this
+  // sends state=PUBLISHED directly rather than leaving it at the repository's
+  // own DRAFT default.
   const payload: Record<string, unknown> = {
     title: formData.get("title"),
     body: formData.get("body"),
+    state: "PUBLISHED",
   };
 
   const res = await apiFetch(`/communities/${communityId}/announcements`, {
@@ -206,6 +211,71 @@ export async function publishAnnouncementAction(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ state: "PUBLISHED" }),
   });
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath(`/admin/community/${communityId}`);
+  return {};
+}
+
+export async function createPositionAction(
+  communityId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const assigneeType = formData.get("assigneeType");
+  const payload: Record<string, unknown> = {
+    title: formData.get("title"),
+    assigneeType,
+  };
+  if (assigneeType === "STAFF") payload.assigneeStaffId = formData.get("assigneeStaffId");
+  if (assigneeType === "STUDENT") payload.assigneeStudentId = formData.get("assigneeStudentId");
+
+  const res = await apiFetch(`/communities/${communityId}/positions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    return { error: await readError(res) };
+  }
+
+  revalidatePath(`/admin/community/${communityId}`);
+  return {};
+}
+
+export async function updatePositionAction(
+  communityId: string,
+  positionId: string,
+  _prev: FormActionState,
+  formData: FormData,
+): Promise<FormActionState> {
+  const assigneeType = formData.get("assigneeType");
+  const payload: Record<string, unknown> = {
+    title: formData.get("title"),
+    assigneeType,
+  };
+  if (assigneeType === "STAFF") payload.assigneeStaffId = formData.get("assigneeStaffId");
+  if (assigneeType === "STUDENT") payload.assigneeStudentId = formData.get("assigneeStudentId");
+
+  const res = await apiFetch(`/community-positions/${positionId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    return { error: await readError(res) };
+  }
+
+  revalidatePath(`/admin/community/${communityId}`);
+  return {};
+}
+
+export async function deletePositionAction(
+  communityId: string,
+  positionId: string,
+): Promise<{ error?: string }> {
+  const res = await apiFetch(`/community-positions/${positionId}`, { method: "DELETE" });
   if (!res.ok) return { error: await readError(res) };
   revalidatePath(`/admin/community/${communityId}`);
   return {};

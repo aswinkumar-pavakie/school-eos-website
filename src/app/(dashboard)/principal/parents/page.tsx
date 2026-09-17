@@ -68,7 +68,7 @@ export default async function PrincipalParentsPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Parents</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Parents</h1>
           <p className="mt-1 text-sm text-text-muted">{meta.total} parent accounts</p>
         </div>
       </div>

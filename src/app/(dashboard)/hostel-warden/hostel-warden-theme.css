@@ -1,0 +1,163 @@
+/*
+ * Design tokens for the Hostel Warden portal, measured verbatim (by literal
+ * usage-count) from brain/SIS HOSTEL WARDEN/Warden Console.dc.html -- a
+ * separate design spec from sitewide globals.css's @theme block and from the
+ * Faculty/Library rebuilds' own tokens (different accent, different font --
+ * Plus Jakarta Sans here, not Outfit).
+ *
+ * Scoped deliberately: every variable is --hw-* and only takes effect inside
+ * .hostel-warden-scope, which HostelWardenShell applies once to its own
+ * outermost wrapper. No other role loads this file or sees these values.
+ */
+
+.hostel-warden-scope {
+  --hw-bg: #ffffff;
+  --hw-surface: #ffffff;
+  --hw-text: #101828;
+  --hw-text-muted: #6b7580;
+  --hw-text-faint: #9aa4b0;
+  --hw-accent: #2a52d8;
+  --hw-accent-100: #eef2fe;
+  --hw-accent-200: #dbe4fd;
+  --hw-accent-300: #c3d0fb;
+  --hw-accent-600: #1d3da6;
+  --hw-accent-700: #2447c4;
+  --hw-accent-900: #10233f;
+  --hw-divider: #e6e9ee;
+  --hw-divider-soft: #eef0f4;
+  --hw-border-input: #d9dee6;
+  --hw-red-bg: #fdecec;
+  --hw-red-text: #a02020;
+  --hw-red-strong: #c0201f;
+  --hw-amber-bg: #fdf3e2;
+  --hw-amber-text: #8a5a12;
+  --hw-panel: #f7f8fa;
+
+  --hw-radius-sm: 9px;
+  --hw-radius-md: 14px;
+
+  --hw-font-sans: var(--font-plus-jakarta-sans-hw), ui-sans-serif, system-ui, sans-serif;
+
+  font-family: var(--hw-font-sans);
+  color: var(--hw-text);
+  background: var(--hw-bg);
+  font-size: 14px;
+}
+
+.hostel-warden-scope * {
+  box-sizing: border-box;
+}
+
+.hostel-warden-scope input,
+.hostel-warden-scope select,
+.hostel-warden-scope textarea,
+.hostel-warden-scope button {
+  font-family: var(--hw-font-sans);
+}
+
+.hostel-warden-scope ::placeholder {
+  color: var(--hw-text-faint);
+}
+
+/* Verbatim port of the design's own .input rule, scoped so it can't collide
+   with any other role's own generic .input class. */
+.hostel-warden-scope .input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--hw-divider);
+  border-radius: var(--hw-radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--hw-text);
+  background: #fff;
+  outline: none;
+}
+.hostel-warden-scope .input:focus {
+  border-color: var(--hw-accent);
+}
+
+.hostel-warden-scope a {
+  color: var(--hw-accent-700);
+  text-decoration: none;
+}
+.hostel-warden-scope a:hover {
+  color: var(--hw-accent-900);
+  text-decoration: underline;
+}
+
+/* Card/table hover-lift -- translateY(-4px) + accent border + soft blue
+   shadow, the .15s ease transition used on every card in the source. */
+.hw-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  will-change: transform;
+}
+.hw-lift:hover,
+.hw-lift:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--hw-accent) !important;
+  box-shadow: 0 12px 26px rgba(42, 82, 216, 0.16);
+}
+.hw-lift:active {
+  transform: translateY(-2px);
+}
+
+/* Table row hover-lift -- matches table.table tbody tr:hover in the source
+   exactly (background stays white, outline instead of border so layout
+   doesn't shift). */
+.hw-row-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hw-row-hover:hover {
+  background: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(42, 82, 216, 0.16);
+  outline: 1px solid var(--hw-accent);
+  outline-offset: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.hw-surface-hover:hover {
+  background: var(--hw-panel);
+}
+
+.hw-btn-primary {
+  background: var(--hw-accent);
+  color: #fff;
+}
+.hw-btn-primary:hover {
+  background: var(--hw-accent-600);
+}
+.hw-btn-secondary:hover {
+  background: var(--hw-panel);
+}
+.hw-btn-ghost {
+  color: var(--hw-accent-700);
+}
+.hw-btn-ghost:hover {
+  background: var(--hw-accent-100);
+}
+
+.hostel-warden-scope table.hw-table th {
+  text-align: left;
+  color: var(--hw-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--hw-panel);
+  border-bottom: 1px solid var(--hw-divider);
+}
+.hostel-warden-scope table.hw-table td {
+  border-bottom: 1px solid var(--hw-divider-soft);
+}
+
+.hostel-warden-scope ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.hostel-warden-scope ::-webkit-scrollbar-thumb {
+  background: #dde2e8;
+  border-radius: 8px;
+}

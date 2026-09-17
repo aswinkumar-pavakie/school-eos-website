@@ -3,17 +3,13 @@ import type { MediaPost } from "@/lib/media-api";
 import { formatDate } from "@/lib/format";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }
 
 export function ContentCalendarPanel({ posts, year, month }: { posts: MediaPost[]; year: number; month: number }) {
-  // month is 0-indexed
   const relevant = posts.filter((p) => p.state === "SCHEDULED" || p.state === "PUBLISHED");
   const byDay = new Map<string, MediaPost[]>();
   for (const post of relevant) {
@@ -26,7 +22,6 @@ export function ContentCalendarPanel({ posts, year, month }: { posts: MediaPost[
 
   const firstOfMonth = new Date(year, month, 1);
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  // getDay(): 0=Sun..6=Sat -> convert to Mon-first index
   const leadingBlanks = (firstOfMonth.getDay() + 6) % 7;
 
   const prevMonth = month === 0 ? { year: year - 1, month: 11 } : { year, month: month - 1 };
@@ -35,57 +30,57 @@ export function ContentCalendarPanel({ posts, year, month }: { posts: MediaPost[
   const isCurrentMonthRealToday = today.getFullYear() === year && today.getMonth() === month;
 
   const thisMonthPosts = [...byDay.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const postsThisMonth = relevant.filter((p) => dayKey((p.publishedAt ?? p.publishAt)!).slice(0, 7) === `${year}-${String(month + 1).padStart(2, "0")}`).length;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
-      <div className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <Link href={`?tab=calendar&year=${prevMonth.year}&month=${prevMonth.month}`} className="text-text-muted hover:text-text">‹</Link>
-          <div className="text-center">
-            <p className="text-base font-extrabold text-text">{MONTH_NAMES[month]} {year}</p>
-            <p className="text-xs text-text-muted">{relevant.filter((p) => dayKey((p.publishedAt ?? p.publishAt)!).slice(0, 7) === `${year}-${String(month + 1).padStart(2, "0")}`).length} posts this month</p>
+    <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 20, marginTop: 28, alignItems: "start" }}>
+      <div style={{ background: "#fff", border: "1px solid var(--med-border)", borderRadius: 15, padding: "24px 26px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link href={`?tab=calendar&year=${prevMonth.year}&month=${prevMonth.month}`} style={{ fontSize: 18, color: "var(--med-body-muted)" }}>‹</Link>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 18, fontWeight: 800 }}>{MONTH_NAMES[month]} {year}</div>
+            <div style={{ fontSize: 12.5, color: "var(--med-tertiary)" }}>{postsThisMonth} posts this month</div>
           </div>
-          <Link href={`?tab=calendar&year=${nextMonth.year}&month=${nextMonth.month}`} className="text-text-muted hover:text-text">›</Link>
+          <Link href={`?tab=calendar&year=${nextMonth.year}&month=${nextMonth.month}`} style={{ fontSize: 18, color: "var(--med-body-muted)" }}>›</Link>
         </div>
-        <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-text-muted">
-          {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 8, marginTop: 18, textAlign: "center" }}>
+          {WEEKDAYS.map((d) => (
+            <div key={d} style={{ fontSize: 12, fontWeight: 700, color: "var(--med-tertiary)" }}>{d}</div>
+          ))}
         </div>
-        <div className="mt-2 grid grid-cols-7 gap-2">
-          {Array.from({ length: leadingBlanks }).map((_, i) => <div key={`b${i}`} />)}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 8, marginTop: 8 }}>
+          {Array.from({ length: leadingBlanks }).map((_, i) => (
+            <div key={`b${i}`} />
+          ))}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1;
             const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             const hasPosts = byDay.has(key);
             const isToday = isCurrentMonthRealToday && today.getDate() === day;
             return (
-              <div
-                key={day}
-                className={`flex aspect-square flex-col items-center justify-center rounded-[var(--radius-input)] text-sm ${
-                  isToday ? "border border-primary font-extrabold text-primary" : "text-text"
-                }`}
-              >
+              <div key={day} style={{ aspectRatio: "1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 10, fontSize: 14, border: isToday ? "1px solid var(--med-primary)" : undefined, fontWeight: isToday ? 800 : 500, color: isToday ? "var(--med-primary)" : "var(--med-ink)" }}>
                 {day}
-                {hasPosts ? <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" /> : null}
+                {hasPosts && <span style={{ marginTop: 3, width: 6, height: 6, borderRadius: "50%", background: "var(--med-primary)" }} />}
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="rounded-[var(--radius-card)] border border-border bg-surface p-5">
-        <h2 className="mb-1 text-sm font-bold text-text">This month</h2>
-        <p className="mb-3 text-xs text-text-muted">Scheduled drafts and published posts</p>
+      <div style={{ background: "#fff", border: "1px solid var(--med-border)", borderRadius: 15, padding: "24px 26px" }}>
+        <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.4px" }}>This month</div>
+        <div style={{ fontSize: 13.5, color: "var(--med-body-muted)", marginTop: 4 }}>Scheduled drafts and published posts</div>
         {thisMonthPosts.length === 0 ? (
-          <p className="text-sm text-text-muted">Nothing scheduled.</p>
+          <div style={{ fontSize: 13.5, color: "var(--med-tertiary)", marginTop: 16 }}>Nothing scheduled.</div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 16 }}>
             {thisMonthPosts.map(([key, dayPosts]) => (
               <div key={key}>
-                <p className="text-xs font-bold text-text-muted">{formatDate(key)}</p>
+                <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--med-tertiary)" }}>{formatDate(key)}</div>
                 {dayPosts.map((post) => (
-                  <p key={post.id} className="mt-1 line-clamp-1 text-sm text-text">
+                  <div key={post.id} style={{ fontSize: 14, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {post.state === "SCHEDULED" ? "🕒 " : "✅ "}{post.caption}
-                  </p>
+                  </div>
                 ))}
               </div>
             ))}

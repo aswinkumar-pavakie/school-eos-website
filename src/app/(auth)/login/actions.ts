@@ -7,31 +7,55 @@ import { setAuthCookies } from "@/lib/api";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
-// Admin, Principal (web half), Finance/Accounts, Library, Media Room, Community
-// (Phase 1: login only), Transport Manager, Faculty, Parent -- the web logins
-// in the system. Vice Principal moved to mobile-only per updated plan
-// (2026-09-03) -- see MOBILE_ALLOWED_ROLES in school-eos-mobile/src/lib/auth.ts.
-// Faculty was mobile-only too until the product decision on 2026-09-08 to
-// bring the same module to the web (see src/app/(dashboard)/faculty); Parent
-// got the same treatment right after (see src/app/(dashboard)/parent). FACULTY
-// also covers Sports Faculty (Sports In-Charge) operations (see /sports's own
-// layout.tsx) -- the /sports module only ever shows data for sport(s) a
-// SPORTS_FACULTY role_assignment scopes an account to, so a non-PT teacher's
-// account just sees empty lists there (same "empty, not 403" convention the
-// backend already uses); reached via the "Sports" nav item inside /faculty,
-// not a separate login path. Hostel Warden stays mobile-only; this backend
-// endpoint itself doesn't restrict by client, so the platform boundary is
-// enforced here, not assumed from who the task said would use this screen.
+// (Phase 1: login only), Transport Manager, Faculty, Parent, Vice Principal,
+// Hostel Warden, Academic Coordinator -- the web logins in the system. Vice
+// Principal was mobile-only from 2026-09-03 until explicitly reversed by
+// direct request -- see src/app/(dashboard)/vice-principal's own layout.tsx
+// for why its nav is NOT a copy of Principal's: real backend @Roles audit
+// across every controller found genuine differences (VP has real Attendance
+// Sessions + Examinations oversight Principal's own web console doesn't; VP
+// lacks the per-student Transport/Fees sub-views and vehicle
+// documents/maintenance Principal has). Faculty was mobile-only too until
+// the product decision on 2026-09-08 to bring the same module to the web
+// (see src/app/(dashboard)/faculty); Parent got the same treatment right
+// after (see src/app/(dashboard)/parent). FACULTY also covers Sports
+// Faculty (Sports In-Charge) operations (see /sports's own layout.tsx) --
+// the /sports module only ever shows data for sport(s) a SPORTS_FACULTY
+// role_assignment scopes an account to, so a non-PT teacher's account just
+// sees empty lists there (same "empty, not 403" convention the backend
+// already uses); reached via the "Sports" nav item inside /faculty, not a
+// separate login path. Hostel Warden was mobile-only until this same
+// treatment was extended to it (see src/app/(dashboard)/hostel-warden) --
+// this backend's own /hostel/* endpoints never restricted by client, so this
+// list is the actual platform boundary, not something assumed from who the
+// task said would use a given screen.
 const WEB_ALLOWED_ROLES = [
   "ADMIN",
   "PRINCIPAL",
+  "VICE_PRINCIPAL",
   "FINANCE",
   "LIBRARY",
   "MEDIA_ROOM",
-  "COMMUNITY",
   "TRANSPORT_MANAGER",
   "FACULTY",
   "PARENT",
+  "HOSTEL_WARDEN",
+  // A genuinely separate coordinator-only login (see Admin's own "coordinator
+  // login" flow, persons.service.ts's createAcademicCoordinatorLogin) --
+  // carries ONLY this role_code, no FACULTY, in its own JWT. A faculty member
+  // using their own shared FACULTY login for coordinator duties never needs
+  // this entry to matter here (FACULTY already covers them; see the redirect
+  // branch below).
+  "ACADEMIC_COORDINATOR",
+  // A genuinely new, separate real login (own person/login_identifier/
+  // user_credential/role_assignment rows -- see backend query.md's
+  // "Correspondent role" entry), not a second role on an existing Principal
+  // account. Its web console (src/app/(dashboard)/correspondent/) is
+  // Principal's own layout/pages cloned, since the SIS Correspondent
+  // reference design is literally Principal Console.dc.html relabeled --
+  // every backend endpoint Principal's console calls already had its own
+  // @Roles widened to include CORRESPONDENT alongside PRINCIPAL.
+  "CORRESPONDENT",
 ];
 
 export interface LoginState {
@@ -111,14 +135,17 @@ export async function loginAction(
   if (roleCodes.includes("PRINCIPAL")) {
     redirect("/principal");
   }
+  if (roleCodes.includes("CORRESPONDENT")) {
+    redirect("/correspondent");
+  }
+  if (roleCodes.includes("VICE_PRINCIPAL")) {
+    redirect("/vice-principal");
+  }
   if (roleCodes.includes("LIBRARY")) {
     redirect("/library");
   }
   if (roleCodes.includes("MEDIA_ROOM")) {
     redirect("/media");
-  }
-  if (roleCodes.includes("COMMUNITY")) {
-    redirect("/community");
   }
   if (roleCodes.includes("TRANSPORT_MANAGER")) {
     redirect("/transport-manager");
@@ -131,6 +158,16 @@ export async function loginAction(
   }
   if (roleCodes.includes("PARENT")) {
     redirect("/parent");
+  }
+  if (roleCodes.includes("HOSTEL_WARDEN")) {
+    redirect("/hostel-warden");
+  }
+  // A coordinator-only login (no FACULTY role_code at all -- see
+  // WEB_ALLOWED_ROLES's own comment above) lands directly on the Academic
+  // Coordinator portal; a faculty member's own shared login already went to
+  // /faculty above regardless of any coordinator grant they also hold.
+  if (roleCodes.includes("ACADEMIC_COORDINATOR")) {
+    redirect("/academic-coordinator");
   }
   redirect("/dashboard");
 }

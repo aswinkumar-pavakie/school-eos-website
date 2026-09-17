@@ -28,14 +28,32 @@
 // error. The portal keeps the overlay's real DOM position at the body root, same
 // as any other real-world modal, while staying part of this component's React
 // tree for state/context.
+//
+// Existing-identity check: when opened standalone (Admin -> Parents -> "+ New
+// parent", no presetStudent), this now opens on a search step first -- same
+// /api/persons-search?roleCode=PARENT route and search-as-you-type pattern
+// GuardianPersonPicker.tsx already uses from the student side -- so admin sees
+// a real existing parent (if one matches) before ever creating a second person
+// row for someone already in the system. When opened from GuardiansSection's
+// own "Not found -- create new parent" trigger, that search already just
+// happened right next to this button, so this skips straight to the create
+// form -- no redundant second search.
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createParentAction, type FormActionState } from "@/app/(dashboard)/admin/parents/actions";
 import { LinkNewParentToStudentForm } from "./LinkNewParentToStudentForm";
 
 const initialState: FormActionState = {};
+
+interface ExistingParentHit {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  mobile: string | null;
+  email: string | null;
+}
 
 const emptyValues = {
   firstName: "",
@@ -56,6 +74,7 @@ export function CreateParentModal({
   triggerLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"search" | "create">(presetStudent ? "create" : "search");
   const [values, setValues] = useState(emptyValues);
   const [state, formAction, isPending] = useActionState(createParentAction, initialState);
   const created = Boolean(state.personId);
@@ -70,6 +89,7 @@ export function CreateParentModal({
   function handleClose() {
     setOpen(false);
     setValues(emptyValues);
+    setStep(presetStudent ? "create" : "search");
   }
 
   return (
@@ -90,7 +110,12 @@ export function CreateParentModal({
         createPortal(
           <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
             <div className="w-full max-w-[760px] rounded-[16px] bg-surface p-6 shadow-lg">
-              {created ? (
+              {step === "search" ? (
+                <ExistingParentSearchStep
+                  onClose={() => setOpen(false)}
+                  onCreateNew={() => setStep("create")}
+                />
+              ) : created ? (
                 <>
                   <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
                     Parent account created
@@ -242,6 +267,115 @@ export function CreateParentModal({
           </div>,
           document.body,
         )}
+    </>
+  );
+}
+
+function ExistingParentSearchStep({
+  onClose,
+  onCreateNew,
+}: {
+  onClose: () => void;
+  onCreateNew: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<ExistingParentHit[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults([]);
+      setSearched(false);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/persons-search?search=${encodeURIComponent(query)}&roleCode=PARENT`);
+        const body = res.ok ? ((await res.json()) as { data: ExistingParentHit[] }) : { data: [] };
+        setResults(body.data);
+        setSearched(true);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query]);
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">New parent account</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-text-muted hover:bg-bg"
+        >
+          ×
+        </button>
+      </div>
+      <p className="mt-1.5 text-[13px] text-text-muted">
+        First, check this parent isn&apos;t already in the system — search by name, mobile, or email before
+        creating a new account.
+      </p>
+
+      <div className="mt-4">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by parent's name, mobile, or email…"
+          autoComplete="off"
+          autoFocus
+          className="w-full rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+        />
+      </div>
+
+      {loading && <p className="mt-3 text-sm text-text-muted">Searching…</p>}
+
+      {!loading && searched && results.length > 0 && (
+        <ul className="mt-3 flex flex-col divide-y divide-border rounded-[11px] border border-border">
+          {results.map((p) => (
+            <li key={p.id} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <div>
+                <p className="text-sm font-semibold text-text">
+                  {p.firstName} {p.lastName ?? ""}
+                </p>
+                <p className="text-xs text-text-muted">{p.mobile ?? p.email ?? "No contact on file"}</p>
+              </div>
+              <Link
+                href={`/admin/parents/${p.id}`}
+                onClick={onClose}
+                className="rounded-[11px] bg-primary px-3.5 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
+              >
+                View profile
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!loading && searched && results.length === 0 && (
+        <p className="mt-3 text-sm text-text-muted">No existing parent matches &ldquo;{query}&rdquo;.</p>
+      )}
+
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+        <p className="text-xs text-text-muted">
+          {results.length > 0 ? "None of these the right person?" : "Not who you're looking for, or a first-time parent?"}
+        </p>
+        <button
+          type="button"
+          onClick={onCreateNew}
+          className="whitespace-nowrap rounded-[11px] border border-border px-4 py-2 text-sm font-bold text-text hover:bg-field"
+        >
+          Create new parent
+        </button>
+      </div>
     </>
   );
 }

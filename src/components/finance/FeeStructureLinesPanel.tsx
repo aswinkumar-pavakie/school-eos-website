@@ -37,7 +37,7 @@ export function FeeStructureLinesPanel({
       <ul className="mt-3 flex flex-col gap-2">
         {lines.length === 0 && <li className="text-xs text-text-muted">No lines yet.</li>}
         {lines.map((line) => (
-          <li key={line.id} className="rounded-[11px] bg-field p-3">
+          <li key={line.id} className="card-hover rounded-[11px] bg-field p-3">
             <p className="text-[13.5px] font-semibold text-text">
               {feeHeadById.get(line.feeHeadId) ?? "—"}{" "}
               <span className="text-xs font-normal text-text-muted">· Instalment {line.instalmentNo}</span>

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { createSubjectAction, updateSubjectAction, type FormActionState } from "@/app/(dashboard)/admin/academics/actions";
 import { StatusPill } from "@/components/dashboard/StatusPill";
-import { Field, PanelCreateForm, SelectField } from "./shared";
+import { Field, PanelCreateFormRow, PanelHeader, SelectField } from "./shared";
 
 export interface Subject {
   id: string;
@@ -28,32 +28,37 @@ export function SubjectsPanel({ subjects }: { subjects: Subject[] }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createSubjectAction, initialState);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState("");
+
+  const filtered = typeFilter ? subjects.filter((s) => s.subjectType === typeFilter) : subjects;
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] text-text-muted">{subjects.length} subjects</p>
-        {!adding && (
-          <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
-            + New subject
-          </button>
-        )}
-      </div>
+      <PanelHeader
+        title="Subjects"
+        subtitle={`${subjects.length} subject${subjects.length === 1 ? "" : "s"}`}
+        actionLabel="+ New subject"
+        onAction={() => setAdding(true)}
+        hideAction={adding}
+      />
 
-      {adding && (
-        <PanelCreateForm
-          title="New subject"
-          onCancel={() => setAdding(false)}
-          formAction={formAction}
-          isPending={isPending}
-          error={state.error}
-          submitLabel="Create"
-        >
-          <Field label="Name" name="name" required disabled={isPending} placeholder="Mathematics" />
-          <Field label="Code" name="code" required disabled={isPending} placeholder="MATH" />
-          <SelectField label="Type" name="subjectType" required disabled={isPending} options={[["", "Select"], ...TYPES]} />
-        </PanelCreateForm>
-      )}
+      <div className="mt-4 flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">Filter by type</span>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="min-w-[180px] rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+          >
+            <option value="">All types</option>
+            {TYPES.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[560px] text-left text-sm">
@@ -67,14 +72,37 @@ export function SubjectsPanel({ subjects }: { subjects: Subject[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {subjects.length === 0 && (
+            {adding && (
+              <PanelCreateFormRow
+                colSpan={5}
+                onCancel={() => setAdding(false)}
+                formAction={formAction}
+                isPending={isPending}
+                error={state.error}
+              >
+                <Field label="Subject name" name="name" required disabled={isPending} placeholder="Mathematics" />
+                <Field label="Code" name="code" required disabled={isPending} placeholder="MATH" />
+                <SelectField label="Type" name="subjectType" required disabled={isPending} options={[["", "Select"], ...TYPES]} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue="ACTIVE"
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                  ]}
+                />
+              </PanelCreateFormRow>
+            )}
+            {filtered.length === 0 && !adding && (
               <tr>
                 <td colSpan={5} className="py-6 text-center text-text-muted">
-                  No subjects yet.
+                  {subjects.length === 0 ? "No subjects yet." : "No subjects match this filter."}
                 </td>
               </tr>
             )}
-            {subjects.map((subject) => (
+            {filtered.map((subject) => (
               <SubjectRow key={subject.id} subject={subject} editing={editingId === subject.id} onToggle={() => setEditingId((v) => (v === subject.id ? null : subject.id))} />
             ))}
           </tbody>

@@ -109,7 +109,7 @@ export default async function PrincipalInventoryPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Inventory</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Inventory</h1>
           <p className="mt-1 text-sm text-text-muted">{meta.total} inventory items — view-only</p>
         </div>
       </div>
@@ -173,7 +173,7 @@ export default async function PrincipalInventoryPage({
               </tr>
             )}
             {items.map((item) => (
-              <tr key={item.id}>
+              <tr key={item.id} className="card-hover">
                 <td className="px-4 py-3 font-semibold text-text">
                   {item.name}
                   {item.assetCode && <p className="font-mono text-xs font-normal text-text-muted">{item.assetCode}</p>}

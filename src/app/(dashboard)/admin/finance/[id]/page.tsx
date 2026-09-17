@@ -66,7 +66,7 @@ export default async function FeeStructureDetailPage({ params }: { params: Promi
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">
             {yearName} · {gradeName}
           </h1>
           <p className="mt-1 text-sm text-text-muted">

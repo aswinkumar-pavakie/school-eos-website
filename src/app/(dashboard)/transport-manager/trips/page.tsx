@@ -96,7 +96,7 @@ export default async function TransportManagerTripsPage({
           {trips.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No trips match this filter.</li>}
           {trips.map((trip) => (
             <li key={trip.id} className="py-3">
-              <Link href={`/transport-manager/trips/${trip.id}`} className="flex flex-wrap items-center justify-between gap-2">
+              <Link href={`/transport-manager/trips/${trip.id}`} className="card-hover flex flex-wrap items-center justify-between gap-2 rounded-[10px] px-2">
                 <div>
                   <p className="text-[13.5px] font-semibold text-text">
                     {trip.registrationNo} · {trip.routeName} · {trip.direction === "PICKUP" ? "Pickup" : "Drop"}

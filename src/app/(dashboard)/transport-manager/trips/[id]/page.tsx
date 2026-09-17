@@ -101,7 +101,7 @@ export default async function TransportManagerTripDetailPage({ params }: { param
             { label: "Not boarded", value: attendance.notBoarded },
             { label: "Absent", value: attendance.absent },
           ].map((tile) => (
-            <div key={tile.label} className="rounded-[11px] bg-field p-3 text-center">
+            <div key={tile.label} className="card-hover rounded-[11px] bg-field p-3 text-center">
               <p className="text-[20px] font-extrabold leading-[26px] text-text">{tile.value}</p>
               <p className="mt-0.5 text-[11px] font-semibold text-text-muted">{tile.label.toUpperCase()}</p>
             </div>
@@ -115,7 +115,7 @@ export default async function TransportManagerTripDetailPage({ params }: { param
         <ul className="mt-3 flex flex-col divide-y divide-border">
           {timeline.length === 0 && <li className="py-4 text-center text-sm text-text-muted">No boarding/alighting events recorded yet.</li>}
           {timeline.map((event) => (
-            <li key={event.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
+            <li key={event.id} className="card-hover flex flex-wrap items-center justify-between gap-2 rounded-[10px] px-2 py-2.5 text-sm">
               <div>
                 <p className="font-semibold text-text">
                   {event.studentFirstName} {event.studentLastName ?? ""} · {event.direction === "BOARD" ? "Boarded" : "Alighted"}

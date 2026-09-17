@@ -1,254 +1,202 @@
-// Library's own dashboard -- the ONE full operational home page for this role
-// (Admin's oversight view is a separate, much smaller page: src/app/(dashboard)/
-// admin/library/page.tsx). Pulls GET /library/overview (+ a small overdue-issues
-// slice) and renders a KPI row + book-status breakdown + overdue preview +
-// recent-activity list, same shape as Admin's own dashboard.tsx.
+// Library dashboard -- pixel-rebuilt from brain/SIS LIBRARY/School Library
+// Module.dc.html's own Dashboard screen. Two honest adaptations from the
+// design, both because the real data genuinely doesn't exist the way the
+// mockup assumes (confirmed against the live DB, not guessed):
+//  1. "Copies available by grade band" -> "Copies available by subject" --
+//     library_book has no grade-band field at all (see BooksPage's own
+//     comment); subject (category) is the real, closest breakdown.
+//  2. "Total eBooks" stays wired to a real value, which is genuinely 0 --
+//     there is no ebook table/column anywhere in this schema (confirmed via
+//     the live DB's PostgREST listing and mobile's own faculty-library-api.ts
+//     comment). Zero is the honest count, not a placeholder.
+// Everything else (available/issued/overdue/lost+damaged counts, recent
+// activity) is real, unmodified getLibraryOverview() data, same source the
+// pre-rebuild dashboard used.
 
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { KpiCard } from "@/components/dashboard/KpiCard";
-import { StatusPill } from "@/components/dashboard/StatusPill";
-import {
-  AcademicsIcon,
-  FinanceIcon,
-  RequestsIcon,
-  StudentsIcon,
-} from "@/components/dashboard/icons";
 import { AuthExpiredError } from "@/lib/api";
-import { getLibraryOverview, listCategories, listIssues } from "@/lib/library-api";
-import { formatDate, formatMoney, formatMoneySummary, formatRelativeTime, statusLabel, statusTone } from "@/lib/format";
-import { CreateBookModal } from "./books/CreateBookModal";
+import { getLibraryOverview, listBooks, listTransactionHistory } from "@/lib/library-api";
+import { formatFullDate, nowMs, todayIsoDate } from "@/lib/library-time";
+import { Card, StatCard } from "@/components/library-ui/primitives";
 
-function activityTone(action: string): "success" | "pending" | "critical" {
-  const a = action.toUpperCase();
-  if (a.includes("RETURN") || a.includes("REACTIVATE") || a.includes("RESTORE")) return "success";
-  if (a.includes("LOST") || a.includes("DAMAGE") || a.includes("SUSPEND") || a.includes("OVERDUE")) return "critical";
-  return "pending";
-}
-
-function prettifyAction(action: string): string {
-  const words = action.toLowerCase().split("_");
-  return words.map((w, i) => (i === 0 ? w.charAt(0).toUpperCase() + w.slice(1) : w)).join(" ");
+function StatIcon({ children }: { children: ReactNode }) {
+  return (
+    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#1D4ED8" strokeWidth={1.7}>
+      {children}
+    </svg>
+  );
 }
 
 export default async function LibraryDashboardPage() {
   try {
-    const [overview, categories, overdue] = await Promise.all([
+    const today = todayIsoDate(nowMs());
+    const [overview, { data: books }, todayHistory] = await Promise.all([
       getLibraryOverview(),
-      listCategories(),
-      listIssues({ overdueOnly: true, limit: 5 }),
+      listBooks({ limit: 200 }),
+      listTransactionHistory({ startDate: today, endDate: today, limit: 200 }),
     ]);
 
+    const issuedToday = todayHistory.data.filter((e) => e.action.toUpperCase().includes("ISSUE")).length;
+    const returnedToday = todayHistory.data.filter((e) => e.action.toUpperCase().includes("RETURN")).length;
+
+    const bySubject = new Map<string, { available: number; total: number }>();
+    for (const b of books) {
+      const key = b.categoryName ?? "Uncategorised";
+      const entry = bySubject.get(key) ?? { available: 0, total: 0 };
+      entry.available += b.copiesSummary.available;
+      entry.total += b.copiesSummary.total;
+      bySubject.set(key, entry);
+    }
+    const subjectBars = [...bySubject.entries()]
+      .filter(([, v]) => v.total > 0)
+      .sort((a, b) => b[1].total - a[1].total)
+      .slice(0, 6);
+    const maxSubjectTotal = Math.max(1, ...subjectBars.map(([, v]) => v.total));
+
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-[28px] font-bold leading-[34px] text-text">Library</h1>
-            <p className="mt-1 text-sm text-text-muted">Catalog, members, circulation and fines -- at a glance.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <h1 style={{ margin: 0, font: "700 38px/1.15 var(--lib-font-sans)", color: "var(--lib-ink)" }}>Library dashboard</h1>
+          <div style={{ font: "400 16px/1.5 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>
+            School overview · Library Module · {formatFullDate(nowMs())}
           </div>
         </div>
 
-        {/* C. Quick actions -- Issue/return, Manage catalog and Manage members were
-            already here and stay exactly as they were; Add Book is new (opens the
-            same modal Books' own page uses, not a second create flow). Add Book
-            Copy has no single sensible one-click target (a copy always belongs to
-            a specific book), and Search Books is the same destination as Manage
-            catalog, so neither gets its own separate button here. */}
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link href="/library/circulation" className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:opacity-90">
-            Issue / return a book
-          </Link>
-          <CreateBookModal categories={categories} />
-          <Link href="/library/books" className="rounded-[11px] border border-border px-4 py-2.5 text-sm font-semibold text-text hover:bg-bg">
-            Manage catalog
-          </Link>
-          <Link href="/library/members" className="rounded-[11px] border border-border px-4 py-2.5 text-sm font-semibold text-text hover:bg-bg">
-            Manage members
-          </Link>
-        </div>
-
-        {/* B. Summary cards -- the 8 numbers the spec asks for, exactly. */}
-        <div className="mt-6 grid grid-cols-1 gap-[14px] sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard
-            eyebrow="Total books"
-            value={String(overview.totalBooks)}
-            detail={`${overview.activeMembers} active members`}
-            icon={<AcademicsIcon className="h-5 w-5" />}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 20 }}>
+          <StatCard
+            title="Available books"
+            value={overview.availableCopies.toLocaleString()}
+            sub={`of ${overview.totalCopies.toLocaleString()} total copies`}
             href="/library/books"
+            icon={
+              <StatIcon>
+                <circle cx="10" cy="10" r="7" />
+                <path d="M7 10.2l2 2 4-4.4" />
+              </StatIcon>
+            }
           />
-          <KpiCard
-            eyebrow="Total book copies"
-            value={String(overview.totalCopies)}
-            detail="Across the whole catalog"
-            icon={<AcademicsIcon className="h-5 w-5" />}
-            href="/library/books"
-          />
-          <KpiCard
-            eyebrow="Available copies"
-            value={String(overview.availableCopies)}
-            detail="Ready to issue"
-            icon={<AcademicsIcon className="h-5 w-5" />}
-            href="/library/books"
-          />
-          <KpiCard
-            eyebrow="Issued books"
-            value={String(overview.issuedCopies)}
-            detail="Currently on loan"
-            icon={<RequestsIcon className="h-5 w-5" />}
+          <StatCard
+            title="Active borrowings"
+            value={overview.issuedCopies.toLocaleString()}
+            sub="currently checked out"
             href="/library/circulation"
+            icon={
+              <StatIcon>
+                <rect x="4" y="3" width="12" height="14" rx="2" />
+                <path d="M7.5 10l2 2 3.5-4" />
+              </StatIcon>
+            }
           />
-        </div>
-
-        <div className="mt-[14px] grid grid-cols-1 gap-[14px] sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard
-            eyebrow="Overdue books"
-            value={String(overview.overdueCount)}
-            detail="Past their due date"
-            icon={<RequestsIcon className="h-5 w-5" />}
-            href="/library/circulation?overdueOnly=true"
-          />
-          <KpiCard
-            eyebrow="Reserved books"
-            value={String(overview.pendingReservationsCount)}
-            detail="Active reservations"
-            icon={<StudentsIcon className="h-5 w-5" />}
-            href="/library/reservations"
-          />
-          <KpiCard
-            eyebrow="Lost / damaged"
-            value={`${overview.lostCopies} / ${overview.damagedCopies}`}
-            detail="Unaccounted for / needs repair"
-            icon={<RequestsIcon className="h-5 w-5" />}
-            href="/library/books"
-          />
-          <KpiCard
-            eyebrow="Outstanding fines"
-            value={formatMoneySummary(
-              (Number(overview.pendingFinesAmountPaise) + Number(overview.sentToFinanceFinesAmountPaise)).toString(),
-            )}
-            detail={`${formatMoneySummary(overview.sentToFinanceFinesAmountPaise)} already sent to Finance`}
-            icon={<FinanceIcon className="h-5 w-5" />}
+          <StatCard
+            title="Overdue books"
+            value={overview.overdueCount.toLocaleString()}
+            sub="need follow-up with class teachers"
             href="/library/fines"
+            highlighted
+            icon={
+              <StatIcon>
+                <circle cx="10" cy="10" r="7" />
+                <path d="M10 6v4.3l3 1.7" />
+              </StatIcon>
+            }
+          />
+          <StatCard
+            title="Today’s activity"
+            value={(issuedToday + returnedToday).toLocaleString()}
+            sub={`${issuedToday} issued · ${returnedToday} returned`}
+            href="/library/history"
+            icon={
+              <StatIcon>
+                <rect x="3" y="4.5" width="14" height="12" rx="2" />
+                <path d="M3 8.5h14M7 3v3M13 3v3" />
+              </StatIcon>
+            }
+          />
+          <StatCard
+            title="Total eBooks"
+            value="0"
+            sub="published to the school portal"
+            href="/library/ebooks"
+            icon={
+              <StatIcon>
+                <rect x="2.5" y="5" width="15" height="10" rx="1.6" />
+                <path d="M10 5v10" />
+              </StatIcon>
+            }
+          />
+          <StatCard
+            title="Lost & damaged"
+            value={(overview.lostCopies + overview.damagedCopies).toLocaleString()}
+            sub={`${overview.lostCopies} lost · ${overview.damagedCopies} damaged`}
+            href="/library/lost-damaged"
+            icon={
+              <StatIcon>
+                <circle cx="10" cy="10" r="7" />
+                <path d="M10 6v5M10 13.6v.2" />
+              </StatIcon>
+            }
           />
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* D. Overdue section */}
-          <div className="rounded-[16px] border border-border bg-surface p-[18px] lg:col-span-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Overdue books</h2>
-              <Link href="/library/circulation?overdueOnly=true" className="text-[13px] font-semibold text-primary">
-                View all overdues
-              </Link>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(340px,1fr))", gap: 20 }}>
+          <Card style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ font: "600 20px/1.3 var(--lib-font-sans)", color: "var(--lib-ink)" }}>Copies available by subject</div>
+            <div style={{ font: "400 14px/1.5 var(--lib-font-sans)", color: "var(--lib-body-muted)", marginBottom: 14 }}>
+              Available copies out of each subject’s total
             </div>
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full min-w-[560px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-                    <th className="py-2 pr-3">Member</th>
-                    <th className="py-2 pr-3">Book</th>
-                    <th className="py-2 pr-3">Due date</th>
-                    <th className="py-2 pr-3 text-right">Days overdue</th>
-                    <th className="py-2 pr-3 text-right">Est. fine</th>
-                    <th className="py-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {overdue.data.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="py-6 text-center text-text-muted">No overdue books right now.</td>
-                    </tr>
-                  )}
-                  {overdue.data.map((issue) => (
-                    <tr key={issue.id}>
-                      <td className="py-2.5 pr-3 font-semibold text-text">{issue.memberName}</td>
-                      <td className="py-2.5 pr-3 text-text-muted">{issue.bookTitle}</td>
-                      <td className="py-2.5 pr-3 text-text-muted">{formatDate(issue.dueDate)}</td>
-                      <td className="py-2.5 pr-3 text-right font-mono text-critical-text">{issue.daysOverdue}</td>
-                      <td className="py-2.5 pr-3 text-right font-mono text-text-muted">{formatMoney(issue.projectedFinePaise)}</td>
-                      <td className="py-2.5">
-                        <StatusPill tone={statusTone(issue.status)} label={statusLabel(issue.status)} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {subjectBars.length === 0 && (
+                <div style={{ font: "400 14px/1.5 var(--lib-font-sans)", color: "var(--lib-tertiary)" }}>No books catalogued yet.</div>
+              )}
+              {subjectBars.map(([label, v]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 130, font: "500 13px/1.2 var(--lib-font-sans)", color: "#475569", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {label}
+                  </div>
+                  <div style={{ flex: 1, height: 8, borderRadius: 999, background: "var(--lib-tint)", overflow: "hidden" }}>
+                    <div style={{ height: 8, borderRadius: 999, background: "var(--lib-primary)", width: `${Math.round((v.total / maxSubjectTotal) * 100)}%` }} />
+                  </div>
+                  <div style={{ font: "500 13px/1.2 var(--lib-font-mono)", color: "#475569" }}>{v.available} / {v.total}</div>
+                </div>
+              ))}
             </div>
-          </div>
+          </Card>
 
-          <div className="flex flex-col gap-6">
-            {/* E. Reservation attention */}
-            <div className="rounded-[16px] border border-border bg-surface p-[18px]">
-              <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Reservations</h2>
-              <div className="mt-3 flex items-center gap-6">
-                <div>
-                  <p className="font-mono text-2xl font-extrabold text-text">{overview.pendingReservationsCount}</p>
-                  <p className="text-[13px] text-text-muted">waiting in queue</p>
-                </div>
-                <div>
-                  <p className="font-mono text-2xl font-extrabold text-text">{overview.readyReservationsCount}</p>
-                  <p className="text-[13px] text-text-muted">ready for pickup</p>
-                </div>
-              </div>
-              <Link href="/library/reservations" className="mt-3 inline-block text-[13px] font-semibold text-primary">
-                Manage reservations
-              </Link>
+          <Card style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ font: "600 20px/1.3 var(--lib-font-sans)", color: "var(--lib-ink)" }}>Recent activity</div>
+            <div style={{ font: "400 14px/1.5 var(--lib-font-sans)", color: "var(--lib-body-muted)", marginBottom: 8 }}>
+              Latest issues, returns and reported losses
             </div>
-
-            {/* G. Book status overview */}
-            <div className="rounded-[16px] border border-border bg-surface p-[18px]">
-              <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Book status overview</h2>
-              <ul className="mt-3 flex flex-col divide-y divide-border">
-                {([
-                  ["Available", overview.availableCopies, "success"],
-                  ["Issued", overview.issuedCopies, "pending"],
-                  ["Reserved", overview.reservedCopies, "pending"],
-                  ["Lost", overview.lostCopies, "critical"],
-                  ["Damaged", overview.damagedCopies, "critical"],
-                  ["Under repair", overview.underRepairCopies, "pending"],
-                  ["Retired", overview.retiredCopies, "critical"],
-                ] as [string, number, "success" | "pending" | "critical"][]).map(([label, value, tone]) => (
-                  <li key={label} className="flex items-center justify-between gap-3 py-2">
-                    <span className="text-[13px] text-text-muted">{label}</span>
-                    <StatusPill tone={tone} label={String(value)} />
-                  </li>
-                ))}
-              </ul>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {overview.recentActivity.length === 0 && (
+                <div style={{ padding: "14px 0", font: "400 14px/1.5 var(--lib-font-sans)", color: "var(--lib-tertiary)" }}>No activity recorded yet.</div>
+              )}
+              {overview.recentActivity.map((a) => (
+                <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 0", borderTop: "1px solid var(--lib-divider)" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 9, background: "var(--lib-tint)", display: "grid", placeItems: "center", flex: "0 0 auto" }}>
+                    <StatIcon>
+                      <rect x="4" y="3" width="12" height="14" rx="2" />
+                      <path d="M7.5 10l2 2 3.5-4" />
+                    </StatIcon>
+                  </div>
+                  <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 2 }}>
+                    <div style={{ font: "500 15px/1.35 var(--lib-font-sans)", color: "var(--lib-ink)" }}>{a.detail || a.action}</div>
+                    <div style={{ font: "400 13px/1.3 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>{formatFullDate(new Date(a.occurredAt).getTime())}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-
-        {/* F. Recent library activity */}
-        <div className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-          <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Recent activity</h2>
-          <ul className="mt-3 flex flex-col divide-y divide-border">
-            {overview.recentActivity.length === 0 && (
-              <li className="py-6 text-center text-sm text-text-muted">No activity recorded yet.</li>
-            )}
-            {overview.recentActivity.map((event) => (
-              <li key={event.id} className="flex items-center justify-between gap-4 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-[13.5px] font-semibold text-text">
-                    {prettifyAction(event.action)}
-                    {event.detail && <span className="font-normal text-text-muted"> — {event.detail}</span>}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <StatusPill tone={activityTone(event.action)} label={prettifyAction(event.action)} />
-                  <span className="text-xs text-text-muted">{formatRelativeTime(event.occurredAt)}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
+          </Card>
         </div>
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return (
-      <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
-        <p className="text-[15px] font-extrabold leading-[20px] text-text">Couldn&apos;t load the Library dashboard</p>
-        <p className="mt-1.5 text-sm text-text-muted">Nothing was changed — try refreshing the page.</p>
+      <div style={{ border: "1px solid var(--lib-border)", borderRadius: "var(--lib-radius-card)", background: "var(--lib-white)", padding: 32, textAlign: "center" }}>
+        <p style={{ font: "600 15px/1.3 var(--lib-font-sans)" }}>Couldn&apos;t load the Library dashboard</p>
+        <p style={{ marginTop: 6, font: "400 14px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>Nothing was changed — try refreshing the page.</p>
       </div>
     );
   }

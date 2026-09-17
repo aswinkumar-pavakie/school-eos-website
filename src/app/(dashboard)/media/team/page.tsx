@@ -1,15 +1,14 @@
+// Media Team -- pixel-rebuilt from the design's own isTeam screen. Real
+// media_team_member data (listMediaTeam, already fully built) -- click a
+// member for their real profile (equipment held, recent activity).
+
 import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel } from "@/components/media-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { listMediaTeam } from "@/lib/media-api";
-import { CreateMediaTeamMemberModal } from "./CreateMediaTeamMemberModal";
-import { EditMediaTeamMemberModal } from "./EditMediaTeamMemberModal";
-
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return parts.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
-}
+import { AddMemberPanel } from "./AddMemberPanel";
+import { TeamMemberCard } from "./TeamMemberCard";
 
 export default async function MediaTeamPage() {
   try {
@@ -17,49 +16,21 @@ export default async function MediaTeamPage() {
     const maxJobs = Math.max(1, ...members.map((m) => m.activeJobs));
 
     return (
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+      <div className="media-scope">
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, flexWrap: "wrap" }}>
           <div>
-            <h1 className="text-2xl font-extrabold text-text">Media Team</h1>
-            <p className="mt-1 text-sm text-text-muted">{members.length} members · current load and speciality.</p>
+            <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: "-1.2px", lineHeight: 1.1 }}>Media Team</div>
+            <div style={{ fontSize: 15.5, color: "var(--med-body-muted)", marginTop: 10 }}>{members.length} members · current load and speciality · click a member for their profile</div>
           </div>
-          <CreateMediaTeamMemberModal />
+          <AddMemberPanel />
         </div>
 
         {members.length === 0 ? (
-          <EmptyState title="No team members yet" body="Add the people who shoot, edit and publish for the media room." />
+          <div style={{ marginTop: 26 }}><EmptyPanel label="Add the people who shoot, edit and publish for the media room." /></div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {members.map((member) => (
-              <div key={member.id} className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-deep text-sm font-bold text-white">
-                      {initialsOf(member.fullName)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-text">{member.fullName}</p>
-                      <p className="text-xs text-text-muted">{member.designation ?? "—"}</p>
-                    </div>
-                  </div>
-                  <EditMediaTeamMemberModal member={member} />
-                </div>
-
-                <div>
-                  <p className="text-xs font-bold tracking-wide text-text-muted uppercase">Active jobs</p>
-                  <div className="mt-1.5 h-1.5 w-full rounded-full bg-field">
-                    <div
-                      className="h-1.5 rounded-full bg-primary"
-                      style={{ width: `${Math.min(100, (member.activeJobs / maxJobs) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <StatusPill state={member.status} />
-                  <span className="text-xs text-text-muted">{member.phone ?? "—"}</span>
-                </div>
-              </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 20, marginTop: 28 }}>
+            {members.map((m) => (
+              <TeamMemberCard key={m.id} member={m} maxJobs={maxJobs} />
             ))}
           </div>
         )}
@@ -67,6 +38,6 @@ export default async function MediaTeamPage() {
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load the media team. Nothing was submitted — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load the media team."} />;
   }
 }

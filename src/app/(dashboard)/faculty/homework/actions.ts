@@ -1,10 +1,30 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createHomework, deleteHomework, updateHomework } from "@/lib/faculty-api";
+import { createHomework, deleteHomework, gradeHomeworkSubmission, updateHomework } from "@/lib/faculty-api";
 
 export interface FormState {
   error?: string;
+}
+
+export async function gradeSubmissionAction(
+  homeworkId: string,
+  studentId: string,
+  status: "NOT_DONE" | "SUBMITTED" | "GRADED",
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const marksRaw = String(formData.get("marksAwarded") ?? "").trim();
+  try {
+    await gradeHomeworkSubmission(homeworkId, studentId, {
+      status,
+      marksAwarded: marksRaw ? Number(marksRaw) : undefined,
+    });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not update this submission." };
+  }
+  revalidatePath("/faculty/homework");
+  return {};
 }
 
 export async function createHomeworkAction(_prev: FormState, formData: FormData): Promise<FormState> {

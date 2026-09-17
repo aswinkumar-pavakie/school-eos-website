@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { markAllPresent, markAttendanceRecord } from "@/lib/faculty-api";
+import { markAllPresent, markAttendanceRecord, publishAttendance } from "@/lib/faculty-api";
 
 export interface FormState {
   error?: string;
@@ -9,6 +9,11 @@ export interface FormState {
 
 export async function markAllPresentAction(sectionId: string, date: string): Promise<void> {
   await markAllPresent(sectionId, date);
+  revalidatePath("/faculty/attendance");
+}
+
+export async function publishAttendanceAction(sectionId: string, date: string): Promise<void> {
+  await publishAttendance(sectionId, date);
   revalidatePath("/faculty/attendance");
 }
 

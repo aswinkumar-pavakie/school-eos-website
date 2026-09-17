@@ -500,6 +500,53 @@ export async function getDocumentDownloadUrl(studentId: string, requestId: strin
 }
 
 // ============================================================
+// Permissions -- real digital-consent feature (parent-permission-requests
+// controller), scoped by a real ACTIVE guardian_link, never by studentId
+// alone -- see ParentPermissionsService's own header comment.
+// ============================================================
+
+export type PermissionState = "PENDING" | "APPROVED" | "REJECTED";
+export interface PermissionParticipant {
+  id: string;
+  eventId: string;
+  studentId: string;
+  studentName: string;
+  admissionNo: string;
+  rollNo: number | null;
+  gradeName: string | null;
+  sectionName: string | null;
+  state: PermissionState;
+  decidedAt: string | null;
+  signatureObjectKey: string | null;
+  addedAt: string;
+}
+export async function listPermissionRequests(): Promise<PermissionParticipant[]> {
+  const res = await get<ApiEnvelope<PermissionParticipant[]>>("/parent/permission-requests");
+  return res.data;
+}
+
+export interface PermissionEvent {
+  id: string;
+  name: string;
+  location: string;
+  purpose: string;
+  startsAt: string;
+  endsAt: string;
+  monitoringTeacherName: string;
+  monitoringTeacherDesignation: string | null;
+}
+export async function getPermissionRequest(id: string): Promise<{ participant: PermissionParticipant; event: PermissionEvent }> {
+  const res = await get<ApiEnvelope<{ participant: PermissionParticipant; event: PermissionEvent }>>(`/parent/permission-requests/${id}`);
+  return res.data;
+}
+export async function rejectPermissionRequest(id: string): Promise<void> {
+  await post(`/parent/permission-requests/${id}/reject`);
+}
+export async function signPermissionRequest(id: string, signaturePngBase64: string): Promise<void> {
+  await post(`/parent/permission-requests/${id}/sign`, { signaturePngBase64 });
+}
+
+// ============================================================
 // Bus -- display only, no GPS.
 // ============================================================
 
@@ -589,5 +636,139 @@ export interface StudentProfile {
 }
 export async function getStudentProfile(studentId: string): Promise<StudentProfile> {
   const res = await get<ApiEnvelope<StudentProfile>>(`/parent/students/${studentId}/profile`);
+  return res.data;
+}
+
+// ============================================================
+// Fees -- real ParentFeesController (parent-fees.controller.ts). "Term"
+// here is fee_demand.instalment_no within one academic_year -- there is no
+// literal term/semester table in this schema (see
+// parent-fee.repository.ts's own header note). Payment is real Razorpay:
+// createRazorpayOrder only ever opens an order + records an INITIATED
+// payment intent -- nothing is applied to any fee until Razorpay's own
+// webhook confirms the money actually arrived (handleRazorpayWebhook on
+// the backend). The client-side checkout flow polls listPayments for that
+// real state transition rather than trusting Razorpay's own client-side
+// "success" callback.
+// ============================================================
+
+export interface FeeTerm {
+  academicYearId: string;
+  academicYearName: string;
+  instalmentNo: number;
+  label: string;
+}
+export async function listFeeTerms(studentId: string): Promise<FeeTerm[]> {
+  const res = await get<ApiEnvelope<FeeTerm[]>>(`/parent/students/${studentId}/fee-terms`);
+  return res.data;
+}
+
+export interface FeeLine {
+  feeDemandId: string;
+  feeHeadName: string;
+  amountPaise: string;
+  lateFeePaise: string;
+  paidPaise: string;
+  outstandingPaise: string;
+  dueDate: string;
+  state: string;
+}
+export interface FeeSummary {
+  canPay: boolean;
+  totalPayablePaise: string;
+  paidPaise: string;
+  outstandingPaise: string;
+  lines: FeeLine[];
+}
+export async function getFeeSummary(studentId: string, academicYearId: string, instalmentNo: number): Promise<FeeSummary> {
+  const res = await get<ApiEnvelope<FeeSummary>>(
+    `/parent/students/${studentId}/fees?academicYearId=${academicYearId}&instalmentNo=${instalmentNo}`,
+  );
+  return res.data;
+}
+
+export interface RazorpayOrder {
+  paymentId: string;
+  razorpayOrderId: string;
+  razorpayKeyId: string;
+  amountPaise: string;
+  schoolName: string;
+}
+export async function createRazorpayOrder(
+  studentId: string,
+  input: { academicYearId: string; instalmentNo: number; feeDemandIds: string[]; amountPaise: string },
+): Promise<RazorpayOrder> {
+  const res = await post<ApiEnvelope<RazorpayOrder>>(`/parent/students/${studentId}/fees/razorpay-order`, input);
+  return res.data;
+}
+
+export interface PaymentRow {
+  id: string;
+  amountPaise: string;
+  mode: string;
+  gateway: string | null;
+  state: string;
+  initiatedAt: string;
+  confirmedAt: string | null;
+  failureReason: string | null;
+  studentNames: string | null;
+  receiptId: string | null;
+  receiptNo: string | null;
+  receiptCount: number;
+}
+export async function listPayments(studentId: string): Promise<PaymentRow[]> {
+  const res = await get<ApiEnvelope<PaymentRow[]>>(`/parent/students/${studentId}/payments`);
+  return res.data;
+}
+
+export interface ReceiptDetail {
+  receipt: { id: string; receiptNo: string; financialYear: string; amountPaise: string; issuedOn: string };
+  payment: { id: string; mode: string; state: string; gateway: string | null; confirmedAt: string | null };
+  student: { id: string; name: string } | null;
+  lineItems: { feeHeadId: string | null; feeHeadName: string | null; instalmentNo: number; amountPaise: string }[];
+  school: { name: string } | null;
+}
+export async function getReceipt(receiptId: string): Promise<ReceiptDetail> {
+  const res = await get<ApiEnvelope<ReceiptDetail>>(`/parent/receipts/${receiptId}`);
+  return res.data;
+}
+
+// ============================================================
+// Online class -- real ParentOnlineClassesService (a genuinely separate,
+// read-only + join code path from Faculty's own OnlineClassesService; see
+// online-classes.controller.ts's own header comment). A real Google Meet
+// link (meetingUrl), not a custom video call UI -- Start/Resume opens the
+// real link in a new tab, same integration pattern Faculty's own rebuilt
+// Online class screen already uses.
+// ============================================================
+
+export type OnlineClassStatus = "DRAFT" | "SCHEDULED" | "LIVE" | "COMPLETED" | "CANCELLED";
+export type OnlineClassView = "upcoming" | "completed" | "cancelled";
+
+export interface ParentOnlineClass {
+  id: string;
+  subjectName: string;
+  gradeName: string;
+  sectionName: string;
+  topic: string;
+  description: string | null;
+  scheduledDate: string;
+  startTime: string;
+  endTime: string;
+  status: OnlineClassStatus;
+  meetingUrl: string | null;
+  recordingUrl: string | null;
+  cancellationReason: string | null;
+}
+export async function listOnlineClasses(view: OnlineClassView): Promise<ParentOnlineClass[]> {
+  const res = await get<ApiEnvelope<ParentOnlineClass[]>>(`/online-classes?view=${view}`);
+  return res.data;
+}
+export async function getOnlineClass(id: string): Promise<ParentOnlineClass> {
+  const res = await get<ApiEnvelope<ParentOnlineClass>>(`/online-classes/${id}`);
+  return res.data;
+}
+export async function joinOnlineClass(id: string): Promise<{ meetingUrl: string; status: OnlineClassStatus }> {
+  const res = await get<ApiEnvelope<{ meetingUrl: string; status: OnlineClassStatus }>>(`/online-classes/${id}/join`);
   return res.data;
 }

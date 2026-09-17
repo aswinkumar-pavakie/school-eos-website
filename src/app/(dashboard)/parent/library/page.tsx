@@ -1,171 +1,153 @@
-// Parent Library -- real membership summary (issued/due-soon/pending fine),
-// this child's own borrowed + past issues, and a read-only catalogue search
-// -- same /parent/students/:id/library/* routes the Parent mobile app's own
-// Library screen already calls.
+// Library -- pixel-rebuilt from the design's own isLibrary screen
+// (Borrowed / Search / History tabs). Real library_issue + library_book
+// data (getLibrarySummary/searchLibraryCatalog).
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { KpiGrid, KpiCard } from "@/components/ui/KpiCard";
-import { StatusPill } from "@/components/ui/StatusPill";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate, formatMoneyDetail, formatMoneySummary, orDash } from "@/lib/format";
-import {
-  getLibrarySummary,
-  listChildren,
-  resolveSelectedChild,
-  searchLibraryCatalog,
-  type LibraryIssueRow,
-} from "@/lib/parent-api";
+import { formatDate, formatMoneySummary } from "@/lib/format";
+import { getLibrarySummary, listChildren, resolveSelectedChild, searchLibraryCatalog, type LibraryIssueRow } from "@/lib/parent-api";
 
-export default async function ParentLibraryPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ studentId?: string; tab?: string; search?: string }>;
-}) {
+const TABS = [
+  { key: "borrowed", label: "Borrowed" },
+  { key: "search", label: "Search catalogue" },
+  { key: "history", label: "History" },
+] as const;
+
+function statusTone(row: LibraryIssueRow): PillTone {
+  if (row.isOverdue) return "red";
+  if (row.status === "RETURNED") return "gray";
+  return "blue";
+}
+
+export default async function ParentLibraryPage({ searchParams }: { searchParams: Promise<{ studentId?: string; tab?: string; q?: string }> }) {
   try {
-    const { studentId: requestedStudentId, tab, search } = await searchParams;
+    const { studentId: requestedStudentId, tab, q } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
-
-    const [summary, books] = await Promise.all([
-      getLibrarySummary(selected.studentId),
-      searchLibraryCatalog(selected.studentId, search).catch(() => []),
-    ]);
-
-    const activeTab = tab === "history" ? "history" : "borrowed";
-    const rows = activeTab === "history" ? summary.history : summary.borrowed;
+    const activeTab = tab === "search" || tab === "history" ? tab : "borrowed";
+    const summary = await getLibrarySummary(selected.studentId);
+    const catalog = activeTab === "search" ? await searchLibraryCatalog(selected.studentId, q) : [];
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">Library</h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join(" ")}
-            </p>
-          </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
-        </div>
-
-        <div className="mt-6">
-          <KpiGrid>
-            <KpiCard eyebrow="Books issued" value={String(summary.stats.issuedCount)} />
-            <KpiCard eyebrow="Due soon" value={String(summary.stats.dueSoonCount)} />
-            <KpiCard eyebrow="Pending fine" value={formatMoneySummary(summary.stats.pendingFinePaise)} />
-          </KpiGrid>
+      <div className="parent-scope">
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Library</div>
+          <div style={{ fontSize: 15, color: "var(--par-body-muted)" }}>{selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join("-")}</div>
         </div>
 
         {!summary.hasLibraryCard ? (
-          <div className="mt-6">
-            <EmptyState title="No library card yet" body="This child doesn't have a library membership on record." />
-          </div>
+          <EmptyPanel label="No library card issued for this child yet." />
         ) : (
-          <div className="mt-8">
-            <div className="flex gap-2 border-b border-border">
-              <Link
-                href={`/parent/library?studentId=${selected.studentId}&tab=borrowed`}
-                className={`px-3 py-2 text-sm font-bold ${activeTab === "borrowed" ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}
-              >
-                Borrowed
-              </Link>
-              <Link
-                href={`/parent/library?studentId=${selected.studentId}&tab=history`}
-                className={`px-3 py-2 text-sm font-bold ${activeTab === "history" ? "border-b-2 border-primary text-primary" : "text-text-muted"}`}
-              >
-                History
-              </Link>
-            </div>
-
-            <div className="mt-4">
-              {rows.length === 0 ? (
-                <EmptyState
-                  title={activeTab === "history" ? "No past issues" : "No books currently borrowed"}
-                  body={activeTab === "history" ? "Returned books will appear here." : "Books issued to this child will appear here."}
-                />
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {rows.map((issue) => (
-                    <IssueRow key={issue.id} issue={issue} />
-                  ))}
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))", gap: 16, marginBottom: 20 }}>
+              <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 14, padding: 18 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--par-tertiary)", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 10 }}>Books issued</div>
+                <div style={{ fontSize: 28, fontWeight: 800, color: "var(--par-ink)" }}>{summary.stats.issuedCount}</div>
+              </div>
+              <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 14, padding: 18 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--par-tertiary)", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 10 }}>Due soon</div>
+                <div style={{ fontSize: 28, fontWeight: 800, color: "var(--par-ink)" }}>{summary.stats.dueSoonCount}</div>
+              </div>
+              <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 14, padding: 18 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "var(--par-tertiary)", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 10 }}>Pending fine</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: Number(summary.stats.pendingFinePaise) > 0 ? "var(--par-red)" : "var(--par-ink)" }}>
+                  {formatMoneySummary(summary.stats.pendingFinePaise)}
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        )}
 
-        <div className="mt-10">
-          <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Catalogue</h2>
-          <form method="get" action="/parent/library" className="mt-3 flex flex-wrap items-center gap-3">
-            <input type="hidden" name="studentId" value={selected.studentId} />
-            <input
-              name="search"
-              defaultValue={search ?? ""}
-              placeholder="Search title, author…"
-              className="rounded-[var(--radius-input)] border border-border bg-field px-3.5 py-2.5 text-sm text-text"
-            />
-            <button type="submit" className="rounded-[var(--radius-input)] border border-border bg-surface px-4 py-2.5 text-sm font-bold text-text hover:bg-field">
-              Search
-            </button>
-            {search ? (
-              <Link href={`/parent/library?studentId=${selected.studentId}`} className="text-xs font-bold text-text-muted hover:text-text">
-                Clear
-              </Link>
-            ) : null}
-          </form>
+            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+              {TABS.map((t) => (
+                <a key={t.key} href={`/parent/library?studentId=${selected.studentId}&tab=${t.key}`} style={{ textDecoration: "none" }}>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      borderRadius: 9,
+                      padding: "10px 18px",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      background: activeTab === t.key ? "var(--par-navy)" : "#fff",
+                      color: activeTab === t.key ? "#fff" : "var(--par-ink)",
+                      border: activeTab === t.key ? undefined : "1px solid var(--par-border)",
+                    }}
+                  >
+                    {t.label}
+                  </span>
+                </a>
+              ))}
+            </div>
 
-          <div className="mt-4">
-            {books.length === 0 ? (
-              <EmptyState title="No books found" body="Try a different search." />
-            ) : (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {books.map((b) => (
-                  <div key={b.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                    <p className="text-sm font-bold text-text">{b.title}</p>
-                    <p className="text-xs text-text-muted">
-                      {orDash(b.author)}
-                      {b.categoryName ? ` · ${b.categoryName}` : ""}
-                    </p>
-                    <p className="mt-2 text-xs font-semibold text-text-muted">
-                      {b.copiesSummary.available} of {b.copiesSummary.total} available
-                    </p>
+            {activeTab === "borrowed" && <IssueList rows={summary.borrowed} emptyLabel="No books currently borrowed." />}
+            {activeTab === "history" && <IssueList rows={summary.history} emptyLabel="No borrowing history yet." />}
+            {activeTab === "search" && (
+              <div>
+                <form action={`/parent/library`} method="get" style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+                  <input type="hidden" name="studentId" value={selected.studentId} />
+                  <input type="hidden" name="tab" value="search" />
+                  <input
+                    type="text"
+                    name="q"
+                    defaultValue={q ?? ""}
+                    placeholder="Search by title, author or ISBN…"
+                    style={{ flex: 1, border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-input)", padding: "12px 16px", fontSize: 14, fontFamily: "inherit" }}
+                  />
+                  <button type="submit" style={{ border: 0, borderRadius: 9, padding: "0 22px", fontSize: 14, fontWeight: 700, background: "var(--par-primary)", color: "#fff", cursor: "pointer" }}>
+                    Search
+                  </button>
+                </form>
+
+                {catalog.length === 0 ? (
+                  <EmptyPanel label={q ? "No books matched your search." : "Search the catalogue by title, author or ISBN."} />
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px,1fr))", gap: 16 }}>
+                    {catalog.map((b) => (
+                      <div key={b.id} style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 14, padding: 16 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--par-ink)", marginBottom: 4 }}>{b.title}</div>
+                        <div style={{ fontSize: 12.5, color: "var(--par-body-muted)", marginBottom: 10 }}>{b.author ?? "Unknown author"}</div>
+                        <div style={{ fontSize: 12, color: "var(--par-tertiary-2)", marginBottom: 10 }}>{b.categoryName ?? ""}{b.isbn ? ` · ${b.isbn}` : ""}</div>
+                        <StatusPill label={b.copiesSummary.available > 0 ? `${b.copiesSummary.available} available` : "All copies issued"} tone={b.copiesSummary.available > 0 ? "blue" : "gray"} />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             )}
-          </div>
-        </div>
+          </>
+        )}
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load the library. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load the library."} />;
   }
 }
 
-function IssueRow({ issue }: { issue: LibraryIssueRow }) {
+function IssueList({ rows, emptyLabel }: { rows: LibraryIssueRow[]; emptyLabel: string }) {
+  if (rows.length === 0) return <EmptyPanel label={emptyLabel} />;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4">
-      <div>
-        <p className="text-sm font-bold text-text">{issue.bookTitle}</p>
-        <p className="text-xs text-text-muted">
-          Copy {issue.copyCode} · Issued {formatDate(issue.issuedAt)} · Due {formatDate(issue.dueDate)}
-          {issue.returnedAt ? ` · Returned ${formatDate(issue.returnedAt)}` : ""}
-        </p>
-        {issue.isOverdue ? (
-          <p className="mt-1 text-xs font-semibold text-critical-text">
-            {issue.daysOverdue} day{issue.daysOverdue === 1 ? "" : "s"} overdue · Fine {formatMoneyDetail(issue.projectedFinePaise)}
-          </p>
-        ) : null}
-      </div>
-      <div className="flex items-center gap-2">
-        {issue.isOverdue ? <StatusPill state="OVERDUE" /> : <StatusPill state={issue.status} />}
-      </div>
+    <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, overflow: "hidden" }}>
+      {rows.map((r) => (
+        <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", borderBottom: "1px solid var(--par-divider)" }}>
+          <div style={{ width: 40, height: 40, borderRadius: 9, background: "var(--par-tint)", color: "var(--par-primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+              <path d="M4 4h5v16H4zM11 4h5v16h-5zM18.2 5l3 14.6" />
+            </svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--par-ink)" }}>{r.bookTitle}</div>
+            <div style={{ fontSize: 12.5, color: "var(--par-body-muted)" }}>
+              Issued {formatDate(r.issuedAt)} · Due {formatDate(r.dueDate)}
+              {r.returnedAt ? ` · Returned ${formatDate(r.returnedAt)}` : ""}
+            </div>
+          </div>
+          {r.isOverdue && <div style={{ fontSize: 12.5, color: "var(--par-red)", fontWeight: 700, flexShrink: 0 }}>{r.daysOverdue}d overdue · {formatMoneySummary(r.projectedFinePaise)}</div>}
+          <StatusPill label={r.isOverdue ? "Overdue" : r.status} tone={statusTone(r)} />
+        </div>
+      ))}
     </div>
   );
 }

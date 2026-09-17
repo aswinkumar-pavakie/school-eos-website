@@ -84,7 +84,7 @@ export default async function PrincipalAnnouncementsPage({
     <div className="mx-auto max-w-[1100px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Announcements</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Announcements</h1>
           <p className="mt-1 text-sm text-text-muted">Send a message to everyone, or to specific roles.</p>
         </div>
         <CreateAnnouncementForm revalidatePathOverride="/principal/announcements" />
@@ -108,29 +108,34 @@ export default async function PrincipalAnnouncementsPage({
         </label>
       </form>
 
-      <ul className="mt-6 flex flex-col gap-3">
+      <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">
+        All announcements · {announcements.length}
+      </p>
+      <ul className="mt-2.5 flex flex-col gap-3">
         {announcements.length === 0 && (
           <li className="rounded-[16px] border border-dashed border-border bg-surface p-8 text-center text-sm text-text-muted">
             No announcements yet.
           </li>
         )}
         {announcements.map((a) => (
-          <li key={a.id} className="rounded-[16px] border border-border bg-surface p-[18px]">
+          <li
+            key={a.id}
+            className="card-hover rounded-[16px] border border-border bg-surface p-[18px]"
+          >
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-[15px] font-extrabold leading-[20px] text-text">{a.title}</p>
-                  {a.isEmergency && <StatusPill tone="critical" label="Emergency" />}
-                  {a.priority === "URGENT" && !a.isEmergency && <StatusPill tone="pending" label="Urgent" />}
-                </div>
-                <p className="mt-1 text-xs font-semibold text-primary">
-                  {audienceLabel(a.audiences)}
-                  {a.category ? ` · ${a.category}` : ""}
-                </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-[var(--radius-pill)] bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">
+                  {a.category ?? "General"}
+                </span>
+                <StatusPill tone={a.state === "PUBLISHED" ? "success" : "pending"} label={a.state.replace(/_/g, " ")} />
+                {a.isEmergency && <StatusPill tone="critical" label="Emergency" />}
+                {a.priority === "URGENT" && !a.isEmergency && <StatusPill tone="pending" label="Urgent" />}
               </div>
               <span className="text-xs text-text-muted">{formatRelativeTime(a.createdAt)}</span>
             </div>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-text">{a.body}</p>
+            <p className="mt-2.5 text-[15px] font-extrabold leading-[20px] text-text">{a.title}</p>
+            <p className="mt-1.5 whitespace-pre-wrap text-sm text-text-muted">{a.body}</p>
+            <p className="mt-2.5 text-xs font-semibold text-primary">{audienceLabel(a.audiences)}</p>
           </li>
         ))}
       </ul>

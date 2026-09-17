@@ -5,15 +5,20 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { BackLink } from "@/components/dashboard/BackLink";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import { PersonPhotoEditor } from "@/components/dashboard/PersonPhotoEditor";
-import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/dashboard/ProfileHeader";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { EditParentContactForm } from "@/components/parents/EditParentContactForm";
 import { GuardianOccupationForm } from "@/components/parents/GuardianOccupationForm";
 import { ParentAccountStatusAction } from "@/components/parents/ParentAccountStatusAction";
 import { ParentLoginSecuritySection } from "@/components/parents/ParentLoginSecuritySection";
+import {
+  ParentProfileView,
+  type ParentProfileInfoCard,
+  type ParentProfilePill,
+  type ParentProfileSection,
+  type ParentProfileStat,
+} from "@/components/parents/ParentProfileView";
 import { apiFetch } from "@/lib/api";
 import { formatMoneySummary } from "@/lib/format";
 
@@ -78,11 +83,11 @@ export default async function ParentDetailPage({ params }: { params: Promise<{ i
     parent.loginIdentifiers.find((li) => li.identifierType === "EMAIL")?.value ?? null;
   const primaryForCount = parent.children.filter((c) => c.isPrimaryContact).length;
 
-  const pills: ProfilePill[] = [
+  const pills: ParentProfilePill[] = [
     { label: parent.status, tone: statusTone(parent.status) },
     { label: `${parent.children.length} child${parent.children.length === 1 ? "" : "ren"}`, tone: "neutral" },
   ];
-  const stats: ProfileStat[] = [
+  const stats: ParentProfileStat[] = [
     {
       label: "Children linked",
       value: String(parent.children.length),
@@ -90,42 +95,35 @@ export default async function ParentDetailPage({ params }: { params: Promise<{ i
     },
   ];
 
-  return (
-    <div className="mx-auto max-w-[960px]">
-      <BackLink href="/admin/parents" label="Back to parents" />
-      <ProfileHeader
-        photo={
-          <PersonPhotoEditor
-            personId={parent.id}
-            photoUrl={parent.photoUrl}
-            name={`${parent.firstName} ${parent.lastName ?? ""}`}
-            revalidatePaths={["/admin/parents", `/admin/parents/${parent.id}`]}
-            size={112}
-            shape="square"
-          />
-        }
-        name={`${parent.firstName} ${parent.lastName ?? ""}`}
-        subtitle={parent.mobile ?? parent.email ?? "No contact on file"}
-        pills={pills}
-        stats={stats}
-      />
+  const infoCards: ParentProfileInfoCard[] = [
+    {
+      title: "Profile",
+      rows: [
+        ["Mobile", parent.mobile ?? "—"],
+        ["Email", parent.email ?? "—"],
+      ],
+    },
+  ];
 
-      <section className="mt-8 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Contact details</h2>
-        <p className="mt-1 text-[13px] text-text-muted">Name isn&apos;t editable here.</p>
+  const sections: ParentProfileSection[] = [
+    {
+      key: "contact",
+      title: "Edit contact details",
+      subtitle: "Name isn't editable here.",
+      content: (
         <EditParentContactForm
           personId={parent.id}
           mobile={parent.mobile}
           email={parent.email}
           loginEmail={loginEmail}
         />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Login &amp; security</h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          The parent&apos;s own login, distinct from the contact details above.
-        </p>
+      ),
+    },
+    {
+      key: "login",
+      title: "Login & security",
+      subtitle: "The parent's own login, distinct from the contact details above.",
+      content: (
         <div className="mt-3">
           <ParentLoginSecuritySection
             personId={parent.id}
@@ -135,23 +133,20 @@ export default async function ParentDetailPage({ params }: { params: Promise<{ i
             adminVisiblePassword={parent.adminVisiblePassword}
           />
         </div>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
-          Linked children ({parent.children.length})
-        </h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          To link this parent to another child, open that student&apos;s profile and
-          use &quot;Link guardian&quot; there and search for this parent by name.
-        </p>
-
-        {parent.children.length === 0 ? (
+      ),
+    },
+    {
+      key: "children",
+      title: `Linked children (${parent.children.length})`,
+      subtitle:
+        'To link this parent to another child, open that student\'s profile and use "Link guardian" there and search for this parent by name.',
+      content:
+        parent.children.length === 0 ? (
           <p className="mt-4 text-sm text-text-muted">No children linked yet.</p>
         ) : (
           <div className="mt-4 flex flex-col gap-3">
             {parent.children.map((child) => (
-              <div key={child.id} className="rounded-[14px] border border-border p-3.5">
+              <div key={child.id} className="card-hover rounded-[14px] border border-border p-3.5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <PersonAvatar
@@ -209,18 +204,39 @@ export default async function ParentDetailPage({ params }: { params: Promise<{ i
               </div>
             ))}
           </div>
-        )}
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Account</h2>
-        <p className="mt-1 text-[13px] text-text-muted">
-          Deactivating locks this parent out of their login — their children&apos;s records are untouched.
-        </p>
+        ),
+    },
+    {
+      key: "account",
+      title: "Account",
+      subtitle: "Deactivating locks this parent out of their login — their children's records are untouched.",
+      content: (
         <div className="mt-3">
           <ParentAccountStatusAction personId={parent.id} status={parent.status} />
         </div>
-      </section>
-    </div>
+      ),
+    },
+  ];
+
+  return (
+    <ParentProfileView
+      backHref="/admin/parents"
+      photo={
+        <PersonPhotoEditor
+          personId={parent.id}
+          photoUrl={parent.photoUrl}
+          name={`${parent.firstName} ${parent.lastName ?? ""}`}
+          revalidatePaths={["/admin/parents", `/admin/parents/${parent.id}`]}
+          size={112}
+          shape="square"
+        />
+      }
+      name={`${parent.firstName} ${parent.lastName ?? ""}`}
+      subtitle={parent.mobile ?? parent.email ?? "No contact on file"}
+      pills={pills}
+      stats={stats}
+      infoCards={infoCards}
+      sections={sections}
+    />
   );
 }

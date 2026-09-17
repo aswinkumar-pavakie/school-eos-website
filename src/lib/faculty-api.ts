@@ -121,6 +121,9 @@ export async function getAttendanceRoster(sectionId: string, date: string): Prom
 export async function markAllPresent(sectionId: string, date: string): Promise<AttendanceRoster> {
   return (await post<ApiEnvelope<AttendanceRoster>>(`/faculty/attendance/mark-all-present?sectionId=${sectionId}&date=${date}`)).data;
 }
+export async function publishAttendance(sectionId: string, date: string): Promise<AttendanceRoster> {
+  return (await post<ApiEnvelope<AttendanceRoster>>(`/faculty/attendance/publish?sectionId=${sectionId}&date=${date}`)).data;
+}
 export async function markAttendanceRecord(recordId: string, sectionId: string, input: { status: string; reason?: string }): Promise<unknown> {
   return (await post<ApiEnvelope<unknown>>(`/faculty/attendance/records/${recordId}?sectionId=${sectionId}`, input)).data;
 }
@@ -243,6 +246,40 @@ export async function publishMarks(examSubjectId: string): Promise<{ published: 
   return (await post<ApiEnvelope<{ published: number }>>(`/faculty/marks/exam-subjects/${examSubjectId}/publish`)).data;
 }
 
+// ---------- Correction requests ----------
+// Real "sent back by the Academic Coordinator" submissions -- see
+// faculty-marks.service.ts's own listSentBackSubmissions/correctMark. A
+// correction never edits the published mark row directly (a real DB
+// trigger, guard_published_mark, rejects that outright) -- it inserts a
+// real mark_correction row, which every real reader of marks (Performance,
+// Reports, Marks verification, Subject Records, report cards) already
+// reads through. Submitting one also flips the coordinator's own decision
+// back to PENDING, so this exact submission reaches their queue again.
+
+export interface SentBackSubject {
+  examSubjectId: string;
+  maxMarks: number;
+}
+export interface SentBackSubmission {
+  sectionId: string;
+  examId: string;
+  examName: string;
+  gradeName: string | null;
+  sectionName: string | null;
+  comment: string | null;
+  decidedAt: string | null;
+  subjects: SentBackSubject[];
+}
+export async function listSentBackSubmissions(): Promise<SentBackSubmission[]> {
+  return (await get<ApiEnvelope<SentBackSubmission[]>>("/faculty/marks/sent-back")).data;
+}
+export async function correctMark(
+  examSubjectId: string,
+  input: { studentId: string; newMarksObtained: number; reason: string },
+): Promise<{ id: string }> {
+  return (await post<ApiEnvelope<{ id: string }>>(`/faculty/marks/exam-subjects/${examSubjectId}/correct`, input)).data;
+}
+
 // ============================================================
 // Announcements
 // ============================================================
@@ -303,6 +340,28 @@ export interface ClassResultExam {
 export async function listClassResultExams(sectionId: string): Promise<ClassResultExam[]> {
   return (await get<ApiEnvelope<ClassResultExam[]>>(`/faculty/class-results/sections/${sectionId}/exams`)).data;
 }
+export interface ExamScheduleRow {
+  id: string;
+  examId: string;
+  subjectOfferingId: string;
+  gradeName: string;
+  sectionName: string;
+  subjectName: string;
+  teacherFirstName: string | null;
+  teacherLastName: string | null;
+  examDate: string | null;
+  startTime: string | null;
+  durationMinutes: number | null;
+  room: string | null;
+  maxMarks: string;
+  passMarks: string | null;
+  hasPractical: boolean;
+  practicalMax: string | null;
+  internalMax: string | null;
+}
+export async function getExamSchedule(examId: string): Promise<ExamScheduleRow[]> {
+  return (await get<ApiEnvelope<ExamScheduleRow[]>>(`/faculty/exams/${examId}/schedule`)).data;
+}
 export interface ClassResultSubjectMark {
   subjectName: string;
   marksObtained: number | null;
@@ -330,6 +389,12 @@ export interface ClassResults {
 }
 export async function getClassResults(sectionId: string, examId: string): Promise<ClassResults> {
   return (await get<ApiEnvelope<ClassResults>>(`/faculty/class-results/sections/${sectionId}/exams/${examId}`)).data;
+}
+export async function getStudentRemark(sectionId: string, examId: string, studentId: string): Promise<{ remark: string | null }> {
+  return (await get<ApiEnvelope<{ remark: string | null }>>(`/faculty/class-results/sections/${sectionId}/exams/${examId}/students/${studentId}/remark`)).data;
+}
+export async function setStudentRemark(sectionId: string, examId: string, studentId: string, remark: string): Promise<{ remark: string }> {
+  return (await patch<ApiEnvelope<{ remark: string }>>(`/faculty/class-results/sections/${sectionId}/exams/${examId}/students/${studentId}/remark`, { remark })).data;
 }
 
 // ============================================================
@@ -384,6 +449,13 @@ export interface HomeworkRosterRow {
 export async function getHomeworkRoster(id: string, tab: "DONE" | "NOT_DONE"): Promise<{ homework: HomeworkItem; roster: HomeworkRosterRow[] }> {
   return (await get<ApiEnvelope<{ homework: HomeworkItem; roster: HomeworkRosterRow[] }>>(`/faculty/homework/${id}/roster?tab=${tab}`)).data;
 }
+export async function gradeHomeworkSubmission(
+  homeworkId: string,
+  studentId: string,
+  input: { status: "NOT_DONE" | "SUBMITTED" | "GRADED"; marksAwarded?: number; feedback?: string },
+): Promise<{ homework: HomeworkItem; roster: HomeworkRosterRow[] }> {
+  return (await patch<ApiEnvelope<{ homework: HomeworkItem; roster: HomeworkRosterRow[] }>>(`/faculty/homework/${homeworkId}/roster/${studentId}`, input)).data;
+}
 
 // ============================================================
 // Class Teacher (advisor dashboard + student duties)
@@ -407,6 +479,55 @@ export interface StudentSearchResult {
   studentId: string;
   studentName: string;
   rollNo: number | null;
+}
+export interface StudentDetailProfile {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  admissionNo: string;
+  admissionDate: string;
+  bloodGroup: string | null;
+  isHosteller: boolean;
+  usesSchoolTransport: boolean;
+  status: string;
+  gradeName: string | null;
+  sectionName: string | null;
+  rollNo: number | null;
+  photoUrl: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+}
+export interface StudentDetailGuardian {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  relationship: string;
+  isPrimaryContact: boolean;
+  occupation: string | null;
+}
+export interface StudentDetailAttendance {
+  presentCount: number;
+  totalCount: number;
+  percentage: number | null;
+}
+export interface StudentDetailFees {
+  overallStatus: string;
+  totalDuePaise: string;
+  totalPaidPaise: string;
+  totalPendingPaise: string;
+  totalOverduePaise: string;
+}
+export interface StudentDetail {
+  student: StudentDetailProfile;
+  guardians: StudentDetailGuardian[];
+  attendance: StudentDetailAttendance;
+  fees: StudentDetailFees;
+}
+export async function getStudentDetail(studentId: string): Promise<StudentDetail> {
+  return (await get<ApiEnvelope<StudentDetail>>(`/faculty/students/${studentId}`)).data;
 }
 export async function searchSectionStudents(sectionId: string, q: string): Promise<StudentSearchResult[]> {
   return (await get<ApiEnvelope<StudentSearchResult[]>>(`/faculty/class-teacher/sections/${sectionId}/students/search?q=${encodeURIComponent(q)}`)).data;

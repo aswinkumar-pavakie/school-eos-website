@@ -1,72 +1,73 @@
-// Parent Meetings -- real open slots for the selected child's teachers,
-// each slot's own real booking state; an open slot with no booking yet gets
-// a small request action, same /parent/meeting-slots +
-// /parent/meeting-bookings endpoints the Parent mobile app's own Meetings
-// screen already calls.
+// Meetings -- pixel-rebuilt from the design's own isMeetings screen
+// (list -> details). Real teacher-opened slots + real booking state
+// (listParentMeetingSlots/createParentMeetingBooking), same
+// /parent/meeting-slots + /parent/meeting-bookings endpoints already
+// established. The design's own "Join call"/"Record" screens have NO real
+// backend anywhere in this schema for a Parent-Faculty meeting -- unlike
+// Faculty's Online class (a real Google Meet link), MeetingSlot/
+// MeetingBooking carry no meetingUrl or any call/recording field at all.
+// Honestly omitted rather than faked; a slot's own approved state is the
+// only real signal this screen can show.
 
 import { redirect } from "next/navigation";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { formatDate } from "@/lib/format";
-import { listChildren, listParentMeetingSlots, resolveSelectedChild } from "@/lib/parent-api";
-import { RequestMeetingModal } from "./RequestMeetingModal";
+import { listChildren, listParentMeetingSlots, resolveSelectedChild, type MeetingBooking } from "@/lib/parent-api";
+import { RequestMeetingPanel } from "./RequestMeetingPanel";
+
+const BOOKING_TONE: Record<MeetingBooking["state"], PillTone> = {
+  PENDING: "amber",
+  APPROVED: "blue",
+  REJECTED: "red",
+};
 
 function time(value: string): string {
   return value.slice(0, 5);
 }
 
-export default async function ParentMeetingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ studentId?: string }>;
-}) {
+export default async function ParentMeetingsPage({ searchParams }: { searchParams: Promise<{ studentId?: string }> }) {
   try {
     const { studentId: requestedStudentId } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
-
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
     const slots = await listParentMeetingSlots(selected.studentId);
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">Meetings</h1>
-            <p className="mt-1 text-sm text-text-muted">Book a parent-teacher meeting slot for {selected.studentName}.</p>
-          </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
+      <div className="parent-scope">
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Meetings</div>
+          <div style={{ fontSize: 15, color: "var(--par-body-muted)" }}>Book a parent-teacher meeting slot for {selected.studentName}.</div>
         </div>
 
         {slots.length === 0 ? (
-          <div className="mt-6">
-            <EmptyState title="No meeting slots yet" body="Teachers haven't opened any slots for this child yet." />
-          </div>
+          <EmptyPanel label="Teachers haven't opened any slots for this child yet." />
         ) : (
-          <div className="mt-6 flex flex-col gap-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {slots.map((slot) => (
-              <div key={slot.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-bold text-text">{slot.facultyName}</p>
-                    <p className="mt-1 text-xs text-text-muted">
-                      {formatDate(slot.meetingDate)} · {time(slot.fromTime)} – {time(slot.toTime)}
-                    </p>
+              <div key={slot.id} style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-card-sm)", padding: "18px 22px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--par-tint)", color: "var(--par-primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ width: 17, height: 17 }}>
+                        <path d="M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 20.5c0-3.4 2.9-5.5 6.5-5.5s6.5 2.1 6.5 5.5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--par-ink)" }}>{slot.facultyName}</div>
+                      <div style={{ fontSize: 12.5, color: "var(--par-body-muted)" }}>{formatDate(slot.meetingDate)} · {time(slot.fromTime)} – {time(slot.toTime)}</div>
+                    </div>
                   </div>
-                  {slot.booking ? <StatusPill state={slot.booking.state} /> : null}
+                  {slot.booking && <StatusPill label={slot.booking.state} tone={BOOKING_TONE[slot.booking.state]} />}
                 </div>
 
                 {slot.booking ? (
-                  slot.booking.notes ? <p className="mt-2 text-sm text-text-muted">Your note: {slot.booking.notes}</p> : null
+                  slot.booking.notes && <div style={{ fontSize: 13.5, color: "var(--par-body-muted)", marginTop: 10 }}>Your note: {slot.booking.notes}</div>
                 ) : (
-                  <div className="mt-3">
-                    <RequestMeetingModal studentId={selected.studentId} slotId={slot.id} facultyName={slot.facultyName} />
-                  </div>
+                  <RequestMeetingPanel studentId={selected.studentId} slotId={slot.id} facultyName={slot.facultyName} />
                 )}
               </div>
             ))}
@@ -76,6 +77,6 @@ export default async function ParentMeetingsPage({
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load meeting slots. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load meeting slots."} />;
   }
 }

@@ -15,6 +15,7 @@ import {
   type FormActionState,
 } from "@/app/(dashboard)/admin/academics/actions";
 import { StaffPersonPicker } from "./StaffPersonPicker";
+import { PanelHeader } from "./shared";
 
 const initialState: FormActionState = {};
 
@@ -90,17 +91,15 @@ export function CoordinatorsPanel({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13px] text-text-muted">
-          One person can cover several standards, or a whole stage — assign below.
-        </p>
-        <button type="button" onClick={() => setOpen((v) => !v)} className="text-[13px] font-bold text-primary">
-          {open ? "Cancel" : "+ Assign role"}
-        </button>
-      </div>
+      <PanelHeader
+        title="Co-ordinators & roles"
+        subtitle={`One person can cover several standards, or a whole stage. · ${filtered.length} role assignment${filtered.length === 1 ? "" : "s"}`}
+        actionLabel={open ? "Cancel" : "+ Assign role"}
+        onAction={() => setOpen((v) => !v)}
+      />
 
-      <label className="mb-3 flex items-center gap-2 text-sm">
-        <span className="font-semibold text-text">Filter by standard</span>
+      <label className="mb-3 mt-4 flex items-center gap-2 text-sm">
+        <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">Filter by standard</span>
         <select
           value={gradeFilter}
           onChange={(e) => setGradeFilter(e.target.value)}
@@ -183,6 +182,7 @@ function AssignCoordinatorForm({
   onDone: () => void;
 }) {
   const [scopeKind, setScopeKind] = useState<"STAGE" | "GRADE">("STAGE");
+  const [roleCode, setRoleCode] = useState("ACADEMIC_COORDINATOR");
   const action = assignCoordinatorAction.bind(null, academicYearId);
   const [state, formAction, isPending] = useActionState(action, initialState);
 
@@ -204,13 +204,45 @@ function AssignCoordinatorForm({
           name="roleCode"
           required
           disabled={isPending}
-          defaultValue="ACADEMIC_COORDINATOR"
+          value={roleCode}
+          onChange={(e) => setRoleCode(e.target.value)}
           className="rounded-[11px] border border-border bg-surface px-3 py-2 text-text outline-none focus:border-primary"
         >
           <option value="ACADEMIC_COORDINATOR">Academic Coordinator</option>
           <option value="SPORTS_FACULTY">Sports Faculty</option>
         </select>
       </label>
+
+      {roleCode === "ACADEMIC_COORDINATOR" && (
+        <div className="flex flex-col gap-2 rounded-[11px] border border-border bg-surface p-3">
+          <p className="text-[13px] text-text-muted">
+            Optional -- give this Academic Coordinator assignment its own separate login (own email + own password),
+            distinct from this faculty member&rsquo;s own faculty login. Leave both blank to keep using their existing
+            faculty login for coordinator duties too.
+          </p>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Coordinator login email</span>
+            <input
+              type="email"
+              name="coordinatorEmail"
+              disabled={isPending}
+              placeholder="e.g. subha.coordinator@pavakie.edu"
+              className="rounded-[11px] border border-border bg-field px-3 py-2 text-sm text-text outline-none focus:border-primary"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm">
+            <span className="font-semibold text-text">Coordinator login password</span>
+            <input
+              type="password"
+              name="coordinatorPassword"
+              disabled={isPending}
+              minLength={8}
+              placeholder="At least 8 characters"
+              className="rounded-[11px] border border-border bg-field px-3 py-2 text-sm text-text outline-none focus:border-primary"
+            />
+          </label>
+        </div>
+      )}
 
       <div className="flex gap-4 text-sm">
         <label className="flex items-center gap-1.5">
