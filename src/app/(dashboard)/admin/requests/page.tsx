@@ -4,13 +4,32 @@
 // corrections, inventory, repair & maintenance, and other essential
 // administrative requests. Academic, disciplinary, staff-performance and
 // finance-operational decisions are never representable here at all.
+//
+// Card design pixel-matched against Principal Console.dc.html's own
+// isApprovals markup (line 496-534) -- checked against the literal inline
+// styles, not inferred. Real one-click Approve/Reject on each pending card
+// (DecideApprovalRequestDto.comment is optional -- a plain click is real
+// functionality, not a stub); STATUS and TYPE are now dropdown selects
+// instead of the previous pill tabs, both already real, already-supported
+// backend filters (`view`/`requestType` on GET /approval-requests) -- this
+// swaps the control widget, not the filtering logic. "HIGH PRIORITY" isn't
+// shown -- this request type has no due-date/priority field the way the
+// generic approvals engine's requests do, so there's nothing real to flag.
 
-import Link from "next/link";
-import { AutoSubmitSearchInput } from "@/components/dashboard/AutoSubmitFilter";
-import { StatusPill } from "@/components/dashboard/StatusPill";
+import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
+import { InlineDecisionCard } from "@/components/requests/InlineDecisionCard";
 import { CreateApprovalRequestModal } from "@/components/requests/CreateApprovalRequestModal";
 import { apiFetch } from "@/lib/api";
 import { formatRelativeTime } from "@/lib/format";
+import { listApprovals } from "@/lib/finance-api";
+import {
+  approveApprovalRequestInline,
+  rejectApprovalRequestInline,
+  sendBackApprovalRequestInline,
+  approveGenericApprovalInline,
+  rejectGenericApprovalInline,
+  sendBackGenericApprovalInline,
+} from "./actions";
 
 interface ApprovalRequestRow {
   id: string;
@@ -23,12 +42,12 @@ interface ApprovalRequestRow {
   decidedByName: string | null;
 }
 
-const VIEW_TABS: { value: string; label: string }[] = [
-  { value: "pending", label: "Pending Requests" },
+const VIEW_OPTIONS: { value: string; label: string }[] = [
+  { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "sent_back", label: "Sent Back / Requires Changes" },
-  { value: "history", label: "Request History" },
+  { value: "sent_back", label: "Sent back / requires changes" },
+  { value: "history", label: "All history" },
 ];
 
 const REQUEST_TYPE_LABELS: Record<string, string> = {
@@ -40,22 +59,17 @@ const REQUEST_TYPE_LABELS: Record<string, string> = {
   ADMIN_OTHER_REQUEST: "Other administrative request",
 };
 
-function stateTone(state: string): "success" | "pending" | "critical" {
-  if (state === "APPROVED") return "success";
-  if (state === "REJECTED") return "critical";
-  return "pending";
-}
-
 export default async function RequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; search?: string; page?: string }>;
+  searchParams: Promise<{ view?: string; type?: string; search?: string; page?: string }>;
 }) {
   const params = await searchParams;
   const view = params.view ?? "pending";
   const page = Number(params.page ?? "1") || 1;
   const query = new URLSearchParams();
   query.set("view", view);
+  if (params.type) query.set("requestType", params.type);
   if (params.search) query.set("search", params.search);
   query.set("page", String(page));
   query.set("limit", "50");
@@ -77,106 +91,167 @@ export default async function RequestsPage({
   };
   const totalPages = Math.max(1, Math.ceil(meta.total / meta.limit));
 
+  // Second, real source: the generic approvals engine (approval_policy /
+  // GET /approvals) -- see actions.ts's own comment on
+  // approveGenericApprovalInline for why this is needed. listForCaller on the
+  // backend already scopes this to requests genuinely routed to ADMIN as the
+  // current approver (e.g. a Principal's own STAFF_LEAVE_REQUEST, self-
+  // approval blocked, routed here instead) -- not every request in the
+  // system. Only PENDING/APPROVED/REJECTED are supported by this engine's own
+  // status filter (ListApprovalsQueryDto), so "sent back" / "all history"
+  // simply show none from this source -- the 6-type module above still covers
+  // those views for its own requests.
+  const genericStatus = view === "pending" ? "PENDING" : view === "approved" ? "APPROVED" : view === "rejected" ? "REJECTED" : undefined;
+  const genericRequests = genericStatus ? await listApprovals({ status: genericStatus }) : [];
+
+  const pendingCount = view === "pending" ? meta.total + genericRequests.length : undefined;
+
   function hrefWith(overrides: Record<string, string | undefined>) {
     const next = new URLSearchParams();
     next.set("view", view);
+    if (params.type) next.set("type", params.type);
     if (params.search) next.set("search", params.search);
-    next.set("page", String(page));
-    for (const [key, value] of Object.entries(overrides)) {
-      if (value === undefined) next.delete(key);
-      else next.set(key, value);
-    }
+    next.set("page", overrides.page ?? String(page));
     return `/admin/requests?${next.toString()}`;
   }
 
   return (
     <div className="mx-auto max-w-[1280px]">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Requests &amp; Approvals</h1>
-          <p className="mt-1 text-sm text-text-muted">
+          {/* 38px/700/-0.028em, per Principal Console.dc.html's own page.title markup. */}
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Requests &amp; approvals</h1>
+          <p className="mt-1.5 text-sm text-text-muted">
             Limited, high-importance administrative requests only — academic, disciplinary and finance decisions
             stay with Principal/Vice Principal/Finance.
           </p>
         </div>
-        <CreateApprovalRequestModal />
+        <div className="flex items-center gap-3">
+          {pendingCount !== undefined && (
+            <span className="rounded-[var(--radius-pill)] border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary-deep">
+              {pendingCount} awaiting decision
+            </span>
+          )}
+          <CreateApprovalRequestModal />
+        </div>
       </div>
 
-      <div className="mt-6 flex gap-2 overflow-x-auto border-b border-border">
-        {VIEW_TABS.map((tab) => (
-          <Link
-            key={tab.value}
-            href={hrefWith({ view: tab.value, page: "1" })}
-            className={`whitespace-nowrap border-b-2 px-1 pb-2 text-[13px] font-semibold ${
-              view === tab.value ? "border-primary text-primary" : "border-transparent text-text-muted hover:text-text"
-            }`}
+      <form action="/admin/requests" className="mt-6 grid grid-cols-1 gap-[18px] rounded-[14px] border border-border bg-surface p-5 sm:grid-cols-2 lg:grid-cols-3">
+        <label className="flex flex-col gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>
+            Status
+          </span>
+          <AutoSubmitSelect
+            name="view"
+            defaultValue={view}
+            className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
           >
-            {tab.label}
-          </Link>
-        ))}
-        <Link
-          href="/admin/audit?objectType=approval_request"
-          className="whitespace-nowrap border-b-2 border-transparent px-1 pb-2 text-[13px] font-semibold text-text-muted hover:text-text"
-        >
-          Approval Audit Trail
-        </Link>
-      </div>
-
-      <form action="/admin/requests" className="mt-6 flex flex-wrap items-end gap-3">
-        <input type="hidden" name="view" value={view} />
-        <AutoSubmitSearchInput
-          type="search"
-          name="search"
-          defaultValue={params.search ?? ""}
-          placeholder="Search by requester name or description…"
-          className="w-full max-w-md rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
-        />
+            {VIEW_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </AutoSubmitSelect>
+        </label>
+        <label className="flex flex-col gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>
+            Type
+          </span>
+          <AutoSubmitSelect
+            name="type"
+            defaultValue={params.type ?? ""}
+            className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
+          >
+            <option value="">All types</option>
+            {Object.entries(REQUEST_TYPE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </AutoSubmitSelect>
+        </label>
+        <label className="flex flex-col gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>
+            Search
+          </span>
+          <AutoSubmitSearchInput
+            type="search"
+            name="search"
+            defaultValue={params.search ?? ""}
+            placeholder="Requester name or description…"
+            className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
+          />
+        </label>
       </form>
 
-      <div className="mt-6 overflow-x-auto rounded-[16px] border border-border bg-surface">
-        <table className="w-full min-w-[900px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
-              <th className="px-4 py-3">Request type</th>
-              <th className="px-4 py-3">Requested by</th>
-              <th className="px-4 py-3">Description</th>
-              <th className="px-4 py-3">Submitted</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {requests.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-text-muted">
-                  No requests match this view.
-                </td>
-              </tr>
-            )}
-            {requests.map((r) => (
-              <tr key={r.id}>
-                <td className="px-4 py-3 font-semibold text-text">{REQUEST_TYPE_LABELS[r.requestType] ?? r.requestType}</td>
-                <td className="px-4 py-3 text-text-muted">
-                  {r.requestedByName ?? "—"}
-                  {r.requestedByRoleCode && <p className="text-xs">{r.requestedByRoleCode}</p>}
-                </td>
-                <td className="max-w-[320px] truncate px-4 py-3 text-text-muted">{r.payload?.description ?? "—"}</td>
-                <td className="px-4 py-3 text-text-muted" title={new Date(r.createdAt).toISOString()}>
-                  {formatRelativeTime(r.createdAt)}
-                </td>
-                <td className="px-4 py-3">
-                  <StatusPill tone={stateTone(r.state)} label={r.state.replace(/_/g, " ")} />
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/requests/${r.id}`} className="text-[13px] font-semibold text-primary">
-                    View
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {requests.length === 0 ? (
+        <div className="mt-6 rounded-[16px] border border-border bg-surface p-8 text-center">
+          <p className="text-[15px] font-extrabold leading-[20px] text-text">No requests match this view</p>
+          <p className="mt-1.5 text-sm text-text-muted">Nothing here right now.</p>
+        </div>
+      ) : (
+        <div className="mt-6 flex flex-col gap-[14px]">
+          {requests.map((r) => (
+            <div key={r.id} className="card-hover flex flex-wrap justify-between gap-5 rounded-[14px] border border-border p-5">
+              <div className="flex min-w-[260px] flex-1 flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-[10px]">
+                  <span
+                    className="rounded-[6px] px-[10px] py-[5px] text-[11px] font-semibold tracking-[0.1em]"
+                    style={{ color: "#1f4fa8", background: "#eef4ff" }}
+                  >
+                    {(REQUEST_TYPE_LABELS[r.requestType] ?? r.requestType).toUpperCase()}
+                  </span>
+                  <span className="font-mono text-[12px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                    REQ-{r.id.slice(0, 8).toUpperCase()}
+                  </span>
+                  <span className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                    {formatRelativeTime(r.createdAt)}
+                  </span>
+                </div>
+                <p className="text-[19px] font-semibold leading-[24px] tracking-[-0.015em] text-text">
+                  {REQUEST_TYPE_LABELS[r.requestType] ?? r.requestType}
+                </p>
+                {(r.payload?.description || r.payload?.reason) && (
+                  <p className="text-[14px]" style={{ color: "var(--color-text-secondary, var(--color-text-muted))" }}>
+                    {r.payload.description ?? r.payload.reason}
+                  </p>
+                )}
+                <p className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                  Raised by {r.requestedByName ?? "—"}
+                  {r.requestedByRoleCode ? ` · ${r.requestedByRoleCode}` : ""}
+                </p>
+              </div>
+
+              {r.state === "PENDING" || r.state === "RESUBMITTED" ? (
+                <InlineDecisionCard
+                  approveAction={approveApprovalRequestInline.bind(null, r.id)}
+                  rejectAction={rejectApprovalRequestInline.bind(null, r.id)}
+                  sendBackAction={sendBackApprovalRequestInline.bind(null, r.id)}
+                  rejectRequiresComment={false}
+                />
+              ) : (
+                <div className="flex flex-col items-end gap-1">
+                  <span
+                    className="whitespace-nowrap rounded-[var(--radius-pill)] px-[18px] py-[10px] text-[13px] font-semibold"
+                    style={
+                      r.state === "APPROVED"
+                        ? { background: "#e8f6ee", color: "#1f7a4d" }
+                        : r.state === "REJECTED"
+                          ? { background: "#fdecec", color: "#b3261e" }
+                          : { background: "var(--color-field)", color: "var(--color-text-muted)" }
+                    }
+                  >
+                    {r.state.replace(/_/g, " ")}
+                  </span>
+                  {r.decidedByName && (
+                    <span className="text-[12px] text-text-muted">by {r.decidedByName}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between text-sm text-text-muted">
@@ -185,15 +260,83 @@ export default async function RequestsPage({
           </span>
           <div className="flex gap-2">
             {page > 1 && (
-              <Link href={hrefWith({ page: String(page - 1) })} className="font-semibold text-primary">
+              <a href={hrefWith({ page: String(page - 1) })} className="font-semibold text-primary">
                 Previous
-              </Link>
+              </a>
             )}
             {page < totalPages && (
-              <Link href={hrefWith({ page: String(page + 1) })} className="font-semibold text-primary">
+              <a href={hrefWith({ page: String(page + 1) })} className="font-semibold text-primary">
                 Next
-              </Link>
+              </a>
             )}
+          </div>
+        </div>
+      )}
+
+      {genericRequests.length > 0 && (
+        <div className="mt-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-[19px] font-semibold leading-[24px] tracking-[-0.015em] text-text">Other requests routed to you</h2>
+            <span className="rounded-[var(--radius-pill)] border border-border bg-field px-2.5 py-1 text-xs font-semibold text-text-muted">
+              {genericRequests.length}
+            </span>
+          </div>
+          <p className="mt-1 text-[13px] text-text-muted">
+            Not one of the 6 request types above — routed to you here because the normal approver was blocked from
+            self-approving (e.g. a Principal&apos;s own leave request).
+          </p>
+          <div className="mt-4 flex flex-col gap-[14px]">
+            {genericRequests.map((r) => (
+              <div key={r.id} className="card-hover flex flex-wrap justify-between gap-5 rounded-[14px] border border-border p-5">
+                <div className="flex min-w-[260px] flex-1 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-[10px]">
+                    <span
+                      className="rounded-[6px] px-[10px] py-[5px] text-[11px] font-semibold tracking-[0.1em]"
+                      style={{ color: "#1f4fa8", background: "#eef4ff" }}
+                    >
+                      {r.requestType.replace(/_/g, " ").toUpperCase()}
+                    </span>
+                    <span className="font-mono text-[12px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                      REQ-{r.id.slice(0, 8).toUpperCase()}
+                    </span>
+                    <span className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                      {formatRelativeTime(r.createdAt)}
+                    </span>
+                  </div>
+                  <p className="text-[19px] font-semibold leading-[24px] tracking-[-0.015em] text-text">
+                    {r.requestType.replace(/_/g, " ")}
+                  </p>
+                  <p className="text-[13px]" style={{ color: "var(--color-text-tertiary, var(--color-text-muted))" }}>
+                    Raised by {r.requestedByName ?? "—"}
+                  </p>
+                </div>
+
+                {r.state === "PENDING" ? (
+                  <InlineDecisionCard
+                    approveAction={approveGenericApprovalInline.bind(null, r.id)}
+                    rejectAction={rejectGenericApprovalInline.bind(null, r.id)}
+                    sendBackAction={sendBackGenericApprovalInline.bind(null, r.id)}
+                    rejectRequiresComment={true}
+                    sendBackRequiresComment={true}
+                  />
+                ) : (
+                  <div className="flex flex-col items-end gap-1">
+                    <span
+                      className="whitespace-nowrap rounded-[var(--radius-pill)] px-[18px] py-[10px] text-[13px] font-semibold"
+                      style={
+                        r.state === "APPROVED"
+                          ? { background: "#e8f6ee", color: "#1f7a4d" }
+                          : r.state === "REJECTED"
+                            ? { background: "#fdecec", color: "#b3261e" }
+                            : { background: "var(--color-field)", color: "var(--color-text-muted)" }
+                      }
+                    >
+                      {r.state.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

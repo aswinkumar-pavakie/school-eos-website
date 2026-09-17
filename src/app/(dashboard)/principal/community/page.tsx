@@ -82,7 +82,7 @@ export default async function PrincipalCommunityPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Communities</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Communities</h1>
           <p className="mt-1 text-sm text-text-muted">{communities.length} communities — view-only</p>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default async function PrincipalCommunityPage({
               </tr>
             )}
             {communities.map((c) => (
-              <tr key={c.id}>
+              <tr key={c.id} className="card-hover">
                 <td className="px-4 py-3 font-semibold text-text">{c.name}</td>
                 <td className="px-4 py-3 text-text-muted">{c.communityCategory}</td>
                 <td className="px-4 py-3 text-text-muted">{yearById.get(c.academicYearId) ?? "—"}</td>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { createVehicleAction, updateVehicleAction, type FormActionState } from "@/app/(dashboard)/admin/transport/actions";
 import { StatusPill } from "@/components/dashboard/StatusPill";
@@ -58,6 +59,7 @@ export function VehiclesPanel({
   routeNameById,
   driverNameById,
   readOnly = false,
+  detailBasePath,
 }: {
   vehicles: Vehicle[];
   assignments: VehicleAssignment[];
@@ -67,6 +69,10 @@ export function VehiclesPanel({
    * master data -- hides "+ New vehicle" and every row's "Edit" toggle/form.
    * Defaults to false so Admin's existing usage is completely unaffected. */
   readOnly?: boolean;
+  /** When set, each row gets a "Documents" link to `${detailBasePath}/${vehicle.id}`
+   * (the new vehicle-documents/maintenance detail page). Undefined by default
+   * so this doesn't appear anywhere until a caller opts in explicitly. */
+  detailBasePath?: string;
 }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createVehicleAction, initialState);
@@ -136,6 +142,7 @@ export function VehiclesPanel({
               editing={editingId === vehicle.id}
               onToggle={() => setEditingId((v) => (v === vehicle.id ? null : vehicle.id))}
               readOnly={readOnly}
+              detailBasePath={detailBasePath}
             />
           );
         })}
@@ -151,6 +158,7 @@ function VehicleRow({
   editing,
   onToggle,
   readOnly,
+  detailBasePath,
 }: {
   vehicle: Vehicle;
   routeName: string | null;
@@ -158,6 +166,7 @@ function VehicleRow({
   editing: boolean;
   onToggle: () => void;
   readOnly: boolean;
+  detailBasePath?: string;
 }) {
   const action = updateVehicleAction.bind(null, vehicle.id);
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -166,7 +175,14 @@ function VehicleRow({
     <li className="py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[13.5px] font-semibold text-text font-mono">{vehicle.registrationNo}</p>
+          <p className="text-[13.5px] font-semibold text-text font-mono">
+            {vehicle.registrationNo}
+            {detailBasePath && (
+              <Link href={`${detailBasePath}/${vehicle.id}`} className="ml-2 font-sans text-xs font-semibold text-primary">
+                Documents
+              </Link>
+            )}
+          </p>
           <p className="text-xs text-text-muted">
             {vehicle.model ?? "—"} · {vehicle.capacity} seats{vehicle.ownership ? ` · ${vehicle.ownership.toLowerCase()}` : ""}
           </p>

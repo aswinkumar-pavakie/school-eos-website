@@ -47,6 +47,38 @@ export async function createCalendarEventAction(
   return {};
 }
 
+// Admin's own quick "+ Add event" action for the shared MonthCalendar
+// header flow (Day/Event/Category, school-wide) -- mirrors
+// principal/academics/academic-calendar/actions.ts's own
+// createPrincipalCalendarEventAction exactly, just revalidating Admin's own
+// route. The richer scope-targeted createCalendarEventAction above stays for
+// anything that still calls it directly; this is the pixel-matched
+// mockup-shaped counterpart the shared component itself calls.
+export async function createAdminCalendarEventAction(
+  academicYearId: string,
+  isoDate: string,
+  title: string,
+  eventType: string,
+): Promise<FormActionState> {
+  const res = await apiFetch("/calendar-events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      academicYearId,
+      title,
+      eventType,
+      isHoliday: eventType === "HOLIDAY",
+      startDate: isoDate,
+      endDate: isoDate,
+      scopeType: "SCHOOL",
+    }),
+  });
+
+  if (!res.ok) return { error: await readError(res) };
+  revalidatePath("/admin/academic-calendar");
+  return {};
+}
+
 export async function deleteCalendarEventAction(id: string): Promise<void> {
   const res = await apiFetch(`/calendar-events/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Couldn't remove this event. Nothing was changed.");

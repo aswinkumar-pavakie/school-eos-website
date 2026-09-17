@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import {
   changeDriverVehicleAction,
@@ -60,6 +61,7 @@ export function DriversPanel({
   vehicles,
   assignments,
   readOnly = false,
+  detailBasePath,
 }: {
   drivers: Driver[];
   vehicles: DriverVehicle[];
@@ -70,6 +72,10 @@ export function DriversPanel({
    * AssignmentsPanel). Defaults to false so Admin's existing usage is
    * completely unaffected. */
   readOnly?: boolean;
+  /** When set, each row gets a "Documents" link to `${detailBasePath}/${driver.id}`
+   * (the new driver-documents detail page). Undefined by default so this
+   * doesn't appear anywhere until a caller opts in explicitly. */
+  detailBasePath?: string;
 }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createDriverAction, initialState);
@@ -125,6 +131,7 @@ export function DriversPanel({
                   editing={editingId === driver.id}
                   onToggle={() => setEditingId((v) => (v === driver.id ? null : driver.id))}
                   readOnly={readOnly}
+                  detailBasePath={detailBasePath}
                 />
               );
             })}
@@ -143,6 +150,7 @@ function DriverRow({
   editing,
   onToggle,
   readOnly,
+  detailBasePath,
 }: {
   driver: Driver;
   assignment: DriverVehicleAssignment | null;
@@ -151,6 +159,7 @@ function DriverRow({
   editing: boolean;
   onToggle: () => void;
   readOnly: boolean;
+  detailBasePath?: string;
 }) {
   const action = updateDriverAction.bind(null, driver.id);
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -166,7 +175,14 @@ function DriverRow({
   return (
     <>
       <tr>
-        <td className="py-3 pr-3 font-semibold text-text">{driver.fullName}</td>
+        <td className="py-3 pr-3 font-semibold text-text">
+          {driver.fullName}
+          {detailBasePath && (
+            <Link href={`${detailBasePath}/${driver.id}`} className="ml-2 text-xs font-semibold text-primary">
+              Documents
+            </Link>
+          )}
+        </td>
         <td className="py-3 pr-3 text-text-muted">
           {driver.phone ?? "—"} · licence {driver.licenceNo}
         </td>

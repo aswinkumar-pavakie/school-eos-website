@@ -8,10 +8,16 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { BackLink } from "@/components/dashboard/BackLink";
+import { KvRows } from "@/components/dashboard/KvRows";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
-import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/dashboard/ProfileHeader";
 import { StatusPill } from "@/components/dashboard/StatusPill";
+import {
+  ParentProfileView,
+  type ParentProfileInfoCard,
+  type ParentProfilePill,
+  type ParentProfileSection,
+  type ParentProfileStat,
+} from "@/components/parents/ParentProfileView";
 import { apiFetch } from "@/lib/api";
 import { formatMoneySummary } from "@/lib/format";
 
@@ -73,11 +79,11 @@ export default async function PrincipalParentDetailPage({ params }: { params: Pr
   const loginMobile = parent.loginIdentifiers.find((li) => li.identifierType === "MOBILE")?.value ?? null;
   const primaryForCount = parent.children.filter((c) => c.isPrimaryContact).length;
 
-  const pills: ProfilePill[] = [
+  const pills: ParentProfilePill[] = [
     { label: parent.status, tone: statusTone(parent.status) },
     { label: `${parent.children.length} child${parent.children.length === 1 ? "" : "ren"}`, tone: "neutral" },
   ];
-  const stats: ProfileStat[] = [
+  const stats: ParentProfileStat[] = [
     {
       label: "Children linked",
       value: String(parent.children.length),
@@ -85,63 +91,39 @@ export default async function PrincipalParentDetailPage({ params }: { params: Pr
     },
   ];
 
-  return (
-    <div className="mx-auto max-w-[960px]">
-      <BackLink href="/principal/parents" label="Back to parents" />
-      <ProfileHeader
-        photo={
-          <PersonAvatar
-            photoUrl={parent.photoUrl}
-            name={`${parent.firstName} ${parent.lastName ?? ""}`}
-            size={112}
-            shape="square"
-          />
-        }
-        name={`${parent.firstName} ${parent.lastName ?? ""}`}
-        subtitle={parent.mobile ?? parent.email ?? "No contact on file"}
-        pills={pills}
-        stats={stats}
-      />
+  const infoCards: ParentProfileInfoCard[] = [
+    {
+      title: "Profile",
+      rows: [
+        ["Mobile", parent.mobile ?? "—"],
+        ["Email", parent.email ?? "—"],
+      ],
+    },
+  ];
 
-      <section className="mt-8 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Contact details</h2>
-        <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Mobile</dt>
-            <dd className="text-text">{parent.mobile ?? "—"}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Email</dt>
-            <dd className="text-text">{parent.email ?? "—"}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Login &amp; security</h2>
-        <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Login email</dt>
-            <dd className="text-text">{loginEmail ?? "—"}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Login mobile</dt>
-            <dd className="text-text">{loginMobile ?? "—"}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">
-          Linked children ({parent.children.length})
-        </h2>
-
-        {parent.children.length === 0 ? (
+  const sections: ParentProfileSection[] = [
+    {
+      key: "login",
+      title: "Login & security",
+      content: (
+        <KvRows
+          rows={[
+            ["Login email", loginEmail ?? "—"],
+            ["Login mobile", loginMobile ?? "—"],
+          ]}
+        />
+      ),
+    },
+    {
+      key: "children",
+      title: `Linked children (${parent.children.length})`,
+      content:
+        parent.children.length === 0 ? (
           <p className="mt-4 text-sm text-text-muted">No children linked yet.</p>
         ) : (
           <div className="mt-4 flex flex-col gap-3">
             {parent.children.map((child) => (
-              <div key={child.id} className="rounded-[14px] border border-border p-3.5">
+              <div key={child.id} className="card-hover rounded-[14px] border border-border p-3.5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <PersonAvatar
@@ -193,8 +175,27 @@ export default async function PrincipalParentDetailPage({ params }: { params: Pr
               </div>
             ))}
           </div>
-        )}
-      </section>
-    </div>
+        ),
+    },
+  ];
+
+  return (
+    <ParentProfileView
+      backHref="/principal/parents"
+      photo={
+        <PersonAvatar
+          photoUrl={parent.photoUrl}
+          name={`${parent.firstName} ${parent.lastName ?? ""}`}
+          size={112}
+          shape="square"
+        />
+      }
+      name={`${parent.firstName} ${parent.lastName ?? ""}`}
+      subtitle={parent.mobile ?? parent.email ?? "No contact on file"}
+      pills={pills}
+      stats={stats}
+      infoCards={infoCards}
+      sections={sections}
+    />
   );
 }

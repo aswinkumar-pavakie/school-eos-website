@@ -55,13 +55,21 @@ export default async function ExaminationsPage({
   if (params.academicYearId) query.set("academicYearId", params.academicYearId);
   if (params.state) query.set("state", params.state);
   const res = await apiFetch(`/examinations?${query.toString()}`);
-  const exams: ExamRow[] = res.ok ? ((await res.json()) as { data: ExamRow[] }).data : [];
+  if (!res.ok) {
+    return (
+      <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
+        <p className="text-[15px] font-extrabold leading-[20px] text-text">Couldn&apos;t load examinations</p>
+        <p className="mt-1.5 text-sm text-text-muted">Nothing was changed — try refreshing the page.</p>
+      </div>
+    );
+  }
+  const exams: ExamRow[] = ((await res.json()) as { data: ExamRow[] }).data;
 
   return (
     <div className="mx-auto max-w-[1100px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Examinations</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Examinations</h1>
           <p className="mt-1 text-sm text-text-muted">Create, schedule, publish, and lock examinations.</p>
         </div>
         <CreateExamForm academicYears={academicYears} gradeScales={gradeScales} />
@@ -121,7 +129,7 @@ export default async function ExaminationsPage({
               </tr>
             )}
             {exams.map((exam) => (
-              <tr key={exam.id}>
+              <tr key={exam.id} className="card-hover">
                 <td className="px-4 py-3">
                   <Link href={`/admin/examinations/${exam.id}`} className="font-semibold text-primary">
                     {exam.name}

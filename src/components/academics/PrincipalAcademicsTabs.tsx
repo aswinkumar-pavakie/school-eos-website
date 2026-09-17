@@ -50,7 +50,14 @@ interface Department {
   id: string;
   name: string;
   code: string | null;
+  hodStaffId: string | null;
   status: string;
+}
+
+interface StaffMember {
+  id: string;
+  firstName: string;
+  lastName: string | null;
 }
 
 interface Medium {
@@ -122,6 +129,7 @@ export function PrincipalAcademicsTabs({
   subjects,
   departments,
   mediums,
+  staff = [],
   classAdvisorAssignments,
   coordinatorAssignments,
 }: {
@@ -131,6 +139,7 @@ export function PrincipalAcademicsTabs({
   subjects: Subject[];
   departments: Department[];
   mediums: Medium[];
+  staff?: StaffMember[];
   classAdvisorAssignments: ClassAdvisorAssignment[];
   coordinatorAssignments: CoordinatorAssignment[];
 }) {
@@ -138,17 +147,49 @@ export function PrincipalAcademicsTabs({
   const gradeById = new Map(grades.map((g) => [g.id, g] as const));
   const sectionById = new Map(sections.map((s) => [s.id, s] as const));
   const mediumById = new Map(mediums.map((m) => [m.id, m.name] as const));
+  const staffNameById = new Map(staff.map((s) => [s.id, `${s.firstName} ${s.lastName ?? ""}`.trim()] as const));
+
+  // Real client-side sub-filters, one per tab that genuinely has enough rows
+  // to warrant one (Academic years/Grades/Departments stay small lists, no
+  // filter added). Every option list comes from the same real data already
+  // fetched for that tab -- never a fabricated option.
+  const [sectionGradeFilter, setSectionGradeFilter] = useState("");
+  const [subjectStageFilter, setSubjectStageFilter] = useState("");
+  const [advisorGradeFilter, setAdvisorGradeFilter] = useState("");
+  const [coordinatorRoleFilter, setCoordinatorRoleFilter] = useState("");
+
+  const filteredSections = sectionGradeFilter ? sections.filter((s) => s.gradeId === sectionGradeFilter) : sections;
+  const filteredSubjects = subjectStageFilter
+    ? subjects.filter((s) => (subjectStageFilter === "ALL" ? s.appliesToStage === null : s.appliesToStage === subjectStageFilter))
+    : subjects;
+  const filteredClassAdvisors = advisorGradeFilter
+    ? classAdvisorAssignments.filter((a) => {
+        const section = a.scopeId ? sectionById.get(a.scopeId) : undefined;
+        return section?.gradeId === advisorGradeFilter;
+      })
+    : classAdvisorAssignments;
+  const filteredCoordinators = coordinatorRoleFilter
+    ? coordinatorAssignments.filter((a) => a.roleCode === coordinatorRoleFilter)
+    : coordinatorAssignments;
+
+  const filterSelectClass =
+    "min-w-[180px] rounded-[10px] border border-border bg-field px-3.5 py-2 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface";
 
   return (
     <div>
-      <div className="flex gap-2 overflow-x-auto">
+      {/* page.hasTabs per Principal Console.dc.html line 147-158: navy-filled
+          active / white-bordered idle segmented buttons, 10px radius, 12/20px
+          padding -- was a small pill-tab strip (radius 7, bg-primary active). */}
+      <div className="flex flex-wrap gap-2.5">
         {TABS.map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`whitespace-nowrap rounded-[7px] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-              tab === t ? "bg-primary text-white" : "bg-field text-text-muted hover:bg-border"
+            className={`min-h-11 whitespace-nowrap rounded-[10px] border px-5 py-3 text-sm font-semibold transition-colors ${
+              tab === t
+                ? "border-[#0f2342] bg-[#0f2342] text-white"
+                : "border-border bg-surface font-medium text-text hover:bg-bg"
             }`}
           >
             {t}
@@ -156,7 +197,7 @@ export function PrincipalAcademicsTabs({
         ))}
       </div>
 
-      <div className="mt-5 rounded-[16px] border border-border bg-surface p-[18px]">
+      <div className="mt-5 rounded-[16px] border border-border bg-surface p-[22px]">
         {tab === "Academic years" && (
           <ReadOnlyTable
             emptyLabel="No academic years."
@@ -184,31 +225,62 @@ export function PrincipalAcademicsTabs({
         )}
 
         {tab === "Sections" && (
-          <ReadOnlyTable
-            emptyLabel="No sections."
-            rows={sections}
-            columns={[
-              { label: "Grade", render: (s) => gradeById.get(s.gradeId)?.name ?? "—" },
-              { label: "Section", render: (s) => s.name },
-              { label: "Medium", render: (s) => mediumById.get(s.mediumId) ?? "—" },
-              { label: "Capacity", render: (s) => (s.capacity != null ? String(s.capacity) : "—") },
-              { label: "Status", render: (s) => <StatusPill tone={statusTone(s.status)} label={s.status} /> },
-            ]}
-          />
+          <>
+            <div className="mb-4 flex flex-wrap items-end gap-3">
+              <label className="flex flex-col gap-1.5 text-sm">
+                <span className="font-semibold text-text">Grade</span>
+                <select value={sectionGradeFilter} onChange={(e) => setSectionGradeFilter(e.target.value)} className={filterSelectClass}>
+                  <option value="">All grades</option>
+                  {grades.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <ReadOnlyTable
+              emptyLabel="No sections."
+              rows={filteredSections}
+              columns={[
+                { label: "Grade", render: (s) => gradeById.get(s.gradeId)?.name ?? "—" },
+                { label: "Section", render: (s) => s.name },
+                { label: "Medium", render: (s) => mediumById.get(s.mediumId) ?? "—" },
+                { label: "Capacity", render: (s) => (s.capacity != null ? String(s.capacity) : "—") },
+                { label: "Status", render: (s) => <StatusPill tone={statusTone(s.status)} label={s.status} /> },
+              ]}
+            />
+          </>
         )}
 
         {tab === "Subjects" && (
-          <ReadOnlyTable
-            emptyLabel="No subjects."
-            rows={subjects}
-            columns={[
-              { label: "Name", render: (s) => s.name },
-              { label: "Code", render: (s) => s.code },
-              { label: "Type", render: (s) => SUBJECT_TYPE_LABELS[s.subjectType] ?? s.subjectType },
-              { label: "Stage", render: (s) => (s.appliesToStage ? STAGE_LABELS[s.appliesToStage] ?? s.appliesToStage : "All") },
-              { label: "Status", render: (s) => <StatusPill tone={statusTone(s.status)} label={s.status} /> },
-            ]}
-          />
+          <>
+            <div className="mb-4 flex flex-wrap items-end gap-3">
+              <label className="flex flex-col gap-1.5 text-sm">
+                <span className="font-semibold text-text">Stage</span>
+                <select value={subjectStageFilter} onChange={(e) => setSubjectStageFilter(e.target.value)} className={filterSelectClass}>
+                  <option value="">All stages</option>
+                  {Object.entries(STAGE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                  <option value="ALL">All (no single stage)</option>
+                </select>
+              </label>
+            </div>
+            <ReadOnlyTable
+              emptyLabel="No subjects."
+              rows={filteredSubjects}
+              columns={[
+                { label: "Name", render: (s) => s.name },
+                { label: "Code", render: (s) => s.code },
+                { label: "Type", render: (s) => SUBJECT_TYPE_LABELS[s.subjectType] ?? s.subjectType },
+                { label: "Stage", render: (s) => (s.appliesToStage ? STAGE_LABELS[s.appliesToStage] ?? s.appliesToStage : "All") },
+                { label: "Status", render: (s) => <StatusPill tone={statusTone(s.status)} label={s.status} /> },
+              ]}
+            />
+          </>
         )}
 
         {tab === "Departments" && (
@@ -218,43 +290,74 @@ export function PrincipalAcademicsTabs({
             columns={[
               { label: "Name", render: (d) => d.name },
               { label: "Code", render: (d) => d.code ?? "—" },
+              { label: "Head of Department", render: (d) => (d.hodStaffId ? staffNameById.get(d.hodStaffId) ?? "—" : "—") },
               { label: "Status", render: (d) => <StatusPill tone={statusTone(d.status)} label={d.status} /> },
             ]}
           />
         )}
 
         {tab === "Class Advisors" && (
-          <ReadOnlyTable
-            emptyLabel="No Class Advisors assigned."
-            rows={classAdvisorAssignments}
-            columns={[
-              { label: "Faculty", render: (a) => `${a.personFirstName} ${a.personLastName ?? ""}` },
-              {
-                label: "Section",
-                render: (a) => {
-                  const section = a.scopeId ? sectionById.get(a.scopeId) : undefined;
-                  if (!section) return "—";
-                  return `${gradeById.get(section.gradeId)?.name ?? "—"} ${section.name}`;
+          <>
+            <div className="mb-4 flex flex-wrap items-end gap-3">
+              <label className="flex flex-col gap-1.5 text-sm">
+                <span className="font-semibold text-text">Grade</span>
+                <select value={advisorGradeFilter} onChange={(e) => setAdvisorGradeFilter(e.target.value)} className={filterSelectClass}>
+                  <option value="">All grades</option>
+                  {grades.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <ReadOnlyTable
+              emptyLabel="No Class Advisors assigned."
+              rows={filteredClassAdvisors}
+              columns={[
+                { label: "Faculty", render: (a) => `${a.personFirstName} ${a.personLastName ?? ""}` },
+                {
+                  label: "Section",
+                  render: (a) => {
+                    const section = a.scopeId ? sectionById.get(a.scopeId) : undefined;
+                    if (!section) return "—";
+                    return `${gradeById.get(section.gradeId)?.name ?? "—"} ${section.name}`;
+                  },
                 },
-              },
-            ]}
-          />
+              ]}
+            />
+          </>
         )}
 
         {tab === "Coordinators & Roles" && (
-          <ReadOnlyTable
-            emptyLabel="No Coordinators or Sports Faculty assigned."
-            rows={coordinatorAssignments}
-            columns={[
-              { label: "Faculty", render: (a) => `${a.personFirstName} ${a.personLastName ?? ""}` },
-              { label: "Role", render: (a) => ROLE_LABELS[a.roleCode] ?? a.roleCode },
-              {
-                label: "Scope",
-                render: (a) =>
-                  a.scopeName ?? (a.scopeStage ? STAGE_LABELS[a.scopeStage] ?? a.scopeStage : "Whole school"),
-              },
-            ]}
-          />
+          <>
+            <div className="mb-4 flex flex-wrap items-end gap-3">
+              <label className="flex flex-col gap-1.5 text-sm">
+                <span className="font-semibold text-text">Role</span>
+                <select value={coordinatorRoleFilter} onChange={(e) => setCoordinatorRoleFilter(e.target.value)} className={filterSelectClass}>
+                  <option value="">All roles</option>
+                  {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <ReadOnlyTable
+              emptyLabel="No Coordinators or Sports Faculty assigned."
+              rows={filteredCoordinators}
+              columns={[
+                { label: "Faculty", render: (a) => `${a.personFirstName} ${a.personLastName ?? ""}` },
+                { label: "Role", render: (a) => ROLE_LABELS[a.roleCode] ?? a.roleCode },
+                {
+                  label: "Scope",
+                  render: (a) =>
+                    a.scopeName ?? (a.scopeStage ? STAGE_LABELS[a.scopeStage] ?? a.scopeStage : "Whole school"),
+                },
+              ]}
+            />
+          </>
         )}
       </div>
     </div>
@@ -273,23 +376,31 @@ function ReadOnlyTable<T extends { id: string }>({
   if (rows.length === 0) {
     return <p className="text-sm text-text-muted">{emptyLabel}</p>;
   }
+  // isTable per Principal Console.dc.html line 353-409: header row filled
+  // #f8fafc (not just a border), 11px/600/0.11em th, 15px/14px td padding,
+  // hairline row-top divider, hover tint + inset ring -- was a bare
+  // border-bottom header with tighter 3px/2.5px padding and no row hover.
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[480px] text-left text-sm">
         <thead>
-          <tr className="border-b border-border text-[11px] font-bold uppercase leading-[14px] tracking-[0.09em] text-text-muted">
+          <tr className="bg-field">
             {columns.map((c) => (
-              <th key={c.label} className="px-3 py-2.5">
+              <th
+                key={c.label}
+                className="whitespace-nowrap px-3.5 py-[13px] text-[11px] font-semibold uppercase tracking-[0.11em]"
+                style={{ color: "var(--color-text-label, var(--color-text-muted))" }}
+              >
                 {c.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody>
           {rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.id} className="border-t border-[#eef1f6] transition-[box-shadow,background] duration-100 hover:bg-[#f6faff] hover:shadow-[inset_0_0_0_1.5px_#1f6feb]">
               {columns.map((c) => (
-                <td key={c.label} className="px-3 py-2.5 text-text">
+                <td key={c.label} className="px-3.5 py-[15px] align-middle text-text">
                   {c.render(row)}
                 </td>
               ))}

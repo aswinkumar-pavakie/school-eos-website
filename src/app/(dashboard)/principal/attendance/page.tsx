@@ -10,7 +10,16 @@
 
 import { StaffAttendanceBoard, type StaffDailyStatus } from "@/components/attendance/StaffAttendanceBoard";
 import { StaffAttendanceFilterBar } from "@/components/attendance/StaffAttendanceFilterBar";
+import { KpiCard } from "@/components/dashboard/KpiCard";
 import { apiFetch } from "@/lib/api";
+
+interface AttendanceSummary {
+  total: number;
+  present: number;
+  absent: number;
+  onLeave: number;
+  monthAveragePercent: number | null;
+}
 
 interface Grade {
   id: string;
@@ -54,11 +63,12 @@ export default async function PrincipalAttendancePage({
     if (params.subjectId) query.set("subjectId", params.subjectId);
   }
 
-  const [rosterRes, gradesRes, sectionsRes, subjectsRes] = await Promise.all([
+  const [rosterRes, gradesRes, sectionsRes, subjectsRes, summaryRes] = await Promise.all([
     apiFetch(`/staff-attendance?${query.toString()}`),
     apiFetch("/grades"),
     apiFetch("/sections?status=ACTIVE"),
     apiFetch("/subjects"),
+    apiFetch(`/staff-attendance/summary?date=${date}`),
   ]);
 
   if (!rosterRes.ok) {
@@ -74,14 +84,47 @@ export default async function PrincipalAttendancePage({
   const grades: Grade[] = gradesRes.ok ? ((await gradesRes.json()) as { data: Grade[] }).data : [];
   const sections: Section[] = sectionsRes.ok ? ((await sectionsRes.json()) as { data: Section[] }).data : [];
   const subjects: Subject[] = subjectsRes.ok ? ((await subjectsRes.json()) as { data: Subject[] }).data : [];
+  const summary: AttendanceSummary | null = summaryRes.ok
+    ? ((await summaryRes.json()) as { data: AttendanceSummary }).data
+    : null;
+
+  const markedCount = summary ? summary.present + summary.absent : roster.filter((r) => r.status).length;
+  const totalCount = summary?.total ?? roster.length;
+  const markedPct = totalCount > 0 ? Math.round((markedCount / totalCount) * 100) : 0;
+  const dateLabel = new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-    <div className="mx-auto max-w-[1000px]">
+    <div className="mx-auto max-w-[1180px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Attendance</h1>
-          <p className="mt-1 text-sm text-text-muted">Whole-day roll call for staff.</p>
+          {/* 38px/700/-0.028em, per Principal Console.dc.html's own page.title markup. */}
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Staff attendance</h1>
+          <p className="mt-1.5 text-sm text-text-muted">Daily marking for teaching and support staff · {dateLabel}</p>
         </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          eyebrow="Marked today"
+          value={`${markedCount} / ${totalCount}`}
+          detail={["Marking opens at 08:00", "Roll call by the office assistant"]}
+          pctBadge={`${markedPct}%`}
+          bar={markedPct}
+        />
+        <KpiCard eyebrow="On leave" value={String(summary?.onLeave ?? 0)} detail="Approved OD/leave today" />
+        <KpiCard eyebrow="Absent today" value={String(summary?.absent ?? 0)} detail="Marked absent today" />
+        <KpiCard
+          eyebrow="Month average"
+          value={summary?.monthAveragePercent != null ? `${summary.monthAveragePercent}%` : "—"}
+          detail="Month to date, all staff"
+          pctBadge={summary?.monthAveragePercent != null ? `${summary.monthAveragePercent}%` : undefined}
+          bar={summary?.monthAveragePercent ?? undefined}
+        />
       </div>
 
       <StaffAttendanceFilterBar

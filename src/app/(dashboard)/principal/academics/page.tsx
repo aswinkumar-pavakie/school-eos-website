@@ -8,13 +8,17 @@ import { PrincipalAcademicsTabs } from "@/components/academics/PrincipalAcademic
 import { apiFetch } from "@/lib/api";
 
 export default async function PrincipalAcademicsPage() {
-  const [yearsRes, gradesRes, sectionsRes, subjectsRes, departmentsRes, mediumsRes] = await Promise.all([
+  const [yearsRes, gradesRes, sectionsRes, subjectsRes, departmentsRes, mediumsRes, staffRes] = await Promise.all([
     apiFetch("/academic-years"),
     apiFetch("/grades"),
     apiFetch("/sections"),
     apiFetch("/subjects"),
     apiFetch("/departments"),
     apiFetch("/mediums"),
+    // Real Head-of-Department name for the Departments tab (design-reframe
+    // addition) -- department only stores hodStaffId, resolved here the same
+    // way every other list page resolves a person from its own separate list.
+    apiFetch("/staff?limit=500"),
   ]);
 
   if (!yearsRes.ok) {
@@ -32,6 +36,9 @@ export default async function PrincipalAcademicsPage() {
   const { data: subjects } = subjectsRes.ok ? await subjectsRes.json() : { data: [] };
   const { data: departments } = departmentsRes.ok ? await departmentsRes.json() : { data: [] };
   const { data: mediums } = mediumsRes.ok ? await mediumsRes.json() : { data: [] };
+  const { data: staff } = staffRes.ok
+    ? ((await staffRes.json()) as { data: { id: string; firstName: string; lastName: string | null }[] })
+    : { data: [] };
 
   const [advisorsRes, academicCoordRes, sportsFacultyRes] = await Promise.all([
     apiFetch("/role-assignments?roleCode=CLASS_ADVISOR&status=ACTIVE"),
@@ -45,8 +52,12 @@ export default async function PrincipalAcademicsPage() {
 
   return (
     <div className="mx-auto max-w-[1024px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Academic Configuration</h1>
-      <p className="mt-1 text-sm text-text-muted">
+      {/* page.full per Principal Console.dc.html line 121-126: 38px/700/
+          -0.028em/1.08 (was 28px) -- same page-title treatment already
+          applied to the Dashboard's own greeting. Title matched to the
+          mockup's own nav label ("Academics") per this reframe's wording rule. */}
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Academics</h1>
+      <p className="mt-2 text-[15px] text-text-muted">
         The academic structure every other module builds on — years, grades, sections, subjects, departments.
       </p>
       <div className="mt-6">
@@ -57,6 +68,7 @@ export default async function PrincipalAcademicsPage() {
           subjects={subjects}
           departments={departments}
           mediums={mediums}
+          staff={staff}
           classAdvisorAssignments={classAdvisorAssignments}
           coordinatorAssignments={coordinatorAssignments}
         />

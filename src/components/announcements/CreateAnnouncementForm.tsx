@@ -33,10 +33,17 @@ const ROLES: [string, string][] = [
 
 export function CreateAnnouncementForm({
   revalidatePathOverride,
+  triggerLabel = "+ New announcement",
+  triggerClassName = "rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white",
 }: {
   // Additive, defaults to Admin's own page -- Principal's page passes its own
   // route so sending an announcement refreshes its own view, not Admin's.
   revalidatePathOverride?: string;
+  /** Defaults to the full label/pill styling used on the Announcements list
+   * page. The Dashboard's own compact "Notices" panel passes a shorter
+   * "New" label + smaller navy pill to match that panel's own real estate. */
+  triggerLabel?: string;
+  triggerClassName?: string;
 } = {}) {
   const [open, setOpen] = useState(false);
   const [audienceType, setAudienceType] = useState("SCHOOL");
@@ -51,12 +58,8 @@ export function CreateAnnouncementForm({
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white"
-      >
-        + New announcement
+      <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
+        {triggerLabel}
       </button>
     );
   }

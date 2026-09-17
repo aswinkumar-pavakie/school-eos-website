@@ -52,23 +52,23 @@ export function StaffAttendanceFilterBar({
   const visibleSections = selectedGradeId ? sections.filter((s) => s.gradeId === selectedGradeId) : [];
 
   return (
-    <form action={formAction ?? "/admin/attendance"} className="mt-6 flex flex-wrap items-end gap-3">
-      <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-semibold text-text">Date</span>
+    <form action={formAction ?? "/admin/attendance"} className="mt-6 grid grid-cols-1 gap-[18px] rounded-[14px] border border-border bg-surface p-5 sm:grid-cols-2 lg:grid-cols-4">
+      <label className="flex flex-col gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>Date</span>
         <AutoSubmitSearchInput
           type="date"
           name="date"
           defaultValue={date}
-          className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-text outline-none focus:border-primary focus:bg-surface"
+          className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none focus:border-primary"
         />
       </label>
-      <label className="flex flex-col gap-1.5 text-sm">
-        <span className="font-semibold text-text">Staff type</span>
+      <label className="flex flex-col gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>Staff type</span>
         <AutoSubmitSelect
           name="isTeaching"
           defaultValue={isTeaching}
           onChange={(e) => setSelectedIsTeaching(e.target.value)}
-          className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+          className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none transition-colors focus:border-primary"
         >
           <option value="">All faculty &amp; staff</option>
           <option value="true">Teaching only</option>
@@ -78,13 +78,13 @@ export function StaffAttendanceFilterBar({
 
       {selectedIsTeaching === "true" && (
         <>
-          <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-semibold text-text">Standard</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>Standard</span>
             <AutoSubmitSelect
               name="gradeId"
               defaultValue={gradeId}
               onChange={(e) => setSelectedGradeId(e.target.value)}
-              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+              className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none transition-colors focus:border-primary"
             >
               <option value="">All standards</option>
               {grades.map((g) => (
@@ -94,13 +94,13 @@ export function StaffAttendanceFilterBar({
               ))}
             </AutoSubmitSelect>
           </label>
-          <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-semibold text-text">Section</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>Section</span>
             <AutoSubmitSelect
               name="sectionId"
               defaultValue={sectionId}
               disabled={!selectedGradeId}
-              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface disabled:opacity-50"
+              className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none transition-colors focus:border-primary disabled:opacity-50"
             >
               <option value="">All sections</option>
               {visibleSections.map((s) => (
@@ -110,12 +110,12 @@ export function StaffAttendanceFilterBar({
               ))}
             </AutoSubmitSelect>
           </label>
-          <label className="flex flex-col gap-1.5 text-sm">
-            <span className="font-semibold text-text">Subject</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--color-text-label, var(--color-text-muted))" }}>Subject</span>
             <AutoSubmitSelect
               name="subjectId"
               defaultValue={subjectId}
-              className="rounded-[11px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none transition-colors focus:border-primary focus:bg-surface"
+              className="rounded-[10px] border border-[#dfe5ef] bg-surface p-[14px] text-[15px] text-text outline-none transition-colors focus:border-primary"
             >
               <option value="">All subjects</option>
               {subjects.map((s) => (

@@ -158,7 +158,7 @@ export default async function FinanceOverviewPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Finance &amp; Fees</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Finance &amp; Fees</h1>
           <p className="mt-1 text-sm text-text-muted">
             Fee collection visibility for school administration — view-only. Collecting payments, refunds,
             adjustments and reconciliation are Finance/Accounts operations, not part of this view.
@@ -233,7 +233,7 @@ export default async function FinanceOverviewPage({
               </tr>
             )}
             {demands.map((d) => (
-              <tr key={d.id}>
+              <tr key={d.id} className="card-hover">
                 <td className="px-4 py-3 font-semibold text-text">
                   <Link href={`/admin/students/${d.studentId}`} className="hover:underline">
                     {d.studentFirstName} {d.studentLastName ?? ""}

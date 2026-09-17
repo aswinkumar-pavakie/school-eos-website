@@ -1,26 +1,61 @@
-// Not built yet for Principal. The backend now exists
-// (src/modules/examinations, exam + exam_subject -- real, already-populated
-// tables) with a real Admin-only frontend at admin/examinations and
-// admin/examination-timetable, built by explicit instruction to scope that
-// build to Admin only. The approved API doc calls this "Academic authority",
-// which it resolves to Admin, Principal, and Vice Principal -- so a
-// Principal-facing view (read-only, matching every other Principal module's
-// oversight pattern) is a real, well-grounded next phase, just not done yet.
-// Note: the previous version of this note assumed Academic Coordinator would
-// eventually submit a schedule for review -- that's wrong. The doc is explicit
-// that Academic Coordinator never gets a web login at all (Faculty
-// assignment, mobile-only, "no Faculty account -- regardless of assignment,
-// including Academic Coordinator -- can authenticate against a web-tagged
-// endpoint"), so there is no submission workflow to wait on; Admin creates and
-// manages exams directly.
+// Principal -- Exam timetable: per the SIS Principal mockup's own screen
+// (nav item "Exam timetable"). Thin data-fetching wrapper around the shared
+// ExamTimetableView (src/components/academics/ExamTimetableView.tsx), which
+// also backs Vice Principal and Admin so all three render identically off
+// the same real exam/exam_subject schedule (exams.controller.ts, granted to
+// PRINCIPAL) and marksEnteredCount (a real count of `mark` rows per paper --
+// see exam.repository.ts's own comment). No create/edit/publish/lock
+// controls: all writes stay Admin-only.
 
-import { ComingSoon } from "@/components/dashboard/ComingSoon";
+import { ExamTimetableView, type ExamRow, type ExamScheduleRow } from "@/components/academics/ExamTimetableView";
+import { apiFetch } from "@/lib/api";
 
-export default function Page() {
+export default async function PrincipalExamTimetablePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ examId?: string; gradeName?: string; sectionName?: string }>;
+}) {
+  const sp = await searchParams;
+
+  const examsRes = await apiFetch("/examinations");
+  const exams: ExamRow[] = examsRes.ok ? ((await examsRes.json()) as { data: ExamRow[] }).data : [];
+  const selectedExam = (sp.examId ? exams.find((e) => e.id === sp.examId) : exams[0]) ?? null;
+
+  // Every exam's own schedule -- only a handful of real exams exist, so
+  // fetching all of them in parallel to compute a real "papers this month"
+  // figure is cheap; no new endpoint needed for that.
+  const allSchedulesByExam = await Promise.all(
+    exams.map(async (e) => {
+      const res = await apiFetch(`/examinations/${e.id}/schedules`);
+      const rows: ExamScheduleRow[] = res.ok ? ((await res.json()) as { data: ExamScheduleRow[] }).data : [];
+      return { examId: e.id, rows };
+    }),
+  );
+  const allSchedules = allSchedulesByExam.flatMap((e) => e.rows);
+  const selectedSchedules = allSchedulesByExam.find((e) => e.examId === selectedExam?.id)?.rows ?? [];
+
+  const gradeOrder: string[] = [];
+  for (const s of selectedSchedules) if (!gradeOrder.includes(s.gradeName)) gradeOrder.push(s.gradeName);
+  const selectedGrade = sp.gradeName && gradeOrder.includes(sp.gradeName) ? sp.gradeName : gradeOrder[0];
+  const sectionOrder: string[] = [];
+  for (const s of selectedSchedules) {
+    if (s.gradeName === selectedGrade && !sectionOrder.includes(s.sectionName)) sectionOrder.push(s.sectionName);
+  }
+  const selectedSection = sp.sectionName && sectionOrder.includes(sp.sectionName) ? sp.sectionName : sectionOrder[0];
+
   return (
-    <ComingSoon
-      title="Examination Timetable"
-      note="Admin now manages the examination timetable directly (Examinations module). A read-only Principal view of it hasn't been built yet -- that's a separate phase."
+    <ExamTimetableView
+      formAction="/principal/academics/examination-timetable"
+      printBasePath="/print/examinations/timetable"
+      exams={exams}
+      selectedExam={selectedExam}
+      allSchedules={allSchedules}
+      allSchedulesByExam={allSchedulesByExam}
+      selectedSchedules={selectedSchedules}
+      selectedGrade={selectedGrade}
+      selectedSection={selectedSection}
+      gradeOrder={gradeOrder}
+      sectionOrder={sectionOrder}
     />
   );
 }

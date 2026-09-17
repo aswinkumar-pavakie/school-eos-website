@@ -159,6 +159,30 @@ export function GuardiansSection({ studentId, guardians }: { studentId: string; 
 
 function GuardianRowItem({ studentId, guardian }: { studentId: string; guardian: GuardianRow }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+
+  function handleSetPrimary() {
+    setError(null);
+    startTransition(async () => {
+      const result = await setPrimaryGuardianAction(studentId, guardian.id);
+      if (result.error) setError(result.error);
+    });
+  }
+
+  function handleRevoke() {
+    setError(null);
+    startTransition(async () => {
+      const result = await revokeGuardianAction(studentId, guardian.id);
+      if (result.error) setError(result.error);
+      else setConfirming(false);
+    });
+  }
+
+  const name = `${guardian.firstName} ${guardian.lastName ?? ""}`.trim();
+  const primaryWarning = guardian.isPrimaryContact
+    ? " They are this student's primary contact — removing them leaves no primary contact set."
+    : "";
 
   return (
     <tr>
@@ -170,26 +194,55 @@ function GuardianRowItem({ studentId, guardian }: { studentId: string; guardian:
       <td className="py-3 pr-3 text-text-muted">{guardian.accessLevel.toLowerCase().replace(/_/g, " ")}</td>
       <td className="py-3 pr-3 text-text-muted">{guardian.occupation ?? "—"}</td>
       <td className="py-3 text-right">
-        <div className="flex justify-end gap-3">
-          {!guardian.isPrimaryContact && (
+        {error && <p className="mb-1 text-xs font-medium text-critical-text">{error}</p>}
+        {!confirming ? (
+          <div className="flex justify-end gap-3">
+            {!guardian.isPrimaryContact && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={handleSetPrimary}
+                className="text-[13px] font-semibold text-primary disabled:opacity-60"
+              >
+                Set primary
+              </button>
+            )}
             <button
               type="button"
               disabled={isPending}
-              onClick={() => startTransition(() => setPrimaryGuardianAction(studentId, guardian.id))}
-              className="text-[13px] font-semibold text-primary disabled:opacity-60"
+              onClick={() => setConfirming(true)}
+              className="text-[13px] font-semibold text-critical-text disabled:opacity-60"
             >
-              Set primary
+              Revoke
             </button>
-          )}
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() => startTransition(() => revokeGuardianAction(studentId, guardian.id))}
-            className="text-[13px] font-semibold text-critical-text disabled:opacity-60"
-          >
-            Revoke
-          </button>
-        </div>
+          </div>
+        ) : (
+          <div className="rounded-[11px] border border-critical-text bg-critical-bg p-3 text-left">
+            <p className="text-xs font-medium text-critical-text">
+              Revoke {name} ({guardian.relationship.toLowerCase()}) as a guardian for this student?
+              {primaryWarning} This can be undone by linking them again, but any pickup/contact
+              authorization tied to this link is removed now.
+            </p>
+            <div className="mt-2 flex justify-end gap-2.5">
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => setConfirming(false)}
+                className="text-[13px] font-semibold text-text-muted disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={handleRevoke}
+                className="rounded-[9px] bg-critical-text px-3 py-1.5 text-[13px] font-bold text-white disabled:opacity-40"
+              >
+                {isPending ? "Revoking…" : "Confirm revoke"}
+              </button>
+            </div>
+          </div>
+        )}
       </td>
     </tr>
   );

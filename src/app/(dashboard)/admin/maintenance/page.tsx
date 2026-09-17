@@ -8,7 +8,6 @@ import Link from "next/link";
 import { CreateRepairRequestModal } from "@/components/maintenance/CreateRepairRequestModal";
 import { MaintenanceFilterBar } from "@/components/maintenance/MaintenanceFilterBar";
 import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
-import { MaintenanceIcon } from "@/components/dashboard/icons";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
@@ -138,7 +137,7 @@ export default async function MaintenancePage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Repair &amp; Maintenance</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Repair &amp; Maintenance</h1>
           <p className="mt-1 text-sm text-text-muted">{meta.total} requests -- general assets, equipment &amp; facilities</p>
         </div>
         <div className="flex items-center gap-2">
@@ -151,12 +150,24 @@ export default async function MaintenancePage({
       </div>
 
       {overview && (
-        <div className="mt-6 grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
-          <KpiCard eyebrow="Total requests" value={String(overview.total)} detail="All repair & maintenance work" icon={<MaintenanceIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Requested" value={String(overview.requested)} detail="Awaiting assignment" icon={<MaintenanceIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Assigned" value={String(overview.assigned)} detail="Awaiting work to start" icon={<MaintenanceIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="In progress" value={String(overview.inProgress)} detail="Being worked on" icon={<MaintenanceIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Completed" value={String(overview.completed)} detail="Fixed & closed" icon={<MaintenanceIcon className="h-5 w-5" />} />
+        <div className="mt-6 grid grid-cols-2 gap-[18px] sm:grid-cols-3 lg:grid-cols-5">
+          <KpiCard eyebrow="Total requests" value={String(overview.total)} detail="All repair & maintenance work" />
+          <KpiCard
+            eyebrow="Requested"
+            value={String(overview.requested)}
+            detail="Awaiting assignment"
+            pctBadge={overview.total > 0 ? `${Math.round((overview.requested / overview.total) * 100)}%` : undefined}
+            bar={overview.total > 0 ? Math.round((overview.requested / overview.total) * 100) : undefined}
+          />
+          <KpiCard eyebrow="Assigned" value={String(overview.assigned)} detail="Awaiting work to start" />
+          <KpiCard eyebrow="In progress" value={String(overview.inProgress)} detail="Being worked on" />
+          <KpiCard
+            eyebrow="Completed"
+            value={String(overview.completed)}
+            detail="Fixed & closed"
+            pctBadge={overview.total > 0 ? `${Math.round((overview.completed / overview.total) * 100)}%` : undefined}
+            bar={overview.total > 0 ? Math.round((overview.completed / overview.total) * 100) : undefined}
+          />
         </div>
       )}
 
@@ -206,7 +217,7 @@ export default async function MaintenancePage({
               </tr>
             )}
             {requests.map((r) => (
-              <tr key={r.id}>
+              <tr key={r.id} className="card-hover">
                 <td className="px-4 py-3 font-semibold text-text">{r.title}</td>
                 <td className="px-4 py-3 text-text-muted">{r.inventoryItemName ?? r.location ?? "—"}</td>
                 <td className="px-4 py-3">

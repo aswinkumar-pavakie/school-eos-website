@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createSectionAction, updateSectionAction, type FormActionState } from "@/app/(dashboard)/admin/academics/actions";
 import { StatusPill } from "@/components/dashboard/StatusPill";
-import { Field, PanelCreateForm, SelectField } from "./shared";
+import { Field, PanelCreateFormRow, PanelHeader, SelectField } from "./shared";
 
 export interface Section {
   id: string;
@@ -57,57 +57,21 @@ export function SectionsPanel({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] text-text-muted">{sections.length} sections</p>
-        {!adding && (
-          <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
-            + New section
-          </button>
-        )}
-      </div>
-
-      {adding && (
-        <PanelCreateForm
-          title="New section"
-          onCancel={() => setAdding(false)}
-          formAction={formAction}
-          isPending={isPending}
-          error={state.error}
-          submitLabel="Create"
-        >
-          <SelectField
-            label="Academic year"
-            name="academicYearId"
-            required
-            disabled={isPending}
-            options={[["", "Select"], ...years.map((y): [string, string] => [y.id, y.name + (y.isCurrent ? " (current)" : "")])]}
-          />
-          <SelectField
-            label="Grade"
-            name="gradeId"
-            required
-            disabled={isPending}
-            options={[["", "Select"], ...grades.map((g): [string, string] => [g.id, g.name])]}
-          />
-          <SelectField
-            label="Medium"
-            name="mediumId"
-            required
-            disabled={isPending}
-            options={[["", "Select"], ...mediums.map((m): [string, string] => [m.id, m.name])]}
-          />
-          <Field label="Section name" name="name" required disabled={isPending} placeholder="A" />
-          <Field label="Capacity" name="capacity" type="number" disabled={isPending} />
-        </PanelCreateForm>
-      )}
+      <PanelHeader
+        title="Sections"
+        subtitle={`${filtered.length} of ${sections.length} section${sections.length === 1 ? "" : "s"}`}
+        actionLabel="+ New section"
+        onAction={() => setAdding(true)}
+        hideAction={adding}
+      />
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-semibold text-text">Filter by grade</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">Filter by grade</span>
           <GradeFilterSelect grades={grades} value={gradeFilter} onChange={setGradeFilter} />
         </label>
         <label className="flex flex-col gap-1.5 text-sm">
-          <span className="font-semibold text-text">Filter by academic year</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">Filter by academic year</span>
           <select
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
@@ -136,7 +100,51 @@ export function SectionsPanel({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.length === 0 && (
+            {adding && (
+              <PanelCreateFormRow
+                colSpan={5}
+                onCancel={() => setAdding(false)}
+                formAction={formAction}
+                isPending={isPending}
+                error={state.error}
+              >
+                <SelectField
+                  label="Academic year"
+                  name="academicYearId"
+                  required
+                  disabled={isPending}
+                  options={[["", "Select"], ...years.map((y): [string, string] => [y.id, y.name + (y.isCurrent ? " (current)" : "")])]}
+                />
+                <SelectField
+                  label="Grade"
+                  name="gradeId"
+                  required
+                  disabled={isPending}
+                  options={[["", "Select"], ...grades.map((g): [string, string] => [g.id, g.name])]}
+                />
+                <SelectField
+                  label="Medium"
+                  name="mediumId"
+                  required
+                  disabled={isPending}
+                  options={[["", "Select"], ...mediums.map((m): [string, string] => [m.id, m.name])]}
+                />
+                <Field label="Section name" name="name" required disabled={isPending} placeholder="A" />
+                <Field label="Capacity" name="capacity" type="number" disabled={isPending} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue="ACTIVE"
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                    ["ARCHIVED", "Archived"],
+                  ]}
+                />
+              </PanelCreateFormRow>
+            )}
+            {filtered.length === 0 && !adding && (
               <tr>
                 <td colSpan={5} className="py-6 text-center text-text-muted">
                   No sections match this filter.

@@ -7,10 +7,15 @@
 // upload/delete surface, not core "view a student" oversight).
 
 import { notFound } from "next/navigation";
-import { BackLink } from "@/components/dashboard/BackLink";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
-import { ProfileHeader, type ProfilePill, type ProfileStat } from "@/components/dashboard/ProfileHeader";
 import { StudentFeesSection, type StudentFeeSummary } from "@/components/students/StudentFeesSection";
+import {
+  StudentProfileView,
+  type StudentProfileInfoCard,
+  type StudentProfilePill,
+  type StudentProfileSection,
+  type StudentProfileStat,
+} from "@/components/students/StudentProfileView";
 import { StudentTransportSection } from "@/components/students/StudentTransportSection";
 import { apiFetch } from "@/lib/api";
 import { formatDate, formatMoneySummary } from "@/lib/format";
@@ -20,6 +25,8 @@ interface StudentDetail {
   personId: string;
   firstName: string;
   lastName: string | null;
+  dateOfBirth: string | null;
+  gender: string | null;
   admissionNo: string;
   stateStudentId: string | null;
   admissionDate: string;
@@ -187,13 +194,13 @@ export default async function PrincipalStudentDetailPage({ params }: { params: P
     NO_ASSIGNMENT: "Not assigned",
   };
 
-  const pills: ProfilePill[] = [
+  const pills: StudentProfilePill[] = [
     { label: student.admissionNo, tone: "neutral" },
     { label: student.status.replace(/_/g, " "), tone: statusTone(student.status) },
     ...(student.isHosteller ? [{ label: "Hosteller", tone: "primary" as const }] : []),
     ...(wallet?.status === "FROZEN" ? [{ label: "Wallet frozen", tone: "critical" as const }] : []),
   ];
-  const stats: ProfileStat[] = [
+  const stats: StudentProfileStat[] = [
     {
       label: "Attendance",
       value: attendanceSummary.percentage !== null ? `${attendanceSummary.percentage}%` : "—",
@@ -210,81 +217,53 @@ export default async function PrincipalStudentDetailPage({ params }: { params: P
   const sectionById = new Map(sections.map((s) => [s.id, s] as const));
   const yearById = new Map(academicYears.map((y) => [y.id, y.name] as const));
 
-  return (
-    <div className="mx-auto max-w-[960px]">
-      <BackLink href="/principal/students" label="Back to students" />
-      <ProfileHeader
-        photo={
-          <PersonAvatar
-            photoUrl={student.photoUrl}
-            name={`${student.firstName} ${student.lastName ?? ""}`}
-            size={112}
-            shape="square"
-          />
-        }
-        name={`${student.firstName} ${student.lastName ?? ""}`}
-        subtitle={
-          student.gradeName
-            ? `${student.gradeName} · Section ${student.sectionName}${student.rollNo != null ? ` · Roll ${student.rollNo}` : ""}`
-            : "Not enrolled in a class yet"
-        }
-        pills={pills}
-        stats={stats}
-      />
+  const infoCards: StudentProfileInfoCard[] = [
+    {
+      title: "Profile",
+      rows: [
+        student.dateOfBirth && ["Date of birth", formatDate(student.dateOfBirth)],
+        student.gender && ["Gender", student.gender],
+        student.bloodGroup && ["Blood group", student.bloodGroup],
+        student.languageSubjectChoice && ["Second language", student.languageSubjectChoice],
+        student.motherTongue && ["Mother tongue", student.motherTongue],
+        student.communityCategory && ["Community category", student.communityCategory],
+        student.stateStudentId && ["State student ID", student.stateStudentId],
+      ],
+    },
+    {
+      title: "Contact",
+      rows: [
+        [
+          "Address",
+          [student.addressLine1, student.addressLine2, student.city, student.state, student.pincode]
+            .filter(Boolean)
+            .join(", ") || "—",
+        ],
+      ],
+    },
+    {
+      title: "Academic details",
+      note: `Admitted ${formatDate(student.admissionDate)}`,
+      rows: [
+        ["Admission no", student.admissionNo],
+        student.gradeName && ["Class", student.gradeName],
+        student.sectionName && ["Section", student.sectionName],
+        student.rollNo != null && ["Roll no", String(student.rollNo)],
+      ],
+    },
+  ];
 
-      {student.status !== "ACTIVE" && student.dateOfLeaving && (
-        <p className="mt-3 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm text-critical-text">
-          Left on {formatDate(student.dateOfLeaving)}.
-        </p>
-      )}
-
-      <section className="mt-8 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Profile &amp; address</h2>
-        <p className="mt-1 text-[13px] text-text-muted">Admitted {formatDate(student.admissionDate)}.</p>
-        <dl className="mt-4 grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-          {student.bloodGroup && (
-            <div>
-              <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Blood group</dt>
-              <dd className="text-text">{student.bloodGroup}</dd>
-            </div>
-          )}
-          {student.motherTongue && (
-            <div>
-              <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Mother tongue</dt>
-              <dd className="text-text">{student.motherTongue}</dd>
-            </div>
-          )}
-          {student.communityCategory && (
-            <div>
-              <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Community category</dt>
-              <dd className="text-text">{student.communityCategory}</dd>
-            </div>
-          )}
-          {student.stateStudentId && (
-            <div>
-              <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">State student ID</dt>
-              <dd className="text-text">{student.stateStudentId}</dd>
-            </div>
-          )}
-          <div className="sm:col-span-2">
-            <dt className="text-xs font-bold tracking-wide text-text-muted uppercase">Address</dt>
-            <dd className="text-text">
-              {[student.addressLine1, student.addressLine2, student.city, student.state, student.pincode]
-                .filter(Boolean)
-                .join(", ") || "—"}
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Enrolment history</h2>
-        {enrolments.length === 0 ? (
+  const profileSections: StudentProfileSection[] = [
+    {
+      key: "enrolment",
+      title: "Enrolment history",
+      content:
+        enrolments.length === 0 ? (
           <p className="mt-2 text-sm text-text-muted">No enrolment records.</p>
         ) : (
           <div className="mt-3 flex flex-col gap-2">
             {enrolments.map((e) => (
-              <div key={e.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
+              <div key={e.id} className="card-hover flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
                 <div>
                   <p className="font-semibold text-text">
                     {yearById.get(e.academicYearId) ?? "—"} · {gradeById.get(sectionById.get(e.sectionId)?.gradeId ?? "") ?? "—"} · Section {sectionById.get(e.sectionId)?.name ?? "—"}
@@ -299,22 +278,25 @@ export default async function PrincipalStudentDetailPage({ params }: { params: P
               </div>
             ))}
           </div>
-        )}
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Fees</h2>
+        ),
+    },
+    {
+      key: "fees",
+      title: "Fees",
+      content: (
         <div className="mt-3">
           <StudentFeesSection summary={feeSummary} />
         </div>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Wallet</h2>
-        <p className="mt-1 text-[13px] text-text-muted">Canteen / ID-card balance.</p>
+      ),
+    },
+    {
+      key: "wallet",
+      title: "Wallet",
+      subtitle: "Canteen / ID-card balance.",
+      content: (
         <div className="mt-3">
           {wallet ? (
-            <div className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
+            <div className="card-hover flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
               <span className="font-mono font-bold text-text">{formatMoneySummary(wallet.balancePaise)}</span>
               <span className="text-xs font-semibold text-text-muted">{wallet.status.replace(/_/g, " ")}</span>
             </div>
@@ -322,25 +304,29 @@ export default async function PrincipalStudentDetailPage({ params }: { params: P
             <p className="text-sm text-text-muted">No wallet on file.</p>
           )}
         </div>
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Transport</h2>
+      ),
+    },
+    {
+      key: "transport",
+      title: "Transport",
+      content: (
         <StudentTransportSection
           usesSchoolTransport={student.usesSchoolTransport}
           commuteMode={student.commuteMode}
           allocations={transportAllocations}
         />
-      </section>
-
-      <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Guardians</h2>
-        {guardians.length === 0 ? (
+      ),
+    },
+    {
+      key: "guardians",
+      title: "Guardians",
+      content:
+        guardians.length === 0 ? (
           <p className="mt-2 text-sm text-text-muted">No guardians on file.</p>
         ) : (
           <div className="mt-3 flex flex-col gap-2">
             {guardians.map((g) => (
-              <div key={g.id} className="flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
+              <div key={g.id} className="card-hover flex items-center justify-between rounded-[var(--radius-card)] border border-border bg-field px-4 py-3 text-sm">
                 <div>
                   <p className="font-semibold text-text">
                     {g.firstName} {g.lastName ?? ""}
@@ -356,8 +342,42 @@ export default async function PrincipalStudentDetailPage({ params }: { params: P
               </div>
             ))}
           </div>
-        )}
-      </section>
-    </div>
+        ),
+    },
+  ];
+
+  return (
+    <StudentProfileView
+      backHref="/principal/students"
+      photo={
+        // 188x188 square, matching Teacher/Faculty's own photo footprint
+        // exactly (explicit user request for size parity across profiles;
+        // overrides the mockup's own 168x190 rectPhoto spec).
+        <PersonAvatar
+          photoUrl={student.photoUrl}
+          name={`${student.firstName} ${student.lastName ?? ""}`}
+          size={188}
+          shape="square"
+        />
+      }
+      name={`${student.firstName} ${student.lastName ?? ""}`}
+      subtitle={
+        student.gradeName
+          ? `${student.gradeName} · Section ${student.sectionName}${student.rollNo != null ? ` · Roll ${student.rollNo}` : ""}`
+          : "Not enrolled in a class yet"
+      }
+      pills={pills}
+      stats={stats}
+      leavingNote={
+        student.status !== "ACTIVE" &&
+        student.dateOfLeaving && (
+          <p className="mt-3 rounded-[11px] bg-critical-bg px-3.5 py-2.5 text-sm text-critical-text">
+            Left on {formatDate(student.dateOfLeaving)}.
+          </p>
+        )
+      }
+      infoCards={infoCards}
+      sections={profileSections}
+    />
   );
 }

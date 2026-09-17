@@ -85,7 +85,7 @@ function BlockItem({ hostelId, block }: { hostelId: string; block: Block }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="rounded-[11px] border border-border p-3">
+    <li className="card-hover rounded-[11px] border border-border p-3">
       <div className="flex items-center justify-between">
         <p className="text-[13.5px] font-semibold text-text">{block.name}</p>
         <button type="button" onClick={() => setExpanded((v) => !v)} className="text-[13px] font-semibold text-primary">
@@ -121,7 +121,7 @@ function FloorItem({ hostelId, floor }: { hostelId: string; floor: Floor }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="rounded-[11px] bg-field p-3">
+    <li className="card-hover rounded-[11px] bg-field p-3">
       <div className="flex items-center justify-between">
         <p className="text-[13px] font-semibold text-text">Floor {floor.floorNo}</p>
         <button type="button" onClick={() => setExpanded((v) => !v)} className="text-[13px] font-semibold text-primary">
@@ -158,7 +158,7 @@ function RoomItem({ hostelId, room }: { hostelId: string; room: Room }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <li className="rounded-[11px] bg-surface p-2.5">
+    <li className="card-hover rounded-[11px] bg-surface p-2.5">
       <div className="flex items-center justify-between">
         <p className="text-[13px] font-semibold text-text">
           Room {room.roomNo} <span className="font-normal text-text-muted">· capacity {room.bedCapacity}</span>

@@ -5,10 +5,10 @@
 // Every row is real data from GET /parents -- no mock rows.
 
 import Link from "next/link";
-import { CreateParentModal } from "@/components/parents/CreateParentModal";
 import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { DownloadMenu } from "@/components/dashboard/DownloadMenu";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
+import { CreateParentModal } from "@/components/parents/CreateParentModal";
 import {
   PrintSelectedBar,
   RowCheckbox,
@@ -83,12 +83,20 @@ export default async function ParentsPage({
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">Parents</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Parents</h1>
           <p className="mt-1 text-sm text-text-muted">{meta.total} parent accounts</p>
         </div>
         <div className="flex items-center gap-3">
           <DownloadMenu csvHref={`/api/export/parents?${filterQuery()}`} pdfHref={`/print/parents/roster?${filterQuery()}`} />
-          <CreateParentModal />
+          {/* Standalone "+ New parent" (no presetStudent) -- real POST /persons
+              via createParentAction, with its own existing-parent search step
+              first. This is the only Admin-side way to create a parent account
+              outside of enrolling a student now that the separate "Enroll
+              parents" page has been removed (2026-09-16) -- linking to specific
+              children is still done afterwards, from the student's own profile
+              (GuardiansSection), same as it always has been for a second/
+              subsequent guardian. */}
+          <CreateParentModal triggerLabel="+ New parent" />
         </div>
       </div>
 

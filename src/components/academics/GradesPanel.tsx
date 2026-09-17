@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { createGradeAction, updateGradeAction, type FormActionState } from "@/app/(dashboard)/admin/academics/actions";
 import { StatusPill } from "@/components/dashboard/StatusPill";
-import { Field, PanelCreateForm, SelectField } from "./shared";
+import { Field, PanelCreateFormRow, PanelHeader, SelectField } from "./shared";
 
 export interface Grade {
   id: string;
@@ -30,29 +30,13 @@ export function GradesPanel({ grades }: { grades: Grade[] }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] text-text-muted">{grades.length} grades</p>
-        {!adding && (
-          <button type="button" onClick={() => setAdding(true)} className="text-[13px] font-semibold text-primary">
-            + New grade
-          </button>
-        )}
-      </div>
-
-      {adding && (
-        <PanelCreateForm
-          title="New grade"
-          onCancel={() => setAdding(false)}
-          formAction={formAction}
-          isPending={isPending}
-          error={state.error}
-          submitLabel="Create"
-        >
-          <Field label="Name" name="name" required disabled={isPending} placeholder="Grade 5" />
-          <Field label="Level no. (-2 to 12)" name="levelNo" type="number" required disabled={isPending} />
-          <SelectField label="Stage" name="stage" required disabled={isPending} options={[["", "Select"], ...STAGES]} />
-        </PanelCreateForm>
-      )}
+      <PanelHeader
+        title="Grades"
+        subtitle={`${grades.length} grade${grades.length === 1 ? "" : "s"}`}
+        actionLabel="+ New grade"
+        onAction={() => setAdding(true)}
+        hideAction={adding}
+      />
 
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[560px] text-left text-sm">
@@ -66,7 +50,30 @@ export function GradesPanel({ grades }: { grades: Grade[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {grades.length === 0 && (
+            {adding && (
+              <PanelCreateFormRow
+                colSpan={5}
+                onCancel={() => setAdding(false)}
+                formAction={formAction}
+                isPending={isPending}
+                error={state.error}
+              >
+                <Field label="Grade name" name="name" required disabled={isPending} placeholder="Grade 5" />
+                <Field label="Level no. (-2 to 12)" name="levelNo" type="number" required disabled={isPending} />
+                <SelectField label="Stage" name="stage" required disabled={isPending} options={[["", "Select"], ...STAGES]} />
+                <SelectField
+                  label="Status"
+                  name="status"
+                  disabled={isPending}
+                  defaultValue="ACTIVE"
+                  options={[
+                    ["ACTIVE", "Active"],
+                    ["INACTIVE", "Inactive"],
+                  ]}
+                />
+              </PanelCreateFormRow>
+            )}
+            {grades.length === 0 && !adding && (
               <tr>
                 <td colSpan={5} className="py-6 text-center text-text-muted">
                   No grades yet.

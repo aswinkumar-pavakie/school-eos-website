@@ -66,7 +66,7 @@ export default async function RepairRequestDetailPage({ params }: { params: Prom
       <BackLink href="/admin/maintenance" label="Back to Repair & Maintenance" />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">{request.title}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{request.title}</h1>
           <p className="mt-1.5 text-sm text-text-muted">
             {request.issueType.replace(/_/g, " ").toLowerCase()}
             {request.location ? ` · ${request.location}` : ""} · requested {formatDate(request.requestedOn)}

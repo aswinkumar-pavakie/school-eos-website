@@ -46,8 +46,8 @@ export default async function AcademicsPage() {
 
   return (
     <div className="mx-auto max-w-[1024px]">
-      <h1 className="text-[28px] font-bold leading-[34px] text-text">Academic Configuration</h1>
-      <p className="mt-1 text-sm text-text-muted">
+      <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Academics</h1>
+      <p className="mt-2 text-[15px] text-text-muted">
         The academic structure every other module builds on — years, grades, sections, subjects, departments.
       </p>
       <div className="mt-6">

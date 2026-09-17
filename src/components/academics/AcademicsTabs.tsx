@@ -44,14 +44,18 @@ export function AcademicsTabs({
 
   return (
     <div>
-      <div className="flex gap-2 overflow-x-auto">
+      {/* Segmented navy-filled active / white-bordered idle tab style, matched to
+          Principal's read-only Academic Configuration tab bar for visual parity. */}
+      <div className="flex flex-wrap gap-2.5">
         {TABS.map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`whitespace-nowrap rounded-[7px] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-              tab === t ? "bg-primary text-white" : "bg-field text-text-muted hover:bg-border"
+            className={`min-h-11 whitespace-nowrap rounded-[10px] border px-5 py-3 text-sm font-semibold transition-colors ${
+              tab === t
+                ? "border-[#0f2342] bg-[#0f2342] text-white"
+                : "border-border bg-surface font-medium text-text hover:bg-bg"
             }`}
           >
             {t}
@@ -59,7 +63,7 @@ export function AcademicsTabs({
         ))}
       </div>
 
-      <div className="mt-5 rounded-[16px] border border-border bg-surface p-[18px]">
+      <div className="mt-5 rounded-[16px] border border-border bg-surface p-[22px]">
         {tab === "Academic years" && <AcademicYearsPanel years={years} />}
         {tab === "Grades" && <GradesPanel grades={grades} />}
         {tab === "Sections" && <SectionsPanel sections={sections} years={years} grades={grades} mediums={mediums} />}

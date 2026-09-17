@@ -82,7 +82,7 @@ export default async function InventoryItemDetailPage({ params }: { params: Prom
       <BackLink href="/admin/inventory" label="Back to Inventory" />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-bold leading-[34px] text-text">{item.name}</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">{item.name}</h1>
           <p className="mt-1.5 text-sm text-text-muted">
             {item.categoryName}
             {item.assetCode && <span className="font-mono"> · {item.assetCode}</span>} · Qty {item.quantity}
@@ -157,7 +157,7 @@ export default async function InventoryItemDetailPage({ params }: { params: Prom
             <li className="py-3 text-sm text-text-muted">No repair requests raised for this item.</li>
           )}
           {repairRequests.map((r) => (
-            <li key={r.id} className="flex items-center justify-between py-2.5 text-sm">
+            <li key={r.id} className="card-hover flex items-center justify-between py-2.5 text-sm">
               <div>
                 <p className="font-semibold text-text">{r.title}</p>
                 <p className="text-xs text-text-muted">

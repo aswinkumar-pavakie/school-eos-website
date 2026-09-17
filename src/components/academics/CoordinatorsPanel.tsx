@@ -15,6 +15,7 @@ import {
   type FormActionState,
 } from "@/app/(dashboard)/admin/academics/actions";
 import { StaffPersonPicker } from "./StaffPersonPicker";
+import { PanelHeader } from "./shared";
 
 const initialState: FormActionState = {};
 
@@ -90,17 +91,15 @@ export function CoordinatorsPanel({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13px] text-text-muted">
-          One person can cover several standards, or a whole stage — assign below.
-        </p>
-        <button type="button" onClick={() => setOpen((v) => !v)} className="text-[13px] font-bold text-primary">
-          {open ? "Cancel" : "+ Assign role"}
-        </button>
-      </div>
+      <PanelHeader
+        title="Co-ordinators & roles"
+        subtitle={`One person can cover several standards, or a whole stage. · ${filtered.length} role assignment${filtered.length === 1 ? "" : "s"}`}
+        actionLabel={open ? "Cancel" : "+ Assign role"}
+        onAction={() => setOpen((v) => !v)}
+      />
 
-      <label className="mb-3 flex items-center gap-2 text-sm">
-        <span className="font-semibold text-text">Filter by standard</span>
+      <label className="mb-3 mt-4 flex items-center gap-2 text-sm">
+        <span className="text-[11px] font-bold uppercase tracking-[0.09em] text-text-muted">Filter by standard</span>
         <select
           value={gradeFilter}
           onChange={(e) => setGradeFilter(e.target.value)}

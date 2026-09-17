@@ -1,0 +1,203 @@
+// Vice Principal's Parent profile -- read-only oversight, reusing Admin's
+// real data (same GET /parents/:id) and design language. Deliberately
+// excludes every writable piece of Admin's own profile page: the editable
+// contact form, login security actions (reset password), photo editor,
+// per-child occupation edit, and the activate/deactivate account action --
+// Vice Principal views, never edits. Linked-child names route to Vice
+// Principal's own /vice-principal/students/[id], never /admin/students.
+// Backend (parents.controller.ts) strips admin-only security fields
+// (password, reset state, address) for every non-ADMIN role, and strips each
+// child's annualIncomePaise specifically for VICE_PRINCIPAL (kept for
+// PRINCIPAL) -- same financial-detail split already used for students' own
+// financial sections elsewhere in this app -- so this page never receives
+// that field in the first place, not just chooses not to render it.
+
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { KvRows } from "@/components/dashboard/KvRows";
+import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
+import { StatusPill } from "@/components/dashboard/StatusPill";
+import {
+  ParentProfileView,
+  type ParentProfileInfoCard,
+  type ParentProfilePill,
+  type ParentProfileSection,
+  type ParentProfileStat,
+} from "@/components/parents/ParentProfileView";
+import { apiFetch } from "@/lib/api";
+
+interface ChildLink {
+  id: string;
+  studentId: string;
+  studentFirstName: string;
+  studentLastName: string | null;
+  studentAdmissionNo: string;
+  studentPhotoUrl: string | null;
+  gradeName: string | null;
+  sectionName: string | null;
+  relationship: string;
+  isPrimaryContact: boolean;
+  isAuthorisedPickup: boolean;
+  occupation: string | null;
+  status: string;
+}
+
+interface LoginIdentifier {
+  identifierType: string;
+  value: string;
+  isVerified: boolean;
+}
+
+interface ParentDetail {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string | null;
+  mobile: string | null;
+  status: string;
+  photoUrl: string | null;
+  children: ChildLink[];
+  loginIdentifiers: LoginIdentifier[];
+}
+
+function statusTone(status: string): "success" | "pending" | "critical" {
+  return status === "ACTIVE" ? "success" : "critical";
+}
+
+export default async function VicePrincipalParentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
+  const res = await apiFetch(`/parents/${id}`);
+  if (res.status === 404) notFound();
+  if (!res.ok) {
+    return (
+      <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
+        <p className="text-[15px] font-extrabold leading-[20px] text-text">Couldn&apos;t load this parent</p>
+        <p className="mt-1.5 text-sm text-text-muted">Nothing was changed — try refreshing the page.</p>
+      </div>
+    );
+  }
+
+  const { data: parent } = (await res.json()) as { data: ParentDetail };
+  const loginEmail = parent.loginIdentifiers.find((li) => li.identifierType === "EMAIL")?.value ?? null;
+  const loginMobile = parent.loginIdentifiers.find((li) => li.identifierType === "MOBILE")?.value ?? null;
+  const primaryForCount = parent.children.filter((c) => c.isPrimaryContact).length;
+
+  const pills: ParentProfilePill[] = [
+    { label: parent.status, tone: statusTone(parent.status) },
+    { label: `${parent.children.length} child${parent.children.length === 1 ? "" : "ren"}`, tone: "neutral" },
+  ];
+  const stats: ParentProfileStat[] = [
+    {
+      label: "Children linked",
+      value: String(parent.children.length),
+      hint: primaryForCount > 0 ? `primary contact for ${primaryForCount}` : undefined,
+    },
+  ];
+
+  const infoCards: ParentProfileInfoCard[] = [
+    {
+      title: "Profile",
+      rows: [
+        ["Mobile", parent.mobile ?? "—"],
+        ["Email", parent.email ?? "—"],
+      ],
+    },
+  ];
+
+  const sections: ParentProfileSection[] = [
+    {
+      key: "login",
+      title: "Login & security",
+      content: (
+        <KvRows
+          rows={[
+            ["Login email", loginEmail ?? "—"],
+            ["Login mobile", loginMobile ?? "—"],
+          ]}
+        />
+      ),
+    },
+    {
+      key: "children",
+      title: `Linked children (${parent.children.length})`,
+      content:
+        parent.children.length === 0 ? (
+          <p className="mt-4 text-sm text-text-muted">No children linked yet.</p>
+        ) : (
+          <div className="mt-4 flex flex-col gap-3">
+            {parent.children.map((child) => (
+              <div key={child.id} className="card-hover rounded-[14px] border border-border p-3.5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <PersonAvatar
+                      photoUrl={child.studentPhotoUrl}
+                      name={`${child.studentFirstName} ${child.studentLastName ?? ""}`}
+                      size={40}
+                    />
+                    <div>
+                      <Link
+                        href={`/vice-principal/students/${child.studentId}`}
+                        className="text-[14px] font-bold text-primary hover:underline"
+                      >
+                        {child.studentFirstName} {child.studentLastName ?? ""}
+                      </Link>
+                      <p className="text-xs text-text-muted">
+                        {child.studentAdmissionNo}
+                        {child.gradeName ? ` · ${child.gradeName}${child.sectionName ? ` ${child.sectionName}` : ""}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <StatusPill tone={statusTone(child.status)} label={child.status} />
+                </div>
+
+                {/* No "Annual income" cell here -- the backend doesn't send
+                    annualIncomePaise to VICE_PRINCIPAL at all (see this
+                    page's own top comment), so a 3-column layout, not a
+                    4th column showing a misleading "—". */}
+                <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-3 text-[13px] sm:grid-cols-3">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">Relationship</p>
+                    <p className="mt-0.5 font-semibold text-text">{child.relationship.charAt(0) + child.relationship.slice(1).toLowerCase()}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">Occupation</p>
+                    <p className="mt-0.5 font-semibold text-text">{child.occupation ?? "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">Access</p>
+                    <p className="mt-0.5 font-semibold text-text">
+                      {child.isPrimaryContact && "Primary contact"}
+                      {child.isPrimaryContact && child.isAuthorisedPickup && " · "}
+                      {child.isAuthorisedPickup && "Authorised pickup"}
+                      {!child.isPrimaryContact && !child.isAuthorisedPickup && "—"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ),
+    },
+  ];
+
+  return (
+    <ParentProfileView
+      backHref="/vice-principal/parents"
+      photo={
+        <PersonAvatar
+          photoUrl={parent.photoUrl}
+          name={`${parent.firstName} ${parent.lastName ?? ""}`}
+          size={112}
+          shape="square"
+        />
+      }
+      name={`${parent.firstName} ${parent.lastName ?? ""}`}
+      subtitle={parent.mobile ?? parent.email ?? "No contact on file"}
+      pills={pills}
+      stats={stats}
+      infoCards={infoCards}
+      sections={sections}
+    />
+  );
+}

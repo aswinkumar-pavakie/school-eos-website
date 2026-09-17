@@ -5,7 +5,7 @@
 // navigable, click or Enter to jump straight to that record's profile.
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { SearchIcon } from "./icons";
 
 interface SearchResult {
@@ -18,6 +18,14 @@ interface SearchResult {
 
 export function GlobalSearch() {
   const router = useRouter();
+  // Fixes a real pre-existing bug: results always linked to /admin/... even
+  // when this search bar is shown on Principal's or Vice Principal's own
+  // console (both now use it too), 404ing or bouncing the user out of their
+  // own role's shell. The role prefix is just this page's own first path
+  // segment ("/admin", "/principal", "/vice-principal"), passed to the API
+  // route so it builds the right links.
+  const pathname = usePathname();
+  const basePath = "/" + (pathname?.split("/")[1] ?? "admin");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [open, setOpen] = useState(false);
@@ -36,7 +44,9 @@ export function GlobalSearch() {
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/global-search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(
+          `/api/global-search?q=${encodeURIComponent(query)}&basePath=${encodeURIComponent(basePath)}`,
+        );
         if (res.ok) {
           const body = (await res.json()) as { data: SearchResult[] };
           setResults(body.data);
@@ -50,7 +60,7 @@ export function GlobalSearch() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query]);
+  }, [query, basePath]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
