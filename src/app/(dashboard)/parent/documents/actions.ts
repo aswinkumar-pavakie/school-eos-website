@@ -3,24 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createDocumentRequest, DOCUMENT_TYPES, type DocumentType } from "@/lib/parent-api";
 
-export interface FormState {
-  error?: string;
-}
+export async function createDocumentRequestAction(studentId: string, docType: DocumentType, reason: string): Promise<void> {
+  if (!studentId) throw new Error("No child selected.");
+  if (!DOCUMENT_TYPES.includes(docType)) throw new Error("Select a document type.");
+  const trimmedReason = reason.trim();
+  if (!trimmedReason) throw new Error("A reason is required.");
 
-export async function createDocumentRequestAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const studentId = String(formData.get("studentId") ?? "");
-  const docTypeRaw = String(formData.get("docType") ?? "") as DocumentType;
-  const reason = String(formData.get("reason") ?? "").trim();
-
-  if (!studentId) return { error: "No child selected." };
-  if (!DOCUMENT_TYPES.includes(docTypeRaw)) return { error: "Select a document type." };
-  if (!reason) return { error: "A reason is required." };
-
-  try {
-    await createDocumentRequest(studentId, docTypeRaw, reason);
-  } catch (err) {
-    return { error: err instanceof Error ? err.message : "Could not submit the request." };
-  }
+  await createDocumentRequest(studentId, docType, trimmedReason);
   revalidatePath("/parent/documents");
-  return {};
 }

@@ -52,6 +52,17 @@ export async function createMediaTeamMember(input: {
   return (await parseOrThrow<ApiEnvelope<MediaTeamMember>>(res)).data;
 }
 
+export interface MediaTeamMemberDetail extends MediaTeamMember {
+  equipment: string[];
+  activity: { id: string; date: string; text: string }[];
+  active: number;
+  completed: number;
+}
+export async function getMediaTeamMember(id: string): Promise<MediaTeamMemberDetail> {
+  const res = await apiFetch(`/media/team/${id}`);
+  return (await parseOrThrow<ApiEnvelope<MediaTeamMemberDetail>>(res)).data;
+}
+
 export async function updateMediaTeamMember(
   id: string,
   input: { fullName?: string; designation?: string; email?: string; phone?: string; skills?: string[]; status?: MediaTeamMemberStatus },
@@ -75,6 +86,7 @@ export interface ShootAssignment {
   notes: string | null;
   crew: { id: string; fullName: string; designation: string | null }[];
   gear: { id: string; name: string; assetCode: string | null }[];
+  createdBy: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -113,6 +125,13 @@ export async function updateShootAssignment(
 ): Promise<ShootAssignment> {
   const res = await apiFetch(`/media/shoot-assignments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   return (await parseOrThrow<ApiEnvelope<ShootAssignment>>(res)).data;
+}
+
+// Only the assignment's own creator may delete it (shoot-assignments.controller.ts's
+// own ownership check enforces this server-side too).
+export async function deleteShootAssignment(id: string): Promise<void> {
+  const res = await apiFetch(`/media/shoot-assignments/${id}`, { method: "DELETE" });
+  await parseOrThrow<ApiEnvelope<{ deleted: true }>>(res);
 }
 
 // ---------- Social Media Publishing ----------
@@ -231,10 +250,19 @@ export interface MediaInventoryItem {
   location: string | null;
   status: InventoryItemStatus;
   assignedToPersonId: string | null;
+  assignedToName: string | null;
+  assignedOn: string | null;
   description: string | null;
   acquisitionDate: string | null;
   acquisitionCostPaise: number | null;
   vendor: string | null;
+}
+
+export interface MediaInventoryHistoryEntry {
+  id: string;
+  date: string;
+  action: string;
+  actorName: string | null;
 }
 
 export async function listMediaInventory(filter: { search?: string; status?: string } = {}): Promise<{ data: MediaInventoryItem[]; meta: { total: number } }> {
@@ -265,6 +293,49 @@ export async function createMediaInventoryItem(input: {
 
 export async function updateMediaInventoryItem(id: string, input: Partial<{ name: string; assetCode: string; location: string; description: string; vendor: string }>): Promise<MediaInventoryItem> {
   const res = await apiFetch(`/media/inventory/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function getMediaInventoryItem(id: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}`);
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function getMediaInventoryItemHistory(id: string): Promise<MediaInventoryHistoryEntry[]> {
+  const res = await apiFetch(`/media/inventory/${id}/history`);
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryHistoryEntry[]>>(res)).data;
+}
+
+export async function issueMediaInventoryItem(id: string, input: { assignedToPersonId: string }): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/issue`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function returnMediaInventoryItem(id: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/return`, { method: "POST" });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function markMediaInventoryItemDamaged(id: string, notes?: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/mark-damaged`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+// The other side of markMediaInventoryItemDamaged -- repair/service finished,
+// item goes back into the available pool. Without this, DAMAGED was a real
+// dead end: once sent to service, status could never be changed again.
+export async function markMediaInventoryItemAvailable(id: string, notes?: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/mark-available`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function markMediaInventoryItemLost(id: string, notes?: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/mark-lost`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) });
+  return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
+}
+
+export async function retireMediaInventoryItem(id: string, notes?: string): Promise<MediaInventoryItem> {
+  const res = await apiFetch(`/media/inventory/${id}/retire`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }) });
   return (await parseOrThrow<ApiEnvelope<MediaInventoryItem>>(res)).data;
 }
 
@@ -306,6 +377,85 @@ export async function createMediaIndent(input: {
   return (await parseOrThrow<ApiEnvelope<MediaIndent>>(res)).data;
 }
 
+// Cancelling an indent still awaiting a decision: the same generic
+// "requester withdraws their own still-open request" capability every other
+// approval-routed feature in this app already uses (approvals.service.ts's
+// own withdraw()) -- not a media-specific endpoint, since the underlying
+// purchase_request state change already flows through the existing
+// finance-approval-handlers.service.ts onWithdrawn hook. Only the request's
+// own creator can call this, and only while it's still PENDING -- enforced
+// server-side, not just hidden here.
+export async function withdrawMediaIndent(approvalRequestId: string): Promise<void> {
+  const res = await apiFetch(`/approvals/${approvalRequestId}/withdraw`, { method: "POST" });
+  await parseOrThrow<ApiEnvelope<unknown>>(res);
+}
+
+// ---------- Academic Calendar (real calendar_event table, extended to
+// MEDIA_ROOM read + create for this rebuild -- see calendar-events.controller.ts's
+// own comment. Media-created events are always scope_type SCHOOL: the schema
+// has no per-department scope, so they're genuinely visible school-wide,
+// same as an Admin-added one.) ----------
+
+export interface AcademicYear {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+}
+export async function listAcademicYears(): Promise<AcademicYear[]> {
+  const res = await apiFetch("/academic-years");
+  return (await parseOrThrow<ApiEnvelope<AcademicYear[]>>(res)).data;
+}
+
+export type CalendarEventType = "HOLIDAY" | "TERM_START" | "TERM_END" | "EXAM_WINDOW" | "PTM" | "FUNCTION" | "COMPETITION" | "WORKING_SATURDAY" | "OTHER";
+
+export interface CalendarEvent {
+  id: string;
+  academicYearId: string;
+  title: string;
+  description: string | null;
+  eventType: CalendarEventType;
+  isHoliday: boolean;
+  startDate: string;
+  endDate: string;
+  scopeType: string;
+  scopeId: string | null;
+  scopeStage: string | null;
+  createdBy: string | null;
+}
+export async function listCalendarEvents(academicYearId: string): Promise<CalendarEvent[]> {
+  const res = await apiFetch(`/calendar-events?academicYearId=${academicYearId}`);
+  return (await parseOrThrow<ApiEnvelope<CalendarEvent[]>>(res)).data;
+}
+export async function createCalendarEvent(input: {
+  academicYearId: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  eventType: CalendarEventType;
+}): Promise<CalendarEvent> {
+  const res = await apiFetch("/calendar-events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...input, scopeType: "SCHOOL" }),
+  });
+  return (await parseOrThrow<ApiEnvelope<CalendarEvent>>(res)).data;
+}
+
+// Media Room may only edit/delete calendar events it created itself -- see
+// calendar-events.controller.ts's own assertCanModify(), which enforces this
+// server-side too, not just here.
+export async function updateCalendarEvent(id: string, input: Partial<{ title: string; description: string; startDate: string; endDate: string; eventType: CalendarEventType }>): Promise<CalendarEvent> {
+  const res = await apiFetch(`/calendar-events/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<CalendarEvent>>(res)).data;
+}
+export async function deleteCalendarEvent(id: string): Promise<void> {
+  const res = await apiFetch(`/calendar-events/${id}`, { method: "DELETE" });
+  await parseOrThrow<ApiEnvelope<{ deleted: true }>>(res);
+}
+
 // ---------- Dashboard ----------
 
 export interface MediaDashboardSummary {
@@ -321,4 +471,34 @@ export interface MediaDashboardSummary {
 export async function getMediaDashboard(): Promise<MediaDashboardSummary> {
   const res = await apiFetch("/media/dashboard");
   return (await parseOrThrow<ApiEnvelope<MediaDashboardSummary>>(res)).data;
+}
+
+// ---------- Report (real, user-curated scorecard -- media_report_metric) ----------
+
+export interface MediaReportMetric {
+  id: string;
+  academicYearId: string;
+  name: string;
+  nowValue: string;
+  targetValue: string | null;
+  attainmentPct: string | null;
+  createdBy: string;
+}
+export async function listMediaReportMetrics(academicYearId: string): Promise<MediaReportMetric[]> {
+  const res = await apiFetch(`/media/report-metrics?academicYearId=${academicYearId}`);
+  return (await parseOrThrow<ApiEnvelope<MediaReportMetric[]>>(res)).data;
+}
+export async function createMediaReportMetric(input: { academicYearId: string; name: string; nowValue: string; targetValue?: string; attainmentPct?: string }): Promise<MediaReportMetric> {
+  const res = await apiFetch("/media/report-metrics", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MediaReportMetric>>(res)).data;
+}
+// Only the metric's own creator may edit/delete it (media-report.controller.ts's
+// own assertOwnedByActor enforces this server-side too).
+export async function updateMediaReportMetric(id: string, input: Partial<{ name: string; nowValue: string; targetValue: string; attainmentPct: string }>): Promise<MediaReportMetric> {
+  const res = await apiFetch(`/media/report-metrics/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MediaReportMetric>>(res)).data;
+}
+export async function deleteMediaReportMetric(id: string): Promise<void> {
+  const res = await apiFetch(`/media/report-metrics/${id}`, { method: "DELETE" });
+  await parseOrThrow<ApiEnvelope<{ deleted: true }>>(res);
 }

@@ -1,0 +1,66 @@
+/* Media Room theme -- tokens read directly off
+   brain/SIS Mediaroom/Media Room.dc.html (measured, not approximated):
+   Plus Jakarta Sans UI / JetBrains Mono numeric, navy #14306e, primary blue
+   #1d4ed8, 15px cards, 11-12px inputs, 20px pills. */
+.media-scope {
+  --med-font: var(--font-plus-jakarta-sans), sans-serif;
+  --med-mono: var(--font-jetbrains-mono), monospace;
+  --med-primary: #1d4ed8;
+  --med-primary-hover: #12307a;
+  --med-navy: #14306e;
+  --med-navy-hover: #0e2455;
+  --med-ink: #0b1b3a;
+  --med-body: #5b6474;
+  --med-body-muted: #6b7684;
+  --med-tertiary: #8b95a5;
+  --med-tertiary-2: #9aa3b2;
+  --med-border: #e6e9ef;
+  --med-divider: #f0f2f6;
+  --med-divider-2: #f2f4f8;
+  --med-row-border: #edf0f5;
+  --med-panel: #eef2f8;
+  --med-tint: #e9efff;
+  --med-input-border: #e0e5ec;
+  --med-green-bg: #dcfce7;
+  --med-green: #15803d;
+  --med-amber-bg: #fef3c7;
+  --med-amber: #a15c07;
+  --med-red-bg: #fee2e2;
+  --med-red: #b91c1c;
+  --med-radius-card: 15px;
+  --med-radius-input: 12px;
+  --med-radius-btn: 11px;
+  --med-radius-pill: 20px;
+  color-scheme: light;
+  font-family: var(--med-font);
+  color: var(--med-ink);
+  background: #fff;
+}
+.media-scope * { box-sizing: border-box; }
+.media-scope a { color: var(--med-primary); text-decoration: none; }
+.media-scope a:hover { color: var(--med-primary-hover); text-decoration: underline; }
+.media-card-hover {
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.media-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(29,78,216,0.18);
+  border-color: var(--med-primary);
+}
+.media-row-hover {
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.media-row-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(29,78,216,0.16);
+  border-color: var(--med-primary);
+}
+.media-scorecard-row-hover {
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.media-scorecard-row-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(29,78,216,0.12);
+}
+.media-btn-hover-ghost:hover { background: #f2f5fa; }
+.media-btn-hover-navy:hover { background: var(--med-navy-hover); }

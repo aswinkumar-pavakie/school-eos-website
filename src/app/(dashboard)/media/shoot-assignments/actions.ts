@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createShootAssignment, updateShootAssignment, type ShootOutputType, type ShootStatus } from "@/lib/media-api";
+import { createShootAssignment, deleteShootAssignment, updateShootAssignment, type ShootOutputType, type ShootStatus } from "@/lib/media-api";
 
 export interface FormState {
   error?: string;
@@ -50,6 +50,17 @@ export async function updateShootAssignmentAction(id: string, _prev: FormState, 
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Could not update the shoot assignment." };
+  }
+  revalidatePath("/media/shoot-assignments");
+  revalidatePath("/media");
+  return {};
+}
+
+export async function deleteShootAssignmentAction(id: string): Promise<{ error?: string }> {
+  try {
+    await deleteShootAssignment(id);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not delete this shoot assignment." };
   }
   revalidatePath("/media/shoot-assignments");
   revalidatePath("/media");

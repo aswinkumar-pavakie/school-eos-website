@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createMediaIndent } from "@/lib/media-api";
+import { createMediaIndent, withdrawMediaIndent } from "@/lib/media-api";
 
 export interface FormState {
   error?: string;
@@ -23,6 +23,17 @@ export async function createMediaIndentAction(_prev: FormState, formData: FormDa
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Could not submit the indent." };
+  }
+  revalidatePath("/media/raise-indent");
+  revalidatePath("/media");
+  return {};
+}
+
+export async function cancelMediaIndentAction(approvalRequestId: string): Promise<{ error?: string }> {
+  try {
+    await withdrawMediaIndent(approvalRequestId);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not cancel this indent." };
   }
   revalidatePath("/media/raise-indent");
   revalidatePath("/media");
