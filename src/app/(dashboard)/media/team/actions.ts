@@ -48,3 +48,14 @@ export async function updateMediaTeamMemberAction(id: string, _prev: FormState, 
   revalidatePath("/media/team");
   return {};
 }
+
+export async function setMediaTeamMemberStatusAction(id: string, status: "ACTIVE" | "INACTIVE"): Promise<{ error?: string }> {
+  try {
+    await updateMediaTeamMember(id, { status });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not update this team member's status." };
+  }
+  revalidatePath("/media/team");
+  revalidatePath(`/media/team/${id}`);
+  return {};
+}

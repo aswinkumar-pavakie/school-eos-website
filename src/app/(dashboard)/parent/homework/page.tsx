@@ -1,25 +1,14 @@
-// Parent Homework -- real homework list scoped to the selected child (see
-// parent/page.tsx's own `?studentId=` convention), each item's own real
-// submission state, and a real multipart submit (note + files) wired
-// straight to the already-shipped
-// /parent/students/:id/homework/:id/submit endpoint -- the same backend
-// the Parent mobile app's own Homework screen already calls.
+// Daily Tasks / Homework -- pixel-rebuilt from the design's own
+// isDailyTasks screen. Real homework data (listHomework/submitHomework),
+// same /parent/students/:id/homework endpoints already established.
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
+import { ErrorState } from "@/components/ui/EmptyState";
+import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { formatDate } from "@/lib/format";
-import {
-  getHomeworkFileUrl,
-  listChildren,
-  listHomework,
-  resolveSelectedChild,
-  type ParentHomework,
-} from "@/lib/parent-api";
-import { SubmitHomeworkModal } from "./SubmitHomeworkModal";
+import { getHomeworkFileUrl, listChildren, listHomework, resolveSelectedChild, type ParentHomework } from "@/lib/parent-api";
+import { SubmitHomeworkPanel } from "./SubmitHomeworkPanel";
 
 type StatusFilter = "ALL" | "PENDING" | "SUBMITTED" | "GRADED" | "NOT_DONE";
 
@@ -31,19 +20,20 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "NOT_DONE", label: "Not submitted" },
 ];
 
-export default async function ParentHomeworkPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ studentId?: string; status?: string }>;
-}) {
+const STATUS_TONE: Record<ParentHomework["submissionStatus"], PillTone> = {
+  PENDING: "amber",
+  SUBMITTED: "blue",
+  LATE: "red",
+  GRADED: "blue",
+  NOT_DONE: "red",
+};
+
+export default async function ParentHomeworkPage({ searchParams }: { searchParams: Promise<{ studentId?: string; status?: string }> }) {
   try {
     const { studentId: requestedStudentId, status } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
-
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
     const homework = await listHomework(selected.studentId);
     const activeFilter: StatusFilter = FILTERS.some((f) => f.value === status) ? (status as StatusFilter) : "ALL";
@@ -51,35 +41,37 @@ export default async function ParentHomeworkPage({
     const fileLinks = await resolveFileLinks(selected.studentId, filtered);
 
     return (
-      <div className="mx-auto flex max-w-[960px] flex-col gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">Homework</h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join(" ")}
-            </p>
-          </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
+      <div className="parent-scope">
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Daily Tasks</div>
+          <div style={{ fontSize: 15, color: "var(--par-body-muted)" }}>Homework for {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join("-")}</div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
           {FILTERS.map((f) => (
-            <Link
-              key={f.value}
-              href={`/parent/homework?studentId=${selected.studentId}${f.value === "ALL" ? "" : `&status=${f.value}`}`}
-              className={`rounded-[var(--radius-pill)] px-3 py-1.5 text-xs font-bold ${
-                activeFilter === f.value ? "bg-primary text-white" : "bg-field text-text-muted"
-              }`}
-            >
-              {f.label}
-            </Link>
+            <a key={f.value} href={`/parent/homework?studentId=${selected.studentId}${f.value === "ALL" ? "" : `&status=${f.value}`}`} style={{ textDecoration: "none" }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  borderRadius: 9,
+                  padding: "9px 16px",
+                  fontSize: 13.5,
+                  fontWeight: 700,
+                  background: activeFilter === f.value ? "var(--par-navy)" : "#fff",
+                  color: activeFilter === f.value ? "#fff" : "var(--par-ink)",
+                  border: activeFilter === f.value ? undefined : "1px solid var(--par-border)",
+                }}
+              >
+                {f.label}
+              </span>
+            </a>
           ))}
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState title="No homework here" body="Nothing matches this filter yet." />
+          <EmptyPanel label="Nothing matches this filter yet." />
         ) : (
-          <div className="flex flex-col gap-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {filtered.map((hw) => (
               <HomeworkCard key={hw.id} studentId={selected.studentId} homework={hw} fileLinks={fileLinks[hw.id] ?? []} />
             ))}
@@ -89,87 +81,73 @@ export default async function ParentHomeworkPage({
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load homework. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load homework."} />;
   }
 }
 
-async function resolveFileLinks(
-  studentId: string,
-  homework: ParentHomework[],
-): Promise<Record<string, { key: string; url: string }[]>> {
+async function resolveFileLinks(studentId: string, homework: ParentHomework[]): Promise<Record<string, { key: string; url: string }[]>> {
   const entries = await Promise.all(
     homework.map(async (hw) => {
       const keys = hw.objectKeys ?? [];
       if (keys.length === 0) return [hw.id, []] as const;
-      const links = await Promise.all(
-        keys.map(async (key) => ({ key, url: await getHomeworkFileUrl(studentId, hw.id, key).catch(() => "") })),
-      );
+      const links = await Promise.all(keys.map(async (key) => ({ key, url: await getHomeworkFileUrl(studentId, hw.id, key).catch(() => "") })));
       return [hw.id, links.filter((l) => l.url)] as const;
     }),
   );
   return Object.fromEntries(entries);
 }
 
-function HomeworkCard({
-  studentId,
-  homework,
-  fileLinks,
-}: {
-  studentId: string;
-  homework: ParentHomework;
-  fileLinks: { key: string; url: string }[];
-}) {
+function HomeworkCard({ studentId, homework, fileLinks }: { studentId: string; homework: ParentHomework; fileLinks: { key: string; url: string }[] }) {
   const isGraded = homework.submissionStatus === "GRADED";
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-bold tracking-wide text-text-muted uppercase">{homework.subjectName}</p>
-          <p className="text-sm font-bold text-text">{homework.title}</p>
-          <p className="text-xs text-text-muted">
+    <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-card-sm)", padding: "18px 22px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--par-tertiary)", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 4 }}>{homework.subjectName}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--par-ink)" }}>{homework.title}</div>
+          <div style={{ fontSize: 12.5, color: "var(--par-body-muted)", marginTop: 2 }}>
             Assigned {formatDate(homework.assignedOn)} · Due {formatDate(homework.dueDate)}
             {homework.maxMarks !== null ? ` · Max ${homework.maxMarks}` : ""}
-          </p>
+          </div>
         </div>
-        <StatusPill state={homework.submissionStatus} />
+        <StatusPill label={homework.submissionStatus.replace("_", " ")} tone={STATUS_TONE[homework.submissionStatus]} />
       </div>
 
-      {homework.description ? <p className="mt-2 text-sm text-text">{homework.description}</p> : null}
+      {homework.description && <div style={{ fontSize: 14, color: "var(--par-body)", marginBottom: 10 }}>{homework.description}</div>}
 
-      {homework.attachmentKeys && homework.attachmentKeys.length > 0 ? (
-        <p className="mt-2 text-xs text-text-muted">{homework.attachmentKeys.length} reference file(s) from the teacher.</p>
-      ) : null}
+      {homework.attachmentKeys && homework.attachmentKeys.length > 0 && (
+        <div style={{ fontSize: 12.5, color: "var(--par-tertiary-2)", marginBottom: 10 }}>{homework.attachmentKeys.length} reference file(s) from the teacher.</div>
+      )}
 
-      {homework.submittedAt ? (
-        <p className="mt-2 text-xs text-text-muted">
+      {homework.submittedAt && (
+        <div style={{ fontSize: 12.5, color: "var(--par-body-muted)", marginBottom: 6 }}>
           Submitted {formatDate(homework.submittedAt)}
           {homework.isLate ? " · Late" : ""}
-        </p>
-      ) : null}
+        </div>
+      )}
+      {homework.note && <div style={{ fontSize: 13.5, color: "var(--par-body-muted)", marginBottom: 8 }}>Your note: {homework.note}</div>}
 
-      {homework.note ? <p className="mt-1 text-sm text-text-muted">Your note: {homework.note}</p> : null}
-
-      {fileLinks.length > 0 ? (
-        <div className="mt-2 flex flex-wrap gap-3">
+      {fileLinks.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 10 }}>
           {fileLinks.map((f, i) => (
-            <a key={f.key} href={f.url} target="_blank" rel="noreferrer" className="text-sm font-semibold text-primary hover:underline">
+            <a key={f.key} href={f.url} target="_blank" rel="noreferrer" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--par-primary)" }}>
               {fileLinks.length > 1 ? `Open ${i + 1}` : "Open"}
             </a>
           ))}
         </div>
-      ) : null}
+      )}
 
       {isGraded ? (
-        <div className="mt-3 rounded-[var(--radius-input)] border border-border bg-field p-3">
-          <p className="text-sm font-bold text-text">
+        <div style={{ borderRadius: "var(--par-radius-input)", background: "var(--par-panel-2)", padding: 14, marginTop: 4 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "var(--par-ink)" }}>
             Marks: {homework.marksAwarded !== null ? `${homework.marksAwarded}${homework.maxMarks ? ` / ${homework.maxMarks}` : ""}` : "—"}
-          </p>
-          {homework.feedback ? <p className="mt-1 text-sm text-text-muted">{homework.feedback}</p> : null}
+          </div>
+          {homework.feedback && <div style={{ fontSize: 13.5, color: "var(--par-body-muted)", marginTop: 4 }}>{homework.feedback}</div>}
         </div>
       ) : (
-        <div className="mt-3">
-          <SubmitHomeworkModal studentId={studentId} homework={homework} />
+        <div style={{ marginTop: 4 }}>
+          <SubmitHomeworkPanel studentId={studentId} homework={homework} />
         </div>
       )}
     </div>

@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#ffffff; }
+  * { box-sizing:border-box; }
+  a { color:#1d4ed8; text-decoration:none; }
+  a:hover { color:#12307a; text-decoration:underline; }
+  input, textarea, select, button { font-family:'Plus Jakarta Sans', sans-serif; }
+  ::placeholder { color:#9aa3b2; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:#d6dae1; border-radius:8px; border:3px solid #ffffff; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; height:100vh; overflow:hidden; font-family:'Plus Jakarta Sans', sans-serif; color:#0b1b3a; background:#ffffff;">
+
+  <div style="height:76px; flex:none; background:#ffffff; border-bottom:1px solid #e6e9ef; display:flex; align-items:center; gap:14px; padding:0 22px; min-width:0; overflow-x:auto;">
+    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:0 1 230px;">
+      <div style="width:40px; height:40px; border-radius:12px; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; letter-spacing:0.5px; flex:none;">PPS</div>
+      <div style="display:flex; flex-direction:column; gap:1px; min-width:0;">
+        <div style="font-size:16px; font-weight:800; letter-spacing:-0.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Pavakie Public School</div>
+        <div style="font-size:12px; color:#6b7684; font-weight:500;">Media Room</div>
+      </div>
+    </div>
+    <div style="flex:1 1 200px; min-width:120px; max-width:520px; height:44px; border-radius:11px; display:flex; align-items:center; gap:8px; padding:0 14px; background:#ffffff; border:1px solid #e6e9ef;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8b95a5" stroke-width="1.8" style="flex:none;"><circle cx="7" cy="7" r="5"></circle><line x1="11" y1="11" x2="15" y2="15" stroke-linecap="round"></line></svg>
+      <input placeholder="Search students, events, announcements..." style="flex:1; min-width:0; border:none; outline:none; font-size:14px; color:#0b1b3a; background:transparent;" />
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex; align-items:center; gap:8px; border:1px solid #e6e9ef; border-radius:20px; height:42px; padding:0 16px; flex:none;">
+      <span style="font-size:15px;">&#127891;</span>
+      <span style="font-size:13.5px; font-weight:700; color:#0b1b3a; white-space:nowrap;">Media room head</span>
+    </div>
+    <div style="display:flex; align-items:center; height:42px; border:1px solid #e6e9ef; border-radius:20px; padding:0 16px; flex:none;">
+      <span style="font-size:13.5px; font-weight:700; color:#0b1b3a; white-space:nowrap;">2026-27</span>
+    </div>
+    <span style="background:#14306e; color:#ffffff; font-size:13.5px; font-weight:700; padding:0 18px; height:42px; display:flex; align-items:center; border-radius:20px; flex:none; white-space:nowrap;">Odd Semester</span>
+    <button style="width:42px; height:42px; border-radius:50%; border:1px solid #e6e9ef; background:#ffffff; cursor:pointer; flex:none; display:flex; align-items:center; justify-content:center; position:relative;" style-hover="background:#f2f5fa;">
+      <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="#0b1b3a" stroke-width="1.7"><path d="M4 7a5 5 0 0 1 10 0c0 3 1 4 1 4H3s1-1 1-4z" stroke-linejoin="round"></path><path d="M7.4 14.5a1.8 1.8 0 0 0 3.2 0" stroke-linecap="round"></path></svg>
+    </button>
+  </div>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <div style="width:266px; flex:none; background:#ffffff; border-right:1px solid #e6e9ef; display:flex; flex-direction:column; min-height:0;">
+      <div style="flex:1; overflow-y:auto; padding:18px 14px 8px 14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:0 10px 10px 10px;">
+          <span style="font-size:11px; letter-spacing:1.4px; font-weight:700; color:#9aa3b2;">OVERVIEW</span>
+          <span style="font-size:14px; color:#9aa3b2;">&#171;</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <div onClick="{{ go.dashboard }}" style="{{ nav.dashboard }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="2" width="6" height="6" rx="1.5"></rect><rect x="10" y="2" width="6" height="6" rx="1.5"></rect><rect x="2" y="10" width="6" height="6" rx="1.5"></rect><rect x="10" y="10" width="6" height="6" rx="1.5"></rect></svg>
+            <span style="flex:1;">Dashboard</span>
+          </div>
+          <div onClick="{{ go.calendar }}" style="{{ nav.calendar }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="3.5" width="14" height="12.5" rx="2"></rect><line x1="2" y1="7.5" x2="16" y2="7.5"></line><line x1="6" y1="1.6" x2="6" y2="4.4" stroke-linecap="round"></line><line x1="12" y1="1.6" x2="12" y2="4.4" stroke-linecap="round"></line></svg>
+            <span style="flex:1;">Academic calendar</span>
+            <span style="font-family:'JetBrains Mono', monospace; font-size:11.5px; background:#eef2f8; color:#5b6474; border-radius:6px; padding:2px 7px;">4</span>
+          </div>
+          <div onClick="{{ go.analytics }}" style="{{ nav.analytics }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="2,13 6.5,8 10,11 16,4"></polyline><polyline points="12,4 16,4 16,8"></polyline></svg>
+            <span style="flex:1;">Report</span>
+          </div>
+        </div>
+
+        <div style="padding:22px 10px 10px 10px;">
+          <span style="font-size:11px; letter-spacing:1.4px; font-weight:700; color:#9aa3b2;">PRODUCTION</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <div onClick="{{ go.social }}" style="{{ nav.social }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="13.5" cy="4" r="2.3"></circle><circle cx="4.5" cy="9" r="2.3"></circle><circle cx="13.5" cy="14" r="2.3"></circle><line x1="6.6" y1="7.9" x2="11.4" y2="5.1"></line><line x1="6.6" y1="10.1" x2="11.4" y2="12.9"></line></svg>
+            <span style="flex:1;">Social media publishing</span>
+          </div>
+          <div onClick="{{ go.shoots }}" style="{{ nav.shoots }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1.8" y="5" width="10" height="8" rx="2"></rect><path d="M11.8 8.6 16.2 6v6l-4.4-2.6z" stroke-linejoin="round"></path></svg>
+            <span style="flex:1;">Shoot assignments</span>
+          </div>
+        </div>
+
+        <div style="padding:22px 10px 10px 10px;">
+          <span style="font-size:11px; letter-spacing:1.4px; font-weight:700; color:#9aa3b2;">RESOURCES</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <div onClick="{{ go.inventory }}" style="{{ nav.inventory }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M9 1.8 16 5.4v7.2L9 16.2 2 12.6V5.4z"></path><path d="M2 5.4 9 9l7-3.6"></path><line x1="9" y1="9" x2="9" y2="16.2"></line></svg>
+            <span style="flex:1;">Inventory</span>
+            <span style="font-family:'JetBrains Mono', monospace; font-size:11.5px; background:#eef2f8; color:#5b6474; border-radius:6px; padding:2px 7px;">{{ invCount }}</span>
+          </div>
+          <div onClick="{{ go.indent }}" style="{{ nav.indent }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="2" width="12" height="14" rx="2"></rect><line x1="6" y1="6" x2="12" y2="6"></line><line x1="6" y1="9.4" x2="12" y2="9.4"></line><line x1="6" y1="12.8" x2="9.6" y2="12.8"></line></svg>
+            <span style="flex:1;">Raise indent</span>
+            <span style="font-family:'JetBrains Mono', monospace; font-size:11.5px; background:#eef2f8; color:#5b6474; border-radius:6px; padding:2px 7px;">4</span>
+          </div>
+          <div onClick="{{ go.team }}" style="{{ nav.team }}">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="6" r="2.8"></circle><path d="M2.2 15c0-2.7 2.2-4.6 4.8-4.6S11.8 12.3 11.8 15" stroke-linecap="round"></path><path d="M12.4 10.6c1.9.3 3.4 1.9 3.4 4.4" stroke-linecap="round"></path><circle cx="13.2" cy="6.4" r="2.2"></circle></svg>
+            <span style="flex:1;">Media team</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:none; border-top:1px solid #e6e9ef; padding:14px 18px; display:flex; align-items:center; gap:12px;">
+        <div style="width:40px; height:40px; border-radius:50%; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">ME</div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;">
+          <div style="font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">mediaroom@pavakieschool.edu</div>
+          <div style="font-size:12px; color:#6b7684;">Media room</div>
+        </div>
+        <span style="color:#9aa3b2; font-size:16px;">&#8674;</span>
+      </div>
+    </div>
+
+    <div style="flex:1; min-width:0; overflow-y:auto; padding:34px 40px 60px 40px; background:#ffffff;">
+
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1; overflow-wrap:break-word;">Good morning, mediaroom@pavakieschool.edu</div>
+          <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Thursday, 17 September &#183; Media room</div>
+
+          <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:20px; margin-top:24px;">
+            <div onClick="{{ go.shoots }}" style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;">
+              <div style="font-size:15px; font-weight:600; color:#5b6474;">Shoot assignments</div>
+              <div style="font-size:38px; font-weight:800; letter-spacing:-1.4px; margin-top:14px;">{{ assignCount }}</div>
+              <a href="#" onClick="{{ go.shoots }}" style="font-size:14px; font-weight:700; display:block; margin-top:10px;">View assignments</a>
+            </div>
+            <div onClick="{{ go.social }}" style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;">
+              <div style="font-size:15px; font-weight:600; color:#5b6474;">Posts in queue</div>
+              <div style="font-size:38px; font-weight:800; letter-spacing:-1.4px; margin-top:14px;">{{ queueTotal }}</div>
+              <a href="#" onClick="{{ go.social }}" style="font-size:14px; font-weight:700; display:block; margin-top:10px;">Open publishing</a>
+            </div>
+            <div onClick="{{ go.inventory }}" style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;">
+              <div style="font-size:15px; font-weight:600; color:#5b6474;">Equipment issued</div>
+              <div style="font-size:38px; font-weight:800; letter-spacing:-1.4px; margin-top:14px;">{{ issuedCount }} <span style="font-size:20px; color:#8b95a5; font-weight:700;">/ {{ invCount }}</span></div>
+              <a href="#" onClick="{{ go.inventory }}" style="font-size:14px; font-weight:700; display:block; margin-top:10px;">View inventory</a>
+            </div>
+            <div onClick="{{ go.indent }}" style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;">
+              <div style="font-size:15px; font-weight:600; color:#5b6474;">Pending indents</div>
+              <div style="font-size:38px; font-weight:800; letter-spacing:-1.4px; margin-top:14px;">2</div>
+              <a href="#" onClick="{{ go.indent }}" style="font-size:14px; font-weight:700; display:block; margin-top:10px;">Review indents</a>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1.35fr 1fr; gap:20px; margin-top:20px;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Upcoming shoots</div>
+                <a href="#" onClick="{{ go.shoots }}" style="font-size:14px; font-weight:700;">All assignments</a>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+                <sc-for list="{{ upcomingShoots }}" as="a" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:16px; border:1px solid #edf0f5; border-radius:12px; padding:14px 16px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-3px); box-shadow:0 10px 22px rgba(29,78,216,0.16); border-color:#1d4ed8;">
+                    <div style="width:100px; flex:none; text-align:center; background:#ffffff; border:1px solid #e6e9ef; border-radius:10px; padding:8px 4px;">
+                      <div style="font-family:'JetBrains Mono', monospace; font-size:12.5px; font-weight:600; color:#14306e;">{{ a.when }}</div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-size:15.5px; font-weight:700;">{{ a.event }}</div>
+                      <div style="font-size:13px; color:#6b7684; margin-top:3px;">{{ a.crew }} &#183; {{ a.output }}</div>
+                    </div>
+                    <span style="{{ a.statusStyle }}">{{ a.status }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Needs attention</div>
+                <span style="font-size:12.5px; font-weight:700; color:#1d4ed8; background:#e9efff; border-radius:20px; padding:5px 12px;">{{ flags.length }} flags</span>
+              </div>
+              <div style="display:flex; flex-direction:column; margin-top:12px;">
+                <sc-for list="{{ flags }}" as="f" hint-placeholder-count="3">
+                  <div style="display:flex; gap:12px; padding:14px 0; border-bottom:1px solid #f0f2f6;">
+                    <span style="width:8px; height:8px; border-radius:50%; margin-top:7px; flex:none; background:#2563eb;"></span>
+                    <div><div style="font-size:14.5px; font-weight:700;">{{ f.title }}</div><div style="font-size:13px; color:#6b7684; margin-top:2px;">{{ f.sub }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRequests }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Media Requests</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Poster, video and coverage requests raised by staff and the school office</div>
+            </div>
+            <button style="height:48px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer; white-space:nowrap;" style-hover="background:#0e2455;">+ Internal request</button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; margin-top:26px; flex-wrap:wrap;">
+            <sc-for list="{{ reqFilters }}" as="f" hint-placeholder-count="4">
+              <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:18px; margin-top:22px;">
+            <sc-for list="{{ requests }}" as="r" hint-placeholder-count="4">
+              <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div style="{{ r.kindIconStyle }}">{{ r.kindIcon }}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">{{ r.title }}</div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:5px;">
+                      <span style="{{ r.kindStyle }}">{{ r.kind }}</span>
+                      <span style="font-family:'JetBrains Mono', monospace; font-size:12.5px; color:#8b95a5;">{{ r.code }} &#183; raised {{ r.raised }}</span>
+                    </div>
+                  </div>
+                  <span style="{{ r.statusStyle }}">{{ r.status }}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:18px; background:#ffffff; border:1px solid #eef1f6; border-radius:12px; padding:12px 16px;">
+                  <div style="width:38px; height:38px; border-radius:50%; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex:none;">{{ r.byInitials }}</div>
+                  <div>
+                    <div style="font-size:11px; letter-spacing:1px; font-weight:700; color:#9aa3b2;">RAISED BY</div>
+                    <div style="font-size:14.5px; font-weight:700; margin-top:2px;">{{ r.by }}</div>
+                  </div>
+                </div>
+                <div style="font-size:14.5px; color:#5b6474; margin-top:16px; max-width:1000px; text-wrap:pretty;">{{ r.brief }}</div>
+                <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; border-top:1px solid #f0f2f6; margin-top:20px; padding-top:18px;">
+                  <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">EVENT DATE</div><div style="font-size:14.5px; font-weight:700; margin-top:7px;">{{ r.eventDate }}</div></div>
+                  <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">NEEDED BY</div><div style="font-size:14.5px; font-weight:700; margin-top:7px;">{{ r.needBy }}</div></div>
+                  <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">DELIVERABLES</div><div style="font-size:14.5px; font-weight:700; margin-top:7px;">{{ r.deliverables }}</div></div>
+                  <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">ASSIGNED TO</div><div style="font-size:14.5px; font-weight:700; margin-top:7px;">{{ r.assignee }}</div></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:18px;">
+                  <span style="font-size:13px; color:#8b95a5;">{{ r.age }}</span>
+                  <div style="flex:1;"></div>
+                  <button style="height:44px; padding:0 18px; border-radius:10px; border:1px solid #d9dee7; background:#ffffff; font-size:14px; font-weight:700; cursor:pointer;" style-hover="background:#f2f5fa;">View brief</button>
+                  <button style="height:44px; padding:0 20px; border-radius:10px; border:none; background:#14306e; color:#ffffff; font-size:14px; font-weight:700; cursor:pointer;" style-hover="background:#0e2455;">{{ r.cta }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSocial }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Social Media Publishing</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Publish to the Explore feed of the school app and manage the comments students leave there</div>
+            </div>
+            <div style="display:flex; align-items:center; border:1px solid #e6e9ef; border-radius:12px; padding:4px; flex:none;">
+              <button onClick="{{ setTab.new }}" style="{{ tabStyle.new }}">New post</button>
+              <button onClick="{{ setTab.feed }}" style="{{ tabStyle.feed }}">App Explore feed</button>
+              <button onClick="{{ go.calendar }}" style="{{ tabStyle.plain }}">Content calendar</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ isSocialNew }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid; grid-template-columns:1.25fr 1fr; gap:20px; margin-top:28px; align-items:start;">
+              <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px;">
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">New post</div>
+                <div style="font-size:13.5px; color:#6b7684; margin-top:4px;">Goes to the school app Explore feed</div>
+
+                <div style="font-size:13.5px; font-weight:700; color:#1d4ed8; margin-top:22px;">Post format</div>
+                <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                  <sc-for list="{{ formats }}" as="fm" hint-placeholder-count="4">
+                    <button onClick="{{ fm.onClick }}" style="{{ fm.style }}">{{ fm.label }}</button>
+                  </sc-for>
+                </div>
+
+                <div style="font-size:13.5px; font-weight:700; color:#1d4ed8; margin-top:22px;">Post category</div>
+                <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                  <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+                    <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+                  </sc-for>
+                </div>
+
+                <div style="font-size:13.5px; font-weight:700; color:#1d4ed8; margin-top:22px;">Caption</div>
+                <textarea value="{{ caption }}" onChange="{{ setCaption }}" rows="6" style="width:100%; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:14px 16px; font-size:14.5px; line-height:1.6; color:#0b1b3a; outline:none; resize:vertical;" placeholder="Write the caption. Mention the department, date, venue and the registration link."></textarea>
+                <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
+                  <span style="font-family:'JetBrains Mono', monospace; font-size:12.5px; color:#8b95a5;">{{ captionCount }} / 2200</span>
+                  <span style="font-size:12.5px; color:#8b95a5;">&#183; #PavakiePublicSchool #PPS</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:22px;">
+                  <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Publish date</div>
+                    <input type="date" value="{{ pubDate }}" onChange="{{ setPubDate }}" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; color:#0b1b3a; outline:none;" />
+                  </div>
+                  <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Publish time</div>
+                    <input type="time" value="{{ pubTime }}" onChange="{{ setPubTime }}" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; color:#0b1b3a; outline:none;" />
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+                  <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">First comment</div>
+                    <input value="{{ firstComment }}" onChange="{{ setFirstComment }}" placeholder="Hashtags or credits posted as the first comment" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" />
+                  </div>
+                  <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Link in post</div>
+                    <input value="{{ linkInPost }}" onChange="{{ setLinkInPost }}" placeholder="Registration or admissions link" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" />
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:18px;">
+                  <button onClick="{{ togglePin }}" style="{{ pinStyle }}">{{ pinLabel }}</button>
+                  <button onClick="{{ toggleComments }}" style="{{ commentsStyle }}">{{ commentsLabel }}</button>
+                </div>
+
+                <div style="font-size:13.5px; font-weight:700; color:#1d4ed8; margin-top:22px;">Creative</div>
+                <div style="margin-top:10px; border:1px dashed #c9d2e0; border-radius:12px; height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:repeating-linear-gradient(135deg,#fafbfd,#fafbfd 8px,#f2f5f9 8px,#f2f5f9 16px);">
+                  <div style="font-family:'JetBrains Mono', monospace; font-size:12.5px; color:#7a8496;">drop photos / videos here</div>
+                  <div style="font-size:12.5px; color:#9aa3b2;">Several files allowed &#8212; viewers swipe through them. First one is the cover.</div>
+                </div>
+
+                <sc-if value="{{ saveMessage }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:14px; font-size:13.5px; font-weight:700; color:#15803d; background:#dcfce7; border-radius:10px; padding:10px 14px;">{{ saveMessage }}</div>
+                </sc-if>
+
+                <div style="display:flex; align-items:center; gap:12px; margin-top:24px;">
+                  <div style="flex:1;"></div>
+                  <button onClick="{{ saveDraft }}" style="height:48px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="background:#f2f5fa;">Save draft</button>
+                  <button onClick="{{ publishNow }}" style="height:48px; padding:0 24px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="background:#0e2455;">Publish now</button>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">App preview</div>
+                <div style="margin-top:16px; border:1px solid #e6e9ef; border-radius:20px; padding:18px; background:#ffffff;">
+                  <div style="background:#1d4ed8; border-radius:14px; padding:16px 18px; color:#ffffff;">
+                    <div style="font-size:16px; font-weight:800;">Hi, Student</div>
+                    <div style="font-size:13.5px; margin-top:2px; opacity:0.9;">Good Morning!</div>
+                  </div>
+                  <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:14px; padding:16px; margin-top:14px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                      <div style="width:30px; height:30px; border-radius:8px; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;">PPS</div>
+                      <span style="font-size:13.5px; font-weight:700;">Pavakie Public School</span>
+                    </div>
+                    <div style="font-size:13.5px; color:#8b95a5; margin-top:10px;">{{ captionPreview }}</div>
+                    <div style="margin-top:12px; border-radius:10px; background:#eef1f6; height:150px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono', monospace; font-size:12px; color:#9aa3b2;">creative 1080 &#215; 1350</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSocialFeed }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:28px; align-items:start;">
+              <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Publishing queue</div>
+                <div style="display:flex; flex-direction:column; margin-top:8px;">
+                  <sc-for list="{{ queue }}" as="q" hint-placeholder-count="5">
+                    <div style="display:flex; align-items:center; gap:14px; padding:15px 0; border-bottom:1px solid #f0f2f6;">
+                      <span style="{{ q.dotStyle }}"></span>
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-size:14.5px; font-weight:700;">{{ q.title }}</div>
+                        <div style="font-size:12.5px; color:#6b7684; margin-top:3px;">{{ q.meta }}</div>
+                      </div>
+                      <span style="{{ q.statusStyle }}">{{ q.status }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+                <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Top performing this month</div>
+                <div style="display:flex; flex-direction:column; gap:14px; margin-top:16px;">
+                  <sc-for list="{{ topPosts }}" as="t" hint-placeholder-count="3">
+                    <div style="border:1px solid #edf0f5; border-radius:12px; padding:15px 16px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-3px); box-shadow:0 10px 22px rgba(29,78,216,0.16); border-color:#1d4ed8;">
+                      <div style="display:flex; align-items:center; gap:10px;"><span style="{{ t.dotStyle }}"></span><span style="font-size:13px; color:#6b7684;">{{ t.platform }} &#183; {{ t.date }}</span></div>
+                      <div style="font-size:15px; font-weight:700; margin-top:8px;">{{ t.title }}</div>
+                      <div style="display:flex; gap:20px; margin-top:10px;">
+                        <span style="font-size:13px; color:#6b7684;">Reach <b style="color:#0b1b3a;">{{ t.reach }}</b></span>
+                        <span style="font-size:13px; color:#6b7684;">Likes <b style="color:#0b1b3a;">{{ t.likes }}</b></span>
+                        <span style="font-size:13px; color:#6b7684;">Saves <b style="color:#0b1b3a;">{{ t.saves }}</b></span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Academic calendar</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">School events on the academic calendar &#183; add media events and plan coverage ahead.</div>
+            </div>
+            <button onClick="{{ toggleAddEvent }}" style="height:52px; padding:0 26px; border-radius:12px; border:none; background:#14306e; color:#ffffff; font-size:15px; font-weight:700; cursor:pointer; flex:none; white-space:nowrap;" style-hover="background:#0e2455;">+ Add media event</button>
+          </div>
+
+          <sc-if value="{{ addEventOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px; margin-top:24px;">
+              <div style="font-size:19px; font-weight:800; letter-spacing:-0.4px;">New media event</div>
+              <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:16px; margin-top:18px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Event title</div><input placeholder="e.g. Independence Day flag hoisting" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Date</div><input type="date" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Call time</div><input type="time" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+                <button onClick="{{ toggleAddEvent }}" style="height:46px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Cancel</button>
+                <button onClick="{{ toggleAddEvent }}" style="height:46px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Add to calendar</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display:grid; grid-template-columns:1fr 1.15fr; gap:20px; margin-top:24px; align-items:start;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <button style="width:44px; height:44px; border-radius:11px; border:1px solid #e6e9ef; background:#ffffff; cursor:pointer; font-size:16px; color:#0b1b3a;">&#8249;</button>
+                <div style="text-align:center;"><div style="font-size:24px; font-weight:800; letter-spacing:-0.5px;">September 2026</div><div style="font-size:13px; color:#6b7684; margin-top:2px;">{{ events.length }} calendar events</div></div>
+                <button style="width:44px; height:44px; border-radius:11px; border:1px solid #e6e9ef; background:#ffffff; cursor:pointer; font-size:16px; color:#0b1b3a;">&#8250;</button>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-top:22px;">
+                <sc-for list="{{ weekdays }}" as="w" hint-placeholder-count="7">
+                  <div style="text-align:center; font-size:12.5px; font-weight:700; color:#8b95a5;">{{ w }}</div>
+                </sc-for>
+                <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
+                  <div style="{{ d.style }}">{{ d.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px;">
+              <div style="font-size:22px; font-weight:800; letter-spacing:-0.5px;">Events in September</div>
+              <div style="display:flex; flex-direction:column; margin-top:10px;">
+                <sc-for list="{{ events }}" as="e" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid #f0f2f6;">
+                    <div style="width:58px; flex:none; text-align:center; background:#ffffff; border:1px solid #e6e9ef; border-radius:10px; padding:8px 0;">
+                      <div style="font-size:19px; font-weight:800; color:#14306e; line-height:1;">{{ e.day }}</div>
+                      <div style="font-size:10.5px; color:#8b95a5; letter-spacing:0.8px; margin-top:3px;">{{ e.dow }}</div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-size:16px; font-weight:700;">{{ e.title }}</div>
+                      <div style="font-size:13px; color:#6b7684; margin-top:3px;">{{ e.meta }}</div>
+                    </div>
+                    <span style="font-size:12.5px; font-weight:700; background:#eef2f8; color:#5b6474; border-radius:20px; padding:5px 12px; white-space:nowrap;">Event</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isShoots }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Shoot assignments</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Who is shooting what this week &#183; crew, gear and post-production owner.</div>
+            </div>
+            <button onClick="{{ toggleAssignForm }}" style="height:52px; padding:0 26px; border-radius:12px; border:none; background:#14306e; color:#ffffff; font-size:15px; font-weight:700; cursor:pointer; flex:none; white-space:nowrap;" style-hover="background:#0e2455;">+ Add shoot assignment</button>
+          </div>
+
+          <sc-if value="{{ assignFormOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px; margin-top:22px;">
+              <div style="font-size:19px; font-weight:800; letter-spacing:-0.4px;">New shoot assignment</div>
+              <div style="display:grid; grid-template-columns:1fr 1.6fr 1fr 1fr; gap:16px; margin-top:18px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">When</div><input value="{{ newA.when }}" onChange="{{ newA.setWhen }}" placeholder="19 Sep · 13:00" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Event</div><input value="{{ newA.event }}" onChange="{{ newA.setEvent }}" placeholder="e.g. Sports Day finals" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Venue</div><input value="{{ newA.venue }}" onChange="{{ newA.setVenue }}" placeholder="e.g. Sports ground" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Crew</div><input value="{{ newA.crew }}" onChange="{{ newA.setCrew }}" placeholder="e.g. Vignesh, Divya" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:16px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Gear issued</div><input value="{{ newA.gear }}" onChange="{{ newA.setGear }}" placeholder="e.g. Canon EOS 90D, tripod" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Output</div><input value="{{ newA.output }}" onChange="{{ newA.setOutput }}" placeholder="e.g. Photo + video" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Status</div>
+                  <select value="{{ newA.status }}" onChange="{{ newA.setStatus }}" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 12px; font-size:14.5px; outline:none; background:#ffffff;">
+                    <option>Planned</option><option>Confirmed</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+                <button onClick="{{ toggleAssignForm }}" style="height:46px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Cancel</button>
+                <button onClick="{{ addAssignment }}" style="height:46px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Add assignment</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; margin-top:26px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:1fr 1.6fr 1fr 1fr 0.9fr 0.8fr 0.6fr; gap:16px; padding:16px 26px; background:#ffffff; border-bottom:1px solid #eef1f6;">
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">WHEN</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">EVENT</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">CREW</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">GEAR ISSUED</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">OUTPUT</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">STATUS</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;"></span>
+            </div>
+            <sc-for list="{{ assignments }}" as="a" hint-placeholder-count="4">
+              <div>
+                <div style="{{ a.rowStyle }}">
+                  <div><span style="font-family:'JetBrains Mono', monospace; font-size:13.5px; color:#0b1b3a;">{{ a.when }}</span></div>
+                  <div><div style="font-size:15px; font-weight:700;">{{ a.event }}</div><div style="font-size:12.5px; color:#6b7684; margin-top:2px;">{{ a.venue }}</div></div>
+                  <span style="font-size:14px; color:#0b1b3a;">{{ a.crew }}</span>
+                  <span style="font-size:13.5px; color:#5b6474;">{{ a.gear }}</span>
+                  <span style="font-size:13.5px; color:#5b6474;">{{ a.output }}</span>
+                  <span style="{{ a.statusStyle }}">{{ a.status }}</span>
+                  <button onClick="{{ a.toggleEdit }}" style="height:36px; padding:0 14px; border-radius:8px; border:1px solid #d9dee7; background:#ffffff; font-size:12.5px; font-weight:700; cursor:pointer; color:#1d4ed8;">{{ a.editLabel }}</button>
+                </div>
+                <sc-if value="{{ a.editing }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:18px 26px 22px 26px; background:#ffffff; border-bottom:1px solid #f2f4f8;">
+                    <div style="display:grid; grid-template-columns:1fr 1.5fr 1fr 1fr; gap:14px;">
+                      <input value="{{ a.editWhen }}" onChange="{{ a.setEditWhen }}" style="height:44px; border:1px solid #e0e5ec; border-radius:10px; padding:0 12px; font-size:13.5px; outline:none;" />
+                      <input value="{{ a.editEvent }}" onChange="{{ a.setEditEvent }}" style="height:44px; border:1px solid #e0e5ec; border-radius:10px; padding:0 12px; font-size:13.5px; outline:none;" />
+                      <input value="{{ a.editCrew }}" onChange="{{ a.setEditCrew }}" style="height:44px; border:1px solid #e0e5ec; border-radius:10px; padding:0 12px; font-size:13.5px; outline:none;" />
+                      <select value="{{ a.editStatus }}" onChange="{{ a.setEditStatus }}" style="height:44px; border:1px solid #e0e5ec; border-radius:10px; padding:0 10px; font-size:13.5px; outline:none; background:#ffffff;">
+                        <option>Planned</option><option>Confirmed</option>
+                      </select>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end;">
+                      <button onClick="{{ a.toggleEdit }}" style="height:40px; padding:0 16px; border-radius:9px; border:1px solid #d9dee7; background:#ffffff; font-size:13px; font-weight:700; cursor:pointer;">Cancel</button>
+                      <button onClick="{{ a.save }}" style="height:40px; padding:0 18px; border-radius:9px; border:none; background:#14306e; color:#ffffff; font-size:13px; font-weight:700; cursor:pointer;">Save changes</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isInventory }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Inventory</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">{{ invCount }} assets tagged to the media room &#183; issue, return and service history per unit</div>
+            </div>
+            <div style="display:flex; gap:12px; flex:none;">
+              <button style="height:48px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="background:#f2f5fa;">Stock audit</button>
+              <button onClick="{{ toggleAssetForm }}" style="height:48px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="background:#0e2455;">+ Add asset</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ assetFormOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px; margin-top:22px;">
+              <div style="font-size:19px; font-weight:800; letter-spacing:-0.4px;">New asset</div>
+              <div style="display:grid; grid-template-columns:1fr 2fr 1fr; gap:16px; margin-top:18px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Asset tag</div><input value="{{ newAsset.tag }}" onChange="{{ newAsset.setTag }}" placeholder="MR-CAM-015" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Equipment name</div><input value="{{ newAsset.name }}" onChange="{{ newAsset.setName }}" placeholder="e.g. Nikon Z6 III body" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Category</div>
+                  <select value="{{ newAsset.category }}" onChange="{{ newAsset.setCategory }}" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 12px; font-size:14.5px; outline:none; background:#ffffff;">
+                    <option>Camera</option><option>Lens</option><option>Support</option><option>Audio</option><option>Lighting</option><option>Aerial</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Holder / location</div><input value="{{ newAsset.holder }}" onChange="{{ newAsset.setHolder }}" placeholder="e.g. Media room · shelf B2" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Invoice value</div><input value="{{ newAsset.value }}" onChange="{{ newAsset.setValue }}" placeholder="&#8377; 1,20,000" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+                <button onClick="{{ toggleAssetForm }}" style="height:46px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Cancel</button>
+                <button onClick="{{ addAsset }}" style="height:46px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Add asset</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:20px; margin-top:28px;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:20px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Total assets</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px;">{{ invCount }}</div><div style="font-size:13px; color:#8b95a5; margin-top:4px;">book value &#8377;41.8 L</div></div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:20px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Available</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px; color:#15803d;">{{ availCount }}</div><div style="font-size:13px; color:#8b95a5; margin-top:4px;">ready to issue</div></div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:20px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Issued out</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px; color:#1d4ed8;">{{ issuedCount }}</div><div style="font-size:13px; color:#8b95a5; margin-top:4px;">1 overdue return</div></div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:20px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">In service</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px; color:#b45309;">4</div><div style="font-size:13px; color:#8b95a5; margin-top:4px;">2 under warranty</div></div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; margin-top:24px; flex-wrap:wrap;">
+            <sc-for list="{{ invFilters }}" as="f" hint-placeholder-count="5">
+              <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+
+          <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; margin-top:20px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:1.1fr 1.7fr 1fr 1.2fr 1fr 0.9fr; gap:16px; padding:16px 26px; background:#ffffff; border-bottom:1px solid #eef1f6;">
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">ASSET TAG</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">EQUIPMENT</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">CATEGORY</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">HOLDER / LOCATION</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">CONDITION</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">STATUS</span>
+            </div>
+            <sc-for list="{{ inventory }}" as="i" hint-placeholder-count="8">
+              <div>
+                <div onClick="{{ i.toggle }}" style="{{ i.rowStyle }}">
+                  <span style="font-family:'JetBrains Mono', monospace; font-size:13.5px; color:#1d4ed8; font-weight:600;">{{ i.tag }}</span>
+                  <div><div style="font-size:15px; font-weight:700;">{{ i.name }}</div><div style="font-size:12.5px; color:#6b7684; margin-top:2px;">{{ i.serial }}</div></div>
+                  <span style="font-size:14px; color:#5b6474;">{{ i.category }}</span>
+                  <span style="font-size:14px; color:#0b1b3a;">{{ i.holder }}</span>
+                  <span style="font-size:14px; color:#5b6474;">{{ i.condition }}</span>
+                  <span style="{{ i.statusStyle }}">{{ i.status }}</span>
+                </div>
+                <sc-if value="{{ i.open }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:4px 26px 24px 26px; background:#ffffff; border-bottom:1px solid #f2f4f8;">
+                    <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:26px; padding-top:18px;">
+                      <div>
+                        <div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">ASSET DETAILS</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
+                          <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:#6b7684;">Purchased</span><b>{{ i.purchased }}</b></div>
+                          <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:#6b7684;">Invoice value</span><b>{{ i.value }}</b></div>
+                          <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:#6b7684;">Warranty till</span><b>{{ i.warranty }}</b></div>
+                          <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:#6b7684;">Times issued</span><b>{{ i.issues }}</b></div>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:18px;">
+                          <button style="height:42px; padding:0 16px; border-radius:10px; border:1px solid #d9dee7; background:#ffffff; font-size:13.5px; font-weight:700; cursor:pointer;">Issue</button>
+                          <button style="height:42px; padding:0 16px; border-radius:10px; border:1px solid #d9dee7; background:#ffffff; font-size:13.5px; font-weight:700; cursor:pointer;">Send to service</button>
+                        </div>
+                      </div>
+                      <div>
+                        <div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">MOVEMENT HISTORY</div>
+                        <div style="display:flex; flex-direction:column; margin-top:10px;">
+                          <sc-for list="{{ i.history }}" as="h" hint-placeholder-count="3">
+                            <div style="display:flex; gap:14px; padding:11px 0; border-bottom:1px solid #eef1f6;">
+                              <span style="font-family:'JetBrains Mono', monospace; font-size:12.5px; color:#8b95a5; width:86px; flex:none;">{{ h.date }}</span>
+                              <span style="font-size:13.5px; color:#0b1b3a; flex:1;">{{ h.text }}</span>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isIndent }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Raise indent</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Equipment and consumable indents raised to the management &#183; approval moves from AO to the Principal</div>
+            </div>
+            <div style="display:flex; gap:12px; flex:none;">
+              <button onClick="{{ toggleHistory }}" style="{{ historyBtnStyle }}">{{ historyBtnLabel }}</button>
+              <button onClick="{{ toggleIndentForm }}" style="height:52px; padding:0 26px; border-radius:12px; border:none; background:#14306e; color:#ffffff; font-size:15px; font-weight:700; cursor:pointer; white-space:nowrap;" style-hover="background:#0e2455;">{{ indentBtnLabel }}</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ indentFormOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px; margin-top:26px;">
+              <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Indent details</div>
+              <div style="display:grid; grid-template-columns:2fr 1fr; gap:18px; margin-top:20px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Indent title</div><input placeholder="e.g. New wireless microphone set for events" style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 15px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Indent type</div><select style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 12px; font-size:14.5px; background:#ffffff; outline:none;"><option>Capital equipment</option><option>Consumables</option><option>Repair &amp; service</option><option>Rental / hire</option></select></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:18px; margin-top:18px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Quantity</div><input placeholder="2" style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 15px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Estimated cost</div><input placeholder="&#8377; 35,000" style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 15px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Needed by</div><input type="date" style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 15px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Budget head</div><select style="width:100%; height:50px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 12px; font-size:14.5px; background:#ffffff; outline:none;"><option>Media &amp; branding</option><option>School events</option><option>Admissions outreach</option></select></div>
+              </div>
+              <div style="margin-top:18px;"><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Justification</div><textarea rows="4" placeholder="Why the media room needs this — current gear shortfall, events affected, vendor quotations attached." style="width:100%; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:14px 16px; font-size:14.5px; line-height:1.6; outline:none; resize:vertical;"></textarea></div>
+              <div style="display:flex; align-items:center; gap:12px; margin-top:20px;">
+                <span style="font-size:13px; color:#8b95a5;">Route: Media Room Head &#8594; Administrative Officer &#8594; Principal</span>
+                <div style="flex:1;"></div>
+                <button style="height:48px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Save draft</button>
+                <button style="height:48px; padding:0 24px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Submit indent</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showHistory }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-top:32px;">Indent history</div>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
+                <sc-for list="{{ indents }}" as="n" hint-placeholder-count="4">
+                  <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 26px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="font-size:11.5px; font-weight:700; letter-spacing:1px; background:#eef2f8; color:#5b6474; border-radius:7px; padding:5px 10px;">INDENT</span>
+                      <span style="font-family:'JetBrains Mono', monospace; font-size:13px; color:#8b95a5;">{{ n.code }} &#183; raised {{ n.raised }}</span>
+                      <div style="flex:1;"></div>
+                      <span style="{{ n.statusStyle }}">{{ n.status }}</span>
+                    </div>
+                    <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px; margin-top:14px;">{{ n.title }}</div>
+                    <div style="font-size:14.5px; color:#5b6474; margin-top:7px;">{{ n.note }}</div>
+                    <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; border-top:1px solid #f0f2f6; margin-top:18px; padding-top:16px;">
+                      <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">AMOUNT</div><div style="font-size:15px; font-weight:700; margin-top:6px;">{{ n.amount }}</div></div>
+                      <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">QUANTITY</div><div style="font-size:15px; font-weight:700; margin-top:6px;">{{ n.qty }}</div></div>
+                      <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">NEEDED BY</div><div style="font-size:15px; font-weight:700; margin-top:6px;">{{ n.needBy }}</div></div>
+                      <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">NEXT STAGE</div><div style="font-size:15px; font-weight:700; margin-top:6px;">{{ n.stage }}</div></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAnalytics }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px;">
+            <div>
+              <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Report</div>
+              <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">Media room scorecard for AY 2026-27</div>
+            </div>
+            <div style="display:flex; gap:12px; flex:none;">
+              <button style="height:48px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Export Excel</button>
+              <button style="height:48px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Export PDF</button>
+              <button onClick="{{ toggleReportForm }}" style="height:48px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer; white-space:nowrap;">+ Add metric</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ reportFormOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px; margin-top:22px;">
+              <div style="font-size:19px; font-weight:800; letter-spacing:-0.4px;">New report metric</div>
+              <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:16px; margin-top:18px;">
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Metric name</div><input value="{{ newMetric.name }}" onChange="{{ newMetric.setName }}" placeholder="e.g. PTA turnout" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">This year</div><input value="{{ newMetric.now }}" onChange="{{ newMetric.setNow }}" placeholder="92" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Target</div><input value="{{ newMetric.target }}" onChange="{{ newMetric.setTarget }}" placeholder="100" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+                <div><div style="font-size:13.5px; font-weight:700; color:#1d4ed8;">Attainment %</div><input value="{{ newMetric.pct }}" onChange="{{ newMetric.setPct }}" placeholder="92" style="width:100%; height:48px; margin-top:10px; border:1px solid #e0e5ec; border-radius:12px; padding:0 14px; font-size:14.5px; outline:none;" /></div>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
+                <button onClick="{{ toggleReportForm }}" style="height:46px; padding:0 20px; border-radius:11px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Cancel</button>
+                <button onClick="{{ addMetric }}" style="height:46px; padding:0 22px; border-radius:11px; border:none; background:#14306e; color:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer;">Add metric</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px; margin-top:26px;">
+            <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Media scorecard</div>
+            <div style="font-size:13.5px; color:#6b7684; margin-top:4px;">This year against last year and the AY target</div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1.3fr; gap:16px; margin-top:22px; padding-bottom:14px; border-bottom:1px solid #eef1f6;">
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5;">METRIC</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5; text-align:right;">THIS YEAR</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5; text-align:right;">LAST YEAR</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5; text-align:right;">TARGET</span>
+              <span style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#8b95a5; text-align:right;">ATTAINMENT</span>
+            </div>
+            <sc-for list="{{ scorecard }}" as="m" hint-placeholder-count="7">
+              <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1.3fr; gap:16px; padding:15px 0; border-bottom:1px solid #f2f4f8; align-items:center; transition:transform .15s ease, box-shadow .15s ease; cursor:pointer;" style-hover="transform:translateY(-2px); box-shadow:0 8px 18px rgba(29,78,216,0.12);">
+                <span style="font-size:15px; font-weight:700;">{{ m.name }}</span>
+                <span style="font-family:'JetBrains Mono', monospace; font-size:14px; text-align:right;">{{ m.now }}</span>
+                <span style="font-family:'JetBrains Mono', monospace; font-size:14px; text-align:right; color:#6b7684;">{{ m.prev }}</span>
+                <span style="font-family:'JetBrains Mono', monospace; font-size:14px; text-align:right; color:#6b7684;">{{ m.target }}</span>
+                <div style="display:flex; align-items:center; gap:12px; justify-content:flex-end;">
+                  <div style="width:120px; height:7px; border-radius:4px; background:#eef1f6; overflow:hidden;"><div style="{{ m.barStyle }}"></div></div>
+                  <span style="font-family:'JetBrains Mono', monospace; font-size:13.5px; width:38px; text-align:right;">{{ m.pct }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px;">
+              <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Requests by section</div>
+              <div style="font-size:13.5px; color:#6b7684; margin-top:4px;">Odd Semester 2026-27 &#183; 148 requests handled</div>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+                <sc-for list="{{ deptBars }}" as="d" hint-placeholder-count="6">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; font-size:14.5px;"><span style="font-weight:600;">{{ d.name }}</span><span><b>{{ d.count }}</b> <span style="color:#8b95a5;">&#183; {{ d.pct }}</span></span></div>
+                    <div style="height:7px; border-radius:4px; background:#eef1f6; margin-top:8px; overflow:hidden;"><div style="{{ d.barStyle }}"></div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px;">
+              <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Turnaround time</div>
+              <div style="font-size:13.5px; color:#6b7684; margin-top:4px;">From request raised to deliverable approved</div>
+              <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+                <sc-for list="{{ turnaround }}" as="t" hint-placeholder-count="4">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; font-size:14.5px;"><span style="font-weight:600;">{{ t.name }}</span><span><b>{{ t.count }}</b> <span style="color:#8b95a5;">&#183; {{ t.pct }}</span></span></div>
+                    <div style="height:7px; border-radius:4px; background:#eef1f6; margin-top:8px; overflow:hidden;"><div style="{{ t.barStyle }}"></div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:40px; font-weight:800; letter-spacing:-1.2px; line-height:1.1;">Media Team</div>
+          <div style="font-size:15.5px; color:#6b7684; margin-top:10px;">7 members &#183; current load and speciality &#183; click a member for their profile</div>
+          <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; margin-top:28px;">
+            <sc-for list="{{ team }}" as="p" hint-placeholder-count="6">
+              <div onClick="{{ p.open }}" style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;" style-hover="transform:translateY(-4px); box-shadow:0 12px 26px rgba(29,78,216,0.18); border-color:#1d4ed8;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div style="width:46px; height:46px; border-radius:50%; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">{{ p.initials }}</div>
+                  <div><div style="font-size:16px; font-weight:700;">{{ p.name }}</div><div style="font-size:13px; color:#6b7684; margin-top:2px;">{{ p.role }}</div></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13.5px; color:#6b7684; margin-top:18px;"><span>Active jobs</span><b style="color:#0b1b3a;">{{ p.jobs }}</b></div>
+                <div style="height:7px; border-radius:4px; background:#eef1f6; margin-top:10px; overflow:hidden;"><div style="{{ p.barStyle }}"></div></div>
+                <div style="font-size:12.5px; color:#8b95a5; margin-top:10px;">{{ p.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTeamDetail }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <a href="#" onClick="{{ go.team }}" style="font-size:14px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">&#8249; Back to Media Team</a>
+
+          <div style="display:flex; align-items:center; gap:20px; margin-top:20px; background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:26px 28px;">
+            <div style="width:76px; height:76px; border-radius:50%; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:24px; flex:none;">{{ member.initials }}</div>
+            <div style="flex:1;">
+              <div style="font-size:28px; font-weight:800; letter-spacing:-0.6px;">{{ member.name }}</div>
+              <div style="font-size:15px; color:#6b7684; margin-top:4px;">{{ member.role }} &#183; Media Room</div>
+              <div style="display:flex; gap:18px; margin-top:10px; font-size:13.5px; color:#5b6474;">
+                <span>{{ member.email }}</span>
+                <span>&#183;</span>
+                <span>{{ member.phone }}</span>
+                <span>&#183;</span>
+                <span>Joined {{ member.joined }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px; margin-top:20px;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Active jobs</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px;">{{ member.jobs }}</div></div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Completed this term</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px;">{{ member.completed }}</div></div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:22px 24px;"><div style="font-size:14.5px; color:#5b6474; font-weight:600;">Avg. turnaround</div><div style="font-size:34px; font-weight:800; letter-spacing:-1.2px; margin-top:10px;">{{ member.avgTurnaround }}</div></div>
+          </div>
+
+          <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px; margin-top:20px;">
+            <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">&#127909; Media Room Staff &#8211; Basic Details</div>
+            <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px 28px; margin-top:18px;">
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">STAFF ID</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.staffId }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">FULL NAME</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.name }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">PROFILE PHOTO</div><div style="display:flex; align-items:center; gap:8px; margin-top:6px;"><div style="width:28px; height:28px; border-radius:50%; background:#14306e; color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">{{ member.initials }}</div><span style="font-size:13px; color:#8b95a5;">Placeholder</span></div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">DESIGNATION</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.role }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">DEPARTMENT</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">Media Room</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">DATE OF JOINING</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.joined }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">QUALIFICATION</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.qualification }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">SPECIALIZATION</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.specialization }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">PREVIOUS EXPERIENCE</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.prevExperience }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">TOTAL EXPERIENCE</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.totalExperience }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">MOBILE NUMBER</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.phone }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">EMAIL ID</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.email }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">ADDRESS</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.address }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">REPORTING OFFICER</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.reportingOfficer }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">EMPLOYMENT TYPE</div><div style="font-size:14.5px; font-weight:700; margin-top:6px;">{{ member.employmentType }}</div></div>
+              <div><div style="font-size:11px; letter-spacing:1.2px; font-weight:700; color:#9aa3b2;">STATUS</div><span style="font-size:12.5px; font-weight:700; background:#dcfce7; color:#15803d; border-radius:20px; padding:5px 12px; margin-top:6px; display:inline-block;">{{ member.empStatus }}</span></div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:20px; margin-top:20px; align-items:start;">
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+              <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Equipment currently held</div>
+              <div style="display:flex; flex-direction:column; margin-top:12px;">
+                <sc-for list="{{ member.equipment }}" as="eq" hint-placeholder-count="2">
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid #f0f2f6;">
+                    <span style="font-size:14.5px; font-weight:600;">{{ eq }}</span>
+                    <span style="font-size:12.5px; font-weight:700; background:#e9efff; color:#1d4ed8; border-radius:20px; padding:4px 10px;">Issued</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:#ffffff; border:1px solid #e6e9ef; border-radius:15px; padding:24px 26px;">
+              <div style="font-size:20px; font-weight:800; letter-spacing:-0.4px;">Recent activity</div>
+              <div style="display:flex; flex-direction:column; margin-top:12px;">
+                <sc-for list="{{ member.activity }}" as="act" hint-placeholder-count="4">
+                  <div style="display:flex; gap:14px; padding:13px 0; border-bottom:1px solid #f0f2f6;">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:12.5px; color:#8b95a5; width:86px; flex:none;">{{ act.date }}</span>
+                    <span style="font-size:13.5px; color:#0b1b3a; flex:1;">{{ act.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultSection&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dashboard&quot;,&quot;requests&quot;,&quot;social&quot;,&quot;calendar&quot;,&quot;shoots&quot;,&quot;inventory&quot;,&quot;indent&quot;,&quot;analytics&quot;,&quot;team&quot;],&quot;default&quot;:&quot;dashboard&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const PILL = "font-size:12.5px; font-weight:700; border-radius:20px; padding:6px 13px; white-space:nowrap;";
+const pill = (bg, fg) => PILL + "background:" + bg + "; color:" + fg + ";";
+const STATUS = {
+  "Pending": pill("#fef3c7", "#a15c07"),
+  "Approved": pill("#e9efff", "#1d4ed8"),
+  "Delivered": pill("#dcfce7", "#15803d"),
+  "Draft": pill("#eef2f8", "#5b6474"),
+  "Scheduled": pill("#e9efff", "#1d4ed8"),
+  "Available": pill("#dcfce7", "#15803d"),
+  "Issued": pill("#e9efff", "#1d4ed8"),
+  "In service": pill("#fef3c7", "#a15c07"),
+  "Overdue": pill("#fee2e2", "#b91c1c"),
+  "With Principal": pill("#e9efff", "#1d4ed8"),
+  "With AO": pill("#fef3c7", "#a15c07"),
+  "Rejected": pill("#fee2e2", "#b91c1c"),
+  "Planned": pill("#eef2f8", "#5b6474"),
+  "Confirmed": pill("#dcfce7", "#15803d")
+};
+const st = (s) => STATUS[s] || pill("#eef2f8", "#5b6474");
+const dot = (c) => "width:10px; height:10px; border-radius:50%; flex:none; background:" + c + ";";
+const PLATFORM_COLOR = { Instagram: "#d62976", LinkedIn: "#0a66c2", YouTube: "#dc2626" };
+const bar = (pct, color) => "width:" + pct + "%; height:7px; background:" + color + ";";
+const KIND_COLOR = { POSTER: "#1d4ed8", VIDEO: "#7c3aed", COVERAGE: "#15803d" };
+const KIND_ICON = { POSTER: "\u{1F5BC}", VIDEO: "\u{1F3A5}", COVERAGE: "\u{1F4F7}" };
+const ROW_LIFT = "transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; cursor:pointer;";
+
+class Component extends DCLogic {
+  state = {
+    section: "dashboard",
+    reqFilter: "All",
+    invFilter: "All",
+    socialTab: "new",
+    formats: ["Post"],
+    category: "Event",
+    caption: "",
+    firstComment: "",
+    linkInPost: "",
+    pinned: false,
+    commentsOn: true,
+    pubDate: "2026-09-19",
+    pubTime: "18:30",
+    saveMessage: "",
+    openAsset: null,
+    addEventOpen: false,
+    indentFormOpen: true,
+    showHistory: false,
+    extraQueue: [],
+    assignFormOpen: false,
+    extraAssignments: [],
+    editingIdx: null,
+    assignEdits: {},
+    newA: { when: "", event: "", venue: "", crew: "", gear: "", output: "", status: "Planned" },
+    assetFormOpen: false,
+    extraAssets: [],
+    newAsset: { tag: "", name: "", category: "Camera", holder: "", value: "" },
+    reportFormOpen: false,
+    extraMetrics: [],
+    newMetric: { name: "", now: "", target: "", pct: "" },
+    teamDetailId: null
+  };
+
+  componentDidMount() {
+    const d = this.props.defaultSection;
+    if (d && d !== this.state.section) this.setState({ section: d });
+  }
+
+  navStyle(key) {
+    const on = this.state.section === key || (key === "team" && this.state.section === "teamDetail");
+    return "display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:11px; cursor:pointer; font-size:14.5px; font-weight:" +
+      (on ? "700" : "600") + "; background:" + (on ? "#eaf0fd" : "transparent") + "; color:" + (on ? "#1d4ed8" : "#424d60") + ";";
+  }
+
+  chip(active, label) {
+    return "height:40px; padding:0 18px; border-radius:20px; font-size:13.5px; font-weight:700; cursor:pointer; border:1px solid " +
+      (active ? "#c7d7fb" : "#e2e6ee") + "; background:" + (active ? "#eaf0fd" : "#ffffff") + "; color:" + (active ? "#1d4ed8" : "#5b6474") + ";";
+  }
+
+  allRequests() {
+    return [
+      { code: "MED/SCI/2026/041", raised: "12 Sep 2026", kind: "POSTER", bucket: "Pending", status: "Pending", title: "Robotics workshop poster", brief: "Two-day workshop with a guest scientist. Needs a feed poster, a story version and a printable A3 for notice boards.", by: "Ms. R. Kavitha · Science Dept", eventDate: "28 Sep 2026", needBy: "18 Sep 2026", deliverables: "Poster · Story · A3", assignee: "Divya S. · Design", age: "In design since 13 Sep · pending 48h+" },
+      { code: "MED/GEN/2026/040", raised: "12 Sep 2026", kind: "POSTER", bucket: "Pending", status: "Pending", title: "gdggg", brief: "Placeholder request raised for testing the intake form.", by: "secretary@sece.ac.in", eventDate: "20 Sep 2026", needBy: "16 Sep 2026", deliverables: "Poster", assignee: "Unassigned", age: "Pending 48h+" },
+      { code: "MED/SPT/2026/039", raised: "10 Sep 2026", kind: "VIDEO", bucket: "Approved", status: "Approved", title: "Sports Day training highlights film", brief: "Three minute film covering track and field practice sessions ahead of Sports Day.", by: "Mr. S. Prabhu · Sports Dept", eventDate: "22 Sep 2026", needBy: "24 Sep 2026", deliverables: "3 min film · 2 reels", assignee: "Vignesh R. · Video", age: "Shooting · day 1 of 2 complete" },
+      { code: "MED/ADM/2026/038", raised: "08 Sep 2026", kind: "POSTER", bucket: "Approved", status: "Approved", title: "Admissions open house announcement", brief: "Open house on 24 Sep for new admissions. Poster must carry eligibility, timings and the registration deadline.", by: "Mr. K. Senthil · Admissions Office", eventDate: "24 Sep 2026", needBy: "16 Sep 2026", deliverables: "Poster · WhatsApp DP", assignee: "Divya S. · Design", age: "With admissions office since 13 Sep" },
+      { code: "MED/ADM/2026/036", raised: "02 Sep 2026", kind: "POSTER", bucket: "Delivered", status: "Delivered", title: "Admissions closing campaign · 8 creatives", brief: "Eight-post campaign on academics, hostel life, labs and alumni. Delivered with platform-wise crops.", by: "Admissions Office", eventDate: "01 Sep 2026", needBy: "10 Sep 2026", deliverables: "8 creatives · 3 reels", assignee: "Full team", age: "Delivered 09 Sep · approved" },
+      { code: "MED/PTA/2026/035", raised: "01 Sep 2026", kind: "VIDEO", bucket: "Delivered", status: "Delivered", title: "Parent-Teacher Meeting recap reel", brief: "Recap reel of the last PTA session for parents who could not attend.", by: "Dr. M. Anitha · PTA Coordinator", eventDate: "30 Aug 2026", needBy: "17 Sep 2026", deliverables: "60 sec reel", assignee: "Arun P. · Video", age: "Delivered 10 Sep" }
+    ];
+  }
+
+  allInventory() {
+    return [
+      { tag: "MR-CAM-014", name: "Sony A7 IV mirrorless body", serial: "SN 3822-A7IV", category: "Camera", holder: "Vignesh R. · Sports Day shoot", condition: "Good", status: "Issued", purchased: "14 Jun 2024", value: "₹2,41,000", warranty: "13 Jun 2027", issues: "142",
+        history: [{ date: "11 Sep 26", text: "Issued to Vignesh R. for Sports Day training · due 16 Sep" }, { date: "04 Sep 26", text: "Returned by Divya S. · sensor cleaned" }] },
+      { tag: "MR-CAM-009", name: "Canon EOS 90D body", serial: "SN 7741-90D", category: "Camera", holder: "Media room · shelf B2", condition: "Good", status: "Available", purchased: "02 Mar 2023", value: "₹1,98,500", warranty: "expired", issues: "231",
+        history: [{ date: "09 Sep 26", text: "Returned after admissions open house" }] },
+      { tag: "MR-TRP-004", name: "Manfrotto 055 aluminium tripod", serial: "SN 1102-055", category: "Support", holder: "Media room · rack A", condition: "Fair", status: "Available", purchased: "18 Sep 2021", value: "₹22,400", warranty: "expired", issues: "310",
+        history: [{ date: "07 Sep 26", text: "Returned · centre column stiff, watch it" }] },
+      { tag: "MR-GMB-002", name: "DJI RS 3 gimbal", serial: "SN 8830-RS3", category: "Support", holder: "Arun P. · PTA recap edit", condition: "Good", status: "Overdue", purchased: "05 Jan 2025", value: "₹58,900", warranty: "04 Jan 2027", issues: "64",
+        history: [{ date: "02 Sep 26", text: "Issued to Arun P. · due 08 Sep · OVERDUE" }] },
+      { tag: "MR-DRN-001", name: "DJI Mini 4 Pro drone", serial: "SN 4417-M4P", category: "Aerial", holder: "Media room · locker", condition: "Good", status: "Available", purchased: "22 Nov 2025", value: "₹1,09,000", warranty: "21 Nov 2027", issues: "26",
+        history: [{ date: "10 Sep 26", text: "Campus aerials for admissions film" }] },
+      { tag: "MR-AUD-011", name: "Rode Wireless GO II kit", serial: "SN 2265-WGO", category: "Audio", holder: "Media room · shelf C1", condition: "Good", status: "Available", purchased: "09 Aug 2024", value: "₹28,700", warranty: "08 Aug 2026", issues: "97",
+        history: [{ date: "08 Sep 26", text: "Returned after Principal's address recording" }] },
+      { tag: "MR-LGT-007", name: "Godox SL60W LED panel", serial: "SN 6688-SL60", category: "Lighting", holder: "Service · Godox Coimbatore", condition: "Needs repair", status: "In service", purchased: "30 Jan 2023", value: "₹19,500", warranty: "expired", issues: "88",
+        history: [{ date: "06 Sep 26", text: "Sent to service · fan noise and flicker" }] }
+    ];
+  }
+
+  baseAssignments() {
+    return [
+      { when: "19 Sep · 13:00", event: "test1", venue: "—", crew: "Full teamaa", gear: "—", output: "Photo + video", status: "Planned" },
+      { when: "25 Sep · 00:00", event: "test", venue: "—", crew: "Full team", gear: "—", output: "Photo + video", status: "Planned" },
+      { when: "05 Oct · 09:00", event: "TechFest 2026 – Code Sprint", venue: "—", crew: "Arun Prakash, Divya Shree", gear: "Canon EOS 90D, tripod", output: "photo+video", status: "Planned" },
+      { when: "01 Oct · 10:00", event: "CRUD Test Shoot", venue: "Main Block", crew: "tester", gear: "—", output: "photo+video", status: "Planned" }
+    ];
+  }
+
+  teamData() {
+    return [
+      { id: "vr", initials: "VR", name: "Vignesh R.", role: "Senior videographer", jobs: "4", note: "Sports Day film", barStyle: bar(80, "#1d4ed8"), email: "vignesh.r@pavakieschool.edu", phone: "+91 98765 43210", joined: "Jun 2021", completed: "58", avgTurnaround: "2.1 days", equipment: ["Sony A7 IV mirrorless body"], activity: [{ date: "11 Sep 26", text: "Issued A7 IV for Sports Day training" }, { date: "05 Sep 26", text: "Delivered admissions campaign" }],
+        staffId: "PPS-MED-014", qualification: "B.Sc. Visual Communication", specialization: "Cinematography & drone operation", prevExperience: "3 yrs · Freelance videographer", totalExperience: "8 yrs", address: "12, Gandhi Street, Coimbatore", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Full-time", empStatus: "Active" },
+      { id: "ds", initials: "DS", name: "Divya S.", role: "Lead designer", jobs: "5", note: "Workshop poster · open house", barStyle: bar(95, "#b45309"), email: "divya.s@pavakieschool.edu", phone: "+91 98765 43211", joined: "Jan 2020", completed: "76", avgTurnaround: "1.4 days", equipment: [], activity: [{ date: "13 Sep 26", text: "Started design on Robotics workshop poster" }, { date: "09 Sep 26", text: "Returned Canon 90D after open house" }],
+        staffId: "PPS-MED-009", qualification: "B.Des. Communication Design", specialization: "Graphic design & branding", prevExperience: "2 yrs · Design studio, Chennai", totalExperience: "6 yrs", address: "45, Lake View Road, Coimbatore", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Full-time", empStatus: "Active" },
+      { id: "ap", initials: "AP", name: "Arun P.", role: "Editor", jobs: "3", note: "PTA recap · reel edits", barStyle: bar(60, "#1d4ed8"), email: "arun.p@pavakieschool.edu", phone: "+91 98765 43212", joined: "Mar 2022", completed: "41", avgTurnaround: "2.6 days", equipment: ["DJI RS 3 gimbal"], activity: [{ date: "06 Sep 26", text: "Started PTA recap edit" }],
+        staffId: "PPS-MED-021", qualification: "Diploma in Film Editing", specialization: "Video editing & colour grading", prevExperience: "1.5 yrs · Local production house", totalExperience: "4 yrs", address: "7, Race Course Road, Coimbatore", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Full-time", empStatus: "Active" },
+      { id: "mk", initials: "MK", name: "Meera K.", role: "Designer · photographer", jobs: "2", note: "Annual Day identity set", barStyle: bar(40, "#15803d"), email: "meera.k@pavakieschool.edu", phone: "+91 98765 43213", joined: "Aug 2023", completed: "24", avgTurnaround: "3.0 days", equipment: [], activity: [{ date: "05 Sep 26", text: "Requested committee list for Annual Day branding" }],
+        staffId: "PPS-MED-027", qualification: "B.A. Fine Arts", specialization: "Event photography & identity design", prevExperience: "1 yr · Freelance photographer", totalExperience: "3 yrs", address: "23, Avinashi Road, Coimbatore", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Part-time", empStatus: "Active" },
+      { id: "sb", initials: "SB", name: "Sneha B.", role: "Social media executive", jobs: "3", note: "Queue and comment replies", barStyle: bar(60, "#1d4ed8"), email: "sneha.b@pavakieschool.edu", phone: "+91 98765 43214", joined: "Feb 2024", completed: "112", avgTurnaround: "0.8 days", equipment: [], activity: [{ date: "15 Sep 26", text: "Scheduled admissions open house post" }],
+        staffId: "PPS-MED-032", qualification: "MBA Marketing", specialization: "Social media strategy & community management", prevExperience: "1 yr · Digital marketing agency", totalExperience: "2.5 yrs", address: "9, Peelamedu, Coimbatore", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Full-time", empStatus: "Active" },
+      { id: "hk", initials: "HK", name: "Hari K.", role: "Student volunteer", jobs: "1", note: "Assists on event shoots", barStyle: bar(20, "#15803d"), email: "hari.k@student.pavakieschool.edu", phone: "+91 98765 43215", joined: "Jul 2026", completed: "6", avgTurnaround: "n/a", equipment: [], activity: [{ date: "11 Sep 26", text: "Assisted on Sports Day training shoot" }],
+        staffId: "PPS-MED-VOL-03", qualification: "Grade 12 student", specialization: "Event assistance & behind-the-scenes", prevExperience: "None", totalExperience: "2 months", address: "On file with admissions office", reportingOfficer: "Mr. A. Karthikeyan · Media Room Head", employmentType: "Contract", empStatus: "Active" }
+    ];
+  }
+
+  renderVals() {
+    const s = this.state;
+    const go = {};
+    ["dashboard", "requests", "social", "calendar", "shoots", "inventory", "indent", "analytics", "team"].forEach(k => {
+      go[k] = () => this.setState({ section: k, teamDetailId: null });
+    });
+    const nav = {};
+    ["dashboard", "requests", "social", "calendar", "shoots", "inventory", "indent", "analytics", "team"].forEach(k => {
+      nav[k] = this.navStyle(k);
+    });
+
+    const allReqs = this.allRequests();
+    const pendingCount = allReqs.filter(r => r.bucket === "Pending").length;
+    const approvedCount = allReqs.filter(r => r.bucket === "Approved").length;
+    const deliveredCount = allReqs.filter(r => r.bucket === "Delivered").length;
+
+    const reqFilterList = ["All", "Pending", "Approved", "Delivered"];
+    let reqs = allReqs;
+    if (s.reqFilter !== "All") reqs = reqs.filter(r => r.bucket === s.reqFilter);
+    const requests = reqs.map(r => {
+      const initials = r.by.split(" ").filter(w => /^[A-Z]/.test(w)).map(w => w[0]).slice(0, 2).join("") || r.by.slice(0, 2).toUpperCase();
+      return Object.assign({}, r, {
+        statusStyle: st(r.status),
+        kindStyle: "font-size:11.5px; font-weight:700; letter-spacing:1px; color:" + (KIND_COLOR[r.kind] || "#5b6474") + ";",
+        kindIcon: KIND_ICON[r.kind] || "\u{1F4C4}",
+        kindIconStyle: "width:46px; height:46px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center; font-size:22px; background:" + (KIND_COLOR[r.kind] || "#5b6474") + "1a;",
+        byInitials: initials,
+        cta: r.bucket === "Pending" ? "Approve" : (r.bucket === "Approved" ? "Mark delivered" : "View deliverables")
+      });
+    });
+
+    const invFilters = ["All", "Camera", "Support", "Audio", "Lighting", "Aerial"];
+    let invAll = this.allInventory().concat(s.extraAssets);
+    let inv = invAll;
+    if (s.invFilter !== "All") inv = inv.filter(i => i.category === s.invFilter);
+    const inventory = inv.map(i => Object.assign({}, i, {
+      open: s.openAsset === i.tag,
+      statusStyle: st(i.status),
+      rowStyle: "display:grid; grid-template-columns:1.1fr 1.7fr 1fr 1.2fr 1fr 0.9fr; gap:16px; padding:18px 26px; align-items:center; cursor:pointer; border-bottom:1px solid #f2f4f8; background:" + (s.openAsset === i.tag ? "#fafbfd" : "#ffffff") + ";",
+      toggle: () => this.setState({ openAsset: s.openAsset === i.tag ? null : i.tag })
+    }));
+
+    const marked = { 1: true, 5: true };
+    const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
+    const startOffset = 1; // 1 Sep 2026 is a Tuesday -> Mon-first index 1
+    const days = [];
+    for (let i = 0; i < startOffset; i++) days.push({ label: "", style: "height:56px;" });
+    for (let d = 1; d <= 30; d++) {
+      const isMarked = !!marked[d];
+      const isToday = d === 17;
+      let style = "height:56px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:" + (isToday ? "800" : "600") + "; color:#293244;";
+      if (isToday) style += " border:2px solid #1d4ed8; background:#ffffff;";
+      else if (isMarked) style += " border:1px solid #c7d7fb; background:#ffffff; color:#1d4ed8; font-weight:700;";
+      else style += " border:1px solid #eef1f6; background:#ffffff;";
+      days.push({ label: String(d), style });
+    }
+
+    const events = [
+      { day: "1", dow: "TUE", title: "Technova", meta: "Meeting" },
+      { day: "5", dow: "SAT", title: "Meeting", meta: "" },
+      { day: "5", dow: "SAT", title: "Teacher's Day celebration", meta: "" },
+      { day: "5", dow: "SAT", title: "Teacher's Day Celebration", meta: "Cultural programme organized by students" }
+    ];
+
+    const formatList = ["Post", "Photo carousel", "Video", "Announcement card"];
+    const formats = formatList.map(f => ({ label: f, style: this.chip(s.formats[0] === f, f), onClick: () => this.setState({ formats: [f] }) }));
+    const catList = ["Event", "Academic", "Department", "General"];
+    const categories = catList.map(c => ({ label: c, style: this.chip(s.category === c, c), onClick: () => this.setState({ category: c }) }));
+
+    const tabBtn = (active) => "height:38px; padding:0 16px; border-radius:9px; font-size:13.5px; font-weight:700; cursor:pointer; border:none; background:" + (active ? "#ffffff" : "transparent") + "; color:" + (active ? "#14306e" : "#6b7684") + "; box-shadow:" + (active ? "0 1px 4px rgba(11,27,58,0.12)" : "none") + ";";
+
+    const baseQueue = [
+      { title: "Admissions open house announcement", meta: "LinkedIn · 16 Sep, 10.00 am", status: "Scheduled", dotStyle: dot(PLATFORM_COLOR.LinkedIn) },
+      { title: "Robotics workshop registration open", meta: "Instagram · 17 Sep, 9.00 am", status: "Draft", dotStyle: dot(PLATFORM_COLOR.Instagram) },
+      { title: "Sports Day teaser", meta: "YouTube · 20 Sep, 7.00 pm", status: "Scheduled", dotStyle: dot(PLATFORM_COLOR.YouTube) }
+    ];
+    const queue = s.extraQueue.concat(baseQueue).map(q => Object.assign({}, q, { statusStyle: st(q.status) }));
+
+    const topPosts = [
+      { platform: "Instagram", date: "04 Sep", title: "State-level Sports Day medal wins", reach: "412 K", likes: "28.4 K", saves: "3,120", dotStyle: dot(PLATFORM_COLOR.Instagram) },
+      { platform: "LinkedIn", date: "29 Aug", title: "148 families visited our open house", reach: "96 K", likes: "5,840", saves: "612", dotStyle: dot(PLATFORM_COLOR.LinkedIn) }
+    ];
+
+    const assignments = this.baseAssignments().concat(s.extraAssignments).map((a, idx) => {
+      const editing = s.editingIdx === idx;
+      const edits = s.assignEdits[idx] || { when: a.when, event: a.event, crew: a.crew, status: a.status };
+      return Object.assign({}, a, {
+        statusStyle: st(a.status),
+        rowStyle: "display:grid; grid-template-columns:1fr 1.6fr 1fr 1fr 0.9fr 0.8fr 0.6fr; gap:16px; padding:18px 26px; align-items:center; border-bottom:1px solid #f2f4f8; " + ROW_LIFT,
+        editing,
+        editLabel: editing ? "Cancel" : "Edit",
+        editWhen: edits.when, editEvent: edits.event, editCrew: edits.crew, editStatus: edits.status,
+        setEditWhen: (e) => this.setState(p => ({ assignEdits: Object.assign({}, p.assignEdits, { [idx]: Object.assign({}, edits, { when: e.target.value }) }) })),
+        setEditEvent: (e) => this.setState(p => ({ assignEdits: Object.assign({}, p.assignEdits, { [idx]: Object.assign({}, edits, { event: e.target.value }) }) })),
+        setEditCrew: (e) => this.setState(p => ({ assignEdits: Object.assign({}, p.assignEdits, { [idx]: Object.assign({}, edits, { crew: e.target.value }) }) })),
+        setEditStatus: (e) => this.setState(p => ({ assignEdits: Object.assign({}, p.assignEdits, { [idx]: Object.assign({}, edits, { status: e.target.value }) }) })),
+        toggleEdit: () => this.setState(p => ({ editingIdx: p.editingIdx === idx ? null : idx })),
+        save: () => {
+          const e = this.state.assignEdits[idx];
+          const list = this.baseAssignments().concat(this.state.extraAssignments);
+          list[idx] = Object.assign({}, list[idx], e);
+          const extraStart = this.baseAssignments().length;
+          this.setState({ extraAssignments: list.slice(extraStart), editingIdx: null });
+        }
+      });
+    });
+
+    const newA = {
+      when: s.newA.when, event: s.newA.event, venue: s.newA.venue, crew: s.newA.crew, gear: s.newA.gear, output: s.newA.output, status: s.newA.status,
+      setWhen: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { when: e.target.value }) })),
+      setEvent: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { event: e.target.value }) })),
+      setVenue: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { venue: e.target.value }) })),
+      setCrew: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { crew: e.target.value }) })),
+      setGear: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { gear: e.target.value }) })),
+      setOutput: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { output: e.target.value }) })),
+      setStatus: (e) => this.setState(p => ({ newA: Object.assign({}, p.newA, { status: e.target.value }) }))
+    };
+
+    const newAsset = {
+      tag: s.newAsset.tag, name: s.newAsset.name, category: s.newAsset.category, holder: s.newAsset.holder, value: s.newAsset.value,
+      setTag: (e) => this.setState(p => ({ newAsset: Object.assign({}, p.newAsset, { tag: e.target.value }) })),
+      setName: (e) => this.setState(p => ({ newAsset: Object.assign({}, p.newAsset, { name: e.target.value }) })),
+      setCategory: (e) => this.setState(p => ({ newAsset: Object.assign({}, p.newAsset, { category: e.target.value }) })),
+      setHolder: (e) => this.setState(p => ({ newAsset: Object.assign({}, p.newAsset, { holder: e.target.value }) })),
+      setValue: (e) => this.setState(p => ({ newAsset: Object.assign({}, p.newAsset, { value: e.target.value }) }))
+    };
+
+    const indents = [
+      { code: "IND/MED/2026/014", raised: "10 Sep 2026", title: "New wireless microphone set for events", note: "Three vendor quotations attached. Lowest technically compliant bid with two-year onsite warranty.", amount: "₹35,000", qty: "1 set", needBy: "05 Oct 2026", stage: "Principal", status: "With Principal" },
+      { code: "IND/MED/2026/013", raised: "04 Sep 2026", title: "Annual subscription · Adobe Creative Cloud, 6 seats", note: "Renewal for the design and edit workstations. Same rate as last year, education pricing applied.", amount: "₹2,16,000", qty: "6 seats", needBy: "01 Oct 2026", stage: "Administrative Officer", status: "With AO" },
+      { code: "IND/MED/2026/012", raised: "28 Aug 2026", title: "LED panel repair and studio backdrop replacement", note: "Godox SL60W fan replacement plus a new 3 × 4 m chroma backdrop for the interview studio.", amount: "₹34,500", qty: "1 lot", needBy: "20 Sep 2026", stage: "Purchase order raised", status: "Approved" },
+      { code: "IND/MED/2026/011", raised: "16 Aug 2026", title: "Second drone for large event coverage", note: "Returned with a note to reuse the existing unit this term and re-raise after the inspection visit.", amount: "₹1,12,000", qty: "1 unit", needBy: "10 Sep 2026", stage: "Closed", status: "Rejected" }
+    ].map(n => Object.assign({}, n, { statusStyle: st(n.status) }));
+
+    const scorecardBase = [
+      { name: "Requests handled", now: "148", prev: "112", target: "160", pct: "93%", barStyle: bar(93, "#1d4ed8") },
+      { name: "On-time delivery", now: "91.2%", prev: "84.5%", target: "95%", pct: "96%", barStyle: bar(96, "#1d4ed8") },
+      { name: "Events covered", now: "86", prev: "71", target: "90", pct: "96%", barStyle: bar(96, "#1d4ed8") },
+      { name: "Posts published", now: "412", prev: "338", target: "450", pct: "92%", barStyle: bar(92, "#1d4ed8") },
+      { name: "Combined followers", now: "86.2 K", prev: "62.4 K", target: "100 K", pct: "86%", barStyle: bar(86, "#1d4ed8") },
+      { name: "Equipment utilisation", now: "74%", prev: "68%", target: "80%", pct: "93%", barStyle: bar(93, "#15803d") }
+    ];
+    const scorecard = scorecardBase.concat(s.extraMetrics.map(m => ({ name: m.name, now: m.now, prev: "—", target: m.target, pct: m.pct + "%", barStyle: bar(Math.min(100, parseInt(m.pct) || 0), "#1d4ed8") })));
+
+    const newMetric = {
+      name: s.newMetric.name, now: s.newMetric.now, target: s.newMetric.target, pct: s.newMetric.pct,
+      setName: (e) => this.setState(p => ({ newMetric: Object.assign({}, p.newMetric, { name: e.target.value }) })),
+      setNow: (e) => this.setState(p => ({ newMetric: Object.assign({}, p.newMetric, { now: e.target.value }) })),
+      setTarget: (e) => this.setState(p => ({ newMetric: Object.assign({}, p.newMetric, { target: e.target.value }) })),
+      setPct: (e) => this.setState(p => ({ newMetric: Object.assign({}, p.newMetric, { pct: e.target.value }) }))
+    };
+
+    const deptBars = [
+      { name: "Science", count: "34", pct: "23%", barStyle: bar(23, "#1d4ed8") },
+      { name: "Sports", count: "26", pct: "18%", barStyle: bar(18, "#1d4ed8") },
+      { name: "Cultural committee", count: "21", pct: "14%", barStyle: bar(14, "#1d4ed8") },
+      { name: "Admissions", count: "19", pct: "13%", barStyle: bar(13, "#15803d") },
+      { name: "Other sections", count: "31", pct: "21%", barStyle: bar(21, "#8ba0c9") }
+    ];
+
+    const turnaround = [
+      { name: "Under 24 hours", count: "42", pct: "28%", barStyle: bar(28, "#15803d") },
+      { name: "1 – 3 days", count: "68", pct: "46%", barStyle: bar(46, "#1d4ed8") },
+      { name: "4 – 7 days", count: "27", pct: "18%", barStyle: bar(18, "#b45309") },
+      { name: "Over a week", count: "11", pct: "8%", barStyle: bar(8, "#b91c1c") }
+    ];
+
+    const teamRaw = this.teamData();
+    const team = teamRaw.map(p => Object.assign({}, p, { open: () => this.setState({ section: "teamDetail", teamDetailId: p.id }) }));
+    const member = teamRaw.find(p => p.id === s.teamDetailId) || teamRaw[0];
+
+    const flags = [
+      { title: "Gimbal MR-GMB-002 overdue", sub: "With Arun P. since 02 Sep · due 08 Sep" },
+      { title: "TechFest 2026 shoot needs gear", sub: "05 Oct · no equipment assigned yet" },
+      { title: "Indent awaiting review · New wireless microphone set for events", sub: "₹35,000 · raised 23 Aug · with Principal" }
+    ];
+    const queueTotal = queue.length;
+    const assignCount = assignments.length;
+    const upcomingShoots = assignments.slice(0, 3);
+
+    return {
+      go, nav,
+      isDashboard: s.section === "dashboard",
+      isRequests: s.section === "requests",
+      isSocial: s.section === "social",
+      isCalendar: s.section === "calendar",
+      isShoots: s.section === "shoots",
+      isInventory: s.section === "inventory",
+      isIndent: s.section === "indent",
+      isAnalytics: s.section === "analytics",
+      isTeam: s.section === "team",
+      isTeamDetail: s.section === "teamDetail",
+      member,
+      pendingCount, approvedCount, deliveredCount,
+      queueTotal, assignCount, upcomingShoots,
+      requests,
+      reqFilters: reqFilterList.map(f => ({ label: f, style: this.chip(s.reqFilter === f, f), onClick: () => this.setState({ reqFilter: f }) })),
+      invCount: invAll.length,
+      availCount: invAll.filter(i => i.status === "Available").length,
+      issuedCount: invAll.filter(i => i.status === "Issued" || i.status === "Overdue").length,
+      invFilters: invFilters.map(f => ({ label: f, style: this.chip(s.invFilter === f, f), onClick: () => this.setState({ invFilter: f }) })),
+      inventory,
+      assetFormOpen: s.assetFormOpen,
+      toggleAssetForm: () => this.setState({ assetFormOpen: !s.assetFormOpen }),
+      newAsset,
+      addAsset: () => {
+        const a = this.state.newAsset;
+        if (!a.name) return;
+        const asset = { tag: a.tag || ("MR-NEW-" + (this.state.extraAssets.length + 1)), name: a.name, serial: "—", category: a.category, holder: a.holder || "Media room", condition: "Good", status: "Available", purchased: "—", value: a.value || "—", warranty: "—", issues: "0", history: [] };
+        this.setState(p => ({ extraAssets: p.extraAssets.concat([asset]), assetFormOpen: false, newAsset: { tag: "", name: "", category: "Camera", holder: "", value: "" } }));
+      },
+      weekdays,
+      days, events,
+      addEventOpen: s.addEventOpen,
+      toggleAddEvent: () => this.setState({ addEventOpen: !s.addEventOpen }),
+      indentFormOpen: s.indentFormOpen,
+      indentBtnLabel: s.indentFormOpen ? "Close form" : "+ New indent",
+      toggleIndentForm: () => this.setState({ indentFormOpen: !s.indentFormOpen }),
+      showHistory: s.showHistory,
+      historyBtnLabel: s.showHistory ? "Hide history" : "History",
+      historyBtnStyle: "height:52px; padding:0 22px; border-radius:12px; border:1px solid #d9dee7; background:#ffffff; font-size:14.5px; font-weight:700; cursor:pointer; color:" + (s.showHistory ? "#1d4ed8" : "#0b1b3a") + ";",
+      toggleHistory: () => this.setState({ showHistory: !s.showHistory }),
+      isSocialNew: s.socialTab === "new",
+      isSocialFeed: s.socialTab === "feed",
+      setTab: { new: () => this.setState({ socialTab: "new" }), feed: () => this.setState({ socialTab: "feed" }) },
+      tabStyle: { new: tabBtn(s.socialTab === "new"), feed: tabBtn(s.socialTab === "feed"), plain: tabBtn(false) },
+      formats, categories,
+      caption: s.caption,
+      setCaption: (e) => this.setState({ caption: e.target.value }),
+      captionCount: s.caption.length,
+      captionPreview: s.caption || "Your caption appears here...",
+      firstComment: s.firstComment,
+      setFirstComment: (e) => this.setState({ firstComment: e.target.value }),
+      linkInPost: s.linkInPost,
+      setLinkInPost: (e) => this.setState({ linkInPost: e.target.value }),
+      pinLabel: (s.pinned ? "✓ " : "") + "Pin to top of Explore",
+      pinStyle: this.chip(s.pinned, ""),
+      togglePin: () => this.setState({ pinned: !s.pinned }),
+      commentsLabel: (s.commentsOn ? "✓ " : "") + "Allow comments",
+      commentsStyle: this.chip(s.commentsOn, ""),
+      toggleComments: () => this.setState({ commentsOn: !s.commentsOn }),
+      pubDate: s.pubDate,
+      setPubDate: (e) => this.setState({ pubDate: e.target.value }),
+      pubTime: s.pubTime,
+      setPubTime: (e) => this.setState({ pubTime: e.target.value }),
+      saveMessage: s.saveMessage,
+      saveDraft: () => {
+        const title = this.state.caption ? this.state.caption.slice(0, 40) : "Untitled post";
+        const item = { title: title, meta: "Draft saved", status: "Draft" };
+        this.setState(p => ({ extraQueue: [item].concat(p.extraQueue), saveMessage: "Draft saved." }));
+      },
+      publishNow: () => {
+        const title = this.state.caption ? this.state.caption.slice(0, 40) : "Untitled post";
+        const item = { title: title, meta: "Published to Explore feed just now", status: "Scheduled" };
+        this.setState(p => ({ extraQueue: [item].concat(p.extraQueue), caption: "", saveMessage: "Post published to the Explore feed." }));
+      },
+      queue, topPosts,
+      assignments,
+      assignFormOpen: s.assignFormOpen,
+      toggleAssignForm: () => this.setState({ assignFormOpen: !s.assignFormOpen }),
+      newA,
+      addAssignment: () => {
+        const a = this.state.newA;
+        if (!a.event) return;
+        this.setState(p => ({
+          extraAssignments: p.extraAssignments.concat([{ when: a.when || "TBD", event: a.event, venue: a.venue || "—", crew: a.crew || "Unassigned", gear: a.gear || "—", output: a.output || "—", status: a.status }]),
+          assignFormOpen: false,
+          newA: { when: "", event: "", venue: "", crew: "", gear: "", output: "", status: "Planned" }
+        }));
+      },
+      indents,
+      reportFormOpen: s.reportFormOpen,
+      toggleReportForm: () => this.setState({ reportFormOpen: !s.reportFormOpen }),
+      newMetric,
+      addMetric: () => {
+        const m = this.state.newMetric;
+        if (!m.name) return;
+        this.setState(p => ({ extraMetrics: p.extraMetrics.concat([{ name: m.name, now: m.now || "—", target: m.target || "—", pct: m.pct || "0" }]), reportFormOpen: false, newMetric: { name: "", now: "", target: "", pct: "" } }));
+      },
+      scorecard, deptBars, turnaround, team, flags
+    };
+  }
+}
+
+</script>
+</body>
+</html>

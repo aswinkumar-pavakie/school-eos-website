@@ -1,101 +1,161 @@
+// Attendance -- pixel-rebuilt from the design's own isAttendance screen.
+// Real attendance_record data (getAttendance), month-navigable via a real
+// ?month= query param.
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { KpiGrid, KpiCard } from "@/components/ui/KpiCard";
-import { StatusPill } from "@/components/ui/StatusPill";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 import { getAttendance, listChildren, resolveSelectedChild } from "@/lib/parent-api";
 
-function currentMonth(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+function monthKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+function parseMonthKey(key: string): Date {
+  const [y, m] = key.split("-").map(Number);
+  return new Date(y, m - 1, 1);
 }
 
-function shiftMonth(month: string, delta: number): string {
-  const [year, mon] = month.split("-").map(Number);
-  const date = new Date(year!, mon! - 1 + delta, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
+const STATUS_STYLE: Record<string, { bg: string; fg: string }> = {
+  PRESENT: { bg: "#fff", fg: "var(--par-ink)" },
+  ABSENT: { bg: "var(--par-primary-strong)", fg: "#fff" },
+  HOLIDAY: { bg: "var(--par-divider)", fg: "var(--par-tertiary)" },
+  LATE: { bg: "var(--par-amber-bg)", fg: "var(--par-amber)" },
+  HALF_DAY: { bg: "var(--par-amber-bg)", fg: "var(--par-amber)" },
+};
 
-function monthLabel(month: string): string {
-  const [year, mon] = month.split("-").map(Number);
-  const date = new Date(year!, mon! - 1, 1);
-  return date.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
-}
-
-export default async function ParentAttendancePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ studentId?: string; month?: string }>;
-}) {
+export default async function ParentAttendancePage({ searchParams }: { searchParams: Promise<{ studentId?: string; month?: string }> }) {
   try {
-    const { studentId: requestedStudentId, month: requestedMonth } = await searchParams;
+    const { studentId: requestedStudentId, month } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
+    if (!selected) return <ErrorState message="No children linked to this account." />;
 
-    if (!selected) {
-      return <EmptyState title="No children linked" body="This account has no linked students yet." />;
-    }
+    const cursor = month ? parseMonthKey(month) : new Date();
+    const currentMonthKey = monthKey(cursor);
+    const prevMonthKey = monthKey(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1));
+    const nextMonthKey = monthKey(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1));
 
-    const month = requestedMonth ?? currentMonth();
-    const { summary, days } = await getAttendance(selected.studentId, month);
-    const sortedDays = [...days].sort((a, b) => a.date.localeCompare(b.date));
+    const { summary, days } = await getAttendance(selected.studentId, currentMonthKey);
+
+    const dayByDate = new Map(days.map((d) => [new Date(d.date).getDate(), d.status]));
+    const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+    const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
+    const daysInMonth = monthEnd.getDate();
+    const startDow = monthStart.getDay();
+
+    const cells: { day: number | null; status: string | null }[] = [];
+    for (let i = 0; i < startDow; i++) cells.push({ day: null, status: null });
+    for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, status: dayByDate.get(d) ?? null });
+
+    const presentDays = days.filter((d) => d.status === "PRESENT").length;
+    const absentDays = days.filter((d) => d.status === "ABSENT").length;
+    const lateDays = days.filter((d) => d.status === "LATE").length;
 
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">Attendance</h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join(" ")}
-            </p>
+      <div className="parent-scope">
+        <div style={{ fontSize: 24, fontWeight: 700, marginBottom: 4, color: "var(--par-ink)" }}>Attendance</div>
+        <div style={{ fontSize: 14, color: "var(--par-body-muted)", marginBottom: 24 }}>{selected.studentName} · {[selected.gradeName, selected.sectionName].filter(Boolean).join("-")}</div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, alignItems: "start" }}>
+          <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
+              <div style={{ fontSize: 44, fontWeight: 800, color: "var(--par-primary-strong)", lineHeight: 1 }}>{summary.percentage}%</div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--par-ink)" }}>
+                  {summary.presentCount}<span style={{ fontSize: 14, fontWeight: 600, color: "var(--par-tertiary-2)" }}> / {summary.totalCount}</span>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--par-tertiary-2)" }}>days present</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 14, color: "var(--par-body)", marginBottom: 12 }}>{cursor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</div>
+            <div style={{ position: "relative", height: 10, background: "var(--par-divider)", borderRadius: 5, overflow: "hidden", marginBottom: 10 }}>
+              <div style={{ width: `${summary.percentage}%`, height: "100%", background: "var(--par-primary-strong)", borderRadius: 5 }} />
+              <div style={{ position: "absolute", top: 0, left: "85%", width: 3, height: "100%", background: "#fff" }} />
+            </div>
+            <div style={{ fontSize: 13, color: "var(--par-tertiary-2)" }}>Marker shows the 85% requirement</div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 12, marginTop: 20 }}>
+              <div style={{ background: "var(--par-panel-2)", borderRadius: 12, padding: 14 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--par-ink)" }}>{presentDays}</div>
+                <div style={{ fontSize: 12, color: "var(--par-tertiary-2)" }}>Present</div>
+              </div>
+              <div style={{ background: "var(--par-panel-2)", borderRadius: 12, padding: 14 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--par-ink)" }}>{absentDays}</div>
+                <div style={{ fontSize: 12, color: "var(--par-tertiary-2)" }}>Absent</div>
+              </div>
+              <div style={{ background: "var(--par-panel-2)", borderRadius: 12, padding: 14 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "var(--par-ink)" }}>{lateDays}</div>
+                <div style={{ fontSize: 12, color: "var(--par-tertiary-2)" }}>Late arrivals</div>
+              </div>
+            </div>
           </div>
-          <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
-        </div>
 
-        <div className="mt-6">
-          <KpiGrid>
-            <KpiCard eyebrow="Present" value={String(summary.presentCount)} delta={`of ${summary.totalCount} days`} />
-            <KpiCard eyebrow="Attendance" value={`${summary.percentage}%`} />
-          </KpiGrid>
-        </div>
-
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <Link
-            href={`/parent/attendance?studentId=${selected.studentId}&month=${shiftMonth(month, -1)}`}
-            className="rounded-[var(--radius-input)] border border-border bg-surface px-3 py-1.5 text-sm font-semibold text-text hover:border-primary/40"
-          >
-            ← Prev
-          </Link>
-          <p className="text-sm font-bold text-text">{monthLabel(month)}</p>
-          <Link
-            href={`/parent/attendance?studentId=${selected.studentId}&month=${shiftMonth(month, 1)}`}
-            className="rounded-[var(--radius-input)] border border-border bg-surface px-3 py-1.5 text-sm font-semibold text-text hover:border-primary/40"
-          >
-            Next →
-          </Link>
-        </div>
-
-        <div className="mt-4 rounded-[var(--radius-card)] border border-border bg-surface p-4">
-          {sortedDays.length === 0 ? (
-            <EmptyState title="No attendance recorded" body="Nothing recorded for this month yet." />
-          ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {sortedDays.map((d) => (
-                <li key={d.date} className="flex items-center justify-between py-2.5 text-sm">
-                  <span className="text-text">{formatDate(d.date)}</span>
-                  <StatusPill state={d.status} />
-                </li>
+          <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
+              <Link href={`/parent/attendance?studentId=${selected.studentId}&month=${prevMonthKey}`}>
+                <span style={{ display: "flex", width: 38, height: 38, borderRadius: "50%", background: "var(--par-tint)", color: "var(--par-primary-strong)", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>‹</span>
+              </Link>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 19, fontWeight: 800, color: "var(--par-ink)" }}>{cursor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</div>
+                <div style={{ fontSize: 13, color: "var(--par-tertiary-2)" }}>{presentDays} present · {absentDays} absent</div>
+              </div>
+              <Link href={`/parent/attendance?studentId=${selected.studentId}&month=${nextMonthKey}`}>
+                <span style={{ display: "flex", width: 38, height: 38, borderRadius: "50%", background: "var(--par-tint)", color: "var(--par-primary-strong)", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>›</span>
+              </Link>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0,1fr))", gap: 8, marginBottom: 8 }}>
+              {WEEKDAYS.map((w) => (
+                <div key={w} style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "var(--par-tertiary)" }}>{w}</div>
               ))}
-            </ul>
-          )}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, minmax(0,1fr))", gap: 8 }}>
+              {cells.map((c, i) => {
+                const style = c.status ? STATUS_STYLE[c.status] ?? STATUS_STYLE.HOLIDAY! : null;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      aspectRatio: "1",
+                      borderRadius: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      background: style?.bg ?? "transparent",
+                      color: style?.fg ?? "var(--par-ink)",
+                      border: c.day && c.status === "PRESENT" ? "1px solid #D8DCE8" : undefined,
+                    }}
+                  >
+                    {c.day ?? ""}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ borderTop: "1px solid var(--par-divider)", paddingTop: 16, marginTop: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 16, height: 16, borderRadius: 5, background: "#fff", border: "1px solid #D8DCE8", display: "inline-block" }} />
+                <span style={{ fontSize: 13, color: "var(--par-body)" }}>Present</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 16, height: 16, borderRadius: 5, background: "var(--par-primary-strong)", display: "inline-block" }} />
+                <span style={{ fontSize: 13, color: "var(--par-body)" }}>Absent</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 16, height: 16, borderRadius: 5, background: "var(--par-divider)", display: "inline-block" }} />
+                <span style={{ fontSize: 13, color: "var(--par-body)" }}>Holiday</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load attendance. Nothing was changed — try again." />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load attendance."} />;
   }
 }

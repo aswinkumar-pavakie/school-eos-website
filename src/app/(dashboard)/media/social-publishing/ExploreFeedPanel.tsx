@@ -3,17 +3,12 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { formatRelativeTime } from "@/lib/format";
-import type { MediaPost, MediaPostComment } from "@/lib/media-api";
-import {
-  cancelMediaPostAction,
-  deleteCommentAction,
-  deleteMediaPostAction,
-  getMediaPostCommentsAction,
-  replyToCommentAction,
-  type FormState,
-} from "./actions";
+import { StatusPill, type PillTone } from "@/components/media-ui/primitives";
+import type { MediaPost, MediaPostComment, MediaPostState } from "@/lib/media-api";
+import { cancelMediaPostAction, deleteCommentAction, deleteMediaPostAction, getMediaPostCommentsAction, replyToCommentAction, type FormState } from "./actions";
 
 const replyInitial: FormState = {};
+const STATE_TONE: Record<MediaPostState, PillTone> = { DRAFT: "gray", SCHEDULED: "blue", PUBLISHED: "green", CANCELLED: "red" };
 
 function ReplyForm({ commentId, onReplied }: { commentId: string; onReplied: () => void }) {
   const [state, formAction] = useActionState(replyToCommentAction, replyInitial);
@@ -24,24 +19,23 @@ function ReplyForm({ commentId, onReplied }: { commentId: string; onReplied: () 
       return;
     }
     if (!state.error) onReplied();
-    // onReplied is stable enough for this purpose; re-running on every parent
-    // render would refetch comments needlessly.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   return (
-    <form action={formAction} className="mt-2 flex items-center gap-2">
+    <form action={formAction} style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
       <input type="hidden" name="commentId" value={commentId} />
-      <input
-        name="reply"
-        placeholder="Write a reply…"
-        className="flex-1 rounded-[var(--radius-input)] border border-border bg-field px-3 py-1.5 text-xs text-text outline-none focus:border-primary"
-      />
-      <button type="submit" className="text-xs font-bold text-primary hover:underline">Reply</button>
-      {state.error ? <span className="text-xs text-critical-text">{state.error}</span> : null}
+      <input name="reply" placeholder="Write a reply…" style={{ flex: 1, border: "1px solid var(--med-input-border)", borderRadius: 10, padding: "8px 12px", fontSize: 13, outline: "none", fontFamily: "inherit" }} />
+      <button type="submit" style={{ border: 0, background: "none", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "var(--med-primary)" }}>Reply</button>
+      {state.error && <span style={{ fontSize: 12, color: "var(--med-red)" }}>{state.error}</span>}
     </form>
   );
 }
 
+// Real, working comment moderation replaces the design's own "Top performing
+// this month" reach/likes/saves panel -- no real analytics of that kind
+// exist anywhere in this schema (MediaPost has no engagement fields at all),
+// so this genuine, already-built capability is kept instead of a fabricated
+// metrics panel.
 export function ExploreFeedPanel({ posts }: { posts: MediaPost[] }) {
   const router = useRouter();
   const live = posts.filter((p) => p.state === "PUBLISHED" || p.state === "SCHEDULED");
@@ -54,111 +48,104 @@ export function ExploreFeedPanel({ posts }: { posts: MediaPost[] }) {
     startTransition(async () => {
       await action();
       router.refresh();
-      if (selectedId) {
-        const fresh = await getMediaPostCommentsAction(selectedId);
-        setComments(fresh);
-      }
+      if (selectedId) setComments(await getMediaPostCommentsAction(selectedId));
     });
   }
 
   useEffect(() => {
     if (!selectedId) {
-      setComments([]);
-      return;
+      // setState must happen inside a callback, never synchronously in the
+      // effect body (react-hooks/set-state-in-effect) -- a 0ms timeout keeps
+      // this imperceptible to the user while satisfying that.
+      const timer = setTimeout(() => setComments([]), 0);
+      return () => clearTimeout(timer);
     }
-    startLoadingComments(async () => {
-      const result = await getMediaPostCommentsAction(selectedId);
-      setComments(result);
-    });
+    startLoadingComments(async () => setComments(await getMediaPostCommentsAction(selectedId)));
   }, [selectedId]);
 
   const selected = live.find((p) => p.id === selectedId) ?? null;
   const unanswered = comments.filter((c) => !c.staffReply).length;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.2fr]">
-      <div>
-        <h2 className="mb-1 text-sm font-bold text-text">Live on Explore</h2>
-        <p className="mb-3 text-xs text-text-muted">Select a post to read and moderate its comments</p>
-        <div className="flex flex-col gap-3">
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 28, alignItems: "start" }}>
+      <div style={{ background: "#fff", border: "1px solid var(--med-border)", borderRadius: 15, padding: "24px 26px" }}>
+        <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.4px" }}>Publishing queue</div>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 8 }}>
           {live.length === 0 ? (
-            <p className="text-sm text-text-muted">Nothing published or scheduled yet.</p>
+            <div style={{ fontSize: 13.5, color: "var(--med-tertiary)", padding: "20px 0" }}>Nothing published or scheduled yet.</div>
           ) : (
             live.map((post) => (
               <button
                 key={post.id}
+                type="button"
                 onClick={() => setSelectedId(post.id)}
-                className={`rounded-[var(--radius-card)] border p-4 text-left ${selectedId === post.id ? "border-primary bg-field" : "border-border bg-surface"}`}
+                style={{ display: "block", width: "100%", textAlign: "left", border: 0, cursor: "pointer", background: selectedId === post.id ? "var(--med-tint)" : "transparent", borderRadius: 12, padding: "15px 14px", borderBottom: "1px solid var(--med-divider)" }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-field px-2 py-0.5 text-xs font-bold text-text-muted">
-                    {post.state === "SCHEDULED" ? "Scheduled" : "Post"}
-                  </span>
-                  <div className="flex gap-3">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                  <StatusPill label={post.state} tone={STATE_TONE[post.state]} />
+                  <div style={{ display: "flex", gap: 12 }}>
                     <span
                       role="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         startAction(() => deleteMediaPostAction(post.id));
                       }}
-                      className="text-xs font-bold text-critical-text hover:underline"
+                      style={{ fontSize: 12, fontWeight: 700, color: "var(--med-red)", cursor: "pointer" }}
                     >
                       Delete
                     </span>
-                    {post.state === "SCHEDULED" ? (
+                    {post.state === "SCHEDULED" && (
                       <span
                         role="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           startAction(() => cancelMediaPostAction(post.id));
                         }}
-                        className="text-xs font-bold text-text-muted hover:underline"
+                        style={{ fontSize: 12, fontWeight: 700, color: "var(--med-body-muted)", cursor: "pointer" }}
                       >
                         Cancel
                       </span>
-                    ) : null}
+                    )}
                   </div>
                 </div>
-                <p className="mt-2 line-clamp-2 text-sm text-text">{post.caption}</p>
-                <p className="mt-2 text-xs text-text-muted">
-                  Comments {post.commentCount} · Unanswered {post.unansweredCommentCount}
-                </p>
+                <div style={{ fontSize: 14.5, fontWeight: 700, marginTop: 8, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{post.caption}</div>
+                <div style={{ fontSize: 12.5, color: "var(--med-body-muted)", marginTop: 8 }}>Comments {post.commentCount} · Unanswered {post.unansweredCommentCount}</div>
               </button>
             ))
           )}
         </div>
       </div>
 
-      <div className="rounded-[var(--radius-card)] border border-primary bg-surface p-5">
-        <h2 className="mb-3 text-sm font-bold text-text">Comments</h2>
+      <div style={{ background: "#fff", border: "1px solid var(--med-primary)", borderRadius: 15, padding: "24px 26px" }}>
+        <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.4px" }}>Comments</div>
         {!selected ? (
-          <p className="text-sm text-text-muted">Select a post on the left to see its comments.</p>
+          <div style={{ fontSize: 13.5, color: "var(--med-tertiary)", marginTop: 12 }}>Select a post on the left to see its comments.</div>
         ) : (
           <>
-            <p className="mb-3 line-clamp-1 text-xs font-bold text-text-muted">{selected.caption}</p>
-            <div className="mb-3 flex gap-2">
-              <span className="rounded-[var(--radius-input)] border border-primary bg-field px-3 py-1.5 text-xs font-bold text-primary">All ({comments.length})</span>
-              <span className="rounded-[var(--radius-input)] border border-border px-3 py-1.5 text-xs font-bold text-text-muted">Unanswered ({unanswered})</span>
+            <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--med-body-muted)", marginTop: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.caption}</div>
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <span style={{ border: "1px solid var(--med-primary)", background: "var(--med-tint)", borderRadius: 10, padding: "6px 12px", fontSize: 12.5, fontWeight: 700, color: "var(--med-primary)" }}>All ({comments.length})</span>
+              <span style={{ border: "1px solid var(--med-border)", borderRadius: 10, padding: "6px 12px", fontSize: 12.5, fontWeight: 700, color: "var(--med-body-muted)" }}>Unanswered ({unanswered})</span>
             </div>
             {loadingComments ? (
-              <p className="text-sm text-text-muted">Loading…</p>
+              <div style={{ fontSize: 13.5, color: "var(--med-tertiary)", marginTop: 16 }}>Loading…</div>
             ) : comments.length === 0 ? (
-              <p className="text-sm text-text-muted">No comments on this post yet.</p>
+              <div style={{ fontSize: 13.5, color: "var(--med-tertiary)", marginTop: 16 }}>No comments on this post yet.</div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 16 }}>
                 {comments.map((comment) => (
-                  <div key={comment.id} className="border-b border-border pb-4 last:border-0">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-field text-xs font-bold text-text-muted">
+                  <div key={comment.id} style={{ borderBottom: "1px solid var(--med-divider)", paddingBottom: 16 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--med-panel)", color: "var(--med-body)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
                         {(comment.commenterLabel ?? "?").charAt(0).toUpperCase()}
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-text">
-                          {comment.commenterLabel ?? "Student"} <span className="ml-1 font-normal text-text-muted">{formatRelativeTime(comment.createdAt)}</span>
-                        </p>
-                        <p className="text-sm text-text">{comment.body}</p>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700 }}>
+                          {comment.commenterLabel ?? "Student"} <span style={{ marginLeft: 6, fontWeight: 400, color: "var(--med-tertiary)", fontSize: 12.5 }}>{formatRelativeTime(comment.createdAt)}</span>
+                        </div>
+                        <div style={{ fontSize: 14, marginTop: 2 }}>{comment.body}</div>
                         {comment.staffReply ? (
-                          <p className="mt-1 rounded-[var(--radius-input)] bg-field px-3 py-2 text-xs text-text">↳ {comment.staffReply}</p>
+                          <div style={{ marginTop: 8, borderRadius: 10, background: "var(--med-panel)", padding: "8px 12px", fontSize: 12.5 }}>↳ {comment.staffReply}</div>
                         ) : (
                           <ReplyForm
                             commentId={comment.id}
@@ -168,14 +155,8 @@ export function ExploreFeedPanel({ posts }: { posts: MediaPost[] }) {
                             }}
                           />
                         )}
-                        <div className="mt-1 flex gap-3">
-                          <span
-                            role="button"
-                            onClick={() => startAction(() => deleteCommentAction(comment.id))}
-                            className="text-xs font-bold text-critical-text hover:underline"
-                          >
-                            Delete
-                          </span>
+                        <div style={{ marginTop: 6 }}>
+                          <span role="button" onClick={() => startAction(() => deleteCommentAction(comment.id))} style={{ fontSize: 12, fontWeight: 700, color: "var(--med-red)", cursor: "pointer" }}>Delete</span>
                         </div>
                       </div>
                     </div>
