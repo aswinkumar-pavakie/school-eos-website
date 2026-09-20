@@ -110,6 +110,8 @@ const CORRESPONDENT_NAV_ITEMS: ShellNavItem[] = [
   // convention (Principal/VP layouts) is reused rather than nesting it under
   // ADMINISTRATION or OPERATIONS.
   { href: "/correspondent/finance", label: "Finance", icon: "finance", group: "FINANCE" },
+
+  { href: "/correspondent/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "ADMINISTRATION" },
 ];
 
 // Initials for the sidebar's logo/avatar tiles -- same simple first-letter-of-

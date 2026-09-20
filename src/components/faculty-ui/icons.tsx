@@ -44,6 +44,9 @@ const NAV_ICON_PATHS: Record<string, [string, string]> = {
   coordinator: ["M12 3.5 19 6v6c0 5-3 8-7 9-4-1-7-4-7-9V6Z", "m9 12 2 2 4-4"],
   sports: ["M12 4.5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z", "M12 4.5v12 M6 10.5h12"],
   bus: ["M3.5 5.5h17v11h-17z", "M3.5 10.5h17 M7.5 19v-1.5M16.5 19v-1.5"],
+  // New feature (AI assistant chat), no reference design equivalent -- same
+  // 2-path/1.7-stroke placeholder convention as coordinator/sports/bus above.
+  assistant: ["M4 5.5h16v11H9l-4 3.5v-3.5H4z", "M8 10h8 M8 13h5"],
 };
 
 export function NavIcon({

@@ -91,7 +91,7 @@ export default async function HostelWardenDashboardPage() {
 
     const attention: { title: string; note: string; href: string }[] = [];
     if (overdue.length > 0) attention.push({ title: `${overdue.length} pass${overdue.length === 1 ? "" : "es"} past the return time`, note: "Still shown as out -- follow up with the parent", href: "/hostel-warden/movement-log" });
-    if (unaccounted > 0) attention.push({ title: `${unaccounted} student${unaccounted === 1 ? "" : "s"} unaccounted at roll call`, note: "Absent tonight with no approved leave on record", href: "/hostel-warden/gate" });
+    if (unaccounted > 0) attention.push({ title: `${unaccounted} student${unaccounted === 1 ? "" : "s"} unaccounted at roll call`, note: "Absent tonight with no approved leave on record", href: "/hostel-warden/night-attendance" });
     if (complaintsOpen > 0) attention.push({ title: `${complaintsOpen} complaint${complaintsOpen === 1 ? "" : "s"} open`, note: "Raised on the block round or by a student", href: "/hostel-warden/issues" });
     if (bedsVacant > 0) attention.push({ title: `${bedsVacant} bed${bedsVacant === 1 ? "" : "s"} vacant`, note: "Ready to allot this week", href: "/hostel-warden/rooms" });
 
@@ -108,7 +108,7 @@ export default async function HostelWardenDashboardPage() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Link href="/hostel-warden/gate" style={{ textDecoration: "none" }}>
+            <Link href="/hostel-warden/night-attendance" style={{ textDecoration: "none" }}>
               <SecondaryButton type="button" style={{ height: 44, padding: "0 22px", fontSize: 14 }}>
                 Night roll call
               </SecondaryButton>
@@ -130,7 +130,7 @@ export default async function HostelWardenDashboardPage() {
             note={`${unaccounted} unaccounted tonight`}
             percent={rollCallPercent}
             d={ICON.students}
-            href="/hostel-warden/gate"
+            href="/hostel-warden/night-attendance"
           />
           <DashboardStat
             label="Roll-call attendance"
@@ -140,7 +140,7 @@ export default async function HostelWardenDashboardPage() {
             note="Tonight's roll call"
             percent={rollCallPercent}
             d={ICON.check}
-            href="/hostel-warden/gate"
+            href="/hostel-warden/night-attendance"
           />
           <DashboardStat
             label="Out of the hostel now"

@@ -23,6 +23,7 @@ const NAV_ITEMS: ShellNavItem[] = [
   { href: "/sports/profiles", label: "Player Profiles", icon: "students" },
   { href: "/sports/equipment", label: "Equipment", icon: "inventory" },
   { href: "/sports/od-requests", label: "OD Requests", icon: "requests" },
+  { href: "/sports/ai-chat", label: "Ask the Assistant", icon: "assistant" },
 ];
 
 interface MeResponse {

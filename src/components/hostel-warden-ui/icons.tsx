@@ -9,15 +9,23 @@ export type HostelWardenIconId =
   | "leave"
   | "study"
   | "gate"
+  | "attendance"
   | "hostels"
   | "rooms"
   | "fees"
   | "complaints"
-  | "reports";
+  | "reports"
+  | "assistant";
 
 const PATHS: Record<HostelWardenIconId, string> = {
   dashboard: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-5H3zM13 8h8V3h-8z",
   approvals: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11",
+  // Not in the design's own icon set (this screen has no slot in the mock's
+  // own nav at all -- see night-attendance/page.tsx's header comment) --
+  // reused from the same design's own Dashboard "Roll-call attendance"
+  // stat-tile icon (Warden Console.dc.html's own ICON.check), for visual
+  // consistency rather than inventing an unrelated glyph.
+  attendance: "M20 6 9 17l-5-5",
   students: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.9",
   leave: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM12 14v4M10 16h4",
   study: "M12 6v14M12 6C10 4 7 4 3 5v13c4-1 7-1 9 1M12 6c2-2 5-2 9-1v13c-4-1-7-1-9 1",
@@ -27,6 +35,9 @@ const PATHS: Record<HostelWardenIconId, string> = {
   fees: "M2 7h20v10H2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6M6 12h.01M18 12h.01",
   complaints: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM12 8v4M12 14h.01",
   reports: "M3 3v18h18M7 16V10M12 16V6M17 16v-4",
+  // New feature (AI assistant chat), no reference design equivalent -- same
+  // 24px/chat-bubble convention as the icons above.
+  assistant: "M4 5.5h16v11H9l-4 3.5v-3.5H4zM8 10h8M8 13h5",
 };
 
 export function NavIcon({ id, stroke, size = 18 }: { id: HostelWardenIconId; stroke: string; size?: number }) {

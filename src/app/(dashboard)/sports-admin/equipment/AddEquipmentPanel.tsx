@@ -3,10 +3,18 @@
 import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, Select, TextInput } from "@/components/sports-ui/primitives";
 import type { Sport } from "@/lib/sports-admin-api";
-import { listSports } from "@/lib/sports-admin-api";
 import { createEquipmentItemAction, type FormState } from "./actions";
 
 const initial: FormState = {};
+
+// Same httpOnly-cookie reasoning as AddTeamPanel.tsx -- fetch the Route
+// Handler, never sports-admin-api.ts's own functions, from a client component.
+async function fetchJson<T>(path: string): Promise<T[]> {
+  const res = await fetch(path);
+  if (!res.ok) return [];
+  const body = (await res.json()) as { data: T[] };
+  return body.data;
+}
 
 export function AddEquipmentPanel() {
   const [open, setOpen] = useState(false);
@@ -15,10 +23,10 @@ export function AddEquipmentPanel() {
 
   useEffect(() => {
     if (!open) return;
-    listSports().then(setSports).catch(() => {});
+    fetchJson<Sport>("/api/sports-admin/sports").then(setSports).catch(() => {});
   }, [open]);
 
-  if (!open) return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Add item</PrimaryButton>;
+  if (!open) return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Add equipment</PrimaryButton>;
 
   return (
     <div style={{ background: "#fff", border: "1px solid var(--sport-border)", borderRadius: "var(--sport-radius-card)", padding: "22px 24px", width: 400 }}>

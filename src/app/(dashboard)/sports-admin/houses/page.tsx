@@ -1,48 +1,96 @@
-// Sports Admin -> Houses & inter-house. Real getHousePerformance() (matches
-// played/won per house, aggregated from real fixture results) -- no house
-// CRUD exists in this backend (houses themselves are Admin/hostel-side master
-// data), so this screen is read-only performance standings, matching what
-// the backend actually offers.
+// Sports Admin -> Houses & inter-house. Full replication of the design's
+// own `houses` screen: real per-house point TOTALS and an "Inter-house
+// events" register, both built from the real, already-populated
+// merit_point table (house_id/points/reason/awarded_at) -- the same table
+// Admin's Student Development module already writes to, newly broadened to
+// SPORTS_ADMIN (GET/POST /student-development/merit-points) since it's the
+// exact real data model the design's own points-per-house concept needs, no
+// fabricated inter-house-event table required. "+ Record points" awards a
+// real merit point tied to a house; "Points rules" has no real backing
+// table anywhere in this schema (institutional policy, not data) so it's an
+// honest static disclosure panel, never a fabricated report.
 
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { EmptyPanel } from "@/components/sports-ui/primitives";
-import { formatPercentOf } from "@/lib/format";
+import { StatTile, TableCard, type TableCell } from "@/components/sports-ui/primitives";
+import { InfoPanelButton } from "@/components/sports-ui/InfoPanelButton";
+import { formatDate } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
-import { getHousePerformance } from "@/lib/sports-admin-api";
+import { listHouses, listMeritPoints } from "@/lib/sports-admin-api";
+import { MeritPointRowActions } from "./MeritPointRowActions";
+import { RecordPointsPanel } from "./RecordPointsPanel";
 
 export default async function SportsAdminHousesPage() {
   try {
-    const houses = await getHousePerformance();
-    const sorted = [...houses].sort((a, b) => b.wins - a.wins);
+    const [houses, meritPoints] = await Promise.all([listHouses(), listMeritPoints()]);
+    const activeHouses = houses.filter((h) => h.status === "ACTIVE");
+
+    const totalsByHouse = new Map<string, { houseName: string; points: number; playerIds: Set<string> }>();
+    for (const h of activeHouses) {
+      totalsByHouse.set(h.id, { houseName: h.name, points: 0, playerIds: new Set() });
+    }
+    for (const mp of meritPoints) {
+      if (!mp.houseId) continue;
+      const entry = totalsByHouse.get(mp.houseId) ?? { houseName: mp.houseName ?? "—", points: 0, playerIds: new Set<string>() };
+      entry.points += mp.points;
+      entry.playerIds.add(mp.studentId);
+      totalsByHouse.set(mp.houseId, entry);
+    }
+
+    const ranked = Array.from(totalsByHouse.entries())
+      .map(([houseId, v]) => ({ houseId, houseName: v.houseName, points: v.points, players: v.playerIds.size }))
+      .sort((a, b) => b.points - a.points);
+
+    const houseOptions = activeHouses.map((h) => ({ houseId: h.id, houseName: h.name }));
+    const eventRows = [...meritPoints]
+      .sort((a, b) => (a.awardedAt < b.awardedAt ? 1 : -1))
+      .map((mp): { key: string; cells: TableCell[] } => ({
+        key: mp.id,
+        cells: [
+          { kind: "plain", text: mp.reason, bold: true },
+          { kind: "plain", text: formatDate(mp.awardedAt), mono: true },
+          { kind: "plain", text: `${mp.studentFirstName} ${mp.studentLastName ?? ""}` },
+          { kind: "plain", text: mp.houseName ?? "—" },
+          { kind: "plain", text: `+${mp.points}`, bold: true, mono: true },
+          { kind: "node", node: <MeritPointRowActions meritPoint={mp} houses={houseOptions} /> },
+        ],
+      }));
 
     return (
       <div className="sports-scope">
-        <div>
-          <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--sport-heading)" }}>Houses &amp; inter-house</div>
-          <div style={{ fontSize: 14.5, color: "var(--sport-tertiary)", marginTop: 8 }}>Standings from recorded fixture results</div>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.08, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--sport-heading)" }}>Houses &amp; inter-house</h1>
+            <p style={{ margin: 0, marginTop: 8, fontSize: 15, color: "var(--sport-muted-2)" }}>Four houses · points from meets, leagues and tournaments this year</p>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", position: "relative" }}>
+            <InfoPanelButton label="Points rules" title="How house points work">
+              <p style={{ margin: 0 }}>Points are awarded to a student and credited to their house for a real, named achievement — a match won, a meet placement, or exceptional sporting conduct.</p>
+              <p style={{ margin: "10px 0 0" }}>Each award is 1–20 points, logged with a reason and timestamp. There is no fixed points table per event type — the Sports Admin awarding the points sets the amount to fit what was achieved.</p>
+            </InfoPanelButton>
+            <RecordPointsPanel houses={activeHouses.map((h) => ({ houseId: h.id, houseName: h.name }))} />
+          </div>
         </div>
 
-        {sorted.length === 0 ? (
-          <div style={{ marginTop: 20 }}><EmptyPanel label="No house-linked fixture results recorded yet." /></div>
+        {ranked.length === 0 ? (
+          <p style={{ marginTop: 20, color: "var(--sport-muted-2)" }}>No houses are set up yet.</p>
         ) : (
-          <div style={{ background: "#fff", border: "1px solid var(--sport-border)", borderRadius: 14, marginTop: 22, overflow: "hidden" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "0.4fr 1.4fr 0.8fr 0.8fr 0.8fr", gap: 14, padding: "14px 20px", borderBottom: "1px solid var(--sport-divider)" }}>
-              {["#", "HOUSE", "MATCHES", "WINS", "WIN RATE"].map((h) => (
-                <span key={h} style={{ fontSize: 11, letterSpacing: "0.09em", fontWeight: 700, color: "var(--sport-tertiary)" }}>{h}</span>
-              ))}
-            </div>
-            {sorted.map((h, i) => (
-              <div key={h.houseId} className="sport-row-hover" style={{ display: "grid", gridTemplateColumns: "0.4fr 1.4fr 0.8fr 0.8fr 0.8fr", gap: 14, padding: "14px 20px", borderTop: i > 0 ? "1px solid var(--sport-divider)" : undefined, alignItems: "center" }}>
-                <span style={{ fontFamily: "var(--sport-mono)", fontSize: 13, color: "var(--sport-tertiary)" }}>{i + 1}</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--sport-ink)" }}>{h.houseName}</span>
-                <span style={{ fontFamily: "var(--sport-mono)", fontSize: 13, color: "var(--sport-body)" }}>{h.matches}</span>
-                <span style={{ fontFamily: "var(--sport-mono)", fontSize: 13, fontWeight: 700, color: "var(--sport-green)" }}>{h.wins}</span>
-                <span style={{ fontFamily: "var(--sport-mono)", fontSize: 13, color: "var(--sport-body)" }}>{formatPercentOf(h.wins, h.matches)}</span>
-              </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginTop: 24 }}>
+            {ranked.map((h, i) => (
+              <StatTile key={h.houseId} label={h.houseName.toUpperCase()} value={`${h.points} pts`} sub={`${i + 1}${["st", "nd", "rd"][i] ?? "th"} · ${h.players} player${h.players === 1 ? "" : "s"}`} />
             ))}
           </div>
         )}
+
+        <div style={{ marginTop: 24 }}>
+          <TableCard
+            title="Inter-house events"
+            meta={`${eventRows.length} records`}
+            columns={["EVENT / REASON", "DATE", "STUDENT", "HOUSE", "POINTS", "MANAGE"]}
+            rows={eventRows}
+            emptyLabel="No points have been recorded yet."
+          />
+        </div>
       </div>
     );
   } catch (err) {

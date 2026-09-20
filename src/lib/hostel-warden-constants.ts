@@ -52,3 +52,18 @@ export const HOSTEL_COMPLAINT_ALLOWED_TRANSITIONS: Record<HostelComplaintState, 
   CLOSED: [],
   REJECTED: [],
 };
+
+// Movement Log purpose category -- was missed when this constants file was
+// split out, leaving MovementLogView.tsx/RecordExitForm.tsx importing these
+// as values straight from hostel-warden-api.ts and breaking every
+// Hostel Warden page's build (Turbopack fails the whole module graph, not
+// just the offending route, once next/headers leaks into a client bundle).
+export const MOVEMENT_LOG_PURPOSES = ["HOME_LEAVE", "LOCAL_OUTING", "MEDICAL", "SCHOOL_EVENT", "OTHER"] as const;
+export type MovementLogPurpose = (typeof MOVEMENT_LOG_PURPOSES)[number];
+export const MOVEMENT_LOG_PURPOSE_LABELS: Record<MovementLogPurpose, string> = {
+  HOME_LEAVE: "Home leave",
+  LOCAL_OUTING: "Local outing",
+  MEDICAL: "Medical",
+  SCHOOL_EVENT: "School event",
+  OTHER: "Other",
+};

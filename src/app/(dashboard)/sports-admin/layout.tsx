@@ -43,11 +43,6 @@ export default async function SportsAdminLayout({ children }: { children: ReactN
       academicYearLabel={academicYearLabel}
       odCount={odCount}
       indentsCount={indentsCount}
-      // Messages is a real screen but has no backend wiring yet for
-      // SPORTS_ADMIN (the legacy /messages module's parent-teacher threads
-      // are not currently scoped to this role) -- honestly 0, not fabricated,
-      // until that's built. See this module's own build notes.
-      unreadMessagesCount={0}
       onSignOut={logoutAction}
     >
       {children}

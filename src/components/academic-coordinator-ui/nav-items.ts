@@ -47,6 +47,13 @@ export const ACADEMIC_COORDINATOR_NAV: AcademicCoordinatorNavGroup[] = [
       { id: "marksVerify", label: "Marks verification", href: "/academic-coordinator/marks-verify" },
     ],
   },
+  {
+    // Not in the design's own nav (new feature, added after the pixel
+    // replication) -- reuses the "messages" icon id, otherwise unused since
+    // Messages itself is out of scope, rather than inventing a new icon.
+    title: "SYSTEM",
+    items: [{ id: "messages", label: "Ask the Assistant", href: "/academic-coordinator/ai-chat" }],
+  },
 ];
 
 // Ported from the design's implicit per-page title (each screen renders its
@@ -70,4 +77,5 @@ export const ACADEMIC_COORDINATOR_TITLES: Record<string, string> = {
   teacherTt: "Teacher timetable",
   substitute: "Substitute teacher",
   marksVerify: "Marks verification",
+  messages: "Ask the Assistant",
 };

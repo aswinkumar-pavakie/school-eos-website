@@ -3,7 +3,6 @@
 import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, TextInput } from "@/components/sports-ui/primitives";
 import type { StaffSummary } from "@/lib/sports-admin-api";
-import { listStaff } from "@/lib/sports-admin-api";
 import { createCoachAction, type FormState } from "./actions";
 
 const initial: FormState = {};
@@ -19,7 +18,12 @@ export function AddCoachPanel() {
   useEffect(() => {
     if (isExternal || query.trim().length < 2) { setResults([]); return; }
     const handle = setTimeout(() => {
-      listStaff(query.trim()).then((r) => setResults(r.slice(0, 8))).catch(() => setResults([]));
+      // Same httpOnly-cookie reasoning as AddTeamPanel.tsx -- this Route
+      // Handler does the real apiFetch call server-side.
+      fetch(`/api/sports-admin/staff-search?search=${encodeURIComponent(query.trim())}`)
+        .then((res) => (res.ok ? res.json() : { data: [] }))
+        .then((body: { data: StaffSummary[] }) => setResults(body.data.slice(0, 8)))
+        .catch(() => setResults([]));
     }, 250);
     return () => clearTimeout(handle);
   }, [query, isExternal]);

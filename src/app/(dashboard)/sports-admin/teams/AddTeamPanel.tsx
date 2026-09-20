@@ -11,8 +11,19 @@
 import { useActionState, useEffect, useState } from "react";
 import { PrimaryButton, SecondaryButton, FieldLabel, TextInput, Select } from "@/components/sports-ui/primitives";
 import type { Coach, Sport, SportCategory } from "@/lib/sports-admin-api";
-import { listCoaches, listSportCategories, listSports } from "@/lib/sports-admin-api";
 import { createTeamAction, type FormState } from "./actions";
+
+// Client-side pickers here MUST NOT call sports-admin-api.ts functions
+// directly -- those need the httpOnly access-token cookie via next/headers'
+// cookies(), which only works in a server context. This component fetches
+// its own small Route Handlers instead (src/app/api/sports-admin/*), same
+// pattern the app's existing StudentPersonPicker already uses.
+async function fetchJson<T>(path: string): Promise<T[]> {
+  const res = await fetch(path);
+  if (!res.ok) return [];
+  const body = (await res.json()) as { data: T[] };
+  return body.data;
+}
 
 const initial: FormState = {};
 
@@ -29,7 +40,7 @@ export function AddTeamPanel() {
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    Promise.all([listSports(), listCoaches()])
+    Promise.all([fetchJson<Sport>("/api/sports-admin/sports"), fetchJson<Coach>("/api/sports-admin/coaches")])
       .then(([s, c]) => {
         setSports(s);
         setCoaches(c);
@@ -44,7 +55,9 @@ export function AddTeamPanel() {
       setCategories([]);
       return;
     }
-    listSportCategories(selectedSportId).then(setCategories).catch(() => setCategories([]));
+    fetchJson<SportCategory>(`/api/sports-admin/sport-categories?sportId=${selectedSportId}`)
+      .then(setCategories)
+      .catch(() => setCategories([]));
   }, [selectedSportId]);
 
   if (!open) {

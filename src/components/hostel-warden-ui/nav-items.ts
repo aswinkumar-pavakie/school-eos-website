@@ -31,11 +31,18 @@ export const HOSTEL_WARDEN_TITLES: Record<string, [string, string]> = {
   leave: ["Leave register", "Overnight leave approved for students — days away and purpose"],
   study: ["Study hours", "Morning and evening study hour attendance, marked by the warden in the study hall"],
   gate: ["Check-in / check-out", "Gate register — exits and returns for approved passes"],
+  // Not part of the design's own nav at all (confirmed by design-file audit
+  // -- same finding as the mobile app's own build: this screen is genuinely
+  // orphaned in the mock). Added here for real reachability -- night roll
+  // call is a real, already-built feature that needs a home now that
+  // "gate" itself means the real Check-in/check-out register instead.
+  attendance: ["Night attendance", "Nightly roll call for every boarder in this wing"],
   hostels: ["Hostel details", "Block and room records for this wing, maintained by Admin"],
   rooms: ["Rooms & occupancy", "Bed-level allotment across all blocks"],
   fees: ["Hostel fees", "Fee status for boarders in this wing"],
   complaints: ["Issues & maintenance", "Issues the warden notes on the block round or hears from a student in person"],
   reports: ["Reports", "Generated statements and exports"],
+  assistant: ["Ask the Assistant", "Ask a question about school records, policies or anything else"],
 };
 
 export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
@@ -53,6 +60,7 @@ export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
       { id: "leave", label: "Leave register", href: "/hostel-warden/leave" },
       { id: "study", label: "Study hours", href: "/hostel-warden/study-hours" },
       { id: "gate", label: "Check-in / check-out", href: "/hostel-warden/gate" },
+      { id: "attendance", label: "Night attendance", href: "/hostel-warden/night-attendance" },
     ],
   },
   {
@@ -68,6 +76,9 @@ export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
     items: [
       { id: "complaints", label: "Issues & maintenance", href: "/hostel-warden/issues" },
       { id: "reports", label: "Reports", href: "/hostel-warden/reports" },
+      // Not in the design's own nav (new feature, added after the pixel
+      // replication).
+      { id: "assistant", label: "Ask the Assistant", href: "/hostel-warden/ai-chat" },
     ],
   },
 ];

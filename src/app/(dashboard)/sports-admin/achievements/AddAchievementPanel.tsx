@@ -3,10 +3,19 @@
 import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, Select, TextInput } from "@/components/sports-ui/primitives";
 import type { StudentSummary, SportsTeam } from "@/lib/sports-admin-api";
-import { listMyTeams, listStudents } from "@/lib/sports-admin-api";
 import { createAchievementAction, type FormState } from "./actions";
 
 const initial: FormState = {};
+
+// Same httpOnly-cookie reasoning documented across every panel in this
+// module: a "use client" component can't call sports-admin-api.ts's own
+// functions directly, so it fetches a Route Handler instead.
+async function fetchJson<T>(path: string): Promise<T[]> {
+  const res = await fetch(path);
+  if (!res.ok) return [];
+  const body = (await res.json()) as { data: T[] };
+  return body.data;
+}
 
 export function AddAchievementPanel() {
   const [open, setOpen] = useState(false);
@@ -18,18 +27,20 @@ export function AddAchievementPanel() {
 
   useEffect(() => {
     if (!open) return;
-    listMyTeams().then(setTeams).catch(() => {});
+    fetchJson<SportsTeam>("/api/sports-admin/teams").then(setTeams).catch(() => {});
   }, [open]);
 
   useEffect(() => {
     if (query.trim().length < 2) { setResults([]); return; }
     const handle = setTimeout(() => {
-      listStudents({ search: query.trim() }).then((r) => setResults(r.data.slice(0, 8))).catch(() => setResults([]));
+      fetchJson<StudentSummary>(`/api/students-search?search=${encodeURIComponent(query.trim())}`)
+        .then((r) => setResults(r.slice(0, 8)))
+        .catch(() => setResults([]));
     }, 250);
     return () => clearTimeout(handle);
   }, [query]);
 
-  if (!open) return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Record achievement</PrimaryButton>;
+  if (!open) return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Add achievement</PrimaryButton>;
 
   return (
     <div style={{ background: "#fff", border: "1px solid var(--sport-border)", borderRadius: "var(--sport-radius-card)", padding: "22px 24px", width: 420 }}>

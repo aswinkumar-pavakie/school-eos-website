@@ -56,6 +56,13 @@ const WEB_ALLOWED_ROLES = [
   // every backend endpoint Principal's console calls already had its own
   // @Roles widened to include CORRESPONDENT alongside PRINCIPAL.
   "CORRESPONDENT",
+  // Sports Admin -- a genuinely separate, school-wide sports login (own
+  // person/login_identifier/user_credential/role_assignment rows, is_core_login
+  // true -- see database/migrations/0019_sports_admin_role.sql), distinct from
+  // SPORTS_FACULTY (a scoped role_assignment on top of an existing FACULTY
+  // login, not a login of its own). Missed here when the module was first
+  // built -- login was silently blocked by this exact allowlist until fixed.
+  "SPORTS_ADMIN",
 ];
 
 export interface LoginState {
@@ -161,6 +168,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("HOSTEL_WARDEN")) {
     redirect("/hostel-warden");
+  }
+  if (roleCodes.includes("SPORTS_ADMIN")) {
+    redirect("/sports-admin");
   }
   // A coordinator-only login (no FACULTY role_code at all -- see
   // WEB_ALLOWED_ROLES's own comment above) lands directly on the Academic

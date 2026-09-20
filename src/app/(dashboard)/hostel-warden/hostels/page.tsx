@@ -7,11 +7,16 @@
 
 import { ErrorState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/hostel-warden-ui/primitives";
-import { listHostelStructure, listRoomAllocations } from "@/lib/hostel-warden-api";
+import { listHostelStructure, listRoomAllocations, listWardenRoster } from "@/lib/hostel-warden-api";
 
 export default async function HostelDetailsPage() {
   try {
-    const [blocks, allocations] = await Promise.all([listHostelStructure(), listRoomAllocations()]);
+    const [blocks, allocations, roster] = await Promise.all([
+      listHostelStructure(),
+      listRoomAllocations(),
+      listWardenRoster().catch(() => []),
+    ]);
+    const wardenNames = roster.map((w) => [w.firstName, w.lastName].filter(Boolean).join(" ")).join(", ") || "Not assigned";
     const occupiedByRoom = new Map<string, number>();
     for (const a of allocations) occupiedByRoom.set(a.roomId, (occupiedByRoom.get(a.roomId) ?? 0) + 1);
 
@@ -63,6 +68,7 @@ export default async function HostelDetailsPage() {
                   <th style={{ padding: "10px 14px", textAlign: "left" }}>Rooms</th>
                   <th style={{ padding: "10px 14px", textAlign: "left" }}>Beds occupied</th>
                   <th style={{ padding: "10px 14px", textAlign: "left" }}>Vacant</th>
+                  <th style={{ padding: "10px 14px", textAlign: "left" }}>Warden in charge</th>
                 </tr>
               </thead>
               <tbody>
@@ -72,11 +78,12 @@ export default async function HostelDetailsPage() {
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{b.rooms.length}</td>
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{b.occupied} / {b.capacity}</td>
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{Math.max(0, b.capacity - b.occupied)}</td>
+                    <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{wardenNames}</td>
                   </tr>
                 ))}
                 {blockStats.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ padding: 32, textAlign: "center", color: "var(--hw-text-muted)" }}>
+                    <td colSpan={5} style={{ padding: 32, textAlign: "center", color: "var(--hw-text-muted)" }}>
                       No blocks are registered for this hostel yet.
                     </td>
                   </tr>

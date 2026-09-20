@@ -51,6 +51,7 @@ export const LIBRARY_NAV_GROUPS: LibraryNavGroup[] = [
     items: [
       { href: "/library/reservations", label: "Reservations", icon: "reservations" },
       { href: "/library/audit", label: "Audit / History", icon: "audit" },
+      { href: "/library/ai-chat", label: "Ask the Assistant", icon: "assistant" },
     ],
   },
 ];

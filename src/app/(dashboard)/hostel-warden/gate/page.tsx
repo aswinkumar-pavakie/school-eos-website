@@ -1,43 +1,59 @@
-// Check-in / check-out -- the design's own gate register, mapped to the real
-// backend's Night Attendance feature: the only real "is this student in the
-// hostel tonight" check that exists (see hostel-warden-api.ts's own header
-// comment -- there is no separate check-in/check-out event anywhere in the
-// schema; the roll call itself is the real check).
+// Check-in / check-out -- the design's own gate register: exits and returns
+// logged by the warden. Real data merged from every approved outing
+// (parent-app Gate Pass/Emergency Exit requests, plus Warden-authored
+// Movement Log entries) -- "checked out" vs "checked in" is the real
+// actual_return_at column now (see migration
+// 0021_outing_request_movement_log_fields.sql), not just an inferred
+// time-window guess. Night Attendance (roll call) moved to its own route --
+// see night-attendance/page.tsx's own header comment for why.
 
 import { ErrorState } from "@/components/ui/EmptyState";
-import { getNightAttendanceRoster } from "@/lib/hostel-warden-api";
-import { nowMs, todayIsoDate } from "@/lib/hostel-warden-time";
-import { NightRosterMarker } from "./NightRosterMarker";
+import {
+  listEmergencyExitRequests,
+  listGatePassRequests,
+  listHostelStructure,
+  listMovementLogEntries,
+  listRoomAllocations,
+} from "@/lib/hostel-warden-api";
+import { GateRegisterView, type GateRow } from "./GateRegisterView";
 
-export default async function GatePage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
-  const { date: dateParam } = await searchParams;
-  const date = dateParam || todayIsoDate(nowMs());
-
+export default async function GatePage() {
   try {
-    const roster = await getNightAttendanceRoster(date);
-    const present = roster.filter((r) => r.status === "PRESENT").length;
-    const absent = roster.filter((r) => r.status === "ABSENT").length;
+    const [gatePasses, emergencyExits, directEntries, allocations, blocks] = await Promise.all([
+      listGatePassRequests(),
+      listEmergencyExitRequests(),
+      listMovementLogEntries(),
+      listRoomAllocations(),
+      listHostelStructure(),
+    ]);
 
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <form style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, fontWeight: 700, color: "var(--hw-text-muted)" }}>
-            Date
-            <input className="input" type="date" name="date" defaultValue={date} style={{ height: 34, width: 160 }} />
-          </label>
-          <button type="submit" className="hw-btn-secondary" style={{ height: 34, padding: "0 14px", borderRadius: 9, border: "1px solid var(--hw-border-input)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>
-            Go
-          </button>
-          <span style={{ flex: 1 }} />
-          <span style={{ fontSize: 12.5, color: "var(--hw-text-muted)" }}>
-            {present} present · {absent} absent · {roster.length} on roll
-          </span>
-        </form>
+    const admissionByStudent = new Map<string, string>();
+    const roomByStudent = new Map<string, string>();
+    const blockByStudent = new Map<string, string>();
+    for (const a of allocations) {
+      admissionByStudent.set(a.studentId, a.admissionNo);
+      roomByStudent.set(a.studentId, a.roomNo);
+      blockByStudent.set(a.studentId, a.blockName);
+    }
 
-        <NightRosterMarker date={date} roster={roster} />
-      </div>
-    );
+    const outRows: GateRow[] = [...gatePasses, ...emergencyExits, ...directEntries]
+      .filter((r) => r.state === "APPROVED")
+      .map((r) => ({
+        id: r.id,
+        studentId: r.studentId,
+        studentName: [r.studentFirstName, r.studentLastName].filter(Boolean).join(" "),
+        admissionNo: admissionByStudent.get(r.studentId) ?? "—",
+        room: roomByStudent.get(r.studentId) ?? "—",
+        blockName: blockByStudent.get(r.studentId) ?? "—",
+        destination: r.destination,
+        reason: r.reason,
+        dueAt: r.expectedReturn,
+        returned: r.actualReturnAt !== null,
+      }))
+      .sort((a, b) => (a.dueAt < b.dueAt ? -1 : 1));
+
+    return <GateRegisterView outRows={outRows} blocks={blocks} />;
   } catch (err) {
-    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load the night roll call."} />;
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load the gate register."} />;
   }
 }

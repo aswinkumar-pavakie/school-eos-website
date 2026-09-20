@@ -146,6 +146,8 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   // dropped, just folded into Settings as two more tabs; see SettingsTabs.tsx.
   { href: "/admin/settings", label: "Settings", icon: "settings", group: "SYSTEM" },
 
+  { href: "/admin/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "SYSTEM" },
+
   // These modules aren't built yet -- each route already exists and honestly
   // renders <ComingSoon/> (no fake data). "Camps" stays a stub deliberately --
   // the HLD doc flags it as an explicit open product-scope question ("in

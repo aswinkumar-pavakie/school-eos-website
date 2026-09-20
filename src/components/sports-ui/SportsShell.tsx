@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { BellIcon, SearchIcon } from "./icons";
+import { SearchIcon } from "./icons";
 import { SPORTS_NAV } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
 import "../../app/(dashboard)/sports-admin/sports-theme.css";
@@ -13,7 +13,6 @@ export function SportsShell({
   academicYearLabel,
   odCount,
   indentsCount,
-  unreadMessagesCount,
   onSignOut,
   children,
 }: {
@@ -21,12 +20,10 @@ export function SportsShell({
   academicYearLabel: string;
   odCount: number;
   indentsCount: number;
-  unreadMessagesCount: number;
   onSignOut: () => void | Promise<void>;
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const initials = personName
     .split(" ")
     .filter(Boolean)
@@ -42,37 +39,24 @@ export function SportsShell({
         <div style={{ height: 76, flex: "none", background: "#fff", borderBottom: "1px solid var(--sport-border-soft)", display: "flex", alignItems: "center", gap: 14, padding: "0 22px", minWidth: 0, overflowX: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: "0 1 230px" }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--sport-navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, letterSpacing: 0.5, flexShrink: 0 }}>PPS</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "var(--sport-heading)" }}>Pavakie Public School</div>
-              <div style={{ fontSize: 12, color: "var(--sport-body-muted)", fontWeight: 500 }}>Sports department</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "var(--sport-heading)" }}>Pavakie Public School</div>
+              <div style={{ fontSize: 12, color: "var(--sport-tertiary)" }}>Sports department</div>
             </div>
           </div>
-          <div style={{ flex: "1 1 200px", minWidth: 120, maxWidth: 520, height: 44, borderRadius: 11, display: "flex", alignItems: "center", gap: 8, padding: "0 14px", background: "#fff", border: "1px solid var(--sport-input-border)" }}>
+          <div style={{ flex: "1 1 200px", minWidth: 120, maxWidth: 640, borderRadius: 11, display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", background: "#fff", border: "1px solid var(--sport-border)" }}>
             <SearchIcon style={{ color: "var(--sport-tertiary-2)" }} />
             <input placeholder="Search players, squads, fixtures, kit..." style={{ flex: 1, minWidth: 0, border: "none", outline: "none", fontSize: 14, color: "var(--sport-ink)", background: "transparent", fontFamily: "inherit" }} />
-            <span style={{ fontFamily: "var(--sport-mono)", fontSize: 11, color: "var(--sport-tertiary-3)", background: "var(--sport-panel)", borderRadius: 6, padding: "3px 7px" }}>Ctrl K</span>
+            <span style={{ fontFamily: "var(--sport-mono)", fontSize: 11, color: "var(--sport-tertiary-2)", background: "var(--sport-panel)", borderRadius: 6, padding: "3px 7px" }}>Ctrl K</span>
           </div>
           <div style={{ flex: 1 }} />
-          <div style={{ display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--sport-border)", borderRadius: 20, height: 42, padding: "0 16px", flexShrink: 0 }}>
-            <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--sport-ink)", whiteSpace: "nowrap" }}>Sports admin · School</span>
+          <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--sport-menu-border)", borderRadius: 10, padding: "10px 16px", flexShrink: 0 }}>
+            <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--sport-heading)", whiteSpace: "nowrap" }}>Sports admin · School</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", height: 42, border: "1px solid var(--sport-border)", borderRadius: 20, padding: "0 16px", flexShrink: 0 }}>
-            <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--sport-ink)", whiteSpace: "nowrap" }}>{academicYearLabel}</span>
+          <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--sport-menu-border)", borderRadius: 10, padding: "10px 14px", flexShrink: 0 }}>
+            <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--sport-body)", whiteSpace: "nowrap" }}>{academicYearLabel}</span>
           </div>
-          <span style={{ background: "var(--sport-navy)", color: "#fff", fontSize: 13.5, fontWeight: 700, padding: "0 18px", height: 42, display: "flex", alignItems: "center", borderRadius: 20, flexShrink: 0, whiteSpace: "nowrap" }}>Term I</span>
-          <button
-            type="button"
-            className="sport-btn-hover-ghost"
-            onClick={() => router.push("/sports-admin/messages")}
-            style={{ position: "relative", width: 42, height: 42, borderRadius: "50%", border: "1px solid var(--sport-border)", background: "#fff", cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            <BellIcon style={{ color: "var(--sport-ink)" }} />
-            {unreadMessagesCount > 0 ? (
-              <span style={{ position: "absolute", top: -3, right: -3, background: "var(--sport-red)", color: "#fff", fontSize: 10, fontWeight: 800, borderRadius: 999, minWidth: 17, height: 17, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>
-                {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
-              </span>
-            ) : null}
-          </button>
+          <span style={{ background: "var(--sport-navy)", color: "#fff", borderRadius: 10, padding: "10px 16px", fontSize: 13.5, fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap" }}>Term I</span>
         </div>
 
         <div style={{ flex: 1, display: "flex", minHeight: 0 }}>

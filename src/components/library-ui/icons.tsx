@@ -21,7 +21,8 @@ export type LibraryIconId =
   | "reports"
   | "settings"
   | "reservations"
-  | "audit";
+  | "audit"
+  | "assistant";
 
 const PATHS: Record<LibraryIconId, ReactNode> = {
   dashboard: (
@@ -111,6 +112,14 @@ const PATHS: Record<LibraryIconId, ReactNode> = {
     <>
       <rect x="3.5" y="3" width="13" height="14" rx="2" />
       <path d="M7 7.5h6M7 10.5h6M7 13.5h4" />
+    </>
+  ),
+  // New feature (AI assistant chat), also no design source -- same
+  // 2-stroke-path idiom as reservations/audit above.
+  assistant: (
+    <>
+      <path d="M3 4.5h14v9.5H8l-3.5 3v-3H3z" />
+      <path d="M6.5 8.5h7M6.5 11h4.5" />
     </>
   ),
 };

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { EmptyRow, TableShell, Td, Th } from "@/components/hostel-warden-ui/primitives";
 import { listRoomAllocations } from "@/lib/hostel-warden-api";
+import { AddStudentPanel } from "./AddStudentPanel";
 
 export default async function HostelWardenStudentsPage({
   searchParams,
@@ -30,6 +31,7 @@ export default async function HostelWardenStudentsPage({
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <AddStudentPanel />
         <div className="hw-lift" style={{ border: "1px solid var(--hw-divider)", borderRadius: "var(--hw-radius-md)", overflow: "hidden" }}>
           <TableShell>
             <thead>

@@ -83,6 +83,13 @@ export async function createCoach(input: { fullName: string; personId?: string; 
   return (await parseOrThrow<ApiEnvelope<Coach>>(res)).data;
 }
 
+// Edit already real (PATCH /coaches/:id); "Delete" reuses the same route
+// with status='INACTIVE' -- no hard-delete route exists.
+export async function updateCoach(id: string, input: { fullName?: string; contactPhone?: string; qualification?: string; policeVerificationRef?: string; verificationExpiry?: string; status?: "ACTIVE" | "INACTIVE" }): Promise<Coach> {
+  const res = await apiFetch(`/coaches/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<Coach>>(res)).data;
+}
+
 // Real staff lookup -- needed to link a non-external coach to an existing
 // person (coaches.service.ts requires a real personId for internal coaches).
 // GET /staff broadened for SPORTS_ADMIN, read-only, after this exact gap
@@ -116,6 +123,12 @@ export async function listStudents(filter: { search?: string; gradeId?: string; 
   const qs = new URLSearchParams(Object.entries(filter).filter(([, v]) => v !== undefined) as [string, string][]);
   const res = await apiFetch(`/students?${qs.toString()}`);
   return parseOrThrow(res);
+}
+
+export async function getStudent(id: string): Promise<StudentSummary | null> {
+  const res = await apiFetch(`/students/${id}`);
+  if (!res.ok) return null;
+  return (await parseOrThrow<ApiEnvelope<StudentSummary>>(res)).data;
 }
 
 export interface Grade {
@@ -175,6 +188,18 @@ export async function createCalendarEvent(input: { academicYearId: string; title
   const res = await apiFetch("/calendar-events", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...input, scopeType: "SCHOOL" }) });
   return (await parseOrThrow<ApiEnvelope<CalendarEvent>>(res)).data;
 }
+// Both already real, already SPORTS_ADMIN-authorized -- but the backend
+// only allows editing/deleting an event this same account created
+// (assertCanModify in calendar-events.service.ts), so the UI only shows
+// these for rows where createdBy matches the signed-in person.
+export async function updateCalendarEvent(id: string, input: { title?: string; description?: string; startDate?: string; endDate?: string; eventType?: CalendarEventType }): Promise<CalendarEvent> {
+  const res = await apiFetch(`/calendar-events/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<CalendarEvent>>(res)).data;
+}
+export async function deleteCalendarEvent(id: string): Promise<void> {
+  const res = await apiFetch(`/calendar-events/${id}`, { method: "DELETE" });
+  await parseOrThrow(res);
+}
 
 // ---------- Equipment catalog (Admin/Sports Admin-level CRUD, distinct from
 // Faculty's own scoped issue/return calls re-exported above) ----------
@@ -186,14 +211,154 @@ export interface EquipmentItem {
   quantityTotal: number;
   quantityAvailable: number;
   condition: string | null;
+  status: "ACTIVE" | "RETIRED";
 }
 
-export async function listEquipmentCatalog(): Promise<EquipmentItem[]> {
-  const res = await apiFetch("/equipment");
+export async function listEquipmentCatalog(includeRetired = false): Promise<EquipmentItem[]> {
+  const res = await apiFetch(`/equipment${includeRetired ? "?includeRetired=true" : ""}`);
   return (await parseOrThrow<ApiEnvelope<EquipmentItem[]>>(res)).data;
 }
 
 export async function createEquipmentItem(input: { name: string; sportId?: string; quantityTotal: number; quantityAvailable?: number; condition?: string }): Promise<EquipmentItem> {
   const res = await apiFetch("/equipment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   return (await parseOrThrow<ApiEnvelope<EquipmentItem>>(res)).data;
+}
+
+// Edit already real (PATCH /equipment/:id); "Delete" is a genuine new soft-
+// delete via status='RETIRED' -- see migration 0025_equipment_status.sql
+// (this table had no status column, and no delete route, at all before).
+export async function updateEquipmentItem(id: string, input: { name?: string; sportId?: string; quantityTotal?: number; quantityAvailable?: number; condition?: string; status?: "ACTIVE" | "RETIRED" }): Promise<EquipmentItem> {
+  const res = await apiFetch(`/equipment/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<EquipmentItem>>(res)).data;
+}
+
+// ---------- Trials & selection (real -- see migration 0022_sports_trials.sql) ----------
+
+export const TRIAL_ROUNDS = ["ROUND_1", "ROUND_2", "FINAL_ROUND"] as const;
+export type TrialRound = (typeof TRIAL_ROUNDS)[number];
+export const TRIAL_STATUSES = ["PENDING", "HOLD", "SELECTED", "NOT_SELECTED"] as const;
+export type TrialStatus = (typeof TRIAL_STATUSES)[number];
+
+export interface SportsTrial {
+  id: string;
+  studentId: string;
+  studentFirstName: string;
+  studentLastName: string | null;
+  gradeName: string | null;
+  sectionName: string | null;
+  sportId: string;
+  sportName: string;
+  round: TrialRound;
+  trialDate: string;
+  score: string | null;
+  status: TrialStatus;
+  notes: string | null;
+  createdAt: string;
+}
+
+export async function listTrials(): Promise<SportsTrial[]> {
+  const res = await apiFetch("/sports/trials");
+  return (await parseOrThrow<ApiEnvelope<SportsTrial[]>>(res)).data;
+}
+export async function createTrial(input: { studentId: string; sportId: string; round: TrialRound; trialDate: string; score?: string; notes?: string }): Promise<SportsTrial> {
+  const res = await apiFetch("/sports/trials", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsTrial>>(res)).data;
+}
+export async function updateTrial(id: string, input: { status?: TrialStatus; score?: string; notes?: string; round?: TrialRound; trialDate?: string }): Promise<SportsTrial> {
+  const res = await apiFetch(`/sports/trials/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsTrial>>(res)).data;
+}
+// No delete route existed before this build.
+export async function deleteTrial(id: string): Promise<void> {
+  const res = await apiFetch(`/sports/trials/${id}`, { method: "DELETE" });
+  await parseOrThrow(res);
+}
+
+// ---------- Injuries & incidents (real -- see migration 0023_sports_injuries.sql) ----------
+
+export const INJURY_STATUSES = ["UNDER_CARE", "OBSERVATION", "CLOSED"] as const;
+export type InjuryStatus = (typeof INJURY_STATUSES)[number];
+
+export interface SportsInjury {
+  id: string;
+  studentId: string;
+  studentFirstName: string;
+  studentLastName: string | null;
+  gradeName: string | null;
+  sectionName: string | null;
+  sportId: string | null;
+  sportName: string | null;
+  title: string;
+  description: string | null;
+  incidentDate: string;
+  guardianInformed: boolean;
+  guardianInformedAt: string | null;
+  status: InjuryStatus;
+  createdAt: string;
+}
+
+export async function listInjuries(): Promise<SportsInjury[]> {
+  const res = await apiFetch("/sports/injuries");
+  return (await parseOrThrow<ApiEnvelope<SportsInjury[]>>(res)).data;
+}
+export async function createInjury(input: { studentId: string; sportId?: string; title: string; description?: string; incidentDate: string; guardianInformed: boolean }): Promise<SportsInjury> {
+  const res = await apiFetch("/sports/injuries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsInjury>>(res)).data;
+}
+export async function updateInjury(id: string, input: { status?: InjuryStatus; guardianInformed?: boolean; title?: string; description?: string; incidentDate?: string }): Promise<SportsInjury> {
+  const res = await apiFetch(`/sports/injuries/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsInjury>>(res)).data;
+}
+// No delete route existed before this build.
+export async function deleteInjury(id: string): Promise<void> {
+  const res = await apiFetch(`/sports/injuries/${id}`, { method: "DELETE" });
+  await parseOrThrow(res);
+}
+
+// ---------- Budget & approvals (real -- reuses purchase_request, see
+// migration 0024_sports_budget_approval_policy.sql) ----------
+
+export interface SportsBudgetRequest {
+  id: string;
+  referenceNo: string;
+  itemName: string;
+  description: string | null;
+  estimatedAmountPaise: string | null;
+  requestedBy: string | null;
+  requestedByName: string | null;
+  approvalRequestId: string | null;
+  state: string;
+  createdAt: string;
+}
+
+export async function listBudgetRequests(): Promise<SportsBudgetRequest[]> {
+  const res = await apiFetch("/sports/budget-requests");
+  return (await parseOrThrow<ApiEnvelope<SportsBudgetRequest[]>>(res)).data;
+}
+export async function createBudgetRequest(input: { title: string; description?: string; estimatedAmountPaise: string }): Promise<SportsBudgetRequest> {
+  const res = await apiFetch("/sports/budget-requests", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsBudgetRequest>>(res)).data;
+}
+
+// ---------- PT / sports periods (real -- reuses the real academic
+// timetable for the "Physical Training" subject, no new schema) ----------
+
+export interface PtPeriodSlot {
+  id: string;
+  dayOfWeek: number;
+  room: string | null;
+  periodNo: number;
+  periodLabel: string;
+  startTime: string;
+  endTime: string;
+  sectionId: string;
+  sectionName: string;
+  gradeName: string;
+  teacherFirstName: string;
+  teacherLastName: string | null;
+}
+
+export async function listPtPeriods(): Promise<PtPeriodSlot[]> {
+  const res = await apiFetch("/sports/pt-periods");
+  return (await parseOrThrow<ApiEnvelope<PtPeriodSlot[]>>(res)).data;
 }

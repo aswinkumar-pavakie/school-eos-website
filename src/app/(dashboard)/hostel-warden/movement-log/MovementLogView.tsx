@@ -1,14 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { formatDateTime } from "@/lib/format";
-import { Chip, EmptyRow, StatusPill, TableShell, Td, Th, type PillTone } from "@/components/hostel-warden-ui/primitives";
+import { Chip, EmptyRow, GhostButton, PrimaryButton, StatusPill, TableShell, Td, Th, type PillTone } from "@/components/hostel-warden-ui/primitives";
+import { useFlash } from "@/components/hostel-warden-ui/FlashContext";
+import type { HostelStructureBlock } from "@/lib/hostel-warden-api";
+import {
+  MOVEMENT_LOG_PURPOSE_LABELS,
+  MOVEMENT_LOG_PURPOSES,
+  type MovementLogPurpose,
+} from "@/lib/hostel-warden-constants";
 import { DecisionButtons } from "./DecisionButtons";
+import { RecordExitForm } from "./RecordExitForm";
+import { recordReturnAction } from "./actions";
 
 export interface MovementRow {
   id: string;
-  kind: "gate-pass" | "emergency-exit";
+  kind: "gate-pass" | "emergency-exit" | "movement-log";
+  studentId: string;
   studentName: string;
   room: string;
   reason: string;
@@ -17,59 +27,109 @@ export interface MovementRow {
   expectedReturn: string;
   isOvernight: boolean;
   state: string;
+  purposeCategory: MovementLogPurpose | null;
+  actualReturnAt: string | null;
   requestedByName: string;
 }
 
 const KIND_LABEL: Record<MovementRow["kind"], string> = {
   "gate-pass": "Gate pass",
   "emergency-exit": "Emergency exit",
+  "movement-log": "Warden-recorded exit",
 };
 
 // outing_request.state's real CHECK constraint is REQUESTED / APPROVED /
 // REJECTED / CANCELLED / COMPLETED -- confirmed live against the real
 // backend (a freshly parent-submitted request comes back "REQUESTED", not
-// "PENDING"). COMPLETED is a real constraint value nothing in the codebase
-// ever writes yet (no "mark as returned" action exists), so it never
-// appears in practice but is handled below via the generic fallback anyway.
-function statusDisplay(state: string): { label: string; tone: PillTone } {
-  if (state === "REQUESTED") return { label: "Requested", tone: "amber" };
-  if (state === "APPROVED") return { label: "Approved", tone: "blue" };
-  if (state === "REJECTED") return { label: "Rejected", tone: "red" };
-  if (state === "CANCELLED") return { label: "Withdrawn", tone: "gray" };
-  return { label: state, tone: "gray" };
+// "PENDING"). Every Warden-recorded direct entry is created already
+// APPROVED (see backend's createDirect) -- there is no review step for
+// those, only Record return/Amend.
+function statusDisplay(row: MovementRow): { label: string; tone: PillTone } {
+  if (row.kind === "movement-log") {
+    if (row.actualReturnAt) return { label: "Returned", tone: "gray" };
+    return { label: "Away", tone: "blue" };
+  }
+  if (row.state === "REQUESTED") return { label: "Requested", tone: "amber" };
+  if (row.state === "APPROVED") return { label: "Approved", tone: "blue" };
+  if (row.state === "REJECTED") return { label: "Rejected", tone: "red" };
+  if (row.state === "CANCELLED") return { label: "Withdrawn", tone: "gray" };
+  return { label: row.state, tone: "gray" };
 }
 
-type StatusFilter = "REQUESTED" | "APPROVED" | "REJECTED" | "All";
-type KindFilter = "All" | MovementRow["kind"];
+interface StudentOption {
+  studentId: string;
+  name: string;
+  room: string;
+}
 
-export function MovementLogView({ rows }: { rows: MovementRow[] }) {
+export function MovementLogView({ rows, students, blocks }: { rows: MovementRow[]; students: StudentOption[]; blocks: HostelStructureBlock[] }) {
   const searchParams = useSearchParams();
   const q = (searchParams.get("q") ?? "").trim().toLowerCase();
-  const [status, setStatus] = useState<StatusFilter>("REQUESTED");
-  const [kind, setKind] = useState<KindFilter>("All");
+  const [purposeFilter, setPurposeFilter] = useState<MovementLogPurpose | "All">("All");
+  const [blockId, setBlockId] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
+  const [pendingReturnId, setPendingReturnId] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+  const { showFlash } = useFlash();
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
-      if (kind !== "All" && r.kind !== kind) return false;
-      if (status !== "All" && r.state !== status) return false;
+      if (purposeFilter !== "All" && r.purposeCategory !== purposeFilter) return false;
+      if (blockId) {
+        const block = blocks.find((b) => b.id === blockId);
+        if (!block || !r.room.endsWith(block.name)) return false;
+      }
       if (q && !`${r.studentName} ${r.room} ${r.reason} ${r.destination ?? ""}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [rows, kind, status, q]);
+  }, [rows, purposeFilter, blockId, blocks, q]);
 
-  const pendingCount = rows.filter((r) => r.state === "REQUESTED").length;
+  const totalCount = rows.length;
+
+  function recordReturn(id: string) {
+    setPendingReturnId(id);
+    startTransition(async () => {
+      try {
+        await recordReturnAction(id);
+        showFlash("Return recorded.");
+      } catch (err) {
+        showFlash(err instanceof Error ? err.message : "Could not record the return.");
+      } finally {
+        setPendingReturnId(null);
+      }
+    });
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {(["REQUESTED", "APPROVED", "REJECTED", "All"] as StatusFilter[]).map((t) => (
-          <Chip key={t} label={t === "REQUESTED" ? `Pending (${pendingCount})` : t === "All" ? "All" : t.charAt(0) + t.slice(1).toLowerCase()} active={status === t} onClick={() => setStatus(t)} />
+        <Chip label={`All (${totalCount})`} active={purposeFilter === "All"} onClick={() => setPurposeFilter("All")} />
+        {MOVEMENT_LOG_PURPOSES.filter((p) => p !== "OTHER").map((p) => (
+          <Chip key={p} label={MOVEMENT_LOG_PURPOSE_LABELS[p]} active={purposeFilter === p} onClick={() => setPurposeFilter(p)} />
         ))}
         <span style={{ width: 1, height: 22, background: "var(--hw-divider)", margin: "0 6px" }} />
-        {(["All", "gate-pass", "emergency-exit"] as KindFilter[]).map((t) => (
-          <Chip key={t} label={t === "All" ? "All types" : KIND_LABEL[t]} active={kind === t} onClick={() => setKind(t)} />
-        ))}
+        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--hw-text-faint)", textTransform: "uppercase", letterSpacing: ".05em" }}>Block</span>
+        <select className="input" value={blockId} onChange={(e) => setBlockId(e.target.value)} style={{ height: 32, width: 160 }}>
+          <option value="">All blocks</option>
+          {blocks.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.name}
+            </option>
+          ))}
+        </select>
+        <span style={{ flex: 1 }} />
+        {formOpen ? (
+          <GhostButton type="button" onClick={() => setFormOpen(false)} style={{ height: 36 }}>
+            Close entry form
+          </GhostButton>
+        ) : (
+          <PrimaryButton type="button" onClick={() => setFormOpen(true)} style={{ height: 36 }}>
+            Record exit
+          </PrimaryButton>
+        )}
       </div>
+
+      <RecordExitForm students={students} open={formOpen} onClose={() => setFormOpen(false)} />
 
       <div className="hw-lift" style={{ border: "1px solid var(--hw-divider)", borderRadius: "var(--hw-radius-md)", overflow: "hidden" }}>
         <TableShell>
@@ -88,8 +148,9 @@ export function MovementLogView({ rows }: { rows: MovementRow[] }) {
           </thead>
           <tbody>
             {filtered.map((r) => {
-              const st = statusDisplay(r.state);
-              const isPending = r.state === "REQUESTED";
+              const st = statusDisplay(r);
+              const isPendingDecision = r.kind !== "movement-log" && r.state === "REQUESTED";
+              const isOpenDirectEntry = r.kind === "movement-log" && !r.actualReturnAt;
               return (
                 <tr key={r.id} className="hw-row-hover">
                   <Td>
@@ -110,7 +171,20 @@ export function MovementLogView({ rows }: { rows: MovementRow[] }) {
                     <StatusPill label={st.label} tone={st.tone} />
                   </Td>
                   <Td align="right">
-                    {isPending ? <DecisionButtons id={r.id} kind={r.kind} studentName={r.studentName} /> : <span style={{ color: "var(--hw-text-faint)" }}>—</span>}
+                    {isPendingDecision ? (
+                      <DecisionButtons id={r.id} kind={r.kind as "gate-pass" | "emergency-exit"} studentName={r.studentName} />
+                    ) : isOpenDirectEntry ? (
+                      <GhostButton
+                        type="button"
+                        onClick={() => recordReturn(r.id)}
+                        disabled={pendingReturnId === r.id}
+                        style={{ height: 30, fontSize: 12, padding: "0 12px" }}
+                      >
+                        {pendingReturnId === r.id ? "Saving…" : "Record return"}
+                      </GhostButton>
+                    ) : (
+                      <span style={{ color: "var(--hw-text-faint)" }}>—</span>
+                    )}
                   </Td>
                 </tr>
               );

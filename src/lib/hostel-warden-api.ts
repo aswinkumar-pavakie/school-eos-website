@@ -15,8 +15,11 @@ import {
   HOSTEL_COMPLAINT_STATES,
   HOSTEL_ISSUE_TYPES,
   HOSTEL_ISSUE_TYPE_LABELS,
+  MOVEMENT_LOG_PURPOSES,
+  MOVEMENT_LOG_PURPOSE_LABELS,
   type HostelComplaintState,
   type HostelIssueType,
+  type MovementLogPurpose,
   type NightAttendanceStatus,
 } from "./hostel-warden-constants";
 
@@ -28,8 +31,11 @@ export {
   HOSTEL_COMPLAINT_STATES,
   HOSTEL_ISSUE_TYPES,
   HOSTEL_ISSUE_TYPE_LABELS,
+  MOVEMENT_LOG_PURPOSES,
+  MOVEMENT_LOG_PURPOSE_LABELS,
   type HostelComplaintState,
   type HostelIssueType,
+  type MovementLogPurpose,
   type NightAttendanceStatus,
 };
 
@@ -155,6 +161,10 @@ export interface OutingRequestRow {
   approvalRequestId: string | null;
   state: string;
   requestType: string | null;
+  calledByName: string | null;
+  calledByPhone: string | null;
+  purposeCategory: MovementLogPurpose | null;
+  actualReturnAt: string | null;
 }
 
 type OutingKind = "gate-pass-requests" | "emergency-exit-requests";
@@ -190,6 +200,40 @@ export const approveEmergencyExitRequest = (id: string, comment?: string) =>
   decideOutingRequest("emergency-exit-requests", id, "approve", comment);
 export const rejectEmergencyExitRequest = (id: string, comment: string) =>
   decideOutingRequest("emergency-exit-requests", id, "reject", comment);
+
+// ---------- Movement Log (Warden-authored, real -- see backend's own
+// outing-request.repository.ts createDirect/findDirectEntriesForHostels
+// comments and migration 0021_outing_request_movement_log_fields.sql;
+// MOVEMENT_LOG_PURPOSES/LABELS live in hostel-warden-constants.ts and are
+// re-exported above so client components can import them safely) ----------
+
+export function listMovementLogEntries(): Promise<OutingRequestRow[]> {
+  return get("/hostel/movement-log");
+}
+
+export function createMovementLogEntry(input: {
+  studentId: string;
+  purposeCategory: MovementLogPurpose;
+  reason: string;
+  calledByName: string;
+  calledByPhone: string;
+  outFrom: string;
+  expectedReturn: string;
+  isOvernight?: boolean;
+}): Promise<OutingRequestRow> {
+  return send("/hostel/movement-log", "POST", input);
+}
+
+export function recordMovementLogReturn(id: string): Promise<OutingRequestRow> {
+  return send(`/hostel/movement-log/${id}/return`, "POST");
+}
+
+export function amendMovementLogEntry(
+  id: string,
+  input: { expectedReturn?: string; reason?: string; calledByName?: string; calledByPhone?: string },
+): Promise<OutingRequestRow> {
+  return send(`/hostel/movement-log/${id}`, "PATCH", input);
+}
 
 // ---------- Call Requests ----------
 
@@ -356,6 +400,24 @@ export interface HostelStructureBlock {
 // FKs, not free text) -- scoped server-side to the Warden's own hostel(s).
 export function listHostelStructure(): Promise<HostelStructureBlock[]> {
   return get("/hostel/blocks");
+}
+
+// ---------- Warden roster ----------
+
+export interface WardenRosterRow {
+  personId: string;
+  firstName: string;
+  lastName: string | null;
+  mobile: string | null;
+  hostelId: string;
+  hostelName: string;
+}
+
+// Real co-wardens across exactly this caller's own hostel(s) -- see the
+// backend's own warden-assignment.repository.ts findRosterForHostels
+// comment for why this is scoped this way, never a school-wide staff list.
+export function listWardenRoster(): Promise<WardenRosterRow[]> {
+  return get("/hostel/warden-roster");
 }
 
 export interface StudentFeeDemandRow {

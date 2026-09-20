@@ -79,6 +79,16 @@ export function TeamIcon({ style }: { style?: CSSProperties }) {
     </svg>
   );
 }
+// New feature (AI assistant chat), no design source -- same 18x18/1.7-stroke
+// convention as every icon above.
+export function AssistantIcon({ style }: { style?: CSSProperties }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" style={style}>
+      <path d="M3 4h12v8.5H7l-3 2.5v-2.5H3z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 7.5h6M6 9.8h3.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 export function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8b95a5" strokeWidth="1.8">

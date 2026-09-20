@@ -99,6 +99,17 @@ export async function saveDeviceIdentity(identity: DeviceIdentity): Promise<void
   setItem(namespacedKey("device.identity"), JSON.stringify(identity));
 }
 
+/** Called when the server rejects this device as DEVICE_REVOKED -- the
+ * local identity is now permanently unusable (the server will never accept
+ * it again), so bootstrap.ts wipes it (and the KeyPackage pool, which is
+ * keyed to that same dead device) and re-registers a fresh one. Without
+ * this, a revoked device fails the same way forever on every page load --
+ * confirmed live: this was a real, reproducing bug, not hypothetical. */
+export async function clearDeviceIdentity(): Promise<void> {
+  removeItem(namespacedKey("device.identity"));
+  removeItem(namespacedKey("mls.keypackagepool"));
+}
+
 // ---- KeyPackage pool (published; not yet matched to a real join) -------
 
 interface StoredPoolEntry {

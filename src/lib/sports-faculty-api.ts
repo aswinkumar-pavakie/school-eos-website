@@ -95,6 +95,23 @@ export async function assignCoach(teamId: string, coachId: string): Promise<Spor
   return (await parseOrThrow<ApiEnvelope<SportsTeam>>(res)).data;
 }
 
+// Edit/Delete (as deactivate) for the Sports Admin console's own Teams &
+// squads screen -- genuinely unbuilt before this build (see backend's
+// sports-faculty-teams.controller.ts own comment).
+export async function updateTeam(teamId: string, input: { name?: string; sportCategoryId?: string; captainStudentId?: string; houseId?: string; status?: "ACTIVE" | "INACTIVE" }): Promise<SportsTeam> {
+  const res = await apiFetch(`/sports/teams/${teamId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsTeam>>(res)).data;
+}
+
+// Generic approvals-engine withdraw -- reused by every Sports Admin screen
+// whose "delete" is really "withdraw my still-open request" (OD requests,
+// Indents, Budget requests), same real /approvals/:id/withdraw endpoint
+// media-api.ts's own withdrawMediaIndent already uses.
+export async function withdrawSportsApprovalRequest(approvalRequestId: string): Promise<void> {
+  const res = await apiFetch(`/approvals/${approvalRequestId}/withdraw`, { method: "POST" });
+  await parseOrThrow(res);
+}
+
 // ---------- Student sport profiles ----------
 
 export interface SportsProfile {
@@ -263,6 +280,87 @@ export async function getHousePerformance(): Promise<HousePerformance[]> {
   return (await parseOrThrow<ApiEnvelope<HousePerformance[]>>(res)).data;
 }
 
+// ---------- Houses master data (real -- GET /houses, newly broadened to
+// SPORTS_ADMIN alongside ADMIN; see backend's houses.controller.ts own
+// comment. Unlike getHousePerformance() below, this returns EVERY real
+// house, not only ones with fixture results, which is what the "+ Record
+// points" house picker needs.) ----------
+
+export interface House {
+  id: string;
+  name: string;
+  colourHex: string | null;
+  captainStudentId: string | null;
+  status: string;
+}
+
+export async function listHouses(): Promise<House[]> {
+  const res = await apiFetch("/houses");
+  return (await parseOrThrow<ApiEnvelope<House[]>>(res)).data;
+}
+
+// ---------- Inter-house points (real -- reuses the generic merit_point
+// table Admin's own Student Development module already writes/reads,
+// broadened to SPORTS_ADMIN on GET/POST /student-development/merit-points
+// only -- see backend's student-development.controller.ts's own comment).
+// No new table: this is the exact same real, already-populated
+// house_id/points/reason/awarded_at data. ----------
+
+export interface MeritPointRow {
+  id: string;
+  studentId: string;
+  studentFirstName: string;
+  studentLastName: string | null;
+  admissionNo: string;
+  gradeName: string | null;
+  sectionName: string | null;
+  houseId: string | null;
+  houseName: string | null;
+  points: number;
+  reason: string;
+  awardedByFirstName: string | null;
+  awardedByLastName: string | null;
+  awardedAt: string;
+}
+
+export async function listMeritPoints(): Promise<MeritPointRow[]> {
+  const res = await apiFetch("/student-development/merit-points");
+  return (await parseOrThrow<ApiEnvelope<MeritPointRow[]>>(res)).data;
+}
+
+export async function createMeritPoint(input: { studentId: string; houseId?: string; points: number; reason: string }): Promise<MeritPointRow> {
+  const res = await apiFetch("/student-development/merit-points", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MeritPointRow>>(res)).data;
+}
+
+// Edit/Delete for the Sports Admin console's own Houses & inter-house
+// screen -- genuinely unbuilt before this build.
+export async function updateMeritPoint(id: string, input: { houseId?: string; points?: number; reason?: string }): Promise<MeritPointRow> {
+  const res = await apiFetch(`/student-development/merit-points/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<MeritPointRow>>(res)).data;
+}
+export async function deleteMeritPoint(id: string): Promise<void> {
+  const res = await apiFetch(`/student-development/merit-points/${id}`, { method: "DELETE" });
+  await parseOrThrow(res);
+}
+
+// ---------- Academic terms (real -- for the Achievements screen's "Term"
+// filter, derived from each real term's start/end date, see backend's
+// academic-terms.controller.ts own comment) ----------
+
+export interface AcademicTermRow {
+  id: string;
+  academicYearId: string;
+  name: string;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export async function listAcademicTerms(): Promise<AcademicTermRow[]> {
+  const res = await apiFetch("/academic-terms");
+  return (await parseOrThrow<ApiEnvelope<AcademicTermRow[]>>(res)).data;
+}
+
 // ---------- Achievements ----------
 
 export interface SportsAchievement {
@@ -277,6 +375,8 @@ export interface SportsAchievement {
   placement: string;
   awardedOn: string;
   certificateKey: string | null;
+  title: string | null;
+  level: string | null;
 }
 
 export async function listAchievements(): Promise<SportsAchievement[]> {
@@ -287,6 +387,17 @@ export async function listAchievements(): Promise<SportsAchievement[]> {
 export async function createAchievement(input: { studentId: string; teamId?: string; tournamentId?: string; placement: string; level?: string; awardedOn: string; title?: string }): Promise<SportsAchievement> {
   const res = await apiFetch("/sports/achievements", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
   return (await parseOrThrow<ApiEnvelope<SportsAchievement>>(res)).data;
+}
+
+// Edit/Delete for the Sports Admin console's own Achievements screen --
+// genuinely unbuilt before this build.
+export async function updateAchievement(id: string, input: { placement?: string; level?: string; awardedOn?: string; title?: string }): Promise<SportsAchievement> {
+  const res = await apiFetch(`/sports/achievements/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  return (await parseOrThrow<ApiEnvelope<SportsAchievement>>(res)).data;
+}
+export async function deleteAchievement(id: string): Promise<void> {
+  const res = await apiFetch(`/sports/achievements/${id}`, { method: "DELETE" });
+  await parseOrThrow(res);
 }
 
 // ---------- OD (on-duty) requests ----------
@@ -398,6 +509,9 @@ export interface SportsEquipmentIndent {
   description: string | null;
   quantity: number | null;
   neededBy: string | null;
+  estimatedAmountPaise: string | number | null;
+  requestedBy: string | null;
+  approvalRequestId: string | null;
   state: SportsIndentState;
   createdAt: string;
 }

@@ -1,57 +1,47 @@
 // Hostel fees -- the design's own invoices/receipts screen doesn't have a
 // backend counterpart (no hostel-scoped fee module exists in
 // school-eos-backend); what IS real is per-student fee status via Finance's
-// own StudentFeesService, now reachable to this role at
+// own StudentFeesService, reachable to this role at
 // GET /hostel/students/:id/fees (an additive endpoint this build adds --
 // see hostel-warden-api.ts's own comment). This screen composes that real,
-// per-student data into the boarder-fee view the design pictures, rather
-// than showing a bare "not available" gap notice for data that, per-student,
-// genuinely exists.
+// per-student data into the boarder-fee view the design pictures: every
+// resident, with a real Paid/Partial/Pending/Overdue status and amount
+// breakdown, plus the shared header search and a status-filter chip row
+// (see FeesView.tsx) -- both explicitly asked for.
 
 import { ErrorState } from "@/components/ui/EmptyState";
-import { Card, EmptyRow, StatusPill, TableShell, Td, Th, type PillTone } from "@/components/hostel-warden-ui/primitives";
+import { Card } from "@/components/hostel-warden-ui/primitives";
 import { formatMoneySummary } from "@/lib/format";
-import { getStudentFees, listRoomAllocations, type StudentFeeOverallStatus } from "@/lib/hostel-warden-api";
+import { getStudentFees, listRoomAllocations } from "@/lib/hostel-warden-api";
+import { FeesView, type FeeRow } from "./FeesView";
 
-const STATUS_TONE: Record<StudentFeeOverallStatus, PillTone> = {
-  NO_ASSIGNMENT: "gray",
-  PAID: "blue",
-  PARTIAL: "amber",
-  PENDING: "amber",
-  OVERDUE: "red",
-};
-const STATUS_LABEL: Record<StudentFeeOverallStatus, string> = {
-  NO_ASSIGNMENT: "No fee plan",
-  PAID: "Paid",
-  PARTIAL: "Partially paid",
-  PENDING: "Pending",
-  OVERDUE: "Overdue",
-};
-
-export default async function HostelFeesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q } = await searchParams;
-  const needle = (q ?? "").trim().toLowerCase();
-
+export default async function HostelFeesPage() {
   try {
     const allocations = (await listRoomAllocations()).filter((a) => a.status === "ACTIVE");
-    const rows = await Promise.all(
+    const settled = await Promise.all(
       allocations.map(async (a) => {
         const fees = await getStudentFees(a.studentId).catch(() => null);
         return { allocation: a, fees };
       }),
     );
 
-    const withFees = rows.filter((r) => r.fees !== null) as { allocation: (typeof rows)[number]["allocation"]; fees: NonNullable<(typeof rows)[number]["fees"]> }[];
-    const filtered = withFees.filter((r) => {
-      if (!needle) return true;
-      const name = [r.allocation.studentFirstName, r.allocation.studentLastName].filter(Boolean).join(" ");
-      return `${name} ${r.allocation.admissionNo} ${r.allocation.roomNo}`.toLowerCase().includes(needle);
-    });
+    const rows: FeeRow[] = settled
+      .filter((r): r is { allocation: (typeof settled)[number]["allocation"]; fees: NonNullable<(typeof settled)[number]["fees"]> } => r.fees !== null)
+      .map((r) => ({
+        studentId: r.allocation.studentId,
+        name: [r.allocation.studentFirstName, r.allocation.studentLastName].filter(Boolean).join(" "),
+        room: `${r.allocation.roomNo} · ${r.allocation.blockName}`,
+        totalDuePaise: r.fees.totalDuePaise,
+        totalPaidPaise: r.fees.totalPaidPaise,
+        totalOverduePaise: r.fees.totalOverduePaise,
+        overallStatus: r.fees.overallStatus,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    const totalDue = withFees.reduce((sum, r) => sum + Number(r.fees.totalDuePaise), 0);
-    const totalPaid = withFees.reduce((sum, r) => sum + Number(r.fees.totalPaidPaise), 0);
-    const totalOverdue = withFees.reduce((sum, r) => sum + Number(r.fees.totalOverduePaise), 0);
-    const defaulters = withFees.filter((r) => r.fees.overallStatus === "OVERDUE").length;
+    const totalDue = rows.reduce((sum, r) => sum + Number(r.totalDuePaise), 0);
+    const totalPaid = rows.reduce((sum, r) => sum + Number(r.totalPaidPaise), 0);
+    const totalOverdue = rows.reduce((sum, r) => sum + Number(r.totalOverduePaise), 0);
+    const defaulters = rows.filter((r) => r.overallStatus === "OVERDUE").length;
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -74,35 +64,7 @@ export default async function HostelFeesPage({ searchParams }: { searchParams: P
           </Card>
         </div>
 
-        <div className="hw-lift" style={{ border: "1px solid var(--hw-divider)", borderRadius: "var(--hw-radius-md)", overflow: "hidden" }}>
-          <TableShell>
-            <thead>
-              <tr>
-                <Th>Student</Th>
-                <Th>Room</Th>
-                <Th align="right">Total due</Th>
-                <Th align="right">Paid</Th>
-                <Th align="right">Overdue</Th>
-                <Th>Status</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((r) => (
-                <tr key={r.allocation.id} className="hw-row-hover">
-                  <Td style={{ fontWeight: 600 }}>{[r.allocation.studentFirstName, r.allocation.studentLastName].filter(Boolean).join(" ")}</Td>
-                  <Td style={{ color: "var(--hw-text-muted)" }}>{r.allocation.roomNo} · {r.allocation.blockName}</Td>
-                  <Td align="right">{formatMoneySummary(r.fees.totalDuePaise)}</Td>
-                  <Td align="right">{formatMoneySummary(r.fees.totalPaidPaise)}</Td>
-                  <Td align="right">{formatMoneySummary(r.fees.totalOverduePaise)}</Td>
-                  <Td>
-                    <StatusPill label={STATUS_LABEL[r.fees.overallStatus]} tone={STATUS_TONE[r.fees.overallStatus]} />
-                  </Td>
-                </tr>
-              ))}
-              {filtered.length === 0 && <EmptyRow colSpan={6} label={needle ? "No students match that search." : "No fee records available."} />}
-            </tbody>
-          </TableShell>
-        </div>
+        <FeesView rows={rows} />
       </div>
     );
   } catch (err) {

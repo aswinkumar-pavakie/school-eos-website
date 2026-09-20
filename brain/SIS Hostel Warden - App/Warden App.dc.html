@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #e9ebf0; font-family: Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #2a52d8; text-decoration: none; }
+  a:hover { color: #1d3da6; }
+  .appscroll::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 28px 16px;">
+  <div style="width: 390px; flex: 0 0 390px; height: 844px; background: #0a0b0f; border-radius: 46px; padding: 9px; box-shadow: 0 30px 70px rgba(16, 35, 63, .28);">
+    <div style="width: 100%; height: 100%; background: #f7f8fb; border-radius: 38px; overflow: hidden; display: flex; flex-direction: column; position: relative;">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div style="background: linear-gradient(120deg, #1b35a8 0%, #2a52d8 100%); padding: 16px 18px 20px; display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #2a52d8; font-size: 15px; font-weight: 800; display: grid; place-items: center;">PP</div>
+          <div style="flex: 1; min-width: 0; color: #fff; font-size: 18px; font-weight: 800; letter-spacing: -.01em;">Pavakie Public School</div>
+          <button type="button" onClick="{{ goMessages }}" aria-label="Messages" style="all: unset; cursor: pointer; width: 34px; height: 34px; display: grid; place-items: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showSubHeader }}" hint-placeholder-val="{{ false }}">
+        <div style="background: linear-gradient(120deg, #1b35a8 0%, #2a52d8 100%); padding: 16px 18px 20px; display: flex; align-items: center; gap: 14px;">
+          <button type="button" onClick="{{ back }}" aria-label="Back" style="all: unset; cursor: pointer; width: 34px; height: 34px; border-radius: 12px; background: rgba(255,255,255,.18); display: grid; place-items: center;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+          </button>
+          <div style="color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -.01em;">{{ headerTitle }}</div>
+        </div>
+      </sc-if>
+
+      <div class="appscroll" style="flex: 1; overflow-y: auto; background: #fff;">
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 13px; padding: 16px 18px; border-bottom: 1px solid #edeff3;">
+              <div style="width: 48px; height: 48px; border-radius: 99px; background: #dfe6f8; color: #2a52d8; font-size: 15px; font-weight: 800; display: grid; place-items: center;">RK</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 19px; font-weight: 800; color: #2a52d8; letter-spacing: -.01em;">Hi, R. Krishnan</div>
+                <div style="font-size: 12.5px; color: #7b8592; margin-top: 2px;">Chief Warden · A–D Blocks</div>
+              </div>
+            </div>
+
+            <div style="padding: 16px 18px 6px; display: flex; align-items: center; gap: 9px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10233f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3l8-5v12l-8-5H3zM18 8a4 4 0 0 1 0 8"></path></svg>
+              <div style="flex: 1; font-size: 17px; font-weight: 800; color: #10233f;">Notice</div>
+              <button type="button" onClick="{{ goNotices }}" style="all: unset; cursor: pointer; font-size: 13px; font-weight: 700; color: #2a52d8;" style-hover="color: #1d3da6;">View All</button>
+            </div>
+
+            <div style="padding: 8px 18px 0;">
+              <div style="background: #e4eafa; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 12px;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 16px; font-weight: 800; color: #10233f; line-height: 1.3;">{{ noticeTitle }}</div>
+                  <div style="font-size: 13px; color: #556070; margin-top: 8px;">{{ noticeSub }}</div>
+                  <div style="font-size: 12.5px; color: #8b95a3; margin-top: 6px;">{{ noticeDate }}</div>
+                </div>
+                <button type="button" onClick="{{ nextNotice }}" aria-label="Next notice" style="all: unset; cursor: pointer; width: 34px; height: 34px; flex: 0 0 34px; border-radius: 99px; background: #cfdaf6; display: grid; place-items: center;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                </button>
+              </div>
+              <div style="display: flex; justify-content: center; gap: 6px; padding: 12px 0 4px;">
+                <sc-for list="{{ noticeDots }}" as="d" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ d.go }}" aria-label="Notice" style="all: unset; cursor: pointer; height: 5px; border-radius: 99px; width: {{ d.w }}; background: {{ d.bg }};"></button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="padding: 10px 18px 20px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="border: 1px solid #e6e9ee; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <div style="width: 36px; height: 36px; border-radius: 10px; background: #eef2fe; color: #2a52d8; font-size: 12px; font-weight: 800; display: grid; place-items: center;">PP</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">Pavakie Public School</div>
+                    <div style="font-size: 12px; color: #8b95a3; margin-top: 2px;">Warden office · 1 Sept 2026</div>
+                  </div>
+                  <span style="font-size: 11.5px; font-weight: 700; color: #2447c4; background: #eef2fe; border-radius: 99px; padding: 5px 11px;">Gate</span>
+                </div>
+                <div style="font-size: 15px; font-weight: 800; color: #10233f;">Night roll call moves to 22:00</div>
+                <div style="font-size: 13.5px; color: #8a6b3d; line-height: 1.55;">Block sweeps start at 22:00 from tonight. Parent calls for a next-day exit must be logged before 21:00 so the gate copy prints in time.</div>
+                <div style="border: 1px solid #e6e9ee; border-radius: 12px; overflow: hidden; margin-top: 2px;">
+                  <div style="background: #1e3bb0; padding: 9px 12px; display: flex; align-items: center; gap: 8px;">
+                    <div style="flex: 1; color: #fff; font-size: 11px; font-weight: 700;">Pavakie Public School</div>
+                    <div style="color: #c8d4f6; font-size: 10.5px; font-weight: 600;">Warden office</div>
+                    <div style="background: #10233f; color: #fff; font-size: 10px; font-weight: 700; border-radius: 99px; padding: 3px 8px;">1/2</div>
+                  </div>
+                  <div style="padding: 14px 14px 12px; background: #fff;">
+                    <div style="font-size: 21px; font-weight: 800; color: #10233f; letter-spacing: -.02em; line-height: 1.1;">NIGHT GATE</div>
+                    <div style="font-size: 21px; font-weight: 800; color: #2a52d8; letter-spacing: -.02em; line-height: 1.1;">REGISTER</div>
+                    <div style="font-size: 11.5px; color: #4a5462; margin-top: 10px; line-height: 1.6;">A–D Blocks · Main gate · 22:00 sweep<br>Exits close 21:00 · Returns logged at the gate</div>
+                    <div style="margin-top: 12px; height: 74px;">
+                      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="warden-poster" shape="rect" placeholder="notice poster — drop a real photo here" hint-size="100%,74px"></x-import>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="border: 1px solid #e6e9ee; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <div style="width: 36px; height: 36px; border-radius: 10px; background: #eef2fe; color: #2a52d8; font-size: 12px; font-weight: 800; display: grid; place-items: center;">PP</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">Estate office</div>
+                    <div style="font-size: 12px; color: #8b95a3; margin-top: 2px;">Maintenance · 31 Aug 2026</div>
+                  </div>
+                  <span style="font-size: 11.5px; font-weight: 700; color: #2447c4; background: #eef2fe; border-radius: 99px; padding: 5px 11px;">Issue</span>
+                </div>
+                <div style="font-size: 15px; font-weight: 800; color: #10233f;">Plumbing round for A-wing bathrooms</div>
+                <div style="font-size: 13.5px; color: #4a5462; line-height: 1.55;">The water heater in the A-wing bathroom is on the plumbing list for Monday. Two more issues in B and D Blocks are still open with the estate.</div>
+                <button type="button" onClick="{{ goIssues }}" style="all: unset; cursor: pointer; font-size: 13px; font-weight: 700; color: #2a52d8;" style-hover="color: #1d3da6;">Open issues ›</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 18px;">
+            <sc-for list="{{ gridGroups }}" as="g" hint-placeholder-count="3">
+              <div>
+                <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; padding: 0 2px 12px;">{{ g.label }}</div>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 8px;">
+                  <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+                    <button type="button" onClick="{{ it.go }}" style="all: unset; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center;">
+                      <span style="width: 50px; height: 50px; border-radius: 99px; background: #2a52d8; display: grid; place-items: center;" style-hover="background: #1d3da6;">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ it.d }}"></path></svg>
+                      </span>
+                      <span style="font-size: 11.5px; font-weight: 600; color: #3d4754; line-height: 1.3;">{{ it.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isGate }}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 16px 16px 24px; display: flex; flex-direction: column; gap: 18px;">
+            <div style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 12px;">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: #eef2fe; display: grid; place-items: center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15M4 11h16M10 4v17M14 4v17"></path></svg>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 15.5px; font-weight: 800; color: #10233f;">Main gate · night register</div>
+                <div style="font-size: 12.5px; color: #8b95a3; margin-top: 3px;">Guard Murugan S · 22:00 sweep · A–D Blocks</div>
+              </div>
+              <button type="button" onClick="{{ callGate }}" aria-label="Call the gate" style="all: unset; cursor: pointer; width: 42px; height: 42px; border-radius: 12px; background: #2a52d8; display: grid; place-items: center;" style-hover="background: #1d3da6;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
+              </button>
+            </div>
+
+            <div>
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; padding: 0 2px 10px;">Out of the hostel now</div>
+              <div style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+                <sc-for list="{{ gateOutRows }}" as="r" hint-placeholder-count="4">
+                  <div style="display: flex; gap: 12px; padding: 13px 14px; border-bottom: 1px solid #f0f2f6;">
+                    <div style="flex: 0 0 74px; font-size: 13px; font-weight: 800; color: #2a52d8; font-variant-numeric: tabular-nums;">{{ r.time }}</div>
+                    <div style="min-width: 0;">
+                      <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">{{ r.name }}</div>
+                      <div style="font-size: 12px; color: #8b95a3; margin-top: 3px;">{{ r.sub }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0; padding: 0 2px 10px;">Returns due back</div>
+              <div style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+                <sc-for list="{{ gateInRows }}" as="r" hint-placeholder-count="4">
+                  <div style="display: flex; gap: 12px; padding: 13px 14px; border-bottom: 1px solid #f0f2f6;">
+                    <div style="flex: 0 0 74px; font-size: 13px; font-weight: 800; color: #2a52d8; font-variant-numeric: tabular-nums;">{{ r.time }}</div>
+                    <div style="min-width: 0;">
+                      <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">{{ r.name }}</div>
+                      <div style="font-size: 12px; color: #8b95a3; margin-top: 3px;">{{ r.sub }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isGateLog }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="padding: 14px 16px 0; display: flex; align-items: center; gap: 8px;">
+              <label style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; border: 1px solid #e6e9ee; border-radius: 12px; height: 44px; padding: 0 13px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 17px;"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15"></path></svg>
+                <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search name, admission no. or room" aria-label="Search students" style="all: unset; flex: 1; min-width: 0; font-family: inherit; font-size: 14px; color: #10233f;">
+                <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ clearQuery }}" aria-label="Clear search" style="all: unset; cursor: pointer; color: #98a2ae; font-size: 17px; line-height: 1; padding: 0 2px;">×</button>
+                </sc-if>
+              </label>
+              <button type="button" onClick="{{ toggleGateHist }}" aria-label="Gate history" style="all: unset; cursor: pointer; width: 44px; height: 44px; flex: 0 0 44px; border: 1px solid {{ gateHistBd }}; background: {{ gateHistBg }}; border-radius: 12px; display: grid; place-items: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5M3.1 13a9 9 0 1 0 2.6-7.4L3 8M12 7v5l4 2"></path></svg>
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 8px; padding: 12px 16px 0;">
+              <sc-for list="{{ gateStates }}" as="t" hint-placeholder-count="3">
+                <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 42px; line-height: 42px; border-radius: 11px; font-size: 12.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+              </sc-for>
+            </div>
+
+            <div class="appscroll" style="display: flex; gap: 8px; padding: 12px 16px 2px; overflow-x: auto;">
+              <sc-for list="{{ gateBlocks }}" as="t" hint-placeholder-count="5">
+                <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; white-space: nowrap; padding: 8px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ gateHistOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 14px 16px 0;">
+                <div style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+                  <div style="padding: 12px 14px; border-bottom: 1px solid #f0f2f6; display: flex; align-items: center; gap: 10px;">
+                    <div style="flex: 1; font-size: 13.5px; font-weight: 800; color: #10233f;">Gate history</div>
+                    <span style="flex: 0 0 auto; white-space: nowrap; font-size: 11.5px; color: #8b95a3;">{{ gateHistCount }}</span>
+                  </div>
+                  <div style="padding: 12px 14px 0;">
+                    <button type="button" onClick="{{ toggleGateCal }}" aria-label="Pick a date" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 9px; width: 100%; height: 42px; border: 1px solid {{ gateCalEdge }}; border-radius: 11px; padding: 0 12px;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 16px;"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path></svg>
+                      <span style="flex: 1; font-size: 13px; font-weight: 700; color: #10233f;">{{ gateDateLabel }}</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+                  </div>
+                  <sc-if value="{{ gateCalOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding: 12px 14px 0;">
+                      <div style="border: 1px solid #c3d0fb; border-radius: 12px; padding: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                          <button type="button" onClick="{{ gatePrevMonth }}" aria-label="Previous month" style="all: unset; cursor: pointer; width: 30px; height: 30px; border-radius: 9px; border: 1px solid #e6e9ee; display: grid; place-items: center;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3d4754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                          </button>
+                          <div style="flex: 1; text-align: center; font-size: 13.5px; font-weight: 800; color: #10233f;">{{ gateCalMonth }}</div>
+                          <button type="button" onClick="{{ gateNextMonth }}" aria-label="Next month" style="all: unset; cursor: pointer; width: 30px; height: 30px; border-radius: 9px; border: 1px solid #e6e9ee; display: grid; place-items: center;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3d4754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                          </button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px;">
+                          <sc-for list="{{ gateCalWeekdays }}" as="w" hint-placeholder-count="7">
+                            <div style="text-align: center; font-size: 10.5px; font-weight: 700; color: #98a2ae; text-transform: uppercase;">{{ w.label }}</div>
+                          </sc-for>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+                          <sc-for list="{{ gateCalDays }}" as="d" hint-placeholder-count="35">
+                            <button type="button" onClick="{{ d.go }}" aria-label="{{ d.aria }}" style="all: unset; cursor: {{ d.cursor }}; height: 36px; border-radius: 9px; display: grid; place-items: center; font-size: 12.5px; font-weight: {{ d.weight }}; background: {{ d.bg }}; color: {{ d.fg }}; border: 1px solid {{ d.bd }};">{{ d.label }}</button>
+                          </sc-for>
+                        </div>
+                        <div style="font-size: 11px; color: #98a2ae; margin-top: 9px; line-height: 1.5;">Tinted dates have gate movement logged.</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-for list="{{ gateHistRows }}" as="h" hint-placeholder-count="3">
+                    <div style="display: flex; gap: 11px; padding: 12px 14px; border-bottom: 1px solid #f0f2f6;">
+                      <div style="width: 30px; height: 30px; flex: 0 0 30px; border-radius: 99px; background: {{ h.bg }}; display: grid; place-items: center;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{ h.fg }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ h.d }}"></path></svg>
+                      </div>
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13.5px; font-weight: 700; color: #10233f;">{{ h.title }}</div>
+                        <div style="font-size: 11.5px; color: #8b95a3; margin-top: 3px;">{{ h.sub }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ gateHistEmpty }}" hint-placeholder-val="{{ true }}">
+                    <div style="padding: 22px 14px; text-align: center; font-size: 12.5px; color: #8b95a3;">No gate movement logged on {{ gateDateLabel }}.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="padding: 14px 16px 4px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">{{ gateLabel }}</div>
+
+            <div style="padding: 6px 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ gateRows }}" as="r" hint-placeholder-count="4">
+                <div style="border: 1px solid {{ r.edge }}; border-radius: 14px; padding: 13px; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; align-items: center; gap: 11px;">
+                    <div style="width: 38px; height: 38px; flex: 0 0 38px; border-radius: 99px; background: {{ r.avBg }}; color: {{ r.avFg }}; font-size: 13px; font-weight: 800; display: grid; place-items: center;">{{ r.initials }}</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">{{ r.name }}</div>
+                      <div style="font-size: 12px; color: #8b95a3; margin-top: 2px;">{{ r.sub }}</div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 99px; white-space: nowrap; background: {{ r.badgeBg }}; color: {{ r.badgeFg }};">{{ r.badge }}</span>
+                  </div>
+                  <div style="font-size: 12.5px; color: #4a5462; line-height: 1.5;">{{ r.line }}</div>
+                  <div style="display: flex; gap: 10px;">
+                    <button type="button" onClick="{{ r.act }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #2a52d8; color: #fff;" style-hover="background: #1d3da6;">{{ r.actLabel }}</button>
+                    <button type="button" onClick="{{ r.call }}" style="all: unset; cursor: pointer; flex: 0 0 120px; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #fff; color: #3d4754; border: 1px solid #e6e9ee;">Call parent</button>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ gateEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 34px 4px; text-align: center; font-size: 13px; color: #8b95a3;">No students match that search or filter.</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isStudy }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="padding: 14px 16px 0;">
+              <label style="display: flex; align-items: center; gap: 9px; border: 1px solid #e6e9ee; border-radius: 12px; height: 44px; padding: 0 13px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 17px;"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15"></path></svg>
+                <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search name or room" aria-label="Search" style="all: unset; flex: 1; min-width: 0; font-family: inherit; font-size: 14px; color: #10233f;">
+                <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ clearQuery }}" aria-label="Clear search" style="all: unset; cursor: pointer; color: #98a2ae; font-size: 17px; line-height: 1; padding: 0 2px;">×</button>
+                </sc-if>
+              </label>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px 0;">
+              <button type="button" onClick="{{ toggleCal }}" aria-label="Pick a date" style="all: unset; cursor: pointer; flex: 1; display: flex; align-items: center; gap: 9px; height: 44px; border: 1px solid {{ calEdge }}; border-radius: 12px; padding: 0 13px;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 17px;"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path></svg>
+                <span style="flex: 1; font-size: 13.5px; font-weight: 700; color: #10233f;">{{ studyDateLabel }}</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              
+            </div>
+
+            <sc-if value="{{ calOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 12px 16px 0;">
+                <div style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 13px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 11px;">
+                    <button type="button" onClick="{{ prevMonth }}" aria-label="Previous month" style="all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 9px; border: 1px solid #e6e9ee; display: grid; place-items: center;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3d4754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                    </button>
+                    <div style="flex: 1; text-align: center; font-size: 14px; font-weight: 800; color: #10233f;">{{ calMonth }}</div>
+                    <button type="button" onClick="{{ nextMonth }}" aria-label="Next month" style="all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 9px; border: 1px solid #e6e9ee; display: grid; place-items: center;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3d4754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px;">
+                    <sc-for list="{{ calWeekdays }}" as="w" hint-placeholder-count="7">
+                      <div style="text-align: center; font-size: 10.5px; font-weight: 700; color: #98a2ae; text-transform: uppercase;">{{ w.label }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+                    <sc-for list="{{ calDays }}" as="d" hint-placeholder-count="35">
+                      <button type="button" onClick="{{ d.go }}" aria-label="{{ d.aria }}" style="all: unset; cursor: {{ d.cursor }}; height: 38px; border-radius: 9px; display: grid; place-items: center; font-size: 13px; font-weight: {{ d.weight }}; background: {{ d.bg }}; color: {{ d.fg }}; border: 1px solid {{ d.bd }};">{{ d.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div style="font-size: 11.5px; color: #98a2ae; margin-top: 10px; line-height: 1.5;">Dots mark dates with a submitted roll. Pick a date to open its study hall.</div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ histOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 12px 16px 0;">
+                <div style="border: 1px solid #e6e9ee; border-radius: 14px; overflow: hidden;">
+                  <div style="padding: 12px 14px; border-bottom: 1px solid #f0f2f6; font-size: 13.5px; font-weight: 800; color: #10233f;">Submitted rolls</div>
+                  <sc-for list="{{ histRows }}" as="h" hint-placeholder-count="2">
+                    <button type="button" onClick="{{ h.go }}" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border-bottom: 1px solid #f0f2f6;">
+                      <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13.5px; font-weight: 700; color: #10233f;">{{ h.title }}</div>
+                        <div style="font-size: 11.5px; color: #8b95a3; margin-top: 3px;">{{ h.sub }}</div>
+                      </div>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ histEmpty }}" hint-placeholder-val="{{ true }}">
+                    <div style="padding: 22px 14px; text-align: center; font-size: 12.5px; color: #8b95a3;">Nothing submitted yet. Mark a roll and submit it.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="display: flex; gap: 8px; padding: 12px 16px 0;">
+              <sc-for list="{{ studySessions }}" as="t" hint-placeholder-count="2">
+                <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 42px; line-height: 42px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+              </sc-for>
+            </div>
+
+            <div class="appscroll" style="display: flex; gap: 8px; padding: 12px 16px 2px; overflow-x: auto;">
+              <sc-for list="{{ studyClasses }}" as="t" hint-placeholder-count="4">
+                <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; white-space: nowrap; padding: 8px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+              </sc-for>
+            </div>
+
+            <div style="padding: 14px 16px 0;">
+              <div style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 14px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 15.5px; font-weight: 800; color: #10233f;">{{ studyTitle }}</div>
+                    <div style="font-size: 12.5px; color: #8b95a3; margin-top: 3px;">{{ studySub }}</div>
+                  </div>
+                  <span style="font-size: 11.5px; font-weight: 700; color: #2447c4; background: #eef2fe; border-radius: 99px; padding: 5px 11px; white-space: nowrap;">{{ studyMarked }}</span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 13px;">
+                  <sc-for list="{{ studyCounts }}" as="c" hint-placeholder-count="3">
+                    <div style="border-radius: 11px; padding: 9px 10px; background: {{ c.bg }};">
+                      <div style="font-size: 19px; font-weight: 800; color: {{ c.fg }}; letter-spacing: -.02em;">{{ c.value }}</div>
+                      <div style="font-size: 11px; font-weight: 700; color: {{ c.fg }}; margin-top: 2px;">{{ c.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 13px;">
+                  <button type="button" onClick="{{ markAllPresent }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #2a52d8; color: #fff;" style-hover="background: #1d3da6;">Mark all present</button>
+                  <button type="button" onClick="{{ clearMarks }}" style="all: unset; cursor: pointer; flex: 0 0 104px; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #fff; color: #3d4754; border: 1px solid #e6e9ee;">Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ studyRows }}" as="r" hint-placeholder-count="4">
+                <div style="border: 1px solid {{ r.edge }}; border-radius: 14px; padding: 12px 13px; display: flex; align-items: center; gap: 11px;">
+                  <div style="width: 38px; height: 38px; flex: 0 0 38px; border-radius: 99px; background: {{ r.avBg }}; color: {{ r.avFg }}; font-size: 13px; font-weight: 800; display: grid; place-items: center;">{{ r.initials }}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 14.5px; font-weight: 800; color: #10233f;">{{ r.name }}</div>
+                    <div style="font-size: 12px; color: #8b95a3; margin-top: 2px;">{{ r.room }}</div>
+                  </div>
+                  <div style="display: flex; gap: 4px; background: #f3f5f9; border-radius: 11px; padding: 3px;">
+                    <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3">
+                      <button type="button" onClick="{{ o.run }}" aria-label="{{ o.title }}" style="all: unset; cursor: pointer; width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center; font-size: 13px; font-weight: 800; background: {{ o.bg }}; color: {{ o.fg }};">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ studyEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 30px 4px; text-align: center; font-size: 13px; color: #8b95a3;">No students match that search.</div>
+              </sc-if>
+              
+              <div style="display: flex; gap: 10px; padding-top: 4px;">
+                <button type="button" onClick="{{ saveRoll }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 46px; line-height: 46px; border-radius: 12px; font-size: 14px; font-weight: 700; background: #fff; color: #3d4754; border: 1px solid #e6e9ee;" style-hover="background: #f3f5f9;">Save</button>
+                <button type="button" onClick="{{ submitRoll }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 46px; line-height: 46px; border-radius: 12px; font-size: 14px; font-weight: 700; background: #2a52d8; color: #fff;" style-hover="background: #1d3da6;">Submit roll</button>
+              </div>
+              <sc-if value="{{ rollState }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size: 12px; font-weight: 700; color: #1c6b3f; background: #e7f4ec; border-radius: 10px; padding: 10px 12px;">{{ rollState }}</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <sc-if value="{{ showSearch }}" hint-placeholder-val="{{ true }}">
+              <div style="padding: 14px 16px 0;">
+                <label style="display: flex; align-items: center; gap: 9px; border: 1px solid #e6e9ee; border-radius: 12px; height: 44px; padding: 0 13px;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#98a2ae" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 17px;"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15"></path></svg>
+                  <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="{{ searchHint }}" aria-label="Search" style="all: unset; flex: 1; min-width: 0; font-family: inherit; font-size: 14px; color: #10233f;">
+                  <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+                    <button type="button" onClick="{{ clearQuery }}" aria-label="Clear search" style="all: unset; cursor: pointer; color: #98a2ae; font-size: 17px; line-height: 1; padding: 0 2px;">×</button>
+                  </sc-if>
+                </label>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 12px 16px 0;">
+                <sc-if value="{{ issueFormShut }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ openIssueForm }}" style="all: unset; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 46px; border-radius: 12px; background: #2a52d8; color: #fff; font-size: 14px; font-weight: 700;" style-hover="background: #1d3da6;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Log an issue
+                  </button>
+                </sc-if>
+                <sc-if value="{{ issueFormOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 11px;">
+                    <div style="font-size: 15.5px; font-weight: 800; color: #10233f;">Log an issue</div>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">What is wrong
+                      <input value="{{ fTitle }}" onChange="{{ onFTitle }}" placeholder="Water heater dead in A-wing bathroom" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Category
+                      <input value="{{ fCategory }}" onChange="{{ onFCategory }}" placeholder="Plumbing" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Told to the warden by
+                      <input value="{{ fTold }}" onChange="{{ onFTold }}" placeholder="Aarav Menon · A-212" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Assigned to
+                      <input value="{{ fOwner }}" onChange="{{ onFOwner }}" placeholder="Estate — plumbing" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <div style="display: flex; flex-direction: column; gap: 7px;">
+                      <div style="font-size: 12px; font-weight: 700; color: #6b7580;">Priority</div>
+                      <div style="display: flex; gap: 8px;">
+                        <sc-for list="{{ fPriorities }}" as="p" hint-placeholder-count="3">
+                          <button type="button" onClick="{{ p.go }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 42px; line-height: 42px; border-radius: 10px; font-size: 13px; font-weight: 700; background: {{ p.bg }}; color: {{ p.fg }}; border: 1px solid {{ p.bd }};">{{ p.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 2px;">
+                      <button type="button" onClick="{{ saveIssue }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #2a52d8; color: #fff;" style-hover="background: #1d3da6;">Save issue</button>
+                      <button type="button" onClick="{{ closeIssueForm }}" style="all: unset; cursor: pointer; flex: 0 0 104px; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #fff; color: #3d4754; border: 1px solid #e6e9ee;">Cancel</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isMess }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 12px 16px 0;">
+                <sc-if value="{{ messFormShut }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ openMessAdd }}" style="all: unset; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 46px; border-radius: 12px; background: #2a52d8; color: #fff; font-size: 14px; font-weight: 700;" style-hover="background: #1d3da6;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Add a meal
+                  </button>
+                </sc-if>
+                <sc-if value="{{ messFormOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="border: 1px solid #c3d0fb; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 11px;">
+                    <div style="font-size: 15.5px; font-weight: 800; color: #10233f;">{{ messFormTitle }}</div>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Meal
+                      <input value="{{ mMeal }}" onChange="{{ onMMeal }}" placeholder="Breakfast" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Time
+                      <input value="{{ mTime }}" onChange="{{ onMTime }}" placeholder="7:00 AM" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Mess halls
+                      <input value="{{ mHall }}" onChange="{{ onMHall }}" placeholder="A–D mess halls" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Menu — one dish per line
+                      <textarea value="{{ mItems }}" onChange="{{ onMItems }}" placeholder="Idli · 4 nos&#10;Sambar, coconut chutney" style="all: unset; min-height: 84px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 14px; font-weight: 500; line-height: 1.5; color: #10233f; white-space: pre-wrap;"></textarea>
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: #6b7580;">Warden's note (optional)
+                      <input value="{{ mNote }}" onChange="{{ onMNote }}" placeholder="Menu repetition noted at the mess round" style="all: unset; height: 42px; border: 1px solid #e6e9ee; border-radius: 10px; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500; color: #10233f;">
+                    </label>
+                    <div style="display: flex; gap: 10px; margin-top: 2px;">
+                      <button type="button" onClick="{{ saveMeal }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #2a52d8; color: #fff;" style-hover="background: #1d3da6;">Save meal</button>
+                      <button type="button" onClick="{{ closeMessForm }}" style="all: unset; cursor: pointer; flex: 0 0 104px; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: #fff; color: #3d4754; border: 1px solid #e6e9ee;">Cancel</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasTabs }}" hint-placeholder-val="{{ true }}">
+              <div class="appscroll" style="display: flex; gap: 8px; padding: 14px 16px 6px; overflow-x: auto;">
+                <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; white-space: nowrap; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasSelects }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 16px 0;">
+                <sc-for list="{{ selects }}" as="sel" hint-placeholder-count="3">
+                  <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+                    <span style="font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #9aa4b0;">{{ sel.label }}</span>
+                    <button type="button" onClick="{{ sel.toggle }}" aria-label="{{ sel.aria }}" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 6px; height: 42px; border: 1px solid {{ sel.edge }}; background: {{ sel.bg }}; border-radius: 11px; padding: 0 10px 0 11px;">
+                      <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 700; color: {{ sel.fg }};">{{ sel.short }}</span>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{ sel.fg }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 13px; transform: {{ sel.spin }};"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+                  </div>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ selPanelOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 10px 16px 0;">
+                  <div style="border: 1px solid #c3d0fb; border-radius: 12px; overflow: hidden;">
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 11px 13px; border-bottom: 1px solid #f0f2f6;">
+                      <div style="flex: 1; font-size: 13px; font-weight: 800; color: #10233f;">{{ selPanelTitle }}</div>
+                      <button type="button" onClick="{{ closeSel }}" aria-label="Close" style="all: unset; cursor: pointer; color: #98a2ae; font-size: 17px; line-height: 1; padding: 0 2px;">×</button>
+                    </div>
+                    <sc-for list="{{ selPanelOptions }}" as="o" hint-placeholder-count="5">
+                      <button type="button" onClick="{{ o.go }}" style="all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 13px; border-bottom: 1px solid #f4f6f9; background: {{ o.bg }};">
+                        <span style="flex: 1; font-size: 13.5px; font-weight: {{ o.weight }}; color: {{ o.fg }};">{{ o.label }}</span>
+                        <span style="font-size: 11.5px; color: #98a2ae;">{{ o.count }}</span>
+                        <sc-if value="{{ o.on }}" hint-placeholder-val="{{ false }}">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a52d8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        </sc-if>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </sc-if>
+
+            <sc-if value="{{ hasTabs2 }}" hint-placeholder-val="{{ false }}">
+              <div class="appscroll" style="display: flex; gap: 8px; padding: 8px 16px 2px; overflow-x: auto;">
+                <sc-for list="{{ tabs2 }}" as="t" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; white-space: nowrap; padding: 8px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ hasTabs3 }}" hint-placeholder-val="{{ false }}">
+              <div class="appscroll" style="display: flex; gap: 8px; padding: 8px 16px 2px; overflow-x: auto;">
+                <sc-for list="{{ tabs3 }}" as="t" hint-placeholder-count="5">
+                  <button type="button" onClick="{{ t.go }}" style="all: unset; cursor: pointer; white-space: nowrap; padding: 8px 14px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.bd }};">{{ t.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <div style="padding: 12px 16px 4px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9aa4b0;">{{ listLabel }}</div>
+
+            <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ false }}">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px 16px 4px;">
+                <sc-for list="{{ stats }}" as="st" hint-placeholder-count="2">
+                  <div style="border: 1px solid #e6e9ee; border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 20px; font-weight: 800; color: #10233f; letter-spacing: -.02em;">{{ st.value }}</div>
+                    <div style="font-size: 11.5px; color: #8b95a3; margin-top: 4px; line-height: 1.35;">{{ st.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ rowsEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 36px 16px; text-align: center; font-size: 13px; color: #8b95a3;">No records match that search.</div>
+            </sc-if>
+
+            <div style="padding: 10px 16px 24px; display: flex; flex-direction: column; gap: 12px;">
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3">
+                <div style="border: 1px solid #e6e9ee; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 9px;">
+                  <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 15px; font-weight: 800; color: #10233f; line-height: 1.3;">{{ r.title }}</div>
+                      <div style="font-size: 12px; color: #8b95a3; margin-top: 3px;">{{ r.sub }}</div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 99px; white-space: nowrap; background: {{ r.badgeBg }}; color: {{ r.badgeFg }};">{{ r.badge }}</span>
+                  </div>
+                  <sc-for list="{{ r.lines }}" as="l" hint-placeholder-count="2">
+                    <div style="font-size: 12.5px; color: #4a5462; line-height: 1.5;">{{ l.text }}</div>
+                  </sc-for>
+                  <sc-if value="{{ r.hasActions }}" hint-placeholder-val="{{ true }}">
+                    <div style="display: flex; gap: 10px; margin-top: 2px;">
+                      <sc-for list="{{ r.actions }}" as="a" hint-placeholder-count="2">
+                        <button type="button" onClick="{{ a.run }}" style="all: unset; cursor: pointer; flex: 1; text-align: center; height: 44px; line-height: 44px; border-radius: 11px; font-size: 13.5px; font-weight: 700; background: {{ a.bg }}; color: {{ a.fg }}; border: 1px solid {{ a.bd }};">{{ a.label }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ flash }}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; left: 16px; right: 16px; bottom: 86px; background: #10233f; color: #fff; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; line-height: 1.45; display: flex; gap: 10px; align-items: flex-start;">
+          <span style="flex: 1;">{{ flash }}</span>
+          <button type="button" onClick="{{ clearFlash }}" aria-label="Dismiss" style="all: unset; cursor: pointer; color: #9fb2d8; font-size: 16px; line-height: 1;">×</button>
+        </div>
+      </sc-if>
+
+      <div style="border-top: 1px solid #edeff3; background: #fff; display: grid; grid-template-columns: repeat(3, 1fr); padding: 9px 0 13px;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="3">
+          <button type="button" onClick="{{ n.go }}" style="all: unset; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="{{ n.color }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.d }}"></path></svg>
+            <span style="font-size: 11.5px; font-weight: 700; color: {{ n.color }};">{{ n.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 440, &quot;height&quot;: 920}}">
+const BLUE = '#2a52d8', LINE = '#e6e9ee';
+const TONE = { ok: ['#e7f4ec', '#1c6b3f'], warn: ['#fdf1e0', '#8a5b18'], bad: ['#fdeaea', '#9b2323'], info: ['#eef2fe', '#2447c4'] };
+const badge = (text, tone) => ({ badge: text, badgeBg: TONE[tone || 'info'][0], badgeFg: TONE[tone || 'info'][1] });
+
+const NOTICES = [
+  { title: 'Night roll call · 22:00', sub: 'All blocks · warden sweep', date: '1 Sept 2026' },
+  { title: 'Parent calls close at 21:00', sub: 'Warden office · gate register', date: '31 Aug 2026' },
+  { title: 'Term 1 hostel fees due 5 Sept', sub: 'Accounts · A–D Blocks', date: '28 Aug 2026' },
+];
+
+const GRID = [
+  { label: 'My blocks', items: [
+    { id: 'students', label: 'Students', d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.9' },
+    { id: 'study', label: 'Study hours', d: 'M12 6v14M12 6C10 4 7 4 3 5v13c4-1 7-1 9 1M12 6c2-2 5-2 9-1v13c-4-1-7-1-9 1' },
+    { id: 'gatelog', label: 'Gate log', d: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' },
+  ]},
+  { label: 'Hostel', items: [
+    { id: 'hostels', label: 'Hostel details', d: 'M3 21V8l9-5 9 5v13M9 21v-5h6v5' },
+    { id: 'rooms', label: 'Rooms', d: 'M3 3h18v18H3zM3 9h18M9 21V9' },
+    { id: 'fees', label: 'Hostel fees', d: 'M2 7h20v10H2zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6M6 12h.01M18 12h.01' },
+    { id: 'mess', label: 'Mess', d: 'M4 3v8a3 3 0 0 0 6 0V3M7 11v10M17 3c-1.7 0-3 2-3 5s1.3 4 3 4 3-1 3-4-1.3-5-3-5M17 12v9' },
+  ]},
+  { label: 'Administration', items: [
+    { id: 'issues', label: 'Issues', d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM12 8v4M12 14h.01' },
+    { id: 'staff', label: 'Warden roster', d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M19 8v6M22 11h-6' },
+  ]},
+];
+
+const TITLES = {
+  students: 'Student details', study: 'Study hours', leave: 'Student Leave',
+  gatelog: 'Gate log', hostels: 'Hostel details', rooms: 'Rooms & occupancy',
+  fees: 'Hostel fees', mess: 'Mess register', issues: 'Issues & maintenance', applications: 'Applications',
+  reports: 'Reports', staff: 'Warden roster', notices: 'All notices', messages: 'Messages',
+};
+
+const STUDENTS = [
+  { name: 'Aarav Menon', roll: 'ADM-8114', room: 'A-212', block: 'A Block', cls: 'Class 8 · Section A', guardian: 'S. Menon (father) · 98450 22104', state: 'In hostel', fee: 'Paid' },
+  { name: 'Rahul Iyer', roll: 'ADM-7220', room: 'A-118', block: 'A Block', cls: 'Class 9 · Section B', guardian: 'K. Iyer (father) · 78450 11902', state: 'Out on pass', fee: 'Overdue ₹18,000' },
+  { name: 'Fatima Noor', roll: 'ADM-6012', room: 'B-231', block: 'B Block', cls: 'Class 10 · Section A', guardian: 'A. Noor (father) · 99400 71230', state: 'On leave', fee: 'Paid' },
+  { name: 'Nivedha S', roll: 'ADM-6120', room: 'A-104', block: 'A Block', cls: 'Class 9 · Section C', guardian: 'S. Raman (mother) · 98450 77120', state: 'In hostel', fee: 'Paid' },
+  { name: 'Ishan Verma', roll: 'ADM-6003', room: 'D-011', block: 'D Block', cls: 'Class 11 · Section A', guardian: 'A. Verma (mother) · 96770 12045', state: 'Out on pass', fee: 'Overdue ₹9,500' },
+  { name: 'Zoya Rahman', roll: 'ADM-12004', room: 'C-112', block: 'C Block', cls: 'Class 12 · Section B', guardian: 'I. Rahman (father) · 98111 22093', state: 'On leave', fee: 'Pending ₹52,000' },
+  { name: 'Dev Patel', roll: 'ADM-8077', room: 'B-305', block: 'B Block', cls: 'Class 8 · Section B', guardian: 'N. Patel (father) · 79000 41822', state: 'In hostel', fee: 'Pending ₹46,000' },
+  { name: 'Meera Pillai', roll: 'ADM-7188', room: 'B-214', block: 'B Block', cls: 'Class 9 · Section A', guardian: 'R. Pillai (mother) · 70119 55012', state: 'In hostel', fee: 'Pending ₹4,200' },
+];
+
+const LEAVE = [
+  { name: 'Fatima Noor', roll: 'ADM-6012', room: 'B-231 · B Block', days: '3 days', purpose: 'Sibling wedding at Kozhikode', dates: '4 Sept – 6 Sept 2026', call: 'Father · 99400 71230 · 19:10', stage: 'Pending' },
+  { name: 'Rahul Iyer', roll: 'ADM-7220', room: 'A-118 · A Block', days: '5 days', purpose: 'Family medical emergency', dates: '1 Sept – 5 Sept 2026', call: 'Father · 78450 11902 · 20:45', stage: 'Pending' },
+  { name: 'Ishan Verma', roll: 'ADM-6003', room: 'D-011 · D Block', days: '1 day', purpose: 'Town library reference work', dates: '3 Sept 2026', call: 'Mother · 96770 12045 · 08:15', stage: 'Approved' },
+  { name: 'Dev Patel', roll: 'ADM-8077', room: 'B-305 · B Block', days: '7 days', purpose: 'Onam festival at home', dates: '12 Sept – 18 Sept 2026', call: 'Father · 79000 41822 · 18:05', stage: 'Approved' },
+  { name: 'Aisha Kabir', roll: 'ADM-6030', room: 'B-118 · B Block', days: '4 days', purpose: 'Cousin wedding, Chennai', dates: '9 Sept – 12 Sept 2026', call: 'Father · 88450 90031 · 17:20', stage: 'Rejected' },
+];
+
+const GATE_OUT = [
+  { time: '7:05 AM', name: 'Rohit Sharma', sub: 'A-208 · field trip · back 7:30 PM' },
+  { time: '8:05 AM', name: 'Sneha Kulkarni', sub: 'C-104 · science lab visit · back 6:00 PM' },
+  { time: '9:00 AM', name: 'Ishan Verma', sub: 'D-011 · town library · back 6:00 PM' },
+  { time: '7:00 PM', name: 'Rahul Iyer', sub: 'A-118 · medical emergency · back 5 Sept' },
+];
+const GATE_IN = [
+  { time: '6:30 PM', name: 'Meera Pillai', sub: 'B-214 · orthopaedic review' },
+  { time: '7:00 PM', name: 'Karthik R', sub: 'C-108 · sports camp, Bengaluru' },
+  { time: '8:00 PM', name: 'Harshit Rao', sub: 'D-004 · home leave' },
+  { time: '8:30 PM', name: 'Aisha Kabir', sub: 'B-118 · family visit · overdue' },
+];
+
+const STAMP = '1 Sept 2026 · 22:05';
+const floorOf = room => {
+  const n = (room.split('-')[1] || '').replace(/\D/g, '');
+  const f = n.length >= 3 ? Number(n[0]) : 0;
+  return f === 0 ? 'Ground floor' : `Floor ${f}`;
+};
+const isoOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+const MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const REGISTER = GATE_OUT.map(g => ({ name: g.name, time: g.time, sub: g.sub, status: 'Out', detail: 'Exit logged at the main gate by the warden.' }))
+  .concat(GATE_IN.map(g => ({ name: g.name, time: g.time, sub: g.sub, status: 'Due', detail: 'Return expected — log the student in at the gate.' })));
+
+const GATE_HISTORY = [
+  { name: 'Rohit Sharma', room: 'A-208', block: 'A Block', action: 'Out', date: '2026-09-18', at: '18 Sept 2026 · 07:05' },
+  { name: 'Sneha Kulkarni', room: 'C-104', block: 'C Block', action: 'Out', date: '2026-09-18', at: '18 Sept 2026 · 08:05' },
+  { name: 'Meera Pillai', room: 'B-214', block: 'B Block', action: 'In', date: '2026-09-18', at: '18 Sept 2026 · 18:30' },
+  { name: 'Karthik R', room: 'C-108', block: 'C Block', action: 'In', date: '2026-09-17', at: '17 Sept 2026 · 19:00' },
+  { name: 'Ishan Verma', room: 'D-011', block: 'D Block', action: 'Out', date: '2026-09-17', at: '17 Sept 2026 · 09:00' },
+  { name: 'Harshit Rao', room: 'D-004', block: 'D Block', action: 'In', date: '2026-09-16', at: '16 Sept 2026 · 20:10' },
+  { name: 'Rahul Iyer', room: 'A-118', block: 'A Block', action: 'Out', date: '2026-09-15', at: '15 Sept 2026 · 21:15' },
+];
+
+const FEES = [
+  { name: 'Rahul Iyer', roomLine: 'A-118 · A Block', invoice: 'INV-20261-0412', head: 'Room + mess, Term 1', amount: '₹18,000', due: '5 Sept 2026', status: 'Overdue' },
+  { name: 'Ishan Verma', roomLine: 'D-011 · D Block', invoice: 'INV-20261-0398', head: 'Short stay, Sept', amount: '₹9,500', due: '3 Sept 2026', status: 'Overdue' },
+  { name: 'Tanya Joseph', roomLine: 'D-017 · D Block', invoice: 'INV-20261-0391', head: 'Room + mess, Term 1', amount: '₹52,000', due: '2 Sept 2026', status: 'Overdue' },
+  { name: 'Zoya Rahman', roomLine: 'C-112 · C Block', invoice: 'INV-20261-0410', head: 'Senior room + mess, Term 1', amount: '₹52,000', due: '14 Sept 2026', status: 'Pending' },
+  { name: 'Dev Patel', roomLine: 'B-305 · B Block', invoice: 'INV-20261-0381', head: 'Room + mess, Term 1', amount: '₹46,000', due: '18 Sept 2026', status: 'Pending' },
+  { name: 'Aarav Menon', roomLine: 'A-212 · A Block', invoice: 'INV-20261-0344', head: 'Room + mess, Term 1', amount: '₹46,000', due: '12 Jul 2026', status: 'Paid' },
+  { name: 'Fatima Noor', roomLine: 'B-231 · B Block', invoice: 'INV-20261-0377', head: 'Room + mess, Term 1', amount: '₹46,000', due: '12 Jul 2026', status: 'Paid' },
+];
+
+const ISSUES = [
+  { title: 'Water heater dead in A-wing bathroom', id: 'CMP-1188', category: 'Plumbing', told: 'Aarav Menon · A-212', owner: 'Estate — plumbing', age: '2 days', priority: 'High' },
+  { title: 'Broken window latch D-011', id: 'CMP-1176', category: 'Carpentry', told: 'Ishan Verma · D-011', owner: 'Estate — carpentry', age: '6 days', priority: 'High' },
+  { title: 'Wi-Fi drops after 23:00 in B Block', id: 'CMP-1185', category: 'Network', told: 'Nivedha S · A-104', owner: 'IT helpdesk', age: '3 days', priority: 'Medium' },
+  { title: 'Washing machine out of order', id: 'CMP-1162', category: 'Facilities', told: 'Dev Patel · B-305', owner: 'Store', age: '9 days', priority: 'Medium' },
+  { title: 'Corridor light flickering B-231', id: 'CMP-1159', category: 'Electrical', told: 'Fatima Noor · B-231', owner: 'Estate — electrical', age: '3 days', priority: 'Low' },
+  { title: 'Study lamp needed in C-108', id: 'CMP-1170', category: 'Facilities', told: 'Karthik R · C-108', owner: 'Store', age: '8 days', priority: 'Low' },
+];
+
+const HOSTELS = [
+  { name: 'A Block', code: 'BLK-A', wing: 'Boys', rooms: 120, capacity: 360, occupied: 331, warden: 'R. Krishnan · 98450 22001', mess: 'Veg + non-veg' },
+  { name: 'B Block', code: 'BLK-B', wing: 'Girls', rooms: 96, capacity: 288, occupied: 274, warden: 'L. Fernandes · 98450 22002', mess: 'Veg + non-veg' },
+  { name: 'C Block', code: 'BLK-C', wing: 'Girls', rooms: 40, capacity: 80, occupied: 63, warden: 'S. Bhatt · 98450 22003', mess: 'Pure veg' },
+  { name: 'D Block', code: 'BLK-D', wing: 'Boys', rooms: 24, capacity: 48, occupied: 19, warden: 'M. Qureshi · 98450 22004', mess: 'Day mess only' },
+];
+
+const ROLLCALL = [
+  { block: 'A Block', swept: '120 rooms', present: 331, leave: 18, unaccounted: 2, by: 'R. Krishnan' },
+  { block: 'B Block', swept: '96 rooms', present: 261, leave: 12, unaccounted: 1, by: 'L. Fernandes' },
+  { block: 'C Block', swept: '40 rooms', present: 60, leave: 3, unaccounted: 0, by: 'S. Bhatt' },
+  { block: 'D Block', swept: '24 rooms', present: 17, leave: 1, unaccounted: 1, by: 'M. Qureshi' },
+];
+
+const APPLICATIONS = [
+  { name: 'Sneha Kulkarni', ref: 'AP-2091 · 98450 11204', cls: 'Class 11 · Section B', distance: '412 km', pref: 'C Block · Triple', docs: 'Complete', status: 'Shortlisted' },
+  { name: 'Manav Joshi', ref: 'AP-2088 · 90031 55210', cls: 'Class 9 · Section A', distance: '188 km', pref: 'A Block · Triple', docs: 'Complete', status: 'Shortlisted' },
+  { name: 'Ritika Bose', ref: 'AP-2084 · 88450 90112', cls: 'Class 10 · Section C', distance: '96 km', pref: 'B Block · Twin', docs: 'Awaiting transfer certificate', status: 'On hold' },
+  { name: 'Aditya Rane', ref: 'AP-2079 · 70110 22456', cls: 'Class 12 · Section A', distance: '54 km', pref: 'C Block · Twin', docs: 'Awaiting address proof', status: 'On hold' },
+];
+
+const STUDY_ROLL = [
+  { name: 'Aarav Menon', room: 'A-212 · Class 8' },
+  { name: 'Nivedha S', room: 'A-104 · Class 9' },
+  { name: 'Dev Patel', room: 'B-305 · Class 8' },
+  { name: 'Meera Pillai', room: 'B-214 · Class 9' },
+  { name: 'Karthik R', room: 'C-108 · Class 12' },
+  { name: 'Sneha Kulkarni', room: 'C-104 · Class 11' },
+];
+
+const MOVEMENT = [
+  { id: 'LOG-4412', name: 'Aarav Menon', room: 'ADM-8114 · A-212 · A Block', type: 'Home leave', call: 'Father · S. Menon · 98450 22104 · called 18:40', out: 'Out 1 Sept 19:30', back: 'Back by 5 Sept 18:00', reason: 'Father admitted at Kozhikode; travelling tonight.' },
+  { id: 'LOG-4410', name: 'Harshit Rao', room: 'ADM-7066 · D-004 · D Block', type: 'Home leave', call: 'Father · G. Rao · 90011 55428 · called 06:20', out: 'Out 28 Aug 07:10', back: 'Back by 1 Sept 20:00', reason: 'Returning from home leave; night bus delayed two hours.' },
+  { id: 'LOG-4408', name: 'Rahul Iyer', room: 'ADM-7220 · A-118 · A Block', type: 'Medical', call: 'Father · K. Iyer · 78450 11902 · called 20:45', out: 'Out 1 Sept 21:15', back: 'Back by 5 Sept 18:00', reason: 'Family medical emergency at home.' },
+  { id: 'LOG-4405', name: 'Fatima Noor', room: 'ADM-6012 · B-231 · B Block', type: 'Home leave', call: 'Father · A. Noor · 99400 71230 · called 19:10', out: 'Out 4 Sept 07:00', back: 'Back by 6 Sept 20:00', reason: 'Sibling wedding at Kozhikode.' },
+  { id: 'LOG-4396', name: 'Ishan Verma', room: 'ADM-6003 · D-011 · D Block', type: 'Local outing', call: 'Mother · A. Verma · 96770 12045 · called 08:15', out: 'Out 3 Sept 09:00', back: 'Back by 3 Sept 18:00', reason: 'Reference work at the town central library.' },
+];
+
+const REPORTS = [
+  { title: 'Occupancy statement', sub: 'A–D Blocks · Aug 2026', lines: ['Bed-level allotment, block by block', 'Generated 1 Sept 2026 · 4 pages'] },
+  { title: 'Fee arrears', sub: 'Term 1 · overdue only', lines: ['Three overdue invoices, ₹79,500 outstanding', 'Generated 1 Sept 2026 · 2 pages'] },
+  { title: 'Gate register export', sub: 'Exits and returns · Aug 2026', lines: ['312 exits, 308 returns logged', 'Generated 1 Sept 2026 · 9 pages'] },
+  { title: 'Issue log', sub: 'Maintenance · Aug 2026', lines: ['Six issues open, four closed in the month', 'Generated 1 Sept 2026 · 3 pages'] },
+];
+
+const STAFF = [
+  { name: 'R. Krishnan', role: 'Chief warden · A Block', phone: '98450 22001', shift: 'Night sweep 22:00 · on duty' },
+  { name: 'L. Fernandes', role: 'Warden · B Block', phone: '98450 22002', shift: 'Evening study hall · on duty' },
+  { name: 'S. Bhatt', role: 'Warden · C Block', phone: '98450 22003', shift: 'Morning study hall' },
+  { name: 'M. Qureshi', role: 'Warden · D Block', phone: '98450 22004', shift: 'Off duty until 2 Sept' },
+];
+
+const MESS = [
+  { meal: 'Breakfast · 7:00 AM', menu: 'Idli, sambar, coconut chutney, boiled egg', count: '648 served', note: 'D mess reported cold service — with the supervisor' },
+  { meal: 'Lunch · 12:30 PM', menu: 'Rice, rasam, beans poriyal, curd, banana', count: '631 served', note: 'Standard menu' },
+  { meal: 'Snacks · 4:30 PM', menu: 'Bonda, tea, milk for juniors', count: '590 served', note: 'Standard menu' },
+  { meal: 'Dinner · 8:00 PM', menu: 'Chapati, dal, veg kurma, rice', count: '644 served', note: 'Menu repetition noted at the mess round' },
+];
+
+const meal = (m, time, hall, items, note) => ({ meal: m, time, hall, items, note: note || '' });
+const MESS_WEEK = {
+  Monday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Idli · 4 nos', 'Sambar, coconut chutney', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Rice, chapati · 3 nos', 'Sambar, rasam', 'Beans poriyal', 'Curd, pickle, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Bonda, coconut chutney', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Chapati · 4 nos, rice', 'Dal tadka, veg kurma', 'Onion salad', 'Banana']),
+  ],
+  Tuesday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Pongal, vada', 'Sambar, tomato chutney', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Rice, chapati · 3 nos', 'Kara kuzhambu, rasam', 'Cabbage kootu', 'Curd, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Sundal, lemon rice', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Idiyappam, chapati', 'Veg stew, dal', 'Fruit — papaya']),
+  ],
+  Wednesday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Dosa · 3 nos', 'Sambar, milagai podi', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Veg biryani', 'Onion raita, brinjal curry', 'Rice, rasam', 'Curd, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Vegetable puff', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Chapati · 4 nos, rice', 'Channa masala, dal', 'Beetroot salad']),
+  ],
+  Thursday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Idli · 4 nos', 'Sambar, coconut chutney', 'Boiled egg / banana', 'Milk, tea, coffee'], 'D mess reported cold service — with the supervisor'),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Rice, chapati · 3 nos', 'Rasam, sambar', 'Beans poriyal', 'Curd, banana, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Bonda, chutney', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Chapati · 4 nos, rice', 'Dal, veg kurma', 'Onion salad'], 'Menu repetition noted at the mess round'),
+  ],
+  Friday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Poori, potato masala', 'Coconut chutney', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Rice, chapati · 3 nos', 'Mor kuzhambu, rasam', 'Carrot poriyal', 'Curd, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Kesari, murukku', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Parotta · 3 nos, rice', 'Veg salna, dal', 'Fruit — watermelon']),
+  ],
+  Saturday: [
+    meal('Breakfast', '7:00 AM', 'A–D mess halls', ['Uthappam · 2 nos', 'Sambar, chutney', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Rice, chapati · 3 nos', 'Sambar, rasam', 'Aviyal', 'Curd, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Samosa, chutney', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Fried rice, chapati', 'Gobi manchurian, dal', 'Onion salad']),
+  ],
+  Sunday: [
+    meal('Breakfast', '7:30 AM', 'A–D mess halls', ['Ven pongal, medu vada', 'Sambar, chutney', 'Boiled egg / banana', 'Milk, tea, coffee']),
+    meal('Lunch', '12:30 PM', 'A–D mess halls', ['Special meals — rice, chapati', 'Paneer butter masala', 'Rasam, sambar', 'Curd, payasam, appalam']),
+    meal('Snacks', '4:30 PM', 'A–D mess halls', ['Biscuits, groundnut sundal', 'Tea, coffee', 'Milk for juniors']),
+    meal('Dinner', '8:00 PM', 'A–D mess halls', ['Chapati · 4 nos, rice', 'Mixed veg curry, dal', 'Fruit — banana']),
+  ],
+};
+
+const NAV = [
+  { id: 'home', label: 'Home', d: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z' },
+  { id: 'hostel', label: 'Hostel', d: 'M3 21V8l9-5 9 5v13M9 21v-5h6v5' },
+  { id: 'gate', label: 'Gate', d: 'M4 21V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15M4 11h16M10 4v17M14 4v17' },
+];
+
+class Component extends DCLogic {
+  state = { tab: 'home', screen: null, notice: 0, flash: '', sub: {}, marks: {}, query: '', gridQuery: '', gate: {},
+    issues: ISSUES.map(i => ({ ...i })), issueDone: {},
+    issueForm: { open: false, title: '', category: '', told: '', owner: '', priority: 'Medium' },
+    studyDate: '2026-09-01', studyCal: false, studyHist: false, rolls: {}, calYear: 2026, calMonth: 8,
+    gateMarks: {}, gateLog: GATE_HISTORY.slice(), gateHist: false,
+    gateDate: '2026-09-18', gateCal: false, gateCalYear: 2026, gateCalMonth: 8, openSel: null,
+    mess: Object.keys(MESS_WEEK).reduce((acc, d) => { acc[d] = MESS_WEEK[d].map(m => ({ ...m, items: m.items.slice() })); return acc; }, {}),
+    messForm: { open: false, day: 'Thursday', idx: null, meal: '', time: '', hall: '', items: '', note: '' } };
+
+  setForm(patch) { this.setState(s => ({ issueForm: { ...s.issueForm, ...patch } })); }
+  saveIssue() {
+    const f = this.state.issueForm;
+    if (!f.title.trim()) { this.note('Add a line describing the issue before saving.'); return; }
+    const id = `CMP-${1189 + this.state.issues.length - ISSUES.length}`;
+    const entry = {
+      title: f.title.trim(), id, category: f.category.trim() || 'General',
+      told: f.told.trim() || 'Noted by the warden on the block round',
+      owner: f.owner.trim() || 'Estate office', age: 'logged today', priority: f.priority,
+    };
+    this.setState(s => ({
+      issues: [entry].concat(s.issues),
+      sub: { ...s.sub, issues: 'Open' },
+      issueForm: { open: false, title: '', category: '', told: '', owner: '', priority: 'Medium' },
+      flash: `${id} logged · ${entry.priority.toLowerCase()} priority, with ${entry.owner}.`,
+    }));
+  }
+
+  go(screen) { this.setState({ screen, flash: '', query: '' }); }
+  note(msg) { this.setState({ flash: msg }); }
+  mark(name, status, msg) {
+    const stamp = status === 'In' ? `Logged in at the gate · ${STAMP}` : `Logged out at the gate · ${STAMP}`;
+    this.setState(s => ({ gate: { ...s.gate, [name]: { status, stamp } }, flash: msg }));
+  }
+  pickSub(screen, key) { this.setState(s => ({ sub: { ...s.sub, [screen]: key } })); }
+  subOf(screen, fallback) { return this.state.sub[screen] || fallback; }
+
+  chips(screen, list, fallback) {
+    const cur = this.subOf(screen, fallback);
+    return list.map(t => ({
+      label: t, go: () => this.pickSub(screen, t),
+      bg: cur === t ? BLUE : '#fff', fg: cur === t ? '#fff' : '#3d4754', bd: cur === t ? BLUE : LINE,
+    }));
+  }
+
+  act(label, run, kind) {
+    const solid = kind === 'primary';
+    return { label, run, bg: solid ? BLUE : '#fff', fg: solid ? '#fff' : '#3d4754', bd: solid ? BLUE : LINE };
+  }
+
+  gateVals() {
+    const s = this.state;
+    if (s.screen !== 'gatelog') return {};
+    const stateTab = this.subOf('gateState', 'All');
+    const blockTab = this.subOf('gateBlock', 'All blocks');
+    const q = s.query.trim().toLowerCase();
+    const statusOf = st => {
+      const mark = s.gateMarks[st.roll];
+      if (mark) return mark.status;
+      return st.state === 'In hostel' ? 'In hostel' : 'Out';
+    };
+    const pill = (label, on, run) => ({ label, go: run, bg: on ? '#eef2fe' : '#fff', fg: on ? BLUE : '#6b7580', bd: on ? BLUE : LINE });
+    const fmtDay = iso => {
+      const [y, mo, d] = iso.split('-').map(Number);
+      return `${d} ${MONTHS[mo - 1]} ${y}`;
+    };
+    const dayLog = s.gateLog.filter(h => h.date === s.gateDate);
+
+    const scoped = STUDENTS.filter(st => blockTab === 'All blocks' || st.block === blockTab);
+    const byState = scoped.filter(st => stateTab === 'All' || statusOf(st) === (stateTab === 'In hostel' ? 'In hostel' : 'Out'));
+    const shown = byState.filter(st => !q || `${st.name} ${st.roll} ${st.room} ${st.block}`.toLowerCase().indexOf(q) !== -1);
+
+    return {
+      gateStates: ['All', 'In hostel', 'Out now'].map(t => {
+        const on = stateTab === t;
+        const count = t === 'All' ? scoped.length : scoped.filter(st => statusOf(st) === (t === 'In hostel' ? 'In hostel' : 'Out')).length;
+        return { label: `${t} (${count})`, go: () => this.pickSub('gateState', t), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+      }),
+      gateBlocks: ['All blocks'].concat(HOSTELS.map(h => h.name)).map(b => pill(b, blockTab === b, () => this.pickSub('gateBlock', b))),
+      gateLabel: q ? `${shown.length} match “${s.query.trim()}”` : `${stateTab === 'All' ? 'All residents' : stateTab} · ${shown.length}`,
+      gateEmpty: shown.length === 0,
+      gateHistOpen: s.gateHist,
+      toggleGateHist: () => this.setState(st => ({ gateHist: !st.gateHist })),
+      gateHistBg: s.gateHist ? '#eef2fe' : '#fff',
+      gateHistFg: s.gateHist ? BLUE : '#6b7580',
+      gateHistBd: s.gateHist ? BLUE : LINE,
+      gateHistCount: `${dayLog.length} entr${dayLog.length === 1 ? 'y' : 'ies'}`,
+      gateHistEmpty: dayLog.length === 0,
+      gateDateLabel: fmtDay(s.gateDate),
+      gateCalOpen: s.gateCal,
+      gateCalEdge: s.gateCal ? BLUE : LINE,
+      toggleGateCal: () => this.setState(st => ({ gateCal: !st.gateCal })),
+      gateCalMonth: `${MONTHS_FULL[s.gateCalMonth]} ${s.gateCalYear}`,
+      gateCalWeekdays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(l => ({ label: l })),
+      gatePrevMonth: () => this.setState(st => ({ gateCalMonth: st.gateCalMonth === 0 ? 11 : st.gateCalMonth - 1, gateCalYear: st.gateCalMonth === 0 ? st.gateCalYear - 1 : st.gateCalYear })),
+      gateNextMonth: () => this.setState(st => ({ gateCalMonth: st.gateCalMonth === 11 ? 0 : st.gateCalMonth + 1, gateCalYear: st.gateCalMonth === 11 ? st.gateCalYear + 1 : st.gateCalYear })),
+      gateCalDays: this.calGrid(s.gateCalYear, s.gateCalMonth, s.gateDate, iso => s.gateLog.some(h => h.date === iso), iso => this.setState({ gateDate: iso, gateCal: false, gateHist: true, flash: '' })),
+      gateHistRows: dayLog.map(h => ({
+        title: `${h.name} · ${h.action === 'Out' ? 'logged out' : 'logged in'}`,
+        sub: `${h.room} · ${h.block} · ${h.at}`,
+        bg: h.action === 'Out' ? '#fdf1e0' : '#e7f4ec',
+        fg: h.action === 'Out' ? '#8a5b18' : '#1c6b3f',
+        d: h.action === 'Out' ? 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3' : 'M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4M14 17l5-5-5-5M19 12H7',
+      })),
+      gateRows: shown.map(st => {
+        const status = statusOf(st);
+        const mark = s.gateMarks[st.roll];
+        const out = status === 'Out';
+        return {
+          name: st.name, sub: `${st.roll} · ${st.room} · ${st.block}`,
+          initials: st.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+          badge: out ? 'Out of hostel' : 'In hostel',
+          badgeBg: out ? TONE.warn[0] : TONE.ok[0], badgeFg: out ? TONE.warn[1] : TONE.ok[1],
+          edge: out ? '#f0dfc2' : LINE,
+          avBg: out ? '#fdf1e0' : '#eef2fe', avFg: out ? '#8a5b18' : '#2447c4',
+          line: mark ? mark.stamp : `${out ? st.state : st.cls} · guardian ${st.guardian.split(' · ')[1]}`,
+          actLabel: out ? 'Log in' : 'Log out',
+          act: () => this.logGate(st, out ? 'In' : 'Out'),
+          call: () => this.note(`Calling ${st.guardian}.`),
+        };
+      }),
+    };
+  }
+
+  logGate(st, action) {
+    const now = new Date();
+    const at = `${String(now.getDate())} ${MONTHS[now.getMonth()]} ${now.getFullYear()} · ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const status = action === 'Out' ? 'Out' : 'In hostel';
+    const stamp = action === 'Out' ? `Logged out at the gate · ${at}` : `Logged in at the gate · ${at}`;
+    this.setState(s => ({
+      gateMarks: { ...s.gateMarks, [st.roll]: { status, stamp } },
+      gateLog: [{ name: st.name, room: st.room, block: st.block, action, at, date: isoOf(now) }].concat(s.gateLog),
+      gateDate: isoOf(now),
+      flash: `${st.name} · ${st.room} ${action === 'Out' ? 'logged out' : 'logged in'} at the gate.`,
+    }));
+  }
+
+  calGrid(y, m, selected, isMarked, pick) {
+    const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
+    const lead = (first + 6) % 7;
+    const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    const cells = [];
+    for (let i = 0; i < lead; i += 1) cells.push({ label: '', aria: '', cursor: 'default', weight: '600', bg: 'transparent', fg: 'transparent', bd: 'transparent', go: () => {} });
+    for (let d = 1; d <= days; d += 1) {
+      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const on = selected === iso;
+      const has = isMarked(iso);
+      cells.push({
+        label: String(d), aria: `${d} ${MONTHS_FULL[m]} ${y}`, cursor: 'pointer', weight: on ? '800' : has ? '700' : '600',
+        bg: on ? BLUE : has ? '#eef2fe' : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : has ? '#c3d0fb' : LINE,
+        go: () => pick(iso),
+      });
+    }
+    return cells;
+  }
+
+  recordRoll(key, status, inScope, keyOf) {
+    const marks = this.state.marks;
+    const tally = m => inScope.filter(x => marks[keyOf(x.name)] === m).length;
+    const marked = inScope.filter(x => !!marks[keyOf(x.name)]).length;
+    if (status === 'Submitted' && marked < inScope.length) {
+      this.note(`${inScope.length - marked} student(s) still unmarked — mark everyone before submitting.`.replace('(s)', inScope.length - marked === 1 ? '' : 's'));
+      return;
+    }
+    const entry = { status, at: status === 'Submitted' ? `submitted ${STAMP}` : `saved ${STAMP}`, present: tally('Present'), absent: tally('Absent'), excused: tally('Excused') };
+    this.setState(s => ({ rolls: { ...s.rolls, [key]: entry }, flash: `${status === 'Submitted' ? 'Roll submitted' : 'Roll saved'} · present ${entry.present} · absent ${entry.absent} · excused ${entry.excused}.` }));
+  }
+
+  studyVals() {
+    const s = this.state;
+    if (s.screen !== 'study') return {};
+    const session = this.subOf('study', 'Morning');
+    const date = s.studyDate;
+    const rollKey = `${date}|${session}`;
+    const fmt = iso => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${d} ${MONTHS[m - 1]} ${y}`;
+    };
+    const curCls = this.subOf('studyCls', 'All classes');
+    const classes = ['All classes'].concat(STUDY_ROLL.map(r => r.room.split(' · ')[1]).filter((c, i, a) => a.indexOf(c) === i).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, ''))));
+    const pill = (label, on, run) => ({ label, go: run, bg: on ? '#eef2fe' : '#fff', fg: on ? BLUE : '#6b7580', bd: on ? BLUE : LINE });
+    const inScope = STUDY_ROLL.filter(st => curCls === 'All classes' || st.room.split(' · ')[1] === curCls);
+    const q = s.query.trim().toLowerCase();
+    const shown = inScope.filter(st => !q || `${st.name} ${st.room}`.toLowerCase().indexOf(q) !== -1);
+    const keyOf = name => `${date}-${session}-${name}`;
+    const markOf = name => s.marks[keyOf(name)];
+    const tally = m => inScope.filter(st => markOf(st.name) === m).length;
+    const marked = inScope.filter(st => !!markOf(st.name)).length;
+    const OPT = [
+      { m: 'Present', label: 'P', on: [BLUE, '#fff'], edge: '#cfe3d6', av: ['#e7f4ec', '#1c6b3f'] },
+      { m: 'Absent', label: 'A', on: ['#c0392f', '#fff'], edge: '#f3cfcd', av: ['#fdeaea', '#9b2323'] },
+      { m: 'Excused', label: 'E', on: ['#b4802a', '#fff'], edge: '#f0dfc2', av: ['#fdf1e0', '#8a5b18'] },
+    ];
+
+    return {
+      studySessions: ['Morning', 'Evening'].map(t => {
+        const on = session === t;
+        return { label: t, go: () => this.pickSub('study', t), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+      }),
+      studyClasses: classes.map(c => pill(c, curCls === c, () => this.pickSub('studyCls', c))),
+      studyTitle: `${session} study hall`,
+      studySub: `${session === 'Morning' ? '05:45 – 07:00' : '19:30 – 21:00'} · ${curCls === 'All classes' ? 'all classes' : curCls} · ${fmt(date)}`,
+      studyDateLabel: fmt(date),
+      calOpen: s.studyCal, histOpen: s.studyHist,
+      calEdge: s.studyCal ? BLUE : LINE, histEdge: s.studyHist ? BLUE : LINE,
+      toggleCal: () => this.setState(st => ({ studyCal: !st.studyCal, studyHist: false })),
+      toggleHist: () => this.setState(st => ({ studyHist: !st.studyHist, studyCal: false })),
+      prevMonth: () => this.setState(st => ({ calMonth: st.calMonth === 0 ? 11 : st.calMonth - 1, calYear: st.calMonth === 0 ? st.calYear - 1 : st.calYear })),
+      nextMonth: () => this.setState(st => ({ calMonth: st.calMonth === 11 ? 0 : st.calMonth + 1, calYear: st.calMonth === 11 ? st.calYear + 1 : st.calYear })),
+      calMonth: `${MONTHS_FULL[s.calMonth]} ${s.calYear}`,
+      calWeekdays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(l => ({ label: l })),
+      calDays: this.calGrid(s.calYear, s.calMonth, s.studyDate, iso => Object.keys(s.rolls).some(k => k.split('|')[0] === iso), iso => this.setState({ studyDate: iso, studyCal: false, flash: '' })),
+      histEmpty: Object.keys(s.rolls).length === 0,
+      histRows: Object.keys(s.rolls).sort().reverse().map(k => {
+        const r = s.rolls[k];
+        const [d, sess] = k.split('|');
+        return {
+          title: `${sess} study hall · ${fmt(d)}`,
+          sub: `${r.status} · present ${r.present} · absent ${r.absent} · excused ${r.excused}`,
+          go: () => this.setState(st => ({ studyDate: d, sub: { ...st.sub, study: sess }, studyHist: false, flash: '' })),
+        };
+      }),
+      rollState: s.rolls[rollKey] ? `${s.rolls[rollKey].status} · ${s.rolls[rollKey].at}` : '',
+      saveRoll: () => this.recordRoll(rollKey, 'Saved', inScope, keyOf),
+      submitRoll: () => this.recordRoll(rollKey, 'Submitted', inScope, keyOf),
+      studyMarked: `${marked}/${inScope.length} marked`,
+      studyPct: `${inScope.length ? Math.round((marked / inScope.length) * 100) : 0}%`,
+      studyCounts: [
+        { label: 'Present', value: String(tally('Present')), bg: '#e7f4ec', fg: '#1c6b3f' },
+        { label: 'Absent', value: String(tally('Absent')), bg: '#fdeaea', fg: '#9b2323' },
+        { label: 'Excused', value: String(tally('Excused')), bg: '#fdf1e0', fg: '#8a5b18' },
+      ],
+      markAllPresent: () => this.setState(st => {
+        const marks = { ...st.marks };
+        inScope.forEach(x => { marks[keyOf(x.name)] = 'Present'; });
+        return { marks, flash: `${inScope.length} students marked present for the ${session.toLowerCase()} study hall.` };
+      }),
+      clearMarks: () => this.setState(st => {
+        const marks = { ...st.marks };
+        inScope.forEach(x => { delete marks[keyOf(x.name)]; });
+        return { marks, flash: '' };
+      }),
+      studyEmpty: shown.length === 0,
+      studyRows: shown.map(st => {
+        const mark = markOf(st.name);
+        const hit = OPT.find(o => o.m === mark);
+        return {
+          name: st.name, room: st.room,
+          initials: st.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+          edge: hit ? hit.edge : LINE,
+          avBg: hit ? hit.av[0] : '#eef2fe', avFg: hit ? hit.av[1] : '#2447c4',
+          opts: OPT.map(o => ({
+            label: o.label, title: o.m,
+            bg: mark === o.m ? o.on[0] : 'transparent',
+            fg: mark === o.m ? o.on[1] : '#6b7580',
+            run: () => this.setState(prev => {
+              const marks = { ...prev.marks };
+              if (marks[keyOf(st.name)] === o.m) delete marks[keyOf(st.name)];
+              else marks[keyOf(st.name)] = o.m;
+              return { marks };
+            }),
+          })),
+        };
+      }),
+    };
+  }
+
+  setMeal(patch) { this.setState(s => ({ messForm: { ...s.messForm, ...patch } })); }
+  openMeal(day, idx) {
+    const m = this.state.mess[day][idx];
+    this.setState({ messForm: { open: true, day, idx, meal: m.meal, time: m.time, hall: m.hall, items: m.items.join('\n'), note: m.note }, flash: '' });
+  }
+  openMessAdd() {
+    const day = this.subOf('mess', 'Thursday');
+    this.setState({ messForm: { open: true, day, idx: null, meal: '', time: '', hall: 'A–D mess halls', items: '', note: '' }, flash: '' });
+  }
+  deleteMeal(day, idx) {
+    const m = this.state.mess[day][idx];
+    this.setState(s => ({
+      mess: { ...s.mess, [day]: s.mess[day].filter((_, i) => i !== idx) },
+      flash: `${m.meal} removed from the ${day} menu.`,
+    }));
+  }
+  saveMeal() {
+    const f = this.state.messForm;
+    if (!f.meal.trim()) { this.note('Name the meal before saving.'); return; }
+    const entry = {
+      meal: f.meal.trim(), time: f.time.trim() || '—', hall: f.hall.trim() || 'A–D mess halls',
+      items: f.items.split('\n').map(x => x.trim()).filter(Boolean), note: f.note.trim(),
+    };
+    this.setState(s => {
+      const list = s.mess[f.day].slice();
+      if (f.idx === null) list.push(entry); else list[f.idx] = entry;
+      return {
+        mess: { ...s.mess, [f.day]: list },
+        messForm: { open: false, day: f.day, idx: null, meal: '', time: '', hall: '', items: '', note: '' },
+        flash: `${entry.meal} ${f.idx === null ? 'added to' : 'updated on'} the ${f.day} menu.`,
+      };
+    });
+  }
+
+  buildSelects(defs, base) {
+    const openKey = this.state.openSel;
+    const selects = defs.map(sel => {
+      const idle = sel.value === sel.options[0];
+      const open = openKey === sel.key;
+      return {
+        label: sel.label, aria: `${sel.title} · ${sel.value}`,
+        short: idle ? sel.options[0] : sel.value,
+        toggle: () => this.setState(st => ({ openSel: st.openSel === sel.key ? null : sel.key })),
+        edge: open ? BLUE : idle ? LINE : '#c3d0fb',
+        bg: open || !idle ? '#eef2fe' : '#fff',
+        fg: idle && !open ? '#3d4754' : BLUE,
+        spin: open ? 'rotate(180deg)' : 'none',
+      };
+    });
+    const openDef = defs.find(sel => sel.key === openKey);
+    let selPanelTitle = '', selPanelOptions = [];
+    if (openDef) {
+      selPanelTitle = openDef.title;
+      selPanelOptions = openDef.options.map(o => {
+        const on = openDef.value === o;
+        const count = o === openDef.options[0] ? base.length : base.filter(r => openDef.of(r) === o).length;
+        return {
+          label: o, on, count: `${count}`,
+          weight: on ? '800' : '600', fg: on ? BLUE : '#3d4754', bg: on ? '#f7f9ff' : '#fff',
+          go: () => this.setState(st => ({ sub: { ...st.sub, [openDef.key]: o }, openSel: null })),
+        };
+      });
+    }
+    return { selects, selPanelTitle, selPanelOptions };
+  }
+
+  buildDetail() {
+    const screen = this.state.screen;
+    let tabs = [], tabs2 = [], tabs3 = [], selects = [], rows = [], stats = [], listLabel = '';
+    let selPanelTitle = '', selPanelOptions = [];
+
+    if (screen === 'students') {
+      const cur = this.subOf('students', 'All');
+      tabs = this.chips('students', ['All', 'In hostel', 'Out on pass', 'On leave', 'Dues'], 'All');
+      const classes = ['All classes'].concat(STUDENTS.map(st => st.cls.split(' · ')[0]).filter((c, i, a) => a.indexOf(c) === i).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, ''))));
+      const curCls = this.subOf('studentsCls', 'All classes');
+      const curBlock = this.subOf('studentsBlock', 'All blocks');
+      const curFloor = this.subOf('studentsFloor', 'All floors');
+      const floors = ['All floors'].concat(STUDENTS.map(st => floorOf(st.room)).filter((f, i, a) => a.indexOf(f) === i).sort());
+      const base = STUDENTS.filter(st => cur === 'All' ? true : cur === 'Dues' ? st.fee !== 'Paid' : st.state === cur);
+      const defs = [
+        { key: 'studentsCls', label: 'Class', title: 'Filter by class', value: curCls, options: classes, of: st => st.cls.split(' · ')[0] },
+        { key: 'studentsBlock', label: 'Block', title: 'Filter by block', value: curBlock, options: ['All blocks'].concat(HOSTELS.map(h => h.name)), of: st => st.block },
+        { key: 'studentsFloor', label: 'Floor', title: 'Filter by floor', value: curFloor, options: floors, of: st => floorOf(st.room) },
+      ];
+      const openKey = this.state.openSel;
+      selects = defs.map(sel => {
+        const idle = sel.value === sel.options[0];
+        const open = openKey === sel.key;
+        return {
+          label: sel.label, aria: `${sel.title} · ${sel.value}`,
+          short: idle ? `All ${sel.label.toLowerCase()}es`.replace('floores', 'floors').replace('blockes', 'blocks').replace('classes', 'classes') : sel.value,
+          toggle: () => this.setState(st => ({ openSel: st.openSel === sel.key ? null : sel.key })),
+          edge: open ? BLUE : idle ? LINE : '#c3d0fb',
+          bg: open || !idle ? '#eef2fe' : '#fff',
+          fg: idle && !open ? '#3d4754' : BLUE,
+          spin: open ? 'rotate(180deg)' : 'none',
+        };
+      });
+      const openDef = defs.find(sel => sel.key === openKey);
+      if (openDef) {
+        selPanelTitle = openDef.title;
+        selPanelOptions = openDef.options.map(o => {
+          const on = openDef.value === o;
+          const count = o === openDef.options[0] ? base.length : base.filter(st => openDef.of(st) === o).length;
+          return {
+            label: o, on, count: `${count}`,
+            weight: on ? '800' : '600', fg: on ? BLUE : '#3d4754', bg: on ? '#f7f9ff' : '#fff',
+            go: () => this.setState(st => ({ sub: { ...st.sub, [openDef.key]: o }, openSel: null })),
+          };
+        });
+      }
+      const list = base
+        .filter(st => curCls === 'All classes' || st.cls.split(' · ')[0] === curCls)
+        .filter(st => curBlock === 'All blocks' || st.block === curBlock)
+        .filter(st => curFloor === 'All floors' || floorOf(st.room) === curFloor);
+      listLabel = `Residents · ${list.length} of ${STUDENTS.length}`;
+      rows = list.map(st => ({
+        title: st.name, sub: `${st.roll} · ${st.room} · ${st.block}`,
+        ...badge(st.state, st.state === 'In hostel' ? 'ok' : st.state === 'On leave' ? 'warn' : 'info'),
+        lines: [{ text: st.cls }, { text: st.guardian }, { text: `Fees: ${st.fee}` }],
+        hasActions: true,
+        actions: [this.act('Call guardian', () => this.note(`Calling the guardian of ${st.name}.`), 'primary')],
+      }));
+    } else if (screen === 'leave') {
+      const stages = ['Pending', 'Approved', 'Rejected'];
+      const cur = this.subOf('leave', 'Pending');
+      tabs = stages.map(st => {
+        const label = `${st} (${LEAVE.filter(l => l.stage === st).length})`;
+        const on = cur === st;
+        return { label, go: () => this.pickSub('leave', st), bg: on ? '#eef2fe' : '#fff', fg: on ? BLUE : '#6b7580', bd: on ? BLUE : LINE };
+      });
+      const list = LEAVE.filter(l => l.stage === cur);
+      listLabel = 'Leave requests · A–D Blocks';
+      rows = list.map(l => ({
+        title: l.name, sub: `${l.roll} · ${l.room}`,
+        ...badge(l.days, l.stage === 'Rejected' ? 'bad' : l.stage === 'Approved' ? 'ok' : 'warn'),
+        lines: [{ text: l.purpose }, { text: l.dates }, { text: l.call }],
+        hasActions: l.stage === 'Pending',
+        actions: [this.act('Approve', () => this.note(`Leave approved for ${l.name} — parent informed.`), 'primary'), this.act('Reject', () => this.note(`Leave refused for ${l.name}; reason recorded.`))],
+      }));
+    } else if (screen === 'gatelog') {
+      const gate = this.state.gate;
+      const reg = REGISTER.map(g => {
+        const mark = gate[g.name];
+        return { ...g, status: mark ? mark.status : g.status, stamp: mark ? mark.stamp : '' };
+      });
+      const groups = [
+        { key: 'Out now', status: 'Out', label: 'Out of the hostel' },
+        { key: 'Due back', status: 'Due', label: 'Returns expected at the gate' },
+        { key: 'Logged in', status: 'In', label: 'Logged in at the gate' },
+      ];
+      const cur = this.subOf('gatelog', 'Out now');
+      tabs = groups.map(g => {
+        const on = cur === g.key;
+        return {
+          label: `${g.key} (${reg.filter(r => r.status === g.status).length})`,
+          go: () => this.pickSub('gatelog', g.key),
+          bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE,
+        };
+      });
+      const grp = groups.find(g => g.key === cur) || groups[0];
+      const list = reg.filter(r => r.status === grp.status);
+      listLabel = `${grp.label} · ${list.length}`;
+      rows = list.map(g => {
+        const tone = g.status === 'In' ? 'ok' : g.status === 'Due' ? 'warn' : 'info';
+        const lines = [{ text: g.detail }];
+        if (g.stamp) lines.push({ text: g.stamp });
+        else lines.push({ text: g.status === 'Out' ? 'Exit logged at the main gate by the warden.' : g.status === 'Due' ? 'Log the student in at the gate on arrival.' : 'Return recorded in the night register.' });
+        return {
+          title: g.name, sub: g.sub, ...badge(g.status === 'In' ? 'In hostel' : g.time, tone),
+          lines,
+          hasActions: true,
+          actions: g.status === 'In'
+            ? [this.act('Log out', () => this.mark(g.name, 'Out', `${g.name} logged out at the gate · ${STAMP}.`), 'primary'), this.act('Call parent', () => this.note(`Calling the guardian of ${g.name}.`))]
+            : [this.act('Log in', () => this.mark(g.name, 'In', `${g.name} logged in at the gate · ${STAMP}.`), 'primary'), this.act('Call parent', () => this.note(`Calling the guardian of ${g.name}.`))],
+        };
+      });
+    } else if (screen === 'approvals') {
+      listLabel = `Movement log · ${MOVEMENT.length} entries`;
+      rows = MOVEMENT.map(m => ({
+        title: m.name, sub: `${m.id} · ${m.room}`, ...badge(m.type, 'info'),
+        lines: [{ text: m.call }, { text: `${m.out} · ${m.back}` }, { text: m.reason }],
+        hasActions: true,
+        actions: [this.act('Log return', () => this.note(`Return logged for ${m.name} — ${m.id} closed.`), 'primary'), this.act('Amend', () => this.note(`${m.id} opened to amend the call details.`))],
+      }));
+    } else if (screen === 'attendance') {
+      stats = [
+        { value: '669', label: 'Present at the 22:00 sweep' },
+        { value: '34', label: 'Away on recorded leave' },
+        { value: '4', label: 'Unaccounted · escalated' },
+        { value: '94.2%', label: 'Month average · target 90%' },
+      ];
+      listLabel = 'Roll call · 1 Sept 2026, 22:00';
+      rows = ROLLCALL.map(r => ({
+        title: r.block, sub: `${r.swept} swept · verified by ${r.by}`,
+        ...badge(r.unaccounted ? `${r.unaccounted} unaccounted` : 'Complete', r.unaccounted ? 'bad' : 'ok'),
+        lines: [{ text: `Present ${r.present} · on leave ${r.leave}` }],
+        hasActions: true,
+        actions: [this.act('Mark sweep', () => this.note(`${r.block} sweep recorded at 22:00.`), 'primary'), this.act('Open rooms', () => this.note(`${r.block} room list opened.`))],
+      }));
+    } else if (screen === 'study') {
+      const cur = this.subOf('study', 'Morning');
+      tabs = this.chips('study', ['Morning', 'Evening'], 'Morning');
+      const classes = ['All classes'].concat(STUDY_ROLL.map(r => r.room.split(' · ')[1]).filter((c, i, a) => a.indexOf(c) === i).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, ''))));
+      const curCls = this.subOf('studyCls', 'All classes');
+      tabs2 = classes.map(c => {
+        const on = curCls === c;
+        return { label: c, go: () => this.pickSub('studyCls', c), bg: on ? '#eef2fe' : '#fff', fg: on ? BLUE : '#6b7580', bd: on ? BLUE : LINE };
+      });
+      listLabel = `${cur} study hall · ${cur === 'Morning' ? '05:45 – 07:00' : '19:30 – 21:00'}`;
+      rows = STUDY_ROLL.filter(st => curCls === 'All classes' || st.room.split(' · ')[1] === curCls).map(st => {
+        const key = `${cur}-${st.name}`;
+        const mark = this.state.marks[key];
+        return {
+          title: st.name, sub: st.room,
+          ...badge(mark || 'Not marked', mark === 'Present' ? 'ok' : mark === 'Absent' ? 'bad' : mark === 'Excused' ? 'warn' : 'info'),
+          lines: [],
+          hasActions: true,
+          actions: ['Present', 'Absent', 'Excused'].map(m => {
+            const on = mark === m;
+            return { label: m, run: () => this.setState(s => ({ marks: { ...s.marks, [key]: m } })), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+          }),
+        };
+      });
+    } else if (screen === 'hostels') {
+      listLabel = `Hostel records · ${HOSTELS.length}`;
+      rows = HOSTELS.map(h => ({
+        title: h.name, sub: `${h.code} · ${h.wing} wing`,
+        ...badge(`${h.occupied}/${h.capacity}`, h.occupied / h.capacity > 0.9 ? 'warn' : 'ok'),
+        lines: [{ text: `${h.rooms} rooms · mess: ${h.mess}` }, { text: `Warden ${h.warden}` }],
+        hasActions: true,
+        actions: [this.act('Room list', () => { this.pickSub('rooms', h.name); this.go('rooms'); }, 'primary')],
+      }));
+    } else if (screen === 'rooms') {
+      const cur = this.subOf('rooms', 'A Block');
+      tabs = this.chips('rooms', HOSTELS.map(h => h.name), 'A Block');
+      const h = HOSTELS.find(x => x.name === cur) || HOSTELS[0];
+      stats = [
+        { value: String(h.rooms), label: 'Rooms in the block' },
+        { value: String(h.capacity), label: 'Beds sanctioned' },
+        { value: String(h.occupied), label: 'Beds allotted' },
+        { value: String(h.capacity - h.occupied), label: 'Beds free' },
+      ];
+      listLabel = `${cur} · bed-level allotment`;
+      const letter = cur.charAt(0);
+      const SHARE = [['Triple sharing', 3], ['Double sharing', 2], ['Four sharing', 4], ['Single sharing', 1]];
+      const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+      const residents = STUDENTS.filter(st => st.block === cur);
+      const realRooms = residents.map(st => st.room).filter((r, i, a) => a.indexOf(r) === i).sort();
+      const extras = [];
+      let n = 1;
+      while (realRooms.length + extras.length < 10) {
+        const no = `${letter}-${String(100 + n * 7).slice(-3)}`;
+        if (realRooms.indexOf(no) === -1 && extras.indexOf(no) === -1) extras.push(no);
+        n += 1;
+      }
+      const roomList = realRooms.concat(extras);
+      rows = roomList.map((no, k) => {
+        const [share, beds] = SHARE[k % SHARE.length];
+        const here = residents.filter(st => st.room === no);
+        const taken = here.length ? Math.max(here.length, Math.min(beds, here.length + (k % 2))) : (k % 3 === 0 ? 0 : Math.max(1, beds - 1));
+        const free = beds - taken;
+        const lines = [{ text: `${share} · floor ${Math.min(4, Math.ceil((k + 1) / 3))} · ${free === 0 ? 'no bed free' : `${plural(free, 'bed')} free`}` }];
+        here.forEach(st => lines.push({ text: `${st.name} · ${st.cls.split(' · ')[0]} · ${st.state.toLowerCase()}` }));
+        if (taken > here.length) lines.push({ text: `${plural(taken - here.length, 'bed')} allotted from another class · names in the block register` });
+        if (!taken) lines.push({ text: 'Vacant — available for allotment' });
+        return {
+          title: `Room ${no}`, sub: `${taken}/${beds} beds filled`,
+          ...badge(free === 0 ? 'Full' : `${free} free`, free === 0 ? 'warn' : 'ok'),
+          lines,
+          hasActions: true,
+          actions: [this.act('Allot bed', () => this.note(`Bed allotment opened for room ${no}.`), 'primary'), this.act('Move student', () => this.note(`Room change form opened for ${no}.`))],
+        };
+      });
+    } else if (screen === 'fees') {
+      const cur = this.subOf('fees', 'Overdue');
+      tabs = this.chips('fees', ['Overdue', 'Pending', 'Paid'], 'Overdue');
+      const base = FEES.filter(f => f.status === cur).map(f => {
+        const st = STUDENTS.find(x => x.name === f.name);
+        const room = f.roomLine.split(' · ')[0];
+        return { ...f, room, block: f.roomLine.split(' · ')[1] || '', cls: st ? st.cls.split(' · ')[0] : '—', floor: floorOf(room) };
+      });
+      const clsOpts = ['All classes'].concat(base.map(f => f.cls).filter(c => c !== '—').filter((c, i, a) => a.indexOf(c) === i).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, ''))));
+      const floorOpts = ['All floors'].concat(base.map(f => f.floor).filter((c, i, a) => a.indexOf(c) === i).sort());
+      const defs = [
+        { key: 'feesCls', label: 'Class', title: 'Filter by class', value: this.subOf('feesCls', 'All classes'), options: clsOpts, of: f => f.cls },
+        { key: 'feesBlock', label: 'Block', title: 'Filter by block', value: this.subOf('feesBlock', 'All blocks'), options: ['All blocks'].concat(HOSTELS.map(h => h.name)), of: f => f.block },
+        { key: 'feesFloor', label: 'Floor', title: 'Filter by floor', value: this.subOf('feesFloor', 'All floors'), options: floorOpts, of: f => f.floor },
+      ];
+      const built = this.buildSelects(defs, base);
+      selects = built.selects; selPanelTitle = built.selPanelTitle; selPanelOptions = built.selPanelOptions;
+      const list = base.filter(f => defs.every(sel => sel.value === sel.options[0] || sel.of(f) === sel.value));
+      listLabel = `${cur} invoices · ${list.length}`;
+      rows = list.map(f => ({
+        title: f.name, sub: `${f.roomLine} · ${f.invoice}`,
+        ...badge(f.amount, f.status === 'Paid' ? 'ok' : f.status === 'Pending' ? 'warn' : 'bad'),
+        lines: [{ text: f.head }, { text: `Due ${f.due}` }],
+        hasActions: f.status !== 'Paid',
+        actions: [this.act('Send reminder', () => this.note(`Reminder sent to the guardian of ${f.name}.`), 'primary'), this.act('Mark paid', () => this.note(`${f.invoice} marked paid — receipt queued.`))],
+      }));
+    } else if (screen === 'issues') {
+      const all = this.state.issues.map(i => ({ ...i, done: !!this.state.issueDone[i.id] }));
+      const cur = this.subOf('issues', 'Open');
+      tabs = ['Open', 'High', 'Medium', 'Low', 'Done'].map(t => {
+        const on = cur === t;
+        const count = t === 'Open' ? all.filter(i => !i.done).length
+          : t === 'Done' ? all.filter(i => i.done).length
+          : all.filter(i => !i.done && i.priority === t).length;
+        return { label: `${t} (${count})`, go: () => this.pickSub('issues', t), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+      });
+      const base = (cur === 'Done' ? all.filter(i => i.done)
+        : cur === 'Open' ? all.filter(i => !i.done)
+        : all.filter(i => !i.done && i.priority === cur)).map(i => {
+        const room = (i.told.split(' · ')[1] || '').trim();
+        const who = i.told.split(' · ')[0].trim();
+        const st = STUDENTS.find(x => x.name === who);
+        return { ...i, cls: st ? st.cls.split(' · ')[0] : '—', blk: i.block || (st ? st.block : '—'), flr: room ? floorOf(room) : '—' };
+      });
+      const clsOpts = ['All classes'].concat(base.map(i => i.cls).filter(c => c !== '—').filter((c, k, a) => a.indexOf(c) === k).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, ''))));
+      const flrOpts = ['All floors'].concat(base.map(i => i.flr).filter(c => c !== '—').filter((c, k, a) => a.indexOf(c) === k).sort());
+      const defs = [
+        { key: 'issuesCls', label: 'Class', title: 'Filter by class', value: this.subOf('issuesCls', 'All classes'), options: clsOpts, of: i => i.cls },
+        { key: 'issuesBlock', label: 'Block', title: 'Filter by block', value: this.subOf('issuesBlock', 'All blocks'), options: ['All blocks'].concat(HOSTELS.map(h => h.name)), of: i => i.blk },
+        { key: 'issuesFloor', label: 'Floor', title: 'Filter by floor', value: this.subOf('issuesFloor', 'All floors'), options: flrOpts, of: i => i.flr },
+      ];
+      const built = this.buildSelects(defs, base);
+      selects = built.selects; selPanelTitle = built.selPanelTitle; selPanelOptions = built.selPanelOptions;
+      const list = base.filter(i => defs.every(sel => sel.value === sel.options[0] || sel.of(i) === sel.value));
+      listLabel = cur === 'Done' ? `Closed issues · ${list.length}` : `Open issues · ${list.length}`;
+      rows = list.map(i => ({
+        title: i.title, sub: `${i.id} · ${i.category} · ${i.age}`,
+        ...badge(i.done ? 'Done' : i.priority, i.done ? 'ok' : i.priority === 'High' ? 'bad' : i.priority === 'Medium' ? 'warn' : 'ok'),
+        lines: [{ text: `Told to the warden by ${i.told}` }, { text: `Assigned to ${i.owner}` }],
+        hasActions: true,
+        actions: [i.done
+          ? this.act('Reopen', () => this.setState(s => { const d = { ...s.issueDone }; delete d[i.id]; return { issueDone: d, flash: `${i.id} reopened.` }; }), 'primary')
+          : this.act('Mark done', () => this.setState(s => ({ issueDone: { ...s.issueDone, [i.id]: true }, flash: `${i.id} closed — student informed.` })), 'primary')],
+      }));
+    } else if (screen === 'applications') {
+      stats = [
+        { value: '412', label: 'Applications received' },
+        { value: '188', label: 'Shortlisted' },
+        { value: '34', label: 'Seats free' },
+        { value: '27', label: 'Awaiting documents' },
+      ];
+      listLabel = 'Intake 2026–27';
+      rows = APPLICATIONS.map(a => ({
+        title: a.name, sub: `${a.ref} · ${a.cls}`,
+        ...badge(a.status, a.status === 'Shortlisted' ? 'ok' : 'warn'),
+        lines: [{ text: `${a.distance} from school · prefers ${a.pref}` }, { text: `Documents: ${a.docs}` }],
+        hasActions: true,
+        actions: [this.act('Allot', () => this.note(`${a.name} moved to bed allotment.`), 'primary'), this.act('Ask documents', () => this.note(`Document reminder sent to ${a.name}.`))],
+      }));
+    } else if (screen === 'reports') {
+      listLabel = 'Generated statements · Aug 2026';
+      rows = REPORTS.map(r => ({
+        title: r.title, sub: r.sub, ...badge('PDF', 'info'),
+        lines: r.lines.map(text => ({ text })),
+        hasActions: true,
+        actions: [this.act('Download', () => this.note(`${r.title} downloaded.`), 'primary'), this.act('Email', () => this.note(`${r.title} emailed to the principal's office.`))],
+      }));
+    } else if (screen === 'staff') {
+      listLabel = `Warden roster · ${STAFF.length}`;
+      rows = STAFF.map(p => ({
+        title: p.name, sub: p.role, ...badge(p.shift.indexOf('Off') === 0 ? 'Off duty' : 'On duty', p.shift.indexOf('Off') === 0 ? 'warn' : 'ok'),
+        lines: [{ text: p.phone }, { text: p.shift }],
+        hasActions: true,
+        actions: [this.act('Call', () => this.note(`Calling ${p.name} · ${p.phone}.`), 'primary')],
+      }));
+    } else if (screen === 'mess') {
+      const week = this.state.mess;
+      const days = Object.keys(week);
+      const cur = this.subOf('mess', 'Thursday');
+      tabs = days.map(dy => {
+        const on = cur === dy;
+        return { label: dy.slice(0, 3), go: () => this.pickSub('mess', dy), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+      });
+      listLabel = `${cur} · mess menu, all blocks`;
+      rows = week[cur].map((m, idx) => ({
+        title: `${m.meal} · ${m.time}`, sub: m.hall,
+        ...badge(m.note ? 'Noted' : 'Standard', m.note ? 'warn' : 'ok'),
+        lines: m.items.map(text => ({ text })).concat(m.note ? [{ text: m.note }] : []),
+        hasActions: true,
+        actions: [
+          this.act('Edit', () => this.openMeal(cur, idx), 'primary'),
+          this.act('Delete', () => this.deleteMeal(cur, idx)),
+        ],
+      }));
+    } else if (screen === 'notices') {
+      listLabel = `Notices · ${NOTICES.length}`;
+      rows = NOTICES.map(n => ({
+        title: n.title, sub: n.sub, ...badge(n.date, 'info'),
+        lines: [{ text: 'Issued by the warden office to all blocks.' }],
+        hasActions: false, actions: [],
+      }));
+    } else if (screen === 'messages') {
+      listLabel = 'Messages · warden office';
+      rows = [
+        { title: "Principal's office", sub: '1 Sept 2026 · 18:20', ...badge('New', 'info'), lines: [{ text: 'Send the August occupancy statement before the board meeting.' }], hasActions: true, actions: [this.act('Reply', () => this.note('Reply opened.'), 'primary')] },
+        { title: 'Estate — plumbing', sub: '31 Aug 2026 · 11:05', ...badge('Read', 'ok'), lines: [{ text: 'A-wing water heater on the Monday round. Two more in the queue.' }], hasActions: true, actions: [this.act('Reply', () => this.note('Reply opened.'), 'primary')] },
+        { title: 'Accounts', sub: '30 Aug 2026 · 09:40', ...badge('Read', 'ok'), lines: [{ text: 'Three Term 1 invoices are overdue; reminders are due today.' }], hasActions: true, actions: [this.act('Reply', () => this.note('Reply opened.'), 'primary')] },
+      ];
+    }
+
+    const q = this.state.query.trim().toLowerCase();
+    if (q) {
+      const before = rows.length;
+      rows = rows.filter(r => {
+        const hay = [r.title, r.sub, r.badge].concat((r.lines || []).map(l => l.text)).join(' ').toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+      listLabel = `${rows.length} of ${before} match “${this.state.query.trim()}”`;
+    }
+    return { tabs, tabs2, tabs3, selects, rows, stats, listLabel, selPanelTitle, selPanelOptions };
+  }
+
+  renderVals() {
+    const s = this.state, screen = s.screen, tab = s.tab;
+    const d = this.buildDetail();
+    const n = NOTICES[s.notice % NOTICES.length];
+    const headerTitle = screen ? (TITLES[screen] || '') : tab === 'hostel' ? 'Hostel' : 'My Gate';
+    const HINTS = {
+      students: 'Search name, admission no. or room',
+      leave: 'Search name, room or purpose',
+      gatelog: 'Search name or room',
+      approvals: 'Search name, log no. or room',
+      attendance: 'Search block or warden',
+      study: 'Search name or room',
+      hostels: 'Search block, code or warden',
+      rooms: 'Search room no.',
+      fees: 'Search name, invoice or fee head',
+      issues: 'Search issue, reference or category',
+      applications: 'Search applicant or reference',
+      reports: 'Search report',
+      staff: 'Search warden or block',
+      mess: 'Search meal or menu',
+      notices: 'Search notices',
+      messages: 'Search messages',
+    };
+    const gq = s.gridQuery.trim().toLowerCase();
+    const gridGroups = GRID
+      .map(g => ({
+        label: g.label,
+        items: g.items
+          .filter(it => !gq || `${it.label} ${g.label}`.toLowerCase().indexOf(gq) !== -1)
+          .map(it => ({ ...it, go: () => this.go(it.id) })),
+      }))
+      .filter(g => g.items.length);
+
+    return {
+      query: s.query,
+      onQuery: e => this.setState({ query: e.target.value }),
+      clearQuery: () => this.setState({ query: '' }),
+      hasQuery: !!s.query,
+      searchHint: HINTS[screen] || 'Search',
+      showSearch: !!screen && screen !== 'notices',
+      rowsEmpty: !!screen && d.rows.length === 0,
+      isIssues: screen === 'issues',
+      issueFormOpen: s.issueForm.open,
+      issueFormShut: screen === 'issues' && !s.issueForm.open,
+      openIssueForm: () => this.setForm({ open: true }),
+      closeIssueForm: () => this.setForm({ open: false }),
+      saveIssue: () => this.saveIssue(),
+      fTitle: s.issueForm.title, onFTitle: e => this.setForm({ title: e.target.value }),
+      fCategory: s.issueForm.category, onFCategory: e => this.setForm({ category: e.target.value }),
+      fTold: s.issueForm.told, onFTold: e => this.setForm({ told: e.target.value }),
+      fOwner: s.issueForm.owner, onFOwner: e => this.setForm({ owner: e.target.value }),
+      fPriorities: ['High', 'Medium', 'Low'].map(p => {
+        const on = s.issueForm.priority === p;
+        return { label: p, go: () => this.setForm({ priority: p }), bg: on ? BLUE : '#fff', fg: on ? '#fff' : '#3d4754', bd: on ? BLUE : LINE };
+      }),
+      isMess: screen === 'mess',
+      messFormOpen: s.messForm.open,
+      messFormShut: screen === 'mess' && !s.messForm.open,
+      messFormTitle: s.messForm.idx === null ? `Add a meal · ${s.messForm.day}` : `Edit ${s.messForm.meal || 'meal'} · ${s.messForm.day}`,
+      openMessAdd: () => this.openMessAdd(),
+      closeMessForm: () => this.setMeal({ open: false }),
+      saveMeal: () => this.saveMeal(),
+      mMeal: s.messForm.meal, onMMeal: e => this.setMeal({ meal: e.target.value }),
+      mTime: s.messForm.time, onMTime: e => this.setMeal({ time: e.target.value }),
+      mHall: s.messForm.hall, onMHall: e => this.setMeal({ hall: e.target.value }),
+      mItems: s.messForm.items, onMItems: e => this.setMeal({ items: e.target.value }),
+      mNote: s.messForm.note, onMNote: e => this.setMeal({ note: e.target.value }),
+      gridQuery: s.gridQuery,
+      onGridQuery: e => this.setState({ gridQuery: e.target.value }),
+      hasGridQuery: !!s.gridQuery,
+      clearGridQuery: () => this.setState({ gridQuery: '' }),
+      gridEmpty: gridGroups.length === 0,
+      isHome: tab === 'home' && !screen,
+      isGrid: tab === 'hostel' && !screen,
+      isGate: tab === 'gate' && !screen,
+      isDetail: !!screen && screen !== 'study' && screen !== 'gatelog',
+      isStudy: screen === 'study',
+      isGateLog: screen === 'gatelog',
+      ...this.studyVals(),
+      ...this.gateVals(),
+      showSubHeader: !!screen || tab !== 'home',
+      headerTitle,
+      back: () => this.setState({ screen: null, flash: '' }),
+      flash: s.flash,
+      clearFlash: () => this.setState({ flash: '' }),
+
+      noticeTitle: n.title, noticeSub: n.sub, noticeDate: n.date,
+      nextNotice: () => this.setState(st => ({ notice: (st.notice + 1) % NOTICES.length })),
+      noticeDots: NOTICES.map((_, i) => ({
+        go: () => this.setState({ notice: i }),
+        w: i === s.notice % NOTICES.length ? '22px' : '5px',
+        bg: i === s.notice % NOTICES.length ? BLUE : '#cfd6e2',
+      })),
+      goNotices: () => this.go('notices'),
+      goMessages: () => this.go('messages'),
+      goIssues: () => this.go('issues'),
+      callGate: () => this.note('Calling the main gate · Murugan S.'),
+
+      gridGroups,
+      gateOutRows: GATE_OUT, gateInRows: GATE_IN,
+
+      tabs: d.tabs, hasTabs: d.tabs.length > 0,
+      tabs2: d.tabs2, hasTabs2: (d.tabs2 || []).length > 0,
+      tabs3: d.tabs3, hasTabs3: (d.tabs3 || []).length > 0,
+      selects: d.selects, hasSelects: (d.selects || []).length > 0,
+      selPanelOpen: (d.selPanelOptions || []).length > 0,
+      selPanelTitle: d.selPanelTitle, selPanelOptions: d.selPanelOptions,
+      closeSel: () => this.setState({ openSel: null }),
+      rows: d.rows, stats: d.stats, hasStats: d.stats.length > 0, listLabel: d.listLabel,
+
+      navItems: NAV.map(it => ({
+        ...it,
+        color: tab === it.id ? BLUE : '#98a2ae',
+        go: () => this.setState({ tab: it.id, screen: null, flash: '' }),
+      })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

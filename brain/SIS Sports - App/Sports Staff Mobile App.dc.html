@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #EDEFF3; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #10233B; }
+  a { color: #2563EB; text-decoration: none; }
+  a:hover { color: #1D4ED8; }
+  input, textarea, button { font-family: inherit; }
+  .scr::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</helmet>
+
+<div style="min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px">
+  <div style="width:402px; flex:0 0 402px; height:846px; background:#FFFFFF; border-radius:42px; overflow:hidden; position:relative; box-shadow:0 30px 70px rgba(14,42,71,0.22); display:flex; flex-direction:column">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="background:linear-gradient(115deg,#1E3AD6,#2563EB); padding:22px 20px 20px; display:flex; align-items:center; gap:13px">
+        <div style="width:40px; height:40px; border-radius:11px; background:#fff; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px">PP</div>
+        <div style="flex:1; font-size:17px; font-weight:800; color:#fff">Pavakie Public School</div>
+        <div onClick="{{ goMessages }}" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:19px; cursor:pointer">✉</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ subHeader }}" hint-placeholder-val="{{ false }}">
+      <div style="background:linear-gradient(115deg,#1E3AD6,#2563EB); padding:22px 20px 20px; display:flex; align-items:center; gap:14px">
+        <div onClick="{{ goBack }}" style="width:36px; height:36px; border-radius:11px; background:rgba(255,255,255,0.22); color:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; cursor:pointer">←</div>
+        <div style="flex:1; font-size:19px; font-weight:800; color:#fff; line-height:1.2">{{ subHeader }}</div>
+      </div>
+    </sc-if>
+
+    <div class="scr" style="flex:1; min-height:0; overflow-y:auto; background:#FFFFFF">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:10px; padding:0 0 14px">
+          <div onClick="{{ goProfile }}" style="padding:16px 20px; display:flex; align-items:center; gap:14px; cursor:pointer">
+            <div style="width:48px; height:48px; border-radius:50%; background:#DCE4F7; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800">PS</div>
+            <div style="display:flex; flex-direction:column; gap:3px">
+              <div style="font-size:17px; font-weight:800; color:#1E3AD6">Hi, Mr. P. Sathish</div>
+              <div style="font-size:12.5px; color:#5C6A7E; white-space:nowrap">Sports Dept · Sports Admin</div>
+            </div>
+          </div>
+
+          <div style="padding:6px 18px 18px; display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span style="font-size:16px; color:#1E3AD6">⚑</span>
+              <div style="flex:1; font-size:17px; font-weight:800; color:#10233B">Notice</div>
+              <div onClick="{{ goNotice }}" style="font-size:13px; font-weight:700; color:#2563EB; cursor:pointer">View All</div>
+            </div>
+            <div onClick="{{ goNotice }}" style="background:#E4EAFB; border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px; cursor:pointer">
+              <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+                <div style="font-size:16px; font-weight:800; line-height:1.3; color:#10233B">{{ notice.title }}</div>
+                <div style="font-size:13px; font-weight:700; color:#5A667C">{{ notice.from }}</div>
+                <div style="font-size:12px; color:#66738A">{{ notice.date }}</div>
+              </div>
+              <div style="width:30px; height:30px; border-radius:50%; background:#CBD6F3; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:14px; flex:0 0 30px">›</div>
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center; align-items:center">
+              <sc-for list="{{ dots }}" as="d" hint-placeholder-count="3">
+                <div onClick="{{ d.pick }}" style="{{ d.style }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="padding:0 18px 18px; display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:12px">
+              <div style="width:38px; height:38px; border-radius:10px; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800">PP</div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:2px">
+                <div style="font-size:14.5px; font-weight:800; color:#10233B">Pavakie Public School</div>
+                <div style="font-size:12px; color:#66738A">Main ground · 1 Sept 2026</div>
+              </div>
+              <div style="background:#E4EAFB; color:#2563EB; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700">Event</div>
+            </div>
+            <div style="font-size:16px; font-weight:800; color:#10233B">Annual Sports Day rehearsals begin</div>
+            <div style="font-size:14px; line-height:1.55; color:#4E5A6E">Grades 6–10 report to the main ground at 3 PM on Tuesday and Thursday until 20 September.</div>
+            <div style="border:1px solid #E6E9EE; border-radius:12px; overflow:hidden">
+              <div style="background:#1E3AD6; padding:11px 14px; display:flex; align-items:center; gap:10px">
+                <div style="flex:1; font-size:11.5px; font-weight:700; color:#fff">Pavakie Public School</div>
+                <div style="font-size:11.5px; color:#C7D2F7">Sports Committee</div>
+                <div style="background:#0E1A3C; color:#fff; border-radius:20px; padding:2px 9px; font-size:11px; font-weight:700">1/2</div>
+              </div>
+              <div style="padding:16px 14px 14px; display:flex; flex-direction:column; gap:10px">
+                <div style="font-size:22px; font-weight:800; letter-spacing:-0.01em; color:#10233B; line-height:1.1">ANNUAL SPORTS DAY</div>
+                <div style="font-size:22px; font-weight:800; color:#2563EB; line-height:1.1">REHEARSALS</div>
+                <div style="font-size:12.5px; color:#5A667C">Grades 6–10 · Main ground · 3:00 PM</div>
+                <div style="font-size:12.5px; color:#5A667C">Tuesdays and Thursdays until 20 September</div>
+                <div style="height:74px; border-radius:8px; background-color:#EDF0F6; background-image:repeating-linear-gradient(45deg, rgba(37,99,235,0.09) 0 8px, transparent 8px 16px); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono', monospace; font-size:10.5px; color:#66738A">sports day poster — drop a real photo here</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isNotice }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 20px; display:flex; flex-direction:column; gap:12px">
+          <div onClick="{{ openNew }}" style="background:#2563EB; border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:10px; cursor:pointer">
+            <span style="color:#fff; font-size:17px">＋</span>
+            <span style="flex:1; font-size:15px; font-weight:800; color:#fff">Post a notice</span>
+            <span style="color:#fff; font-size:15px">›</span>
+          </div>
+          <div onClick="{{ goHistory }}" style="border:1px solid #E6E9EE; border-radius:14px; padding:15px 18px; display:flex; align-items:center; gap:10px; cursor:pointer">
+            <span style="color:#2563EB; font-size:14px">⟲</span>
+            <span style="flex:1; font-size:14.5px; font-weight:700; color:#10233B">History</span>
+            <span style="background:#E4EAFB; color:#2563EB; border-radius:20px; padding:2px 11px; font-size:12px; font-weight:700">{{ historyCount }}</span>
+            <span style="color:#A9B2C2; font-size:14px">›</span>
+          </div>
+          <sc-for list="{{ notices }}" as="n" hint-placeholder-count="4">
+            <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:11px">
+              <div style="display:flex; align-items:center; gap:11px">
+                <div style="width:34px; height:34px; border-radius:9px; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800">PP</div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:2px">
+                  <div style="font-size:13.5px; font-weight:800; color:#10233B">{{ n.from }}</div>
+                  <div style="font-size:11.5px; color:#66738A">{{ n.date }}</div>
+                </div>
+                <div style="background:#E4EAFB; color:#2563EB; border-radius:20px; padding:3px 11px; font-size:11.5px; font-weight:700">{{ n.tag }}</div>
+              </div>
+              <div style="font-size:15px; font-weight:800; color:#10233B">{{ n.title }}</div>
+              <div style="font-size:13.5px; line-height:1.5; color:#4E5A6E">{{ n.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 20px; display:flex; flex-direction:column; gap:12px">
+          <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+            <span onClick="{{ dateBar.toggle }}" style="color:#2563EB; font-size:14px; cursor:pointer">▤</span>
+            <span onClick="{{ dateBar.toggle }}" style="flex:1; font-size:13.5px; font-weight:700; color:#10233B; cursor:pointer">{{ dateBar.label }}</span>
+            <sc-if value="{{ dateBar.hasPick }}" hint-placeholder-val="{{ false }}">
+              <span onClick="{{ dateBar.clear }}" style="font-size:12px; font-weight:700; color:#2563EB; cursor:pointer">Clear</span>
+            </sc-if>
+            <span onClick="{{ dateBar.toggle }}" style="color:#A9B2C2; font-size:12px; cursor:pointer">▾</span>
+          </div>
+          <sc-if value="{{ dateBar.open }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px">
+              <div style="display:flex; align-items:center; gap:10px">
+                <div onClick="{{ dateBar.prev }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">‹</div>
+                <div style="flex:1; text-align:center; font-size:15px; font-weight:800; color:#10233B">{{ dateBar.title }}</div>
+                <div onClick="{{ dateBar.next }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">›</div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px">
+                <sc-for list="{{ dateBar.dows }}" as="d" hint-placeholder-count="7">
+                  <div style="height:24px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:#6E7A8C">{{ d }}</div>
+                </sc-for>
+                <sc-for list="{{ dateBar.cells }}" as="c" hint-placeholder-count="35">
+                  <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:34px 20px; text-align:center; font-size:13.5px; color:#66738A; line-height:1.6">Nothing posted yet.<br>Notices you post appear here.</div>
+          </sc-if>
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="0">
+            <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:9px">
+              <div style="display:flex; align-items:center; gap:10px">
+                <div style="flex:1; font-size:11.5px; color:#66738A">{{ h.date }}</div>
+                <div style="background:#E4EAFB; color:#2563EB; border-radius:20px; padding:3px 11px; font-size:11.5px; font-weight:700">{{ h.tag }}</div>
+              </div>
+              <div style="font-size:15px; font-weight:800; color:#10233B">{{ h.title }}</div>
+              <sc-if value="{{ h.body }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:13.5px; line-height:1.5; color:#4E5A6E">{{ h.body }}</div>
+              </sc-if>
+              <div style="font-size:12px; color:#66738A">Sent to {{ h.audience }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:14px; padding:0 0 20px">
+          <div style="padding:18px 20px; display:flex; align-items:center; gap:16px">
+            <div style="width:62px; height:62px; border-radius:50%; background:#DCE4F7; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:800">PS</div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:7px">
+              <div style="font-size:20px; font-weight:800; color:#10233B">P. Sathish</div>
+              <div style="font-size:12.5px; color:#5C6A7E">PPS-0871 · Sports Admin · Physical Education</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px">
+                <div style="background:#E4EAFB; color:#2563EB; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:700">Athletics In-charge</div>
+                <div style="background:#E4EAFB; color:#2563EB; border-radius:8px; padding:4px 10px; font-size:11.5px; font-weight:700">Sports Co-ordinator</div>
+              </div>
+            </div>
+          </div>
+          <sc-for list="{{ profileGroups }}" as="g" hint-placeholder-count="3">
+            <div style="display:flex; flex-direction:column; gap:9px; padding:0 16px">
+              <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C; padding-left:4px">{{ g.label }}</div>
+              <div style="border:1px solid #E6E9EE; border-radius:14px; padding:4px 16px">
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="display:flex; gap:16px; align-items:flex-start; padding:14px 0; border-bottom:1px solid #F0F2F6">
+                    <div style="flex:1; font-size:13.5px; color:#66738A">{{ r.k }}</div>
+                    <div style="flex:1.1; font-size:13.5px; font-weight:800; color:#10233B; text-align:right">{{ r.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSports }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 16px 24px; display:flex; flex-direction:column; gap:22px">
+          <sc-for list="{{ sportsGroups }}" as="g" hint-placeholder-count="3">
+            <div style="display:flex; flex-direction:column; gap:14px">
+              <sc-if value="{{ g.label }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ g.label }}</div>
+              </sc-if>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:18px 12px">
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="8">
+                  <div onClick="{{ it.go }}" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer">
+                    <div style="width:52px; height:52px; border-radius:50%; background:#2563EB; color:#fff; display:flex; align-items:center; justify-content:center; font-size:21px">{{ it.icon }}</div>
+                    <div style="font-size:11.5px; font-weight:600; color:#3C4A5B; text-align:center; line-height:1.3">{{ it.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:20px">
+          <div style="border:1px solid #E6E9EE; border-radius:16px; padding:18px 16px; display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <div onClick="{{ prevMonth }}" style="width:32px; height:32px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer">‹</div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px">
+                <div style="font-size:17px; font-weight:800; color:#10233B">{{ cal.title }}</div>
+                <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; color:#6E7A8C">{{ cal.count }}</div>
+              </div>
+              <div onClick="{{ nextMonth }}" style="width:32px; height:32px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer">›</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:4px">
+              <sc-for list="{{ cal.dows }}" as="d" hint-placeholder-count="7">
+                <div style="height:26px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#6E7A8C">{{ d }}</div>
+              </sc-for>
+              <sc-for list="{{ cal.cells }}" as="c" hint-placeholder-count="35">
+                <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ cal.listLabel }}</div>
+            <sc-if value="{{ cal.empty }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:26px 20px; text-align:center; font-size:13px; color:#66738A">No events on this date.</div>
+            </sc-if>
+            <sc-for list="{{ cal.events }}" as="e" hint-placeholder-count="2">
+              <div style="border:1px solid #E6E9EE; border-radius:14px; padding:15px 18px; display:flex; gap:16px; align-items:center">
+                <div style="display:flex; flex-direction:column; align-items:center; width:32px">
+                  <div style="font-size:18px; font-weight:800; color:#2563EB">{{ e.day }}</div>
+                  <div style="font-size:10px; font-weight:700; letter-spacing:0.08em; color:#6E7A8C">{{ e.mon }}</div>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                  <div style="font-size:14.5px; font-weight:800; color:#10233B">{{ e.title }}</div>
+                  <div style="font-size:12.5px; color:#66738A">{{ e.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMessages }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:12px">
+          <div onClick="{{ toggleFilter }}" style="border:1px solid #E6E9EE; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:10px; cursor:pointer">
+            <span style="color:#2563EB; font-size:14px">◎</span>
+            <span style="flex:1; font-size:14px; font-weight:700; color:#10233B">{{ msgFilter }}</span>
+            <span style="color:#A9B2C2; font-size:12px">▾</span>
+          </div>
+          <sc-if value="{{ filterOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #E1E6ED; border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:2px">
+              <sc-for list="{{ filterOptions }}" as="o" hint-placeholder-count="4">
+                <div onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+            <span style="color:#A9B2C2; font-size:13px">⌕</span>
+            <input value="{{ search }}" onChange="{{ setSearch }}" placeholder="Search player or parent name" style="flex:1; border:0; outline:none; font-size:13.5px; color:#10233B; min-width:0">
+          </div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C; padding-top:4px">{{ threadsLabel }}</div>
+          <sc-if value="{{ noThreads }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:26px 20px; text-align:center; font-size:13px; color:#66738A">No conversations match this filter.</div>
+          </sc-if>
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:0 16px">
+            <sc-for list="{{ threads }}" as="t" hint-placeholder-count="5">
+              <div onClick="{{ t.open }}" style="display:flex; gap:13px; align-items:flex-start; padding:14px 0; border-bottom:1px solid #F0F2F6; cursor:pointer">
+                <div style="width:36px; height:36px; border-radius:50%; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex:0 0 36px">{{ t.initial }}</div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <div style="font-size:14px; font-weight:800; color:#10233B">{{ t.name }}</div>
+                  <div style="font-size:11.5px; color:#66738A">{{ t.meta }}</div>
+                  <div style="font-size:12.5px; color:#5A667C; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ t.preview }}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px">
+                  <div style="{{ t.timeStyle }}">{{ t.time }}</div>
+                  <sc-if value="{{ t.unread }}" hint-placeholder-val="{{ false }}">
+                    <div style="width:7px; height:7px; border-radius:50%; background:#2563EB"></div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isThread }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; min-height:100%">
+          <div style="padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #EEF0F4">
+            <div style="width:36px; height:36px; border-radius:50%; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800">{{ thread.initial }}</div>
+            <div style="display:flex; flex-direction:column; gap:2px">
+              <div style="font-size:14.5px; font-weight:800; color:#10233B">{{ thread.name }}</div>
+              <div style="font-size:11.5px; color:#66738A">{{ thread.meta }}</div>
+            </div>
+          </div>
+          <div style="flex:1; padding:16px 18px; display:flex; flex-direction:column; gap:12px">
+            <div style="text-align:center; font-size:10.5px; font-weight:700; letter-spacing:0.14em; color:#A9B2C2">TODAY</div>
+            <div style="display:flex; gap:10px; align-items:flex-start">
+              <div style="width:30px; height:30px; border-radius:50%; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:800; flex:0 0 30px">{{ thread.initial }}</div>
+              <div style="display:flex; flex-direction:column; gap:5px">
+                <div style="border:1px solid #E6E9EE; border-radius:14px; padding:13px 15px; font-size:13.5px; line-height:1.5; color:#4E5A6E; max-width:250px">{{ thread.message }}</div>
+                <div style="font-size:11px; color:#A9B2C2; padding-left:4px">{{ thread.time }}</div>
+              </div>
+            </div>
+            <sc-for list="{{ sent }}" as="s" hint-placeholder-count="0">
+              <div style="display:flex; justify-content:flex-end">
+                <div style="background:#2563EB; border-radius:14px; padding:12px 15px; font-size:13.5px; line-height:1.5; color:#fff; max-width:250px">{{ s }}</div>
+              </div>
+            </sc-for>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; padding-top:4px">
+              <sc-for list="{{ quickReplies }}" as="q" hint-placeholder-count="3">
+                <div onClick="{{ q.send }}" style="border:1px solid #E1E6ED; border-radius:20px; padding:9px 15px; font-size:12.5px; font-weight:600; color:#3C4A5B; cursor:pointer">{{ q.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:12px 16px 18px; display:flex; align-items:center; gap:10px">
+            <div style="flex:1; border:1px solid #E1E6ED; border-radius:24px; padding:12px 16px; display:flex; align-items:center; gap:10px">
+              <span style="color:#A9B2C2; font-size:14px">⎘</span>
+              <input value="{{ draft }}" onChange="{{ setDraft }}" placeholder="Write a reply" style="flex:1; border:0; outline:none; font-size:13.5px; min-width:0">
+            </div>
+            <div onClick="{{ sendDraft }}" style="{{ sendStyle }}">→</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:14px">
+          <div style="display:flex; align-items:center; gap:10px">
+            
+            <div onClick="{{ openAdd }}" style="flex:1; background:#2563EB; color:#fff; border-radius:13px; padding:15px; text-align:center; font-size:15px; font-weight:800; cursor:pointer">{{ reg.action }}</div>
+          </div>
+          <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+            <span style="color:#A9B2C2; font-size:13px">⌕</span>
+            <input value="{{ regSearch }}" onChange="{{ setRegSearch }}" placeholder="{{ reg.searchPh }}" style="flex:1; border:0; outline:none; font-size:13px; min-width:0">
+          </div>
+          <div style="display:flex; gap:8px; overflow-x:auto">
+            <sc-for list="{{ reg.chips }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ dateBar.show }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+                <span onClick="{{ dateBar.toggle }}" style="color:#2563EB; font-size:14px; cursor:pointer">▤</span>
+                <span onClick="{{ dateBar.toggle }}" style="flex:1; font-size:13.5px; font-weight:700; color:#10233B; cursor:pointer">{{ dateBar.label }}</span>
+                <sc-if value="{{ dateBar.hasPick }}" hint-placeholder-val="{{ false }}">
+                  <span onClick="{{ dateBar.clear }}" style="font-size:12px; font-weight:700; color:#2563EB; cursor:pointer">Clear</span>
+                </sc-if>
+                <span onClick="{{ dateBar.toggle }}" style="color:#A9B2C2; font-size:12px; cursor:pointer">▾</span>
+              </div>
+              <sc-if value="{{ dateBar.open }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px">
+                  <div style="display:flex; align-items:center; gap:10px">
+                    <div onClick="{{ dateBar.prev }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">‹</div>
+                    <div style="flex:1; text-align:center; font-size:15px; font-weight:800; color:#10233B">{{ dateBar.title }}</div>
+                    <div onClick="{{ dateBar.next }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">›</div>
+                  </div>
+                  <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px">
+                    <sc-for list="{{ dateBar.dows }}" as="d" hint-placeholder-count="7">
+                      <div style="height:24px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:#6E7A8C">{{ d }}</div>
+                    </sc-for>
+                    <sc-for list="{{ dateBar.cells }}" as="c" hint-placeholder-count="35">
+                      <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11.5px; color:#6E7A8C">Days with records are highlighted.</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+          <div style="display:flex; align-items:baseline; gap:10px; padding-top:2px">
+            <div style="flex:1; font-size:16px; font-weight:800; color:#10233B">{{ reg.listTitle }}</div>
+            <div style="flex:0 0 auto; white-space:nowrap; font-size:11.5px; color:#6E7A8C">{{ reg.count }}</div>
+          </div>
+          <sc-if value="{{ reg.empty }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:28px 20px; text-align:center; font-size:13px; color:#66738A">No records match this search.</div>
+          </sc-if>
+          <sc-for list="{{ reg.rows }}" as="r" hint-placeholder-count="5">
+            <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:12px; position:relative">
+              <div style="display:flex; align-items:flex-start; gap:12px">
+                <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                  <div style="font-size:14.5px; font-weight:800; color:#10233B; line-height:1.35">{{ r.title }}</div>
+                  <div style="font-size:12.5px; color:#5C6A7E">{{ r.sub }}</div>
+                </div>
+                <div style="position:relative">
+                  <div onClick="{{ r.editStatus }}" style="{{ r.statusStyle }}">{{ r.status }} <span style="font-size:9px; opacity:0.7">▾</span></div>
+                  <sc-if value="{{ r.picking }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute; top:calc(100% + 6px); right:0; z-index:20; background:#fff; border:1px solid #E1E6ED; border-radius:12px; box-shadow:0 14px 34px rgba(14,42,71,0.18); padding:6px; min-width:150px; display:flex; flex-direction:column; gap:2px">
+                      <sc-for list="{{ r.statusOptions }}" as="o" hint-placeholder-count="3">
+                        <div onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:7px; border-top:1px solid #F0F2F6; padding-top:11px">
+                <sc-for list="{{ r.metas }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex; gap:12px; align-items:baseline">
+                    <div style="flex:1; font-size:12px; color:#6E7A8C">{{ m.k }}</div>
+                    <div style="flex:1.2; font-size:12.5px; font-weight:700; color:#3C4A5B; text-align:right">{{ m.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStudents }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:13px">
+          <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+            <span style="color:#A9B2C2; font-size:13px">⌕</span>
+            <input value="{{ stuSearch }}" onChange="{{ setStuSearch }}" placeholder="Search by name, admission no. or class" style="flex:1; border:0; outline:none; font-size:13px; min-width:0">
+          </div>
+          <div style="display:flex; gap:8px; overflow-x:auto">
+            <sc-for list="{{ stuChips }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:10px; padding-top:2px">
+            <div style="flex:1; font-size:16px; font-weight:800; color:#10233B">Players register</div>
+            <div style="flex:0 0 auto; white-space:nowrap; font-size:11.5px; color:#6E7A8C">{{ stuCount }}</div>
+          </div>
+          <sc-if value="{{ stuEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:28px 20px; text-align:center; font-size:13px; color:#66738A">No students match this search.</div>
+          </sc-if>
+          <sc-for list="{{ students }}" as="x" hint-placeholder-count="6">
+            <div onClick="{{ x.open }}" style="border:1px solid #E6E9EE; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:13px; cursor:pointer">
+              <div style="width:42px; height:42px; flex:0 0 42px; border-radius:50%; background:#0E2A47; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13.5px; font-weight:800">{{ x.initials }}</div>
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:14.5px; font-weight:800; color:#10233B">{{ x.name }}</div>
+                <div style="font-size:12px; color:#5C6A7E">{{ x.meta }}</div>
+                <div style="font-size:11.5px; color:#8A94A8">{{ x.adm }} · PT {{ x.att }}</div>
+              </div>
+              <div style="{{ x.statusStyle }}">{{ x.status }}</div>
+              <span style="color:#A9B2C2; font-size:14px">›</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStudent }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:14px">
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:16px">
+            <div style="display:flex; align-items:center; gap:14px">
+              <div style="width:56px; height:56px; flex:0 0 56px; border-radius:50%; background:#0E2A47; color:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800">{{ st.initials }}</div>
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:5px">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                  <div style="font-size:19px; font-weight:800; color:#10233B">{{ st.name }}</div>
+                  <div style="{{ st.statusStyle }}">{{ st.status }}</div>
+                </div>
+                <div style="font-size:12.5px; color:#5C6A7E">{{ st.meta }}</div>
+                <div style="font-size:11px; letter-spacing:0.06em; color:#8A94A8">{{ st.id }}</div>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:9px">
+              <sc-for list="{{ st.stats }}" as="s" hint-placeholder-count="4">
+                <div style="background:#F7F9FC; border-radius:12px; padding:12px 13px; display:flex; flex-direction:column; gap:4px">
+                  <div style="font-size:9.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ s.k }}</div>
+                  <div style="font-size:13.5px; font-weight:800; color:#10233B">{{ s.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px">
+            <div style="font-size:15.5px; font-weight:800; color:#10233B">Personal details</div>
+            <div style="display:flex; flex-direction:column; gap:9px">
+              <sc-for list="{{ st.rows }}" as="r" hint-placeholder-count="6">
+                <div style="display:flex; gap:12px; align-items:baseline; border-bottom:1px solid #F0F2F6; padding-bottom:9px">
+                  <div style="flex:1; font-size:12px; color:#6E7A8C">{{ r.k }}</div>
+                  <div style="flex:1.3; font-size:12.5px; font-weight:700; color:#3C4A5B; text-align:right; word-break:break-word">{{ r.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px">
+            <div style="font-size:15.5px; font-weight:800; color:#10233B">Squads</div>
+            <div style="display:flex; align-items:baseline; gap:12px">
+              <div style="flex:1; font-size:13.5px; font-weight:700; color:#10233B">{{ st.squad }}</div>
+              <div style="font-size:11.5px; color:#6E7A8C">{{ st.age }}</div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; align-items:center; gap:9px">
+              <div style="flex:1; font-size:15.5px; font-weight:800; color:#10233B">Achievements</div>
+              <div style="background:#E8EFFE; color:#1D4ED8; border-radius:20px; padding:4px 11px; font-size:11px; font-weight:700; white-space:nowrap">{{ st.achCount }}</div>
+            </div>
+            <sc-if value="{{ st.noAch }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px; color:#66738A">No achievements recorded yet.</div>
+            </sc-if>
+            <sc-for list="{{ st.ach }}" as="a" hint-placeholder-count="0">
+              <div style="display:flex; flex-direction:column; gap:3px; border-top:1px solid #F0F2F6; padding-top:10px">
+                <div style="font-size:13px; font-weight:800; color:#10233B">{{ a.t }}</div>
+                <div style="font-size:11.5px; color:#6E7A8C">{{ a.m }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPermissions }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:12px">
+          <div style="background:#F3F5F9; border-radius:13px; padding:4px; display:flex; gap:4px">
+            <sc-for list="{{ permTabs }}" as="t" hint-placeholder-count="2">
+              <div onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</div>
+            </sc-for>
+          </div>
+          <div onClick="{{ openNewRequest }}" style="background:#2563EB; border-radius:13px; padding:15px; text-align:center; font-size:15px; font-weight:800; color:#fff; cursor:pointer">＋ New request</div>
+          <sc-if value="{{ permEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px dashed #DDE3EB; border-radius:14px; padding:30px 20px; text-align:center; font-size:13px; color:#66738A; line-height:1.6">No closed requests yet.<br>Completed requests move here.</div>
+          </sc-if>
+          <sc-for list="{{ permissions }}" as="p" hint-placeholder-count="4">
+            <div onClick="{{ p.open }}" style="border:1px solid #E6E9EE; border-radius:14px; padding:16px; display:flex; align-items:center; gap:13px; cursor:pointer">
+              <div style="width:38px; height:38px; border-radius:11px; background:#E8EFFE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 38px">{{ p.icon }}</div>
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+                <div style="font-size:14.5px; font-weight:800; color:#10233B; line-height:1.3">{{ p.title }}</div>
+                <div style="font-size:11.5px; color:#6E7A8C">{{ p.meta }}</div>
+                <div style="font-size:11.5px; font-weight:700; color:#2563EB">{{ p.due }}</div>
+              </div>
+              <div style="background:#E8EFFE; color:#1D4ED8; border-radius:20px; padding:4px 11px; font-size:11.5px; font-weight:700; white-space:nowrap">{{ p.pendingLabel }}</div>
+              <span style="color:#A9B2C2; font-size:14px">›</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPermDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:14px">
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; flex-direction:column; gap:7px">
+              <div style="font-size:16px; font-weight:800; color:#10233B">{{ perm.title }}</div>
+              <div style="font-size:13px; line-height:1.55; color:#4E5A6E">{{ perm.note }}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px; border-top:1px solid #F0F2F6; padding-top:14px">
+              <div style="display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:10.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">DETAILS</div>
+                <div style="font-size:13.5px; font-weight:800; color:#10233B">{{ perm.details }}</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:10.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">REQUESTED BY</div>
+                <div style="font-size:13.5px; font-weight:800; color:#10233B">{{ perm.requestedBy }}</div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:10.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">RESPOND BY</div>
+                <div style="font-size:13.5px; font-weight:800; color:#10233B">{{ perm.respond }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:14px">
+            <div style="height:8px; border-radius:8px; background:#EAEEF6; overflow:hidden">
+              <div style="{{ perm.barStyle }}"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px">
+              <div style="background:#F4F7FF; border-radius:11px; padding:12px 13px; display:flex; flex-direction:column; gap:5px">
+                <div style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:#66738A">SIGNED</div>
+                <div style="font-size:19px; font-weight:800; color:#1D4ED8">{{ perm.signed }}</div>
+              </div>
+              <div style="background:#F4F7FF; border-radius:11px; padding:12px 13px; display:flex; flex-direction:column; gap:5px">
+                <div style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:#66738A">PENDING</div>
+                <div style="font-size:19px; font-weight:800; color:#1D4ED8">{{ perm.pending }}</div>
+              </div>
+              <div style="background:#F4F7FF; border-radius:11px; padding:12px 13px; display:flex; flex-direction:column; gap:5px">
+                <div style="font-size:10px; font-weight:700; letter-spacing:0.1em; color:#66738A">DECLINED</div>
+                <div style="font-size:19px; font-weight:800; color:#1D4ED8">{{ perm.declined }}</div>
+              </div>
+            </div>
+            <sc-if value="{{ remindOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <div style="font-size:10.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ remindLabel }}</div>
+                <textarea value="{{ remindText }}" onChange="{{ setRemindText }}" rows="3" style="border:1px solid #DDE3EB; border-radius:11px; padding:13px 14px; font-size:13px; line-height:1.5; color:#4E5A6E; outline:none; resize:none"></textarea>
+                <div style="display:flex; gap:10px">
+                  <div onClick="{{ sendRemind }}" style="flex:1; background:#2563EB; border-radius:11px; padding:14px; text-align:center; font-size:14px; font-weight:800; color:#fff; cursor:pointer">Send as notice</div>
+                  <div onClick="{{ cancelRemind }}" style="border:1px solid #DDE3EB; border-radius:11px; padding:14px 20px; text-align:center; font-size:14px; font-weight:700; color:#3C4A5B; cursor:pointer">Cancel</div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ remindClosed }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ openRemind }}" style="background:#2563EB; border-radius:11px; padding:15px; text-align:center; font-size:14.5px; font-weight:800; color:#fff; cursor:pointer">Remind pending parents</div>
+            </sc-if>
+            <sc-if value="{{ remindSentNote }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#ECFDF5; color:#047857; border-radius:11px; padding:12px 14px; font-size:12.5px; font-weight:700; text-align:center">{{ remindSentNote }}</div>
+            </sc-if>
+          </div>
+
+          <div style="border:1px solid #E6E9EE; border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:10px">
+            <span style="color:#A9B2C2; font-size:13px">⌕</span>
+            <input value="{{ studentSearch }}" onChange="{{ setStudentSearch }}" placeholder="Search a student" style="flex:1; border:0; outline:none; font-size:13px; min-width:0">
+          </div>
+          <div style="font-size:10.5px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">SIGNATURE STATUS</div>
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:0 16px">
+            <sc-for list="{{ signatures }}" as="x" hint-placeholder-count="5">
+              <div style="display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid #F0F2F6">
+                <div style="width:36px; height:36px; border-radius:50%; background:#E8EFFE; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:800; flex:0 0 36px">{{ x.initial }}</div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <div style="font-size:14px; font-weight:800; color:#10233B">{{ x.name }}</div>
+                  <div style="font-size:11.5px; color:#6E7A8C">{{ x.meta }}</div>
+                </div>
+                <div style="{{ x.style }}">{{ x.status }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isBus }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:16px 16px 24px; display:flex; flex-direction:column; gap:20px">
+          <div style="border:1px solid #E6E9EE; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:14px">
+              <div style="width:44px; height:44px; border-radius:12px; background:#E4EAFB; color:#1E3AD6; display:flex; align-items:center; justify-content:center; font-size:19px">⊟</div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:15px; font-weight:800; color:#10233B">Route 7 · Staff shuttle</div>
+                <div style="font-size:12px; color:#66738A">Vehicle TN 37 BX 4412 · Murugan S</div>
+              </div>
+              <div onClick="{{ toggleCall }}" style="width:40px; height:40px; border-radius:11px; background:#2563EB; color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer">☏</div>
+            </div>
+            <sc-if value="{{ calling }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#F4F7FF; border-radius:11px; padding:13px 15px; display:flex; align-items:center; gap:10px">
+                <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                  <div style="font-size:13px; font-weight:800; color:#1D4ED8">Calling Murugan S</div>
+                  <div style="font-size:12px; color:#66738A">+91 90876 21134 · Driver, Route 7</div>
+                </div>
+                <div onClick="{{ toggleCall }}" style="border:1px solid #DDE3EB; background:#fff; border-radius:9px; padding:8px 13px; font-size:12px; font-weight:700; color:#3C4A5B; cursor:pointer">End</div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">MORNING STOPS</div>
+            <div style="border:1px solid #E6E9EE; border-radius:14px; padding:0 16px">
+              <sc-for list="{{ stops }}" as="s" hint-placeholder-count="4">
+                <div style="display:flex; gap:16px; align-items:flex-start; padding:16px 0; border-bottom:1px solid #F0F2F6">
+                  <div style="width:66px; font-size:12.5px; font-weight:800; color:#2563EB">{{ s.time }}</div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                    <div style="font-size:14.5px; font-weight:700; color:#10233B">{{ s.name }}</div>
+                    <sc-if value="{{ s.note }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12px; color:#66738A">{{ s.note }}</div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <sc-if value="{{ showFab }}" hint-placeholder-val="{{ true }}">
+      <div onClick="{{ goMessages }}" style="position:absolute; right:18px; bottom:96px; width:52px; height:52px; border-radius:50%; background:#2563EB; color:#fff; display:flex; align-items:center; justify-content:center; font-size:21px; box-shadow:0 10px 24px rgba(37,99,235,0.4); cursor:pointer">✉</div>
+    </sc-if>
+
+    <div style="border-top:1px solid #EAECF1; padding:11px 24px 16px; display:flex; align-items:flex-start; gap:10px">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+        <div onClick="{{ t.go }}" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer">
+          <div style="{{ t.iconStyle }}">{{ t.icon }}</div>
+          <div style="{{ t.labelStyle }}">{{ t.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ newNoticeOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeNew }}" style="position:absolute; inset:0; background:rgba(14,26,60,0.45)"></div>
+      <div class="scr" style="position:absolute; left:0; right:0; bottom:0; top:58px; background:#fff; border-radius:22px 22px 0 0; padding:22px 20px 24px; overflow-y:auto; display:flex; flex-direction:column; gap:18px">
+        <div style="display:flex; align-items:flex-start; gap:12px">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+            <div style="font-size:20px; font-weight:800; color:#10233B">New notice</div>
+            <div style="font-size:12.5px; color:#66738A">Visible to the audiences you select</div>
+          </div>
+          <div onClick="{{ closeNew }}" style="width:32px; height:32px; border-radius:9px; background:#EEF1F6; color:#5A667C; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer">✕</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">TITLE</div>
+          <input value="{{ noticeTitle }}" onChange="{{ setNoticeTitle }}" placeholder="e.g. Report to the main ground at 3 PM" style="border:1px solid #DDE3EB; border-radius:11px; padding:14px 15px; font-size:13.5px; outline:none">
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">DETAILS</div>
+          <textarea value="{{ noticeBody }}" onChange="{{ setNoticeBody }}" placeholder="Optional message" rows="3" style="border:1px solid #DDE3EB; border-radius:11px; padding:14px 15px; font-size:13.5px; outline:none; resize:none"></textarea>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="display:flex; align-items:center; gap:10px">
+            <div style="flex:1; font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">TARGET AUDIENCE</div>
+            <div style="font-size:12px; font-weight:700; color:#2563EB">{{ selectedLabel }}</div>
+          </div>
+          <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="5">
+            <div onClick="{{ a.toggle }}" style="{{ a.style }}">
+              <div style="{{ a.dotStyle }}"></div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+                <div style="font-size:14px; font-weight:800; color:#10233B">{{ a.label }}</div>
+                <div style="font-size:11.5px; color:#66738A">{{ a.role }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div onClick="{{ postNotice }}" style="{{ postStyle }}">Post notice</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeAdd }}" style="position:absolute; inset:0; background:rgba(14,26,60,0.45)"></div>
+      <div class="scr" style="position:absolute; left:0; right:0; bottom:0; top:120px; background:#fff; border-radius:22px 22px 0 0; padding:22px 20px 24px; overflow-y:auto; display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; align-items:flex-start; gap:12px">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+            <div style="font-size:20px; font-weight:800; color:#10233B">{{ addSheet.title }}</div>
+            <div style="font-size:12.5px; color:#66738A">{{ addSheet.sub }}</div>
+          </div>
+          <div onClick="{{ closeAdd }}" style="width:32px; height:32px; border-radius:9px; background:#EEF1F6; color:#5A667C; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer">✕</div>
+        </div>
+        <sc-for list="{{ addSheet.fields }}" as="f" hint-placeholder-count="4">
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ f.label }}</div>
+            <div style="display:flex; gap:10px; align-items:center">
+              <input value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" style="flex:1; min-width:0; border:1px solid #DDE3EB; border-radius:11px; padding:14px 15px; font-size:13.5px; outline:none">
+              <sc-if value="{{ f.isPicker }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ f.openPicker }}" style="width:48px; height:48px; flex:0 0 48px; border-radius:11px; border:1px solid #DDE3EB; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer">▤</div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ f.picking }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid #E6E9EE; border-radius:13px; padding:14px; display:flex; flex-direction:column; gap:12px">
+                <sc-if value="{{ f.showDate }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:10px">
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <div onClick="{{ f.prevCal }}" style="width:28px; height:28px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">‹</div>
+                      <div style="flex:1; text-align:center; font-size:14px; font-weight:800; color:#10233B">{{ f.calTitle }}</div>
+                      <div onClick="{{ f.nextCal }}" style="width:28px; height:28px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">›</div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px">
+                      <sc-for list="{{ f.dows }}" as="d" hint-placeholder-count="7">
+                        <div style="height:24px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:#6E7A8C">{{ d }}</div>
+                      </sc-for>
+                      <sc-for list="{{ f.cells }}" as="c" hint-placeholder-count="35">
+                        <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.showTime }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:12px">
+                    <div style="display:flex; gap:8px">
+                      <sc-for list="{{ f.slots }}" as="sl" hint-placeholder-count="2">
+                        <div onClick="{{ sl.pick }}" style="{{ sl.style }}">
+                          <div style="{{ sl.labelStyle }}">{{ sl.label }}</div>
+                          <div style="{{ sl.valueStyle }}">{{ sl.value }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="position:relative; display:flex; gap:10px; justify-content:center; padding:4px 0">
+                      <div style="position:absolute; left:0; right:0; top:56px; height:38px; border-radius:11px; background:#F1F5FF; pointer-events:none"></div>
+                      <div class="scr" data-wheel="hour" style="position:relative; width:96px; height:142px; overflow-y:auto; scroll-snap-type:y mandatory; padding:52px 0">
+                        <sc-for list="{{ f.hours }}" as="h" hint-placeholder-count="14">
+                          <div onClick="{{ h.pick }}" style="{{ h.wheelStyle }}">{{ h.label }}</div>
+                        </sc-for>
+                      </div>
+                      <div style="position:relative; width:26px; height:142px; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; color:#B9C2D2">:</div>
+                      <div class="scr" data-wheel="min" style="position:relative; width:96px; height:142px; overflow-y:auto; scroll-snap-type:y mandatory; padding:52px 0">
+                        <sc-for list="{{ f.mins }}" as="m" hint-placeholder-count="4">
+                          <div onClick="{{ m.pick }}" style="{{ m.wheelStyle }}">{{ m.label }}</div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+                <div onClick="{{ f.done }}" style="border:1px solid #DDE3EB; border-radius:10px; padding:11px; text-align:center; font-size:13px; font-weight:700; color:#3C4A5B; cursor:pointer">Done</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="display:flex; flex-direction:column; gap:9px">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">STATUS</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <sc-for list="{{ addSheet.statuses }}" as="o" hint-placeholder-count="3">
+              <div onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div onClick="{{ saveAdd }}" style="{{ addSheet.saveStyle }}">{{ addSheet.saveLabel }}</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ requestOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeRequest }}" style="position:absolute; inset:0; background:rgba(14,26,60,0.45)"></div>
+      <div class="scr" style="position:absolute; left:0; right:0; bottom:0; top:120px; background:#fff; border-radius:22px 22px 0 0; padding:22px 20px 24px; overflow-y:auto; display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; align-items:flex-start; gap:12px">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+            <div style="font-size:20px; font-weight:800; color:#10233B">New request</div>
+            <div style="font-size:12.5px; color:#66738A">Parents sign this in the parent app</div>
+          </div>
+          <div onClick="{{ closeRequest }}" style="width:32px; height:32px; border-radius:9px; background:#EEF1F6; color:#5A667C; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer">✕</div>
+        </div>
+        <sc-for list="{{ requestFields }}" as="f" hint-placeholder-count="4">
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.12em; color:#6E7A8C">{{ f.label }}</div>
+            <div style="display:flex; gap:10px; align-items:center">
+              <input value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" style="flex:1; min-width:0; border:1px solid #DDE3EB; border-radius:11px; padding:14px 15px; font-size:13.5px; outline:none">
+              <sc-if value="{{ f.isPicker }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ f.openPicker }}" style="width:48px; height:48px; flex:0 0 48px; border-radius:11px; border:1px solid #DDE3EB; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer">▤</div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ f.picking }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid #E6E9EE; border-radius:13px; padding:14px; display:flex; flex-direction:column; gap:12px">
+                <sc-if value="{{ f.showDate }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:10px">
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <div onClick="{{ f.prevCal }}" style="width:28px; height:28px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">‹</div>
+                      <div style="flex:1; text-align:center; font-size:14px; font-weight:800; color:#10233B">{{ f.calTitle }}</div>
+                      <div onClick="{{ f.nextCal }}" style="width:28px; height:28px; border-radius:50%; border:1px solid #E6E9EE; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">›</div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px">
+                      <sc-for list="{{ f.dows }}" as="d" hint-placeholder-count="7">
+                        <div style="height:24px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:#6E7A8C">{{ d }}</div>
+                      </sc-for>
+                      <sc-for list="{{ f.cells }}" as="c" hint-placeholder-count="35">
+                        <div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.showTime }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:12px">
+                    <div style="display:flex; gap:8px">
+                      <sc-for list="{{ f.slots }}" as="sl" hint-placeholder-count="2">
+                        <div onClick="{{ sl.pick }}" style="{{ sl.style }}">
+                          <div style="{{ sl.labelStyle }}">{{ sl.label }}</div>
+                          <div style="{{ sl.valueStyle }}">{{ sl.value }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="position:relative; display:flex; gap:10px; justify-content:center; padding:4px 0">
+                      <div style="position:absolute; left:0; right:0; top:56px; height:38px; border-radius:11px; background:#F1F5FF; pointer-events:none"></div>
+                      <div class="scr" data-wheel="hour" style="position:relative; width:96px; height:142px; overflow-y:auto; scroll-snap-type:y mandatory; padding:52px 0">
+                        <sc-for list="{{ f.hours }}" as="h" hint-placeholder-count="14">
+                          <div onClick="{{ h.pick }}" style="{{ h.wheelStyle }}">{{ h.label }}</div>
+                        </sc-for>
+                      </div>
+                      <div style="position:relative; width:26px; height:142px; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; color:#B9C2D2">:</div>
+                      <div class="scr" data-wheel="min" style="position:relative; width:96px; height:142px; overflow-y:auto; scroll-snap-type:y mandatory; padding:52px 0">
+                        <sc-for list="{{ f.mins }}" as="m" hint-placeholder-count="4">
+                          <div onClick="{{ m.pick }}" style="{{ m.wheelStyle }}">{{ m.label }}</div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+                <div onClick="{{ f.done }}" style="border:1px solid #DDE3EB; border-radius:10px; padding:11px; text-align:center; font-size:13px; font-weight:700; color:#3C4A5B; cursor:pointer">Done</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div onClick="{{ saveRequest }}" style="{{ requestSaveStyle }}">Create request</div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:930},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2563EB&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#2563EB&quot;,&quot;#1E3AD6&quot;,&quot;#0F766E&quot;,&quot;#B4471F&quot;]},&quot;showFab&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const NOTICES = [
+  { from: "Principal's Office", date: '2 Sept 2026', tag: 'Notice', title: 'Inter-house athletics meet · 21 September', body: 'Grades 6–10: track events from 8:00 AM, field events from 11:00 AM. House captains report to the main ground by 7:30 AM.' },
+  { from: 'Sports Room notice board', date: '31 Aug 2026', tag: 'Squad', title: 'Cricket under-17 squad list out', body: 'Selected players report for net practice at 6:30 AM from Monday. Kit collection from the sports room on Saturday.' },
+  { from: 'Estate Office', date: '29 Aug 2026', tag: 'Ground', title: 'Main ground closed for re-levelling', body: 'The main ground is unavailable from 3 to 6 September. Move all practice sessions to Court A or the indoor hall.' }
+];
+
+const PROFILE = [
+  { label: 'PROFILE', rows: [
+    { k: 'Full name', v: 'P. Sathish' }, { k: 'Employee ID', v: 'PPS-0871' },
+    { k: 'Designation', v: 'Sports Admin' }, { k: 'Department', v: 'Physical Education' },
+    { k: 'Experience', v: '14 years' }, { k: 'Joining date', v: '04 Jun 2012' } ] },
+  { label: 'CONTACT', rows: [
+    { k: 'Official email', v: 'sathish.p@pavakie.edu.in' }, { k: 'Phone number', v: '+91 98404 77120' },
+    { k: 'School / campus', v: 'Pavakie Public School, Main Campus' }, { k: 'Sports room', v: 'Block D · Ground floor' } ] },
+  { label: 'SPORTS DETAILS', rows: [
+    { k: 'Disciplines handled', v: 'Athletics, Cricket, Kabaddi' }, { k: 'Squads in charge', v: 'Under-14, Under-17 athletics' },
+    { k: 'Grounds assigned', v: 'Main ground, Track, Sand court' }, { k: 'Academic year', v: '2026–27' } ] },
+  { label: 'PROFESSIONAL INFORMATION', rows: [
+    { k: 'Highest qualification', v: 'M.P.Ed, B.P.Ed' }, { k: 'Certifications', v: 'NIS Athletics Level 2 · First Aid' },
+    { k: 'Areas of expertise', v: 'Sprint coaching, Meet management' }, { k: 'Workshops', v: 'SGFI Officials Clinic 2025' } ] }
+];
+
+const STUDENTS = [
+  { name: 'Aarav S', adm: 'PPS/2021/410', cls: 'Class 9-A', disc: 'Cricket', att: '92%', status: 'active',
+    id: 'SPT-20075', dob: '12 Apr 2011', gender: 'Male', guardian: 'Mrs. Lakshmi P', mobile: '90031 22456',
+    email: 'aarav.s2026@pavakie.edu.in', squad: 'PPS Cricket XI', age: 'Under-17', ach: [] },
+  { name: 'Divya Prakash', adm: 'PPS/2021/411', cls: 'Class 8-B', disc: 'Throwball', att: '88%', status: 'active',
+    id: 'SPT-20076', dob: '03 Jan 2012', gender: 'Female', guardian: 'Mr. K. Prakash', mobile: '98410 33127',
+    email: 'divya.p2026@pavakie.edu.in', squad: 'Throwball under-14', age: 'Under-14',
+    ach: [{ t: 'Zonal throwball — 2nd place', m: 'Aug 2026 · Team event' }] },
+  { name: 'Rahul Iyer', adm: 'PPS/2021/412', cls: 'Class 10-A', disc: 'Athletics', att: '95%', status: 'active',
+    id: 'SPT-20077', dob: '27 Jul 2010', gender: 'Male', guardian: 'Mrs. Shobha Iyer', mobile: '99406 71880',
+    email: 'rahul.i2026@pavakie.edu.in', squad: 'Athletics squad', age: 'Under-17',
+    ach: [{ t: '200m sprint — 1st place', m: 'Zonal meet · Aug 2026' }, { t: 'Relay 4x100m — 2nd place', m: 'Zonal meet · Aug 2026' }] },
+  { name: 'Meera Suresh', adm: 'PPS/2021/413', cls: 'Class 7-C', disc: 'Badminton', att: '81%', status: 'rest',
+    id: 'SPT-20078', dob: '19 Nov 2012', gender: 'Female', guardian: 'Mr. V. Suresh', mobile: '90422 56014',
+    email: 'meera.s2026@pavakie.edu.in', squad: 'Badminton under-14', age: 'Under-14', ach: [] },
+  { name: 'Sandeep V', adm: 'PPS/2021/414', cls: 'Class 11-A', disc: 'Basketball', att: '90%', status: 'active',
+    id: 'SPT-20079', dob: '08 Feb 2009', gender: 'Male', guardian: 'Mrs. R. Vasanthi', mobile: '98849 20713',
+    email: 'sandeep.v2026@pavakie.edu.in', squad: 'Basketball open boys', age: 'Open', ach: [] },
+  { name: 'Kavya Balan', adm: 'PPS/2021/415', cls: 'Class 6-A', disc: 'Skating', att: '76%', status: 'injured',
+    id: 'SPT-20080', dob: '30 May 2014', gender: 'Female', guardian: 'Mr. S. Balan', mobile: '94430 88251',
+    email: 'kavya.b2026@pavakie.edu.in', squad: 'Skating group', age: 'Under-14', ach: [] },
+  { name: 'Nandhini R', adm: 'PPS/2021/416', cls: 'Class 9-C', disc: 'Kabaddi', att: '94%', status: 'active',
+    id: 'SPT-20081', dob: '14 Sep 2011', gender: 'Female', guardian: 'Mrs. G. Rajeswari', mobile: '90035 41192',
+    email: 'nandhini.r2026@pavakie.edu.in', squad: 'Kabaddi under-14 girls', age: 'Under-14',
+    ach: [{ t: 'District kabaddi — best defender', m: 'Jul 2026' }] },
+  { name: 'Vikram Raja', adm: 'PPS/2021/417', cls: 'Class 12-B', disc: 'Football', att: '87%', status: 'active',
+    id: 'SPT-20082', dob: '21 Mar 2008', gender: 'Male', guardian: 'Mr. M. Raja', mobile: '98945 60027',
+    email: 'vikram.r2026@pavakie.edu.in', squad: 'Football under-17', age: 'Under-17', ach: [] },
+  { name: 'Harini M', adm: 'PPS/2021/418', cls: 'Class 8-A', disc: 'Volleyball', att: '83%', status: 'rest',
+    id: 'SPT-20083', dob: '05 Dec 2011', gender: 'Female', guardian: 'Mrs. P. Mageshwari', mobile: '90477 31564',
+    email: 'harini.m2026@pavakie.edu.in', squad: 'Volleyball under-17', age: 'Under-17', ach: [] },
+  { name: 'Gokul V', adm: 'PPS/2021/419', cls: 'Class 9-A', disc: 'Kabaddi', att: '91%', status: 'active',
+    id: 'SPT-20084', dob: '17 Jun 2011', gender: 'Male', guardian: 'Mr. T. Velu', mobile: '99524 10893',
+    email: 'gokul.v2026@pavakie.edu.in', squad: 'Kabaddi under-17 boys', age: 'Under-17', ach: [] }
+];
+
+const SPORTS_GROUPS = [
+  { label: 'TODAY', items: [
+    ['★', 'Trials', 'trials'], ['✚', 'Injury Report', 'injuries'], ['⌾', 'Ask Permissions', 'permissions'], ['✉', 'Message', 'messages'] ] },
+  { label: 'PLAYERS & SQUADS', items: [
+    ['◍', 'Students', 'students'], ['◎', 'Squads', 'squads'], ['▤', 'Calendar', 'calendar'], ['⚑', 'Fixtures', 'fixtures'] ] },
+  { label: 'TRAINING', items: [
+    ['⟳', 'Sessions', 'sessions'], ['▥', 'Practice Plan', 'practice'], ['▶', 'Live Session', 'live'], ['✎', 'Entry Results', 'results'] ] },
+  { label: 'SPORTS CO-ORDINATOR', items: [
+    ['▦', 'Meet Setup', 'meets'], ['◔', 'Selection Window', 'selection'], ['⇄', 'Substitute Coach', 'substitutes'],
+    ['☑', 'Result Verification', 'verification'], ['⊞', 'Equipment', 'equipment'] ] }
+];
+
+const PILL = {
+  selected: ['#ECFDF5', '#047857'], approved: ['#ECFDF5', '#047857'], verified: ['#ECFDF5', '#047857'],
+  completed: ['#ECFDF5', '#047857'], active: ['#ECFDF5', '#047857'], won: ['#ECFDF5', '#047857'],
+  hold: ['#FEF6E7', '#B45309'], pending: ['#FEF6E7', '#B45309'], 'under care': ['#FEF6E7', '#B45309'],
+  observation: ['#FEF6E7', '#B45309'], draft: ['#FEF6E7', '#B45309'], forming: ['#FEF6E7', '#B45309'],
+  open: ['#FEF6E7', '#B45309'], rest: ['#EEF1F6', '#5A667C'], injured: ['#FEF2F2', '#B91C1C'], closed: ['#EEF1F6', '#5A667C'], drawn: ['#EEF1F6', '#5A667C'],
+  archived: ['#EEF1F6', '#5A667C'], upcoming: ['#E8EFFE', '#1D4ED8'], scheduled: ['#E8EFFE', '#1D4ED8'],
+  live: ['#E8EFFE', '#1D4ED8'], place: ['#E8EFFE', '#1D4ED8'], lost: ['#FEF2F2', '#B91C1C'], rejected: ['#FEF2F2', '#B91C1C']
+};
+const pillKey = (v) => PILL[v] ? v : (v.indexOf('won') === 0 ? 'won' : v.indexOf('lost') === 0 ? 'lost' : v.indexOf('place') > 0 ? 'place' : 'closed');
+
+const REGS = {
+  trials: { title: 'Trials & selection', sub: '3 trials scheduled this term · 46 candidates screened', action: '+ Schedule trial',
+    searchPh: 'Search candidates by name, class or discipline', listTitle: 'Trials register',
+    labels: ['Discipline', 'Trial date', 'Score'], titleLabel: 'Candidate name', subLabel: 'Class & section',
+    statuses: ['pending', 'selected', 'hold'], addTitle: 'Schedule trial', saveLabel: 'Save trial' },
+  injuries: { title: 'Injuries & incidents', sub: '5 cases on record this term · 2 open', action: '+ Log incident',
+    searchPh: 'Search cases by student, class or incident', listTitle: 'Incident register',
+    labels: ['Date', 'Guardian informed', 'Attended by'], titleLabel: 'What happened', subLabel: 'Student & class',
+    statuses: ['under care', 'observation', 'closed'], addTitle: 'Log incident', saveLabel: 'Save incident' },
+  fixtures: { title: 'Fixtures', sub: 'Inter-school and district matches for the current term', action: '+ Add fixture',
+    searchPh: 'Search fixtures by opponent, sport or venue', listTitle: 'Fixture list',
+    labels: ['Date · time', 'Venue', 'Level'], titleLabel: 'Fixture', subLabel: 'Opponent',
+    statuses: ['upcoming', 'won', 'drawn', 'lost'], addTitle: 'Add fixture', saveLabel: 'Save fixture' },
+  squads: { title: 'Squads', sub: '6 squads registered for 2026–27', action: '+ New squad',
+    searchPh: 'Search squads by name or coach', listTitle: 'Squad list',
+    labels: ['Coach', 'Players', 'Next session'], titleLabel: 'Squad name', subLabel: 'Age group',
+    statuses: ['active', 'forming', 'archived'], addTitle: 'New squad', saveLabel: 'Save squad' },
+  timetable: { title: 'Practice timetable', sub: 'Term I · ground and hall allotment', action: '+ Add slot',
+    searchPh: 'Search by day, squad or ground', listTitle: 'Weekly slots',
+    labels: ['Time', 'Ground', 'Coach'], titleLabel: 'Slot', subLabel: 'Squad',
+    statuses: ['active', 'draft'], addTitle: 'Add slot', saveLabel: 'Save slot' },
+  sessions: { title: 'Training sessions', sub: '6 sessions today · 2 completed', action: '+ New session',
+    searchPh: 'Search sessions by squad or ground', listTitle: 'Today on the ground',
+    labels: ['Time', 'In-charge', 'Attendance'], titleLabel: 'Session', subLabel: 'Ground',
+    statuses: ['scheduled', 'completed', 'closed'], addTitle: 'New session', saveLabel: 'Save session' },
+  results: { title: 'Entry results', sub: 'Event results entered by coaches', action: '+ Enter result',
+    searchPh: 'Search by player, event or meet', listTitle: 'Result entries',
+    labels: ['Event', 'Mark', 'Entered by'], titleLabel: 'Player', subLabel: 'Meet',
+    statuses: ['draft', 'pending', 'verified'], addTitle: 'Enter result', saveLabel: 'Save result' },
+  practice: { title: 'Practice plans', sub: 'Weekly plans shared with coaches', action: '+ New plan',
+    searchPh: 'Search plans by squad or focus', listTitle: 'Plan library',
+    labels: ['Squad', 'Week', 'Sessions'], titleLabel: 'Plan', subLabel: 'Focus',
+    statuses: ['active', 'draft', 'archived'], addTitle: 'New plan', saveLabel: 'Save plan' },
+  live: { title: 'Live session', sub: 'Mark attendance and notes while on the ground', action: '+ Start session',
+    searchPh: 'Search running sessions', listTitle: 'Running now',
+    labels: ['Started', 'Ground', 'Marked'], titleLabel: 'Session', subLabel: 'Squad',
+    statuses: ['live', 'scheduled', 'completed'], addTitle: 'Start session', saveLabel: 'Start session' },
+  meets: { title: 'Meet setup', sub: 'Inter-house and inter-school meet configuration', action: '+ New meet',
+    searchPh: 'Search meets by name or date', listTitle: 'Meets',
+    labels: ['Date', 'Events', 'Venue'], titleLabel: 'Meet', subLabel: 'Level',
+    statuses: ['draft', 'open', 'closed'], addTitle: 'New meet', saveLabel: 'Save meet' },
+  selection: { title: 'Selection window', sub: 'Windows in which coaches can submit squads', action: '+ Open window',
+    searchPh: 'Search windows by squad', listTitle: 'Windows',
+    labels: ['Opens', 'Closes', 'Submitted'], titleLabel: 'Window', subLabel: 'Squad',
+    statuses: ['open', 'closed', 'draft'], addTitle: 'Open window', saveLabel: 'Save window' },
+  substitutes: { title: 'Substitute coach', sub: 'Cover arranged for absent PT staff', action: '+ Assign cover',
+    searchPh: 'Search by coach or date', listTitle: 'Cover arrangements',
+    labels: ['Date', 'Periods', 'Covering for'], titleLabel: 'Substitute', subLabel: 'Squad / class',
+    statuses: ['pending', 'approved', 'closed'], addTitle: 'Assign cover', saveLabel: 'Save cover' },
+  verification: { title: 'Result verification', sub: 'Coach entries awaiting your sign-off', action: '+ Add entry',
+    searchPh: 'Search by meet or event', listTitle: 'Awaiting verification',
+    labels: ['Meet', 'Entries', 'Submitted by'], titleLabel: 'Batch', subLabel: 'Event group',
+    statuses: ['pending', 'verified', 'rejected'], addTitle: 'Add entry', saveLabel: 'Save entry' },
+  equipment: { title: 'Equipment', sub: 'Sports room stock · last audit 12 Aug 2026', action: '+ Add item',
+    searchPh: 'Search equipment by item or store', listTitle: 'Stock register',
+    labels: ['In stock', 'Issued', 'Condition'], titleLabel: 'Item', subLabel: 'Discipline',
+    statuses: ['active', 'pending', 'archived'], addTitle: 'Add item', saveLabel: 'Save item' }
+};
+
+const DATA = {
+  trials: [
+    { title: 'Madhavan L', sub: 'Class 9-B', metas: ['Basketball · Final round', '18 Aug 2026', '24/30'], status: 'selected' },
+    { title: 'Sneha R', sub: 'Class 8-A', metas: ['Throwball · Final round', '18 Aug 2026', '21/30'], status: 'selected' },
+    { title: 'Arun Kumar', sub: 'Class 10-C', metas: ['Football · Round 2', '21 Aug 2026', '17/30'], status: 'hold' },
+    { title: 'Priya D', sub: 'Class 7-A', metas: ['Athletics · Round 1', '02 Sep 2026', '—'], status: 'pending' },
+    { title: 'Bharath S', sub: 'Class 11-B', metas: ['Cricket · Final round', '05 Sep 2026', '26/30'], status: 'selected' },
+    { title: 'Gokul V', sub: 'Class 9-A', metas: ['Kabaddi · Round 2', '12 Sep 2026', '19/30'], status: 'hold' } ],
+  injuries: [
+    { title: 'Ankle sprain during practice match', sub: 'Kavya Balan · Class 6-A', metas: ['15 Sep 2026', 'Yes · phone', 'School nurse'], status: 'under care' },
+    { title: 'Wrist strain in net practice', sub: 'Aarav S · Class 9-A', metas: ['11 Sep 2026', 'Yes · phone', 'School nurse'], status: 'observation' },
+    { title: 'Cut above eyebrow — kabaddi', sub: 'Nandhini R · Class 9-C', metas: ['29 Aug 2026', 'Yes · in person', 'First aid room'], status: 'closed' },
+    { title: 'Heat exhaustion at zonal meet', sub: 'Rahul Iyer · Class 10-A', metas: ['22 Aug 2026', 'Yes · phone', 'Meet doctor'], status: 'closed' },
+    { title: 'Fall on wet court', sub: 'Harini M · Class 8-A', metas: ['09 Aug 2026', 'Yes · phone', 'First aid room'], status: 'closed' } ],
+  fixtures: [
+    { title: 'Cricket under-17', sub: 'St. Ann’s Matriculation', metas: ['19 Sep 2026 · 09:00', 'Home · Main ground', 'Inter-school'], status: 'upcoming' },
+    { title: 'Football under-17', sub: 'Kendriya Vidyalaya', metas: ['23 Sep 2026 · 15:30', 'Away · KV ground', 'Inter-school'], status: 'upcoming' },
+    { title: 'Kabaddi under-14 girls', sub: 'Government HSS, Sulur', metas: ['26 Sep 2026 · 10:00', 'Home · Sand court', 'District'], status: 'upcoming' },
+    { title: 'Basketball open boys', sub: 'Vidya Vikasini School', metas: ['30 Sep 2026 · 16:00', 'Away · VVS court', 'Inter-school'], status: 'upcoming' },
+    { title: 'Throwball under-14', sub: 'Holy Cross School', metas: ['05 Sep 2026 · 09:30', 'Home · Court B', 'Inter-school'], status: 'won 2–0' },
+    { title: 'Athletics relay', sub: 'Zonal meet · 14 schools', metas: ['29 Aug 2026 · 08:00', 'Away · District stadium', 'District'], status: '2nd place' },
+    { title: 'Chess team event', sub: 'Bharathi Vidyalaya', metas: ['22 Aug 2026 · 14:00', 'Home · Indoor hall', 'Inter-school'], status: 'drawn' },
+    { title: 'Cricket under-14', sub: 'St. Joseph’s School', metas: ['16 Aug 2026 · 09:00', 'Away · SJS ground', 'Inter-school'], status: 'lost by 24 runs' } ],
+  squads: [
+    { title: 'Cricket under-17', sub: 'Boys · Under-17', metas: ['Mr. R. Manohar', '16', 'Tomorrow 06:30'], status: 'active' },
+    { title: 'Athletics squad', sub: 'Mixed · Under-14 & 17', metas: ['Mr. P. Sathish', '22', 'Today 06:30'], status: 'active' },
+    { title: 'Kabaddi under-14 girls', sub: 'Girls · Under-14', metas: ['Mrs. S. Deepa', '12', 'Today 15:45'], status: 'active' },
+    { title: 'Basketball open boys', sub: 'Boys · Open', metas: ['Mr. K. Selva', '12', 'Today 16:00'], status: 'active' },
+    { title: 'Throwball under-14', sub: 'Girls · Under-14', metas: ['Mrs. A. Revathi', '10', 'Thursday 16:00'], status: 'forming' } ],
+  timetable: [
+    { title: 'Monday · Period 7', sub: 'Athletics squad', metas: ['14:45 – 15:30', 'Track', 'Mr. P. Sathish'], status: 'active' },
+    { title: 'Tuesday · Early morning', sub: 'Cricket under-17', metas: ['06:30 – 08:00', 'Main ground', 'Mr. R. Manohar'], status: 'active' },
+    { title: 'Wednesday · Period 5', sub: 'Class 8-B PT', metas: ['12:15 – 13:00', 'Court A', 'Mr. K. Selva'], status: 'active' },
+    { title: 'Thursday · Evening', sub: 'Kabaddi under-14 girls', metas: ['15:45 – 17:00', 'Sand court', 'Mrs. S. Deepa'], status: 'draft' } ],
+  sessions: [
+    { title: 'Cricket net practice', sub: 'Main ground', metas: ['06:30 – 08:00', 'Mr. R. Manohar', '15 / 16'], status: 'completed' },
+    { title: 'Athletics sprint drills', sub: 'Track', metas: ['06:30 – 07:45', 'Mr. P. Sathish', '8 / 8'], status: 'completed' },
+    { title: 'Kabaddi conditioning', sub: 'Sand court', metas: ['15:45 – 17:00', 'Mrs. S. Deepa', '—'], status: 'scheduled' },
+    { title: 'Basketball shooting', sub: 'Court A', metas: ['16:00 – 17:30', 'Mr. K. Selva', '—'], status: 'scheduled' },
+    { title: 'Football fitness', sub: 'Main ground', metas: ['16:15 – 18:00', 'Mr. K. Selva', '—'], status: 'scheduled' } ],
+  results: [
+    { title: 'Sneha K', sub: 'Zonal athletics meet', metas: ['200 m final', '27.8 s', 'Mr. P. Sathish'], status: 'verified' },
+    { title: 'Rahul Iyer', sub: 'Zonal athletics meet', metas: ['Long jump', '5.42 m', 'Mr. P. Sathish'], status: 'pending' },
+    { title: 'Madhavan L', sub: 'Inter-house meet', metas: ['Shot put', '9.10 m', 'Mr. K. Selva'], status: 'pending' },
+    { title: 'Priya D', sub: 'Inter-house meet', metas: ['100 m heat 2', '14.2 s', 'Mrs. A. Revathi'], status: 'draft' } ],
+  practice: [
+    { title: 'Sprint block · week 3', sub: 'Acceleration and starts', metas: ['Athletics squad', '14–19 Sep', '5'], status: 'active' },
+    { title: 'Batting rotation', sub: 'Strike rotation and singles', metas: ['Cricket under-17', '14–19 Sep', '4'], status: 'active' },
+    { title: 'Raid defence set', sub: 'Chain and ankle hold', metas: ['Kabaddi under-14', '21–26 Sep', '3'], status: 'draft' },
+    { title: 'Pre-meet taper', sub: 'Volume reduction week', metas: ['Athletics squad', '21–26 Sep', '4'], status: 'draft' } ],
+  live: [
+    { title: 'Kabaddi conditioning', sub: 'Kabaddi under-14 girls', metas: ['15:45', 'Sand court', '9 / 12'], status: 'live' },
+    { title: 'Basketball shooting', sub: 'Basketball open boys', metas: ['16:00', 'Court A', '0 / 12'], status: 'scheduled' },
+    { title: 'Athletics sprint drills', sub: 'Athletics squad', metas: ['06:30', 'Track', '8 / 8'], status: 'completed' } ],
+  meets: [
+    { title: 'Inter-house athletics meet', sub: 'Inter-house', metas: ['21 Sep 2026', '18', 'Track · Main ground'], status: 'open' },
+    { title: 'Annual Sports Day', sub: 'School', metas: ['30 Sep 2026', '24', 'Main ground'], status: 'draft' },
+    { title: 'Zonal athletics meet', sub: 'District', metas: ['29 Aug 2026', '12', 'District stadium'], status: 'closed' } ],
+  selection: [
+    { title: 'Under-17 cricket selection', sub: 'Cricket under-17', metas: ['10 Sep 2026', '18 Sep 2026', '2 of 3 coaches'], status: 'open' },
+    { title: 'District athletics entry', sub: 'Athletics squad', metas: ['12 Sep 2026', '20 Sep 2026', '1 of 2 coaches'], status: 'open' },
+    { title: 'Throwball under-14 squad', sub: 'Throwball under-14', metas: ['20 Aug 2026', '28 Aug 2026', 'Complete'], status: 'closed' } ],
+  substitutes: [
+    { title: 'Mr. K. Selva', sub: 'Class 8-B PT', metas: ['18 Sep 2026', 'Periods 5, 6', 'Mrs. S. Deepa'], status: 'pending' },
+    { title: 'Mrs. A. Revathi', sub: 'Throwball under-14', metas: ['16 Sep 2026', 'Evening session', 'Mr. R. Manohar'], status: 'approved' },
+    { title: 'Mr. P. Sathish', sub: 'Athletics squad', metas: ['08 Sep 2026', 'Morning session', 'Mr. K. Selva'], status: 'closed' } ],
+  verification: [
+    { title: 'Track events batch 1', sub: 'Sprints and relays', metas: ['Zonal athletics meet', '14', 'Mr. P. Sathish'], status: 'pending' },
+    { title: 'Field events batch 1', sub: 'Jumps and throws', metas: ['Zonal athletics meet', '9', 'Mr. K. Selva'], status: 'pending' },
+    { title: 'Inter-house heats', sub: 'Heats and finals', metas: ['Inter-house meet', '22', 'Mrs. A. Revathi'], status: 'verified' } ],
+  equipment: [
+    { title: 'Cricket bats (senior)', sub: 'Cricket', metas: ['14', '9', 'Good'], status: 'active' },
+    { title: 'Basketballs', sub: 'Basketball', metas: ['18', '12', 'Good'], status: 'active' },
+    { title: 'Relay batons', sub: 'Athletics', metas: ['12', '8', 'Fair'], status: 'active' },
+    { title: 'TT boards', sub: 'Table tennis', metas: ['3', '3', 'One condemned'], status: 'pending' },
+    { title: 'Kabaddi mats', sub: 'Kabaddi', metas: ['4', '4', 'Fair'], status: 'active' } ]
+};
+
+const THREADS = [
+  { initial: 'L', name: 'Mrs. Lakshmi P', meta: 'Mother of Aarav S · Class 9-A · Cricket', preview: 'Good morning sir. Aarav has fever t…', time: '09:12', unread: true,
+    message: 'Good morning sir. Aarav has fever today, he will not attend morning practice.' },
+  { initial: 'S', name: 'Mr. Suresh Kumar', meta: 'Father of Divya R · Class 8-B · Throwball', preview: 'Sure sir, we will collect the kit by 4…', time: 'Yesterday', unread: false,
+    message: 'Sure sir, we will collect the kit by 4 PM from the sports room.' },
+  { initial: 'A', name: 'Mrs. Anitha M', meta: 'Mother of Karthik V · Class 9-A · Football', preview: 'Karthik missed the trial. Is there a r…', time: 'Yesterday', unread: true,
+    message: 'Karthik missed the trial on Tuesday. Is there a re-trial for the under-17 football squad?' },
+  { initial: 'R', name: 'Mr. Ramesh B', meta: 'Father of Sneha K · Class 10-C · Athletics', preview: 'Thank you sir, we will report at 7 AM…', time: '3 Sept', unread: false,
+    message: 'Thank you sir, we will report at 7 AM for the district meet travel.' },
+  { initial: 'V', name: 'Mrs. Vidhya K', meta: 'Mother of Charan K · Class 8-A · Basketball', preview: 'Shared the consent form in the class…', time: '2 Sept', unread: false,
+    message: 'Shared the consent form in the class group. Please confirm if it has reached you.' }
+];
+
+const AUDIENCES = [
+  ['Cricket under-17 squad', '16 players'], ['Football under-17 squad', '18 players'],
+  ['Athletics squad', '22 players'], ['Class 9-A · PT period', 'Subject teacher'], ['All players', 'Sports admin']
+];
+
+const STOPS = [
+  { time: '7:05 AM', name: 'Ganapathy Signal', note: 'Boarding point' },
+  { time: '7:18 AM', name: 'Sathy Road Junction', note: '' },
+  { time: '7:32 AM', name: 'Peelamedu Bus Stand', note: '' },
+  { time: '7:50 AM', name: 'Pavakie Public School', note: 'Arrival' }
+];
+
+const MONTHS = [
+  { title: 'August 2026', mon: 'AUG', first: 6, days: 31, events: [
+      { day: 15, title: 'Independence Day', meta: 'Holiday · March past 8:00 AM' },
+      { day: 26, title: 'Inter-house heats begin', meta: 'Grades 8-10 · Track' } ] },
+  { title: 'September 2026', mon: 'SEP', first: 2, days: 30, events: [
+      { day: 19, title: 'Cricket under-17 vs St. Ann’s', meta: 'Home · Main ground · 09:00' },
+      { day: 21, title: 'Inter-house athletics meet', meta: 'Grades 6-10 · Track · 08:00' },
+      { day: 30, title: 'Annual Sports Day', meta: 'Grades 6-10 · Main ground · 08:00' } ] }
+];
+
+const PERMISSIONS = [
+  { icon: '⚑', title: 'Inter-school sports meet', meta: 'Cricket under-17 · 19 Sept 2026 · 08:00–17:00', due: 'Reply by 16 Sept 2026',
+    note: 'Travel by school bus to St. Ann’s Matriculation. Packed lunch and sports kit required.',
+    details: 'Cricket under-17 · 19 Sept 2026 · 09:00', requestedBy: 'Sports admin · you', respond: 'Respond by 16 Sept',
+    signed: 11, pending: 13, declined: 2, closed: false },
+  { icon: '⊕', title: 'District meet travel consent', meta: 'Athletics squad · 24 Sept 2026 · 06:30–19:00', due: 'Respond by 20 Sept',
+    note: 'Bus hire to the district stadium. Players report at the school gate by 6:15 AM.',
+    details: 'Athletics squad · 24 Sept 2026 · 06:30', requestedBy: 'Sports admin · you', respond: 'Respond by 20 Sept',
+    signed: 18, pending: 4, declined: 0, closed: false },
+  { icon: '◉', title: 'Photography and media consent', meta: 'All players · Academic year 2026–27', due: 'No deadline',
+    note: 'Match and practice photographs may be used in the school newsletter and notice boards.',
+    details: 'All players · Academic year 2026–27', requestedBy: 'Sports admin · you', respond: 'No deadline',
+    signed: 74, pending: 22, declined: 3, closed: false },
+  { icon: '✚', title: 'Sports day participation', meta: 'Grades 6–10 · 30 Sept 2026 · 08:00–13:00', due: 'Respond by 26 Sept',
+    note: 'Participation in track and field events. Medical conditions must be declared before the meet.',
+    details: 'Grades 6–10 · 30 Sept 2026 · 08:00', requestedBy: 'Sports admin · you', respond: 'Respond by 26 Sept',
+    signed: 96, pending: 31, declined: 5, closed: false },
+  { icon: '◔', title: 'Zonal meet travel · August', meta: 'Athletics squad · 29 Aug 2026', due: 'Closed 27 Aug 2026',
+    note: 'Travel to the district stadium for the zonal athletics meet.',
+    details: 'Athletics squad · 29 Aug 2026 · 08:00', requestedBy: 'Sports admin · you', respond: 'Closed 27 Aug',
+    signed: 21, pending: 0, declined: 1, closed: true }
+];
+
+const SIGNATURES = [
+  { initial: 'AS', name: 'Aarav S', meta: '9A-01 · Father · Not opened yet', status: 'PENDING' },
+  { initial: 'BR', name: 'Bhavna R', meta: '9A-02 · Mother · 1 Sept, 2026', status: 'SIGNED' },
+  { initial: 'KV', name: 'Karthik V', meta: '9A-04 · Mother · Opened 2 Sept', status: 'PENDING' },
+  { initial: 'ML', name: 'Madhavan L', meta: '9B-07 · Father · 31 Aug, 2026', status: 'SIGNED' },
+  { initial: 'SK', name: 'Sneha K', meta: '10C-03 · Father · Declined 2 Sept', status: 'DECLINED' }
+];
+
+const TABS = [['home', 'Home', '⌂'], ['sports', 'Sports', '◎'], ['bus', 'Bus', '⊟']];
+
+class Component extends DCLogic {
+  state = { screen: 'home', notice: 0, newNotice: false, picked: [], noticeTitle: '', noticeBody: '',
+    notices: NOTICES.slice(), history: [], filterOpen: false, msgFilter: 'All squads', search: '',
+    thread: 0, draft: '', sent: [], month: 1, calDay: null,
+    stuSearch: '', stuChip: 'All', stu: 0,
+    data: JSON.parse(JSON.stringify(DATA)), regSearch: '', regChip: 'All', picking: null,
+    addOpen: false, addForm: {}, addStatus: '', dateOpen: false, dateSel: '', dateMonth: 1,
+    pickField: null, pickMonth: 1, pickDate: '', tA: {}, tB: {}, tSide: 'from',
+    permList: JSON.parse(JSON.stringify(PERMISSIONS)), permTab: 'Requests', perm: 0,
+    remindOpen: false, remindText: '', remindSent: '', studentSearch: '',
+    requestOpen: false, reqForm: {}, calling: false };
+
+  set(patch) { this.setState(patch); }
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accent ?? '#2563EB';
+    const go = (screen) => () => this.setState({ screen, filterOpen: false, regSearch: '', regChip: 'All', picking: null, dateSel: '', dateOpen: false });
+    const tabOf = { home: 'home', notice: 'home', history: 'home', profile: 'home', messages: 'home', thread: 'home', bus: 'bus' };
+    const activeTab = tabOf[s.screen] || 'sports';
+    const regKey = REGS[s.screen] ? s.screen : null;
+    const subTitles = { notice: 'Notice', history: 'Notice history', profile: 'Profile', sports: 'Sports',
+      calendar: 'Sports Calendar', messages: 'Messages', thread: 'Message', bus: 'My Bus',
+      permissions: 'Ask permissions', permission: 'Permission',
+      students: 'Students / players', student: 'Student' };
+    const backTo = { notice: 'home', history: 'notice', profile: 'home', messages: 'home', thread: 'messages',
+      calendar: 'sports', sports: 'home', bus: 'home', permissions: 'sports', permission: 'permissions',
+      students: 'sports', student: 'students' };
+
+    const pill = (v) => { const c = PILL[pillKey(v)]; return 'display:inline-flex; align-items:center; gap:4px; cursor:pointer; border-radius:20px; padding:4px 11px; font-size:11.5px; font-weight:700; white-space:nowrap; background:' + c[0] + '; color:' + c[1]; };
+
+    const MON_SHORT = ['Aug', 'Sep'];
+    const norm = (t) => t.replace(/Sept/g, 'Sep').replace(/\b0(\d)\b/g, '$1');
+    const dateMatch = (txt) => !s.dateSel || norm(txt).indexOf(s.dateSel) >= 0;
+    // registers
+    let reg = {};
+    if (regKey) {
+      const cfg = REGS[regKey];
+      const all = s.data[regKey];
+      const chipList = ['All'].concat(cfg.statuses);
+      const q = s.regSearch.toLowerCase();
+      const rows = all.map((r, i) => ({ r, i })).filter(({ r }) => {
+        const hay = (r.title + ' ' + r.sub + ' ' + r.metas.join(' ')).toLowerCase();
+        const okQ = !q || hay.indexOf(q) >= 0;
+        const okC = s.regChip === 'All' || pillKey(r.status) === pillKey(s.regChip) || r.status === s.regChip;
+        return okQ && okC && dateMatch(r.title + ' ' + r.sub + ' ' + r.metas.join(' '));
+      });
+      reg = {
+        sub: cfg.sub, action: cfg.action, searchPh: cfg.searchPh, listTitle: cfg.listTitle,
+        count: rows.length + ' records', empty: rows.length === 0,
+        chips: chipList.map(label => ({ label, pick: () => this.setState({ regChip: label }),
+          style: 'padding:8px 14px; border-radius:20px; font-size:12.5px; cursor:pointer; white-space:nowrap; font-weight:'
+            + (label === s.regChip ? '800' : '600') + '; color:' + (label === s.regChip ? accent : '#5C6A7E')
+            + '; background:' + (label === s.regChip ? '#E8EFFE' : '#F3F5F9') })),
+        rows: rows.map(({ r, i }) => ({
+          title: r.title, sub: r.sub, status: r.status, statusStyle: pill(r.status),
+          metas: cfg.labels.map((k, j) => ({ k, v: r.metas[j] })),
+          picking: s.picking === i,
+          editStatus: () => this.setState({ picking: s.picking === i ? null : i }),
+          statusOptions: cfg.statuses.map(label => ({ label,
+            style: 'padding:10px 12px; border-radius:9px; font-size:12.5px; cursor:pointer; font-weight:'
+              + (label === r.status ? '800' : '600') + '; color:' + (label === r.status ? accent : '#3C4A5B')
+              + '; background:' + (label === r.status ? '#F1F5FF' : 'transparent'),
+            pick: () => { const d = JSON.parse(JSON.stringify(s.data)); d[regKey][i].status = label; this.setState({ data: d, picking: null }); } }))
+        }))
+      };
+    }
+
+    const addCfg = regKey ? REGS[regKey] : null;
+    const sample = regKey ? (DATA[regKey][0] || { title: '', sub: '', metas: ['', '', ''] }) : { title: '', sub: '', metas: ['', '', ''] };
+    const MON_S = ['Aug', 'Sep'];
+    const HOURS = ['06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'];
+    const MINS = ['00', '15', '30', '45'];
+    const hhmm = (t) => t && t.h ? t.h + ':' + (t.m || '00') : '';
+    const kindOf = (l) => {
+      const d = /DATE|OPENS|CLOSES|RESPOND|WEEK/.test(l), t = /TIME|STARTED/.test(l);
+      return d && t ? 'datetime' : d ? 'date' : t ? 'time' : 'text';
+    };
+    const chip = (on) => 'padding:9px 0; text-align:center; border-radius:10px; font-size:12.5px; cursor:pointer; font-weight:' + (on ? '800' : '600')
+      + '; color:' + (on ? accent : '#5C6A7E') + '; background:' + (on ? '#E8EFFE' : '#F3F5F9');
+    const wheel = (on) => 'height:38px; display:flex; align-items:center; justify-content:center; scroll-snap-align:center; cursor:pointer; border-radius:11px; font-variant-numeric:tabular-nums; font-size:'
+      + (on ? '19px' : '16px') + '; font-weight:' + (on ? '800' : '600') + '; color:' + (on ? accent : '#8D98AA');
+    const mkField = (key, label, ph, get, commit) => {
+      const kind = kindOf(label);
+      const on = s.pickField === key;
+      const mm = MONTHS[s.pickMonth];
+      const dsel = s.pickDate;
+      const range = kind === 'time';
+      const A = s.tA, B = s.tB, side = s.tSide;
+      const timeOf = (a, b) => range ? (hhmm(a) && hhmm(b) ? hhmm(a) + ' – ' + hhmm(b) : hhmm(a)) : hhmm(a);
+      const compose = (d, t) => kind === 'datetime' ? [d, t].filter(Boolean).join(' · ') : kind === 'date' ? d : t;
+      const put = (d, t) => commit(key, compose(d, t));
+      const act = side === 'to' && range ? B : A;
+      const setPart = (part, v) => {
+        const nx = { ...act, [part]: v };
+        const a = side === 'to' && range ? A : nx;
+        const b = side === 'to' && range ? nx : B;
+        this.setState(side === 'to' && range ? { tB: nx } : { tA: nx });
+        put(dsel, timeOf(a, b));
+      };
+      const cells = [];
+      for (let i = 0; i < mm.first; i++) cells.push({ label: '', style: 'height:30px', pick: () => {} });
+      for (let d = 1; d <= mm.days; d++) {
+        const str = d + ' ' + MON_S[s.pickMonth] + ' 2026';
+        const sel = dsel === str;
+        cells.push({ label: String(d),
+          pick: () => { this.setState({ pickDate: str }); put(str, timeOf(A, B)); },
+          style: 'height:30px; display:flex; align-items:center; justify-content:center; font-size:12.5px; border-radius:9px; cursor:pointer; font-weight:'
+            + (sel ? '800' : '600') + '; color:' + (sel ? '#fff' : '#3C4A5B') + '; background:' + (sel ? accent : 'transparent') });
+      }
+      return { label, ph, value: get(key),
+        set: (e) => commit(key, e.target.value),
+        isPicker: kind !== 'text', picking: on,
+        showDate: kind === 'date' || kind === 'datetime',
+        showTime: kind === 'time' || kind === 'datetime',
+        openPicker: () => this.setState({ pickField: on ? null : key }),
+        calTitle: mm.title, dows: ['S', 'M', 'T', 'W', 'T', 'F', 'S'], cells,
+        prevCal: () => this.setState({ pickMonth: Math.max(0, s.pickMonth - 1) }),
+        nextCal: () => this.setState({ pickMonth: Math.min(MONTHS.length - 1, s.pickMonth + 1) }),
+        timeRange: range,
+        slots: (range ? [['from', 'FROM', A], ['to', 'TO', B]] : [['from', 'TIME', A]]).map(([id, lbl, t]) => ({
+          label: lbl, value: hhmm(t) || '--:--',
+          pick: () => this.setState({ tSide: id }),
+          style: 'flex:1; display:flex; flex-direction:column; gap:4px; padding:11px 14px; border-radius:11px; cursor:pointer; border:1px solid '
+            + (side === id ? accent : '#E6E9EE') + '; background:' + (side === id ? '#F4F7FF' : '#fff'),
+          labelStyle: 'font-size:10px; font-weight:700; letter-spacing:0.12em; color:' + (side === id ? accent : '#6E7A8C'),
+          valueStyle: 'font-size:16px; font-weight:800; color:' + (hhmm(t) ? '#10233B' : '#B9C2D2')
+        })),
+        hours: HOURS.map(h => ({ label: h, style: chip(h === act.h), wheelStyle: wheel(h === act.h), pick: () => setPart('h', h) })),
+        mins: MINS.map(m => ({ label: m, style: chip(m === act.m), wheelStyle: wheel(m === act.m), pick: () => setPart('m', m) })),
+
+        done: () => this.setState({ pickField: null }) };
+    };
+    const addField = (key, label, ph) => mkField(key, label, ph,
+      (k) => s.addForm[k] || '',
+      (k, v) => this.setState({ addForm: { ...s.addForm, [k]: v } }));
+    const addValid = !!(s.addForm.t && s.addForm.t.trim());
+
+    // calendar
+    const m = MONTHS[s.month];
+    const dayEvents = m.events.filter(e => e.day === s.calDay);
+    const shown = (s.calDay ? dayEvents : m.events).map(e => ({ day: String(e.day), mon: m.mon, title: e.title, meta: e.meta }));
+    const cells = [];
+    for (let i = 0; i < m.first; i++) cells.push({ label: '', style: 'height:36px', pick: () => {} });
+    for (let d = 1; d <= m.days; d++) {
+      const dow = (m.first + d - 1) % 7;
+      const hasEvent = m.events.some(e => e.day === d);
+      const on = s.calDay === d;
+      cells.push({ label: String(d), pick: () => this.setState({ calDay: on ? null : d }),
+        style: 'height:36px; display:flex; align-items:center; justify-content:center; font-size:13px; border-radius:10px; cursor:pointer;'
+          + (on ? ' font-weight:800; color:#fff; background:' + accent + ';'
+             : hasEvent ? ' font-weight:800; color:' + accent + '; background:#E4EAFB;'
+             : ' font-weight:600; color:' + (dow === 0 ? '#BCC4D2' : '#3C4A5B') + ';') });
+    }
+
+    // messages
+    const filtered = THREADS.filter(t => {
+      const okF = s.msgFilter === 'All squads' || t.meta.indexOf(s.msgFilter) >= 0;
+      const okS = !s.search || t.name.toLowerCase().indexOf(s.search.toLowerCase()) >= 0 || t.meta.toLowerCase().indexOf(s.search.toLowerCase()) >= 0;
+      return okF && okS;
+    });
+
+    // permissions
+    const permRows = s.permList.map((p, i) => ({ p, i })).filter(({ p }) => (s.permTab === 'History') === !!p.closed);
+    const p = s.permList[s.perm];
+    const total = Math.max(1, p.signed + p.pending + p.declined);
+    const reqField = (key, label, ph) => mkField(key, label, ph,
+      (k) => s.reqForm[k] || '',
+      (k, v) => this.setState({ reqForm: { ...s.reqForm, [k]: v } }));
+    const reqValid = !!(s.reqForm.title && s.reqForm.title.trim());
+
+    const dm = MONTHS[s.dateMonth];
+    const dateHays = regKey ? s.data[regKey].map(r => r.title + ' ' + r.sub + ' ' + r.metas.join(' '))
+      : s.history.map(h => h.date + ' ' + h.title);
+    const dCells = [];
+    for (let i = 0; i < dm.first; i++) dCells.push({ label: '', style: 'height:30px', pick: () => {} });
+    for (let d = 1; d <= dm.days; d++) {
+      const key = d + ' ' + MON_SHORT[s.dateMonth] + ' 2026';
+      const has = dateHays.some(h => norm(h).indexOf(key) >= 0);
+      const on = s.dateSel === key;
+      dCells.push({ label: String(d), pick: () => this.setState({ dateSel: on ? '' : key, dateOpen: false }),
+        style: 'height:30px; display:flex; align-items:center; justify-content:center; font-size:12.5px; border-radius:9px; cursor:pointer;'
+          + (on ? ' font-weight:800; color:#fff; background:' + accent + ';'
+             : has ? ' font-weight:800; color:' + accent + '; background:#E4EAFB;'
+             : ' font-weight:600; color:#98A3B2;') });
+    }
+    const dated = regKey ? dateHays.some(h => /\d{1,2}\s(Aug|Sep|Sept)\s2026/.test(h)) : true;
+    const dateBar = { open: s.dateOpen && dated, title: dm.title, dows: ['S', 'M', 'T', 'W', 'T', 'F', 'S'], cells: dCells,
+      show: dated, label: s.dateSel ? s.dateSel : 'All dates', hasPick: !!s.dateSel,
+      toggle: () => this.setState({ dateOpen: !s.dateOpen }),
+      clear: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ dateSel: '', dateOpen: false }); },
+      prev: () => this.setState({ dateMonth: Math.max(0, s.dateMonth - 1) }),
+      next: () => this.setState({ dateMonth: Math.min(MONTHS.length - 1, s.dateMonth + 1) }) };
+    const historyRows = s.history.filter(h => dateMatch(h.date + ' ' + h.title));
+
+    // students
+    const stuQ = s.stuSearch.trim().toLowerCase();
+    const stuRows = STUDENTS.filter(x => {
+      const okC = s.stuChip === 'All' || x.status === s.stuChip.toLowerCase();
+      const hay = (x.name + ' ' + x.adm + ' ' + x.cls + ' ' + x.disc).toLowerCase();
+      return okC && (!stuQ || hay.indexOf(stuQ) >= 0);
+    });
+    const st = STUDENTS[s.stu] || STUDENTS[0];
+
+    return {
+      isHome: s.screen === 'home', isNotice: s.screen === 'notice', isHistory: s.screen === 'history',
+      isProfile: s.screen === 'profile', isSports: s.screen === 'sports', isCalendar: s.screen === 'calendar',
+      isMessages: s.screen === 'messages', isThread: s.screen === 'thread', isBus: s.screen === 'bus',
+      isRegister: !!regKey, isPermissions: s.screen === 'permissions', isPermDetail: s.screen === 'permission',
+      subHeader: s.screen === 'home' ? '' : (regKey ? REGS[regKey].title : subTitles[s.screen]),
+      goBack: () => this.setState({ screen: regKey ? 'sports' : (backTo[s.screen] || 'home'), newNotice: false, picking: null, calDay: null }),
+      goNotice: go('notice'), goHistory: go('history'), goProfile: go('profile'), goMessages: go('messages'),
+      showFab: (this.props.showFab ?? true) && s.screen === 'home',
+
+      notice: s.notices[s.notice] || s.notices[0],
+      dots: s.notices.slice(0, 4).map((n, i) => ({ pick: () => this.setState({ notice: i }),
+        style: 'width:' + (i === s.notice ? '20px' : '6px') + '; height:6px; border-radius:6px; cursor:pointer; background:' + (i === s.notice ? accent : '#D5DAE2') })),
+      notices: s.notices,
+      history: historyRows, historyCount: String(s.history.length), historyEmpty: historyRows.length === 0,
+      dateBar,
+      profileGroups: PROFILE,
+
+      isStudents: s.screen === 'students', isStudent: s.screen === 'student',
+      stuSearch: s.stuSearch, setStuSearch: (e) => this.setState({ stuSearch: e.target.value }),
+      stuChips: ['All', 'Active', 'Injured', 'Rest'].map(label => ({ label,
+        pick: () => this.setState({ stuChip: label }),
+        style: 'padding:9px 16px; border-radius:20px; font-size:12.5px; white-space:nowrap; cursor:pointer; font-weight:'
+          + (label === s.stuChip ? '800' : '600') + '; color:' + (label === s.stuChip ? '#fff' : '#5C6A7E')
+          + '; background:' + (label === s.stuChip ? accent : '#F3F5F9') })),
+      stuCount: stuRows.length + ' of ' + STUDENTS.length + ' players',
+      stuEmpty: stuRows.length === 0,
+      students: stuRows.map(x => ({ name: x.name, meta: x.cls + ' · ' + x.disc, adm: x.adm, att: x.att,
+        initials: x.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+        status: x.status, statusStyle: pill(x.status).replace('cursor:pointer', 'cursor:default'),
+        open: () => this.setState({ screen: 'student', stu: STUDENTS.indexOf(x) }) })),
+      st: { name: st.name, status: st.status, statusStyle: pill(st.status).replace('cursor:pointer', 'cursor:default'),
+        meta: st.cls + ' · ' + st.disc, id: st.id,
+        initials: st.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+        stats: [{ k: 'REGISTER NO.', v: st.adm }, { k: 'CLASS', v: st.cls }, { k: 'DISCIPLINE', v: st.disc }, { k: 'ATTENDANCE', v: st.att }],
+        rows: [{ k: 'Date of birth', v: st.dob }, { k: 'Gender', v: st.gender }, { k: 'Guardian', v: st.guardian },
+          { k: 'Mobile', v: st.mobile }, { k: 'Email', v: st.email }, { k: 'Registered for', v: '2026–27' }],
+        squad: st.squad, age: st.age,
+        achCount: st.ach.length + (st.ach.length === 1 ? ' result' : ' results'),
+        ach: st.ach.map(a => ({ t: a.t, m: a.m })), noAch: st.ach.length === 0 },
+
+      sportsGroups: SPORTS_GROUPS.map(g => ({ label: g.label, items: g.items.map(([icon, label, target]) => ({ icon, label, go: go(target) })) })),
+
+      cal: { title: m.title, count: m.events.length + ' EVENTS', dows: ['S', 'M', 'T', 'W', 'T', 'F', 'S'], cells,
+        listLabel: s.calDay ? 'SELECTED DAY' : 'THIS MONTH', events: shown, empty: shown.length === 0 },
+      prevMonth: () => this.setState({ month: Math.max(0, s.month - 1), calDay: null }),
+      nextMonth: () => this.setState({ month: Math.min(MONTHS.length - 1, s.month + 1), calDay: null }),
+
+      msgFilter: s.msgFilter, filterOpen: s.filterOpen,
+      toggleFilter: () => this.setState({ filterOpen: !s.filterOpen }),
+      filterOptions: ['All squads', 'Cricket', 'Football', 'Athletics', 'Basketball', 'Throwball'].map(label => ({
+        label, pick: () => this.setState({ msgFilter: label, filterOpen: false }),
+        style: 'padding:11px 13px; border-radius:9px; font-size:13.5px; cursor:pointer; font-weight:' + (label === s.msgFilter ? '800' : '600')
+          + '; color:' + (label === s.msgFilter ? accent : '#3C4A5B') + '; background:' + (label === s.msgFilter ? '#F1F5FF' : 'transparent') })),
+      search: s.search, setSearch: (e) => this.setState({ search: e.target.value }),
+      threadsLabel: 'ALL PARENTS · ' + filtered.length, noThreads: filtered.length === 0,
+      threads: filtered.map(t => ({ ...t, open: () => this.setState({ screen: 'thread', thread: THREADS.indexOf(t), sent: [] }),
+        timeStyle: 'font-size:11.5px; font-weight:700; color:' + (t.unread ? accent : '#A9B2C2') })),
+
+      thread: THREADS[s.thread], sent: s.sent,
+      quickReplies: ['Noted, thank you', 'Will check and reply', 'Can we talk after practice?'].map(label => ({
+        label, send: () => this.setState({ sent: s.sent.concat([label]) }) })),
+      draft: s.draft, setDraft: (e) => this.setState({ draft: e.target.value }),
+      sendDraft: () => { if (s.draft.trim()) this.setState({ sent: s.sent.concat([s.draft.trim()]), draft: '' }); },
+      sendStyle: 'width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff; cursor:pointer; background:' + (s.draft.trim() ? accent : '#B9C2D2'),
+
+      reg, regSearch: s.regSearch, setRegSearch: (e) => this.setState({ regSearch: e.target.value }),
+      openAdd: () => this.setState({ addOpen: true, addForm: {}, addStatus: addCfg ? addCfg.statuses[0] : '' }),
+      closeAdd: () => this.setState({ addOpen: false }),
+      addOpen: s.addOpen,
+      addSheet: addCfg ? {
+        title: addCfg.addTitle, sub: 'Added to the ' + addCfg.listTitle.toLowerCase(),
+        fields: [addField('t', addCfg.titleLabel.toUpperCase(), 'e.g. ' + sample.title)]
+          .concat([addField('s', addCfg.subLabel.toUpperCase(), 'e.g. ' + sample.sub)])
+          .concat(addCfg.labels.map((l, i) => addField('m' + i, l.toUpperCase(), 'e.g. ' + sample.metas[i]))),
+        statuses: addCfg.statuses.map(label => ({ label, pick: () => this.setState({ addStatus: label }),
+          style: 'padding:9px 15px; border-radius:20px; font-size:12.5px; cursor:pointer; font-weight:' + (label === s.addStatus ? '800' : '600')
+            + '; color:' + (label === s.addStatus ? accent : '#5C6A7E') + '; background:' + (label === s.addStatus ? '#E8EFFE' : '#F3F5F9') })),
+        saveLabel: addCfg.saveLabel,
+        saveStyle: 'border-radius:12px; padding:16px; text-align:center; font-size:15px; font-weight:800; color:#fff; cursor:pointer; background:' + (addValid ? accent : '#B9C2D2')
+      } : {},
+      saveAdd: () => {
+        if (!addValid || !regKey) return;
+        const d = JSON.parse(JSON.stringify(s.data));
+        d[regKey].unshift({ title: s.addForm.t.trim(), sub: (s.addForm.s || '—').trim(),
+          metas: REGS[regKey].labels.map((l, i) => (s.addForm['m' + i] || '—')), status: s.addStatus || REGS[regKey].statuses[0] });
+        this.setState({ data: d, addOpen: false, addForm: {}, regChip: 'All', regSearch: '' });
+      },
+
+      permTabs: ['Requests · ' + s.permList.filter(x => !x.closed).length, 'History'].map(label => {
+        const key = label.indexOf('Requests') === 0 ? 'Requests' : 'History';
+        const on = key === s.permTab;
+        return { label, pick: () => this.setState({ permTab: key }),
+          style: 'flex:1; text-align:center; padding:12px; border-radius:11px; font-size:13.5px; cursor:pointer; font-weight:'
+            + (on ? '800' : '600') + '; color:' + (on ? '#10233B' : '#8A94A8') + '; background:' + (on ? '#fff' : 'transparent')
+            + '; box-shadow:' + (on ? '0 2px 8px rgba(14,42,71,0.10)' : 'none') };
+      }),
+      permEmpty: permRows.length === 0,
+      permissions: permRows.map(({ p: x, i }) => ({ icon: x.icon, title: x.title, meta: x.meta, due: x.due,
+        pendingLabel: x.pending + ' pending',
+        open: () => this.setState({ screen: 'permission', perm: i, remindOpen: false, remindSent: '',
+          remindText: 'Reminder: your consent for "' + x.title + '" is still pending. Please sign in the parent app.' }) })),
+
+      perm: { title: p.title, note: p.note, details: p.details, requestedBy: p.requestedBy, respond: p.respond,
+        signed: String(p.signed), pending: String(p.pending), declined: String(p.declined),
+        barStyle: 'height:8px; border-radius:8px; background:' + accent + '; width:' + Math.round((p.signed / total) * 100) + '%' },
+      remindOpen: s.remindOpen, remindClosed: !s.remindOpen,
+      remindLabel: 'MESSAGE TO ' + p.pending + ' PENDING PARENTS',
+      remindSentNote: s.remindSent,
+      openRemind: () => this.setState({ remindOpen: true, remindSent: '' }),
+      cancelRemind: () => this.setState({ remindOpen: false }),
+      sendRemind: () => {
+        const entry = { from: 'Sports Room notice board', date: '17 Sept 2026', tag: 'Reminder',
+          title: 'Consent pending · ' + p.title, body: s.remindText.trim(),
+          audience: p.details + ' · ' + p.pending + ' pending parents' };
+        this.setState({ remindOpen: false, notices: [entry].concat(s.notices), notice: 0,
+          history: [entry].concat(s.history),
+          remindSent: 'Notice sent to ' + p.pending + ' pending parents' });
+      },
+      remindText: s.remindText, setRemindText: (e) => this.setState({ remindText: e.target.value }),
+      studentSearch: s.studentSearch, setStudentSearch: (e) => this.setState({ studentSearch: e.target.value }),
+      signatures: SIGNATURES.filter(x => !s.studentSearch || x.name.toLowerCase().indexOf(s.studentSearch.toLowerCase()) >= 0).map(x => ({ ...x,
+        style: 'border-radius:20px; padding:4px 12px; font-size:10.5px; font-weight:800; letter-spacing:0.06em; white-space:nowrap; background:'
+          + (x.status === 'SIGNED' ? '#ECFDF5' : x.status === 'DECLINED' ? '#FEF2F2' : '#E8EFFE')
+          + '; color:' + (x.status === 'SIGNED' ? '#047857' : x.status === 'DECLINED' ? '#B91C1C' : '#1D4ED8') })),
+
+      requestOpen: s.requestOpen,
+      openNewRequest: () => this.setState({ requestOpen: true, reqForm: {} }),
+      closeRequest: () => this.setState({ requestOpen: false }),
+      requestFields: [reqField('title', 'TITLE', 'e.g. District meet travel consent'),
+        reqField('note', 'DETAILS', 'What parents are agreeing to'),
+        reqField('audience', 'AUDIENCE', 'e.g. Athletics squad'),
+        reqField('respond', 'RESPOND BY', 'e.g. Respond by 26 Sept')],
+      requestSaveStyle: 'border-radius:12px; padding:16px; text-align:center; font-size:15px; font-weight:800; color:#fff; cursor:pointer; background:' + (reqValid ? accent : '#B9C2D2'),
+      saveRequest: () => {
+        if (!reqValid) return;
+        const audience = (s.reqForm.audience || 'All players').trim();
+        const list = s.permList.slice();
+        list.unshift({ icon: '⌾', title: s.reqForm.title.trim(), meta: audience, due: (s.reqForm.respond || 'No deadline').trim(),
+          note: (s.reqForm.note || '—').trim(), details: audience, requestedBy: 'Sports admin · you',
+          respond: (s.reqForm.respond || 'No deadline').trim(), signed: 0, pending: 0, declined: 0, closed: false });
+        this.setState({ permList: list, requestOpen: false, reqForm: {}, permTab: 'Requests', perm: 0 });
+      },
+
+      stops: STOPS, calling: s.calling, toggleCall: () => this.setState({ calling: !s.calling }),
+
+      tabs: TABS.map(([key, label, icon]) => {
+        const on = activeTab === key;
+        return { label, icon, go: go(key), iconStyle: 'font-size:20px; color:' + (on ? accent : '#A9B2C2'),
+          labelStyle: 'font-size:11.5px; font-weight:' + (on ? '800' : '600') + '; color:' + (on ? accent : '#A9B2C2') };
+      }),
+
+      newNoticeOpen: s.newNotice,
+      openNew: () => this.setState({ newNotice: true }),
+      closeNew: () => this.setState({ newNotice: false }),
+      noticeTitle: s.noticeTitle, setNoticeTitle: (e) => this.setState({ noticeTitle: e.target.value }),
+      noticeBody: s.noticeBody, setNoticeBody: (e) => this.setState({ noticeBody: e.target.value }),
+      selectedLabel: s.picked.length + ' selected',
+      audiences: AUDIENCES.map(([label, role]) => {
+        const on = s.picked.indexOf(label) >= 0;
+        return { label, role,
+          style: 'display:flex; gap:13px; align-items:center; padding:14px 16px; border-radius:12px; cursor:pointer; border:1px solid '
+            + (on ? accent : '#E6E9EE') + '; background:' + (on ? '#F4F7FF' : '#fff'),
+          dotStyle: 'width:20px; height:20px; border-radius:50%; flex:0 0 20px; border:2px solid ' + (on ? accent : '#C8D0DC')
+            + '; background:' + (on ? accent : '#fff') + '; box-shadow:' + (on ? 'inset 0 0 0 3px #fff' : 'none'),
+          toggle: () => this.setState({ picked: on ? s.picked.filter(x => x !== label) : s.picked.concat([label]) }) };
+      }),
+      postNotice: () => {
+        if (!s.picked.length || !s.noticeTitle.trim()) return;
+        const entry = { from: 'Sports Room notice board', date: '17 Sept 2026', tag: 'Notice',
+          title: s.noticeTitle.trim(), body: s.noticeBody.trim(), audience: s.picked.join(', ') };
+        this.setState({ notices: [entry].concat(s.notices), history: [entry].concat(s.history),
+          newNotice: false, picked: [], noticeTitle: '', noticeBody: '', notice: 0 });
+      },
+      postStyle: 'border-radius:12px; padding:16px; text-align:center; font-size:15px; font-weight:800; color:#fff; cursor:pointer; background:'
+        + (s.picked.length && s.noticeTitle.trim() ? accent : '#B9C2D2')
+    };
+  }
+}
+
+</script>
+</body>
+</html>

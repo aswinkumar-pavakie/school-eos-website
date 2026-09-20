@@ -277,6 +277,18 @@ export function CollapseIcon({ className }: IconProps) {
   );
 }
 
+// New feature (AI assistant chat), no reference design to match -- same
+// 24px/1.5px-stroke/outline/currentColor set as every icon above, a plain
+// chat-bubble glyph.
+export function AssistantIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden>
+      <path d="M4 5.5h16v11H9l-4 3.5v-3.5H4z" />
+      <path d="M8 10h8M8 13h5" />
+    </svg>
+  );
+}
+
 export const NAV_ICONS = {
   dashboard: DashboardIcon,
   students: StudentsIcon,
@@ -303,4 +315,5 @@ export const NAV_ICONS = {
   profile: IdCardIcon,
   coordinator: CoordinatorIcon,
   sports: SportsIcon,
+  assistant: AssistantIcon,
 } as const;

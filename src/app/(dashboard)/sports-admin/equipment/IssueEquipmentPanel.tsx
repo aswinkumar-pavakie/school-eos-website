@@ -4,10 +4,19 @@ import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, Select, TextArea, TextInput } from "@/components/sports-ui/primitives";
 import { SignaturePad } from "@/components/sports-ui/SignaturePad";
 import type { EquipmentItem, SportsTeam, StudentSummary } from "@/lib/sports-admin-api";
-import { listMyTeams, listStudents } from "@/lib/sports-admin-api";
 import { issueEquipmentAction, type FormState } from "./actions";
 
 const initial: FormState = {};
+
+// Same httpOnly-cookie reasoning documented across every panel in this
+// module: a "use client" component can't call sports-admin-api.ts's own
+// functions directly, so it fetches a Route Handler instead.
+async function fetchJson<T>(path: string): Promise<T[]> {
+  const res = await fetch(path);
+  if (!res.ok) return [];
+  const body = (await res.json()) as { data: T[] };
+  return body.data;
+}
 
 export function IssueEquipmentPanel({ item }: { item: EquipmentItem }) {
   const [open, setOpen] = useState(false);
@@ -21,13 +30,15 @@ export function IssueEquipmentPanel({ item }: { item: EquipmentItem }) {
 
   useEffect(() => {
     if (!open) return;
-    listMyTeams().then(setTeams).catch(() => {});
+    fetchJson<SportsTeam>("/api/sports-admin/teams").then(setTeams).catch(() => {});
   }, [open]);
 
   useEffect(() => {
     if (target !== "student" || query.trim().length < 2) { setResults([]); return; }
     const handle = setTimeout(() => {
-      listStudents({ search: query.trim() }).then((r) => setResults(r.data.slice(0, 8))).catch(() => setResults([]));
+      fetchJson<StudentSummary>(`/api/students-search?search=${encodeURIComponent(query.trim())}`)
+        .then((r) => setResults(r.slice(0, 8)))
+        .catch(() => setResults([]));
     }, 250);
     return () => clearTimeout(handle);
   }, [query, target]);

@@ -3,10 +3,18 @@
 import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, Select, TextInput } from "@/components/sports-ui/primitives";
 import type { Coach, SportsTeam } from "@/lib/sports-admin-api";
-import { listCoaches, listMyTeams } from "@/lib/sports-admin-api";
 import { createTrainingSessionAction, type FormState } from "./actions";
 
 const initial: FormState = {};
+
+// Same httpOnly-cookie reasoning as AddTeamPanel.tsx -- fetch the Route
+// Handler, never sports-admin-api.ts's own functions, from a client component.
+async function fetchJson<T>(path: string): Promise<T[]> {
+  const res = await fetch(path);
+  if (!res.ok) return [];
+  const body = (await res.json()) as { data: T[] };
+  return body.data;
+}
 
 export function AddSessionPanel() {
   const [open, setOpen] = useState(false);
@@ -16,14 +24,14 @@ export function AddSessionPanel() {
 
   useEffect(() => {
     if (!open) return;
-    Promise.all([listMyTeams(), listCoaches()]).then(([t, c]) => {
+    Promise.all([fetchJson<SportsTeam>("/api/sports-admin/teams"), fetchJson<Coach>("/api/sports-admin/coaches")]).then(([t, c]) => {
       setTeams(t);
       setCoaches(c);
     }).catch(() => {});
   }, [open]);
 
   if (!open) {
-    return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Schedule session</PrimaryButton>;
+    return <PrimaryButton type="button" onClick={() => setOpen(true)}>+ Add session</PrimaryButton>;
   }
 
   return (

@@ -8,7 +8,6 @@
 import { useActionState, useEffect, useState } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, StatusPill, TextInput } from "@/components/sports-ui/primitives";
 import type { Coach, StudentSummary } from "@/lib/sports-admin-api";
-import { listStudents } from "@/lib/sports-admin-api";
 import type { TeamRosterMember } from "@/lib/sports-faculty-api";
 import { addRosterMemberAction, assignCoachAction, endRosterMemberAction, type FormState } from "./actions";
 
@@ -92,8 +91,13 @@ export function AddRosterMemberPanel({ teamId }: { teamId: string }) {
       return;
     }
     const handle = setTimeout(() => {
-      listStudents({ search: query.trim() })
-        .then((r) => setResults(r.data.slice(0, 8)))
+      // Reuses the app's existing authenticated student-search Route Handler
+      // (its access-token cookie can only be read server-side, so this
+      // component can't call listStudents() directly -- same reasoning as
+      // every other picker in this module).
+      fetch(`/api/students-search?search=${encodeURIComponent(query.trim())}`)
+        .then((res) => (res.ok ? res.json() : { data: [] }))
+        .then((body: { data: StudentSummary[] }) => setResults(body.data.slice(0, 8)))
         .catch(() => setResults([]));
     }, 250);
     return () => clearTimeout(handle);

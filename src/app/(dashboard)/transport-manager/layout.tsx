@@ -141,6 +141,10 @@ export default async function TransportManagerLayout({ children }: { children: R
     { href: "/transport-manager/trips", label: "Trips", icon: "timetable", group: "MONITORING" },
 
     { href: "/transport-manager/reports", label: "Reports", icon: "reports", group: "REPORTS" },
+
+    // No mockup equivalent for this new feature either -- same shared SVG
+    // icon as every other no-mockup item above, no guessed materialIcon name.
+    { href: "/transport-manager/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "REPORTS" },
   ];
 
   return (

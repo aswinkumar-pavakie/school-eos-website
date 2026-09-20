@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createEquipmentItem, issueEquipment, returnEquipment } from "@/lib/sports-admin-api";
+import { createEquipmentItem, issueEquipment, returnEquipment, updateEquipmentItem } from "@/lib/sports-admin-api";
 
 export interface FormState {
   error?: string;
@@ -45,6 +45,39 @@ export async function returnEquipmentAction(issueId: string, _prev: FormState, f
     await returnEquipment(issueId, String(formData.get("conditionOnReturn") ?? "").trim() || undefined);
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Could not record this return." };
+  }
+  revalidatePath("/sports-admin/equipment");
+  return {};
+}
+
+// Edit already real (PATCH /equipment/:id); "Delete" is a genuine new
+// Retire/Reactivate toggle via status='RETIRED' -- see migration
+// 0025_equipment_status.sql (this table had no delete path at all before).
+export async function updateEquipmentItemAction(id: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  const name = String(formData.get("name") ?? "").trim();
+  const quantityRaw = String(formData.get("quantityTotal") ?? "").trim();
+  if (!name) return { error: "Item name is required." };
+  const quantityTotal = Number(quantityRaw);
+  if (!Number.isFinite(quantityTotal) || quantityTotal < 0) return { error: "Enter a valid total quantity." };
+
+  try {
+    await updateEquipmentItem(id, {
+      name,
+      quantityTotal,
+      condition: String(formData.get("condition") ?? "").trim() || undefined,
+    });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not update this item." };
+  }
+  revalidatePath("/sports-admin/equipment");
+  return {};
+}
+
+export async function setEquipmentStatusAction(id: string, status: "ACTIVE" | "RETIRED"): Promise<{ error?: string }> {
+  try {
+    await updateEquipmentItem(id, { status });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not update this item's status." };
   }
   revalidatePath("/sports-admin/equipment");
   return {};

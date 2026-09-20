@@ -8,6 +8,7 @@ import { StatusPill } from "@/components/sports-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { getTeam, listCoaches, listTeamRoster } from "@/lib/sports-admin-api";
 import { AddRosterMemberPanel, AssignCoachPanel, RosterList } from "./RosterPanel";
+import { TeamActions } from "./TeamActions";
 
 export default async function SportsAdminTeamDetailPage({ params }: { params: Promise<{ teamId: string }> }) {
   const { teamId } = await params;
@@ -25,12 +26,15 @@ export default async function SportsAdminTeamDetailPage({ params }: { params: Pr
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 24, marginTop: 14, flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--sport-heading)" }}>{team.name}</div>
-            <div style={{ fontSize: 14.5, color: "var(--sport-tertiary)", marginTop: 8 }}>
+            <div style={{ fontSize: 15, color: "var(--sport-muted-2)", marginTop: 8 }}>
               {team.sportName} · {activeRoster.length} active player{activeRoster.length === 1 ? "" : "s"}
               {coachName ? ` · Coach: ${coachName}` : " · No coach assigned"}
             </div>
           </div>
-          <StatusPill label={team.status === "ACTIVE" ? "Active" : "Inactive"} tone={team.status === "ACTIVE" ? "good" : "mute"} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+            <StatusPill label={team.status === "ACTIVE" ? "Active" : "Inactive"} tone={team.status === "ACTIVE" ? "good" : "mute"} />
+            <TeamActions teamId={team.id} name={team.name} status={team.status} />
+          </div>
         </div>
 
         <div style={{ marginTop: 24 }}>
