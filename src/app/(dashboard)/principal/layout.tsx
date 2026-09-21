@@ -94,7 +94,8 @@ const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   { href: "/principal/my-attendance", label: "My Attendance", icon: "attendance", group: "MY RECORD" },
   { href: "/principal/my-leave", label: "My Leave", icon: "requests", group: "MY RECORD" },
 
-  { href: "/principal/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "SYSTEM" },
+  // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
+  // -- no longer a sidebar entry, matching the reference design.
 ];
 
 // Initials for the sidebar's logo/avatar tiles -- same simple first-letter-of-

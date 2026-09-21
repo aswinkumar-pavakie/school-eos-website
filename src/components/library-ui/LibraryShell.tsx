@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import { NavIcon, SearchIcon, CampusIcon, SettingsGearIcon, BellIcon, SignOutIcon } from "./icons";
 import { LIBRARY_NAV_GROUPS } from "./nav-items";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import { ToastProvider } from "./toast/ToastProvider";
 import "../../app/(dashboard)/library/library-theme.css";
 
@@ -58,6 +59,7 @@ export function LibraryShell({
 
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,7 +108,17 @@ export function LibraryShell({
 
   return (
     <ToastProvider>
-    <div className={`library-scope ${outfit.variable} ${jetbrainsMono.variable}`} style={{ display: "grid", gridTemplateColumns: "296px minmax(0,1fr)", minHeight: "100vh", alignItems: "start" }}>
+    <div
+      className={`library-scope ${outfit.variable} ${jetbrainsMono.variable}`}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "296px minmax(0,1fr)",
+        minHeight: "100vh",
+        alignItems: "start",
+        marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+        transition: "margin-right 300ms ease",
+      }}
+    >
       <aside
         style={{
           position: "sticky",
@@ -246,6 +258,7 @@ export function LibraryShell({
             )}
           </div>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+            <AskAiWidget onOpenChange={setAiChatOpen} />
             <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "10px 18px", border: "1px solid var(--lib-border)", borderRadius: 999, font: "500 15px/1.2 var(--lib-font-sans)", color: "var(--lib-ink)" }}>
               <CampusIcon />
               Library · Campus

@@ -35,6 +35,8 @@ export function DashboardStat({
         gap: 14,
         background: "var(--hw-surface)",
         color: "inherit",
+        minWidth: 0,
+        overflow: "hidden",
       }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
@@ -45,7 +47,7 @@ export function DashboardStat({
           </svg>
         </span>
       </div>
-      <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
+      <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, fontVariantNumeric: "tabular-nums", overflowWrap: "anywhere" }}>{value}</div>
       <div style={{ fontSize: 13.5, color: "var(--hw-text-muted)" }}>
         <b style={{ color: "var(--hw-accent)" }}>{deltaStrong}</b> {deltaText}
       </div>

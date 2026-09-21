@@ -13,6 +13,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BellIcon, CollapseIcon, NAV_ICONS } from "./icons";
 import { GlobalSearch } from "./GlobalSearch";
 import { MaterialIcon } from "../transport/MaterialIcon";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 
 export type ShellNavItem = {
   href: string;
@@ -146,7 +147,8 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   // dropped, just folded into Settings as two more tabs; see SettingsTabs.tsx.
   { href: "/admin/settings", label: "Settings", icon: "settings", group: "SYSTEM" },
 
-  { href: "/admin/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "SYSTEM" },
+  // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
+  // -- no longer a sidebar entry, matching the reference design.
 
   // These modules aren't built yet -- each route already exists and honestly
   // renders <ComingSoon/> (no fake data). "Camps" stays a stub deliberately --
@@ -243,6 +245,7 @@ export function Shell({
 }: ShellProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [seenCount, setSeenCount] = useState(0);
@@ -288,7 +291,10 @@ export function Shell({
   }, [menuOpen, notifOpen]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div
+      className="flex h-screen overflow-hidden transition-[margin-right] duration-300 ease-out"
+      style={{ marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0 }}
+    >
       <aside
         className={`hidden shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-150 lg:flex ${
           collapsed ? "w-16" : "w-66"
@@ -387,6 +393,7 @@ export function Shell({
           </div>
 
           <div className="flex shrink-0 items-center gap-3">
+            <AskAiWidget onOpenChange={setAiChatOpen} />
             {headerExtra}
             {!hideRolePill && (
               <span className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted md:flex">

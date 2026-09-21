@@ -32,6 +32,8 @@ export function StatCard({
         gap: 14,
         background: highlighted ? "var(--lib-tint)" : "var(--lib-white)",
         height: "100%",
+        minWidth: 0,
+        overflow: "hidden",
       }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
@@ -40,7 +42,7 @@ export function StatCard({
           {icon}
         </div>
       </div>
-      <div style={{ font: "700 40px/1 var(--lib-font-sans)", color: highlighted ? "var(--lib-navy)" : "var(--lib-ink)" }}>{value}</div>
+      <div style={{ font: "700 40px/1 var(--lib-font-sans)", color: highlighted ? "var(--lib-navy)" : "var(--lib-ink)", overflowWrap: "anywhere" }}>{value}</div>
       {sub && <div style={{ font: "400 14px/1.4 var(--lib-font-sans)", color: highlighted ? "var(--lib-primary)" : "var(--lib-body-muted)" }}>{sub}</div>}
     </div>
   );

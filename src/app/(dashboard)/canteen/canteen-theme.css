@@ -1,0 +1,80 @@
+/*
+ * Design tokens for the Canteen counter portal -- pixel-matched, value for
+ * value, to faculty-theme.css (src/app/(dashboard)/faculty/), itself
+ * measured verbatim from brain/SIS Class teacher/Class Teacher Portal.dc.html.
+ * Reused here per explicit instruction: "same color same font same size
+ * text style text size color etc design exactly same... 100 percent" --
+ * this is that portal's own real token set, not an approximation or a
+ * different reference (an earlier pass here used the Sports Admin
+ * dashboard mockup instead; superseded).
+ *
+ * Scoped deliberately: every variable is --can-* (never reusing --color-,
+ * --radius-, --fac- or --sport- names) and only takes effect inside
+ * .canteen-scope, which CanteenShell applies once to its own outermost
+ * wrapper -- no other role ever loads this file or sees these values.
+ */
+
+.canteen-scope {
+  --can-primary: #1d4ed8;
+  --can-navy: #12275c;
+  --can-ink: #0f172a;
+  --can-body: #334155;
+  --can-body-muted: #64748b;
+  --can-tertiary: #94a3b8;
+
+  --can-white: #ffffff;
+  --can-tint: #eff6ff;
+  --can-panel: #f8fafc;
+  --can-divider: #f1f5f9;
+  --can-chip: #eef2f7;
+
+  --can-border: #e2e8f0;
+  --can-border-hover: #dbeafe;
+  --can-border-focus: #bfdbfe;
+  --can-outline-hover: #93b4f5;
+
+  --can-red: #dc2626;
+  --can-red-bg: #fee2e2;
+  --can-red-text: #b91c1c;
+  --can-green-text: #15803d;
+  --can-green-bg: #f0fdf4;
+  --can-amber: #fbbf24;
+
+  --can-radius-card: 12px;
+  --can-radius-input: 10px;
+  --can-radius-btn-sm: 9px;
+  --can-radius-pill: 20px;
+  --can-radius-full: 999px;
+
+  --can-shadow-popover-strong: 0 18px 40px rgba(15, 23, 42, 0.14);
+
+  --can-font-sans: var(--font-outfit-can), ui-sans-serif, system-ui, sans-serif;
+  --can-font-mono: var(--font-ibm-plex-mono-can), ui-monospace, "SFMono-Regular", monospace;
+
+  font-family: var(--can-font-sans);
+  color: var(--can-ink);
+  background: var(--can-white);
+}
+
+.canteen-scope .can-font-mono {
+  font-family: var(--can-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The Faculty portal's own signature elevation language, reused verbatim:
+   flat cards that lift 3px and gain a soft blue outline ring on hover,
+   never a resting shadow. */
+.can-hover-lift {
+  transition: transform 0.14s ease, outline-color 0.14s ease, border-color 0.14s ease;
+  outline: 1.5px solid transparent;
+  outline-offset: -2px;
+}
+.can-hover-lift:hover {
+  transform: translateY(-3px);
+  outline-color: var(--can-outline-hover);
+  border-color: var(--can-border-hover) !important;
+}
+.can-hover-lift:active {
+  transform: translateY(-1px);
+  transition-duration: 0.12s;
+}

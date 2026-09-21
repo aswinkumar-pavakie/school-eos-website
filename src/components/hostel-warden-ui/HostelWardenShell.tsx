@@ -8,6 +8,7 @@ import { BellIcon, ChevronRightIcon, NavIcon, SearchIcon } from "./icons";
 import { HOSTEL_WARDEN_NAV, HOSTEL_WARDEN_TITLES } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
 import "../../app/(dashboard)/hostel-warden/hostel-warden-theme.css";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -72,6 +73,7 @@ export function HostelWardenShell({
   }
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!profileOpen) return;
@@ -94,7 +96,12 @@ export function HostelWardenShell({
     <FlashProvider>
       <div
         className={`hostel-warden-scope ${plusJakartaSans.variable}`}
-        style={{ display: "flex", minHeight: "100vh" }}
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+          transition: "margin-right 300ms ease",
+        }}
       >
         <aside
           style={{
@@ -247,6 +254,7 @@ export function HostelWardenShell({
               <h1 style={{ margin: 0, fontWeight: 800, fontSize: 27, letterSpacing: "-0.03em", lineHeight: 1.15 }}>{title}</h1>
             </div>
             <div style={{ flex: 1 }} />
+            <AskAiWidget onOpenChange={setAiChatOpen} />
 
             <div role="group" aria-label="Hostel wing" style={{ display: "flex", alignItems: "center", gap: 4, border: "1px solid var(--hw-divider)", borderRadius: 9, padding: 3 }}>
               {(["Boys", "Girls"] as const).map((w) => {

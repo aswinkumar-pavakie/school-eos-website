@@ -63,6 +63,12 @@ const WEB_ALLOWED_ROLES = [
   // login, not a login of its own). Missed here when the module was first
   // built -- login was silently blocked by this exact allowlist until fixed.
   "SPORTS_ADMIN",
+  // Canteen counter -- a genuinely separate, device-scoped login (own
+  // person/login_identifier/user_credential/role_assignment rows -- see
+  // database/migrations/0027_canteen_vendor_role.sql). Two screens only
+  // (Ledger, History); every real endpoint lives under
+  // school-eos-backend/src/modules/canteen/, @Roles('CANTEEN_VENDOR') only.
+  "CANTEEN_VENDOR",
 ];
 
 export interface LoginState {
@@ -171,6 +177,9 @@ export async function loginAction(
   }
   if (roleCodes.includes("SPORTS_ADMIN")) {
     redirect("/sports-admin");
+  }
+  if (roleCodes.includes("CANTEEN_VENDOR")) {
+    redirect("/canteen");
   }
   // A coordinator-only login (no FACULTY role_code at all -- see
   // WEB_ALLOWED_ROLES's own comment above) lands directly on the Academic

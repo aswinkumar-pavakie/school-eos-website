@@ -23,9 +23,9 @@ export function KpiCard({
   href?: string;
 }) {
   const body = (
-    <div className="acc-card-hover" style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px", cursor: href ? "pointer" : undefined, height: "100%" }}>
+    <div className="acc-card-hover" style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px", cursor: href ? "pointer" : undefined, height: "100%", minWidth: 0, overflow: "hidden" }}>
       <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>{label}</div>
-      <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", letterSpacing: "-0.02em", margin: "9px 0 6px" }}>{value}</div>
+      <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", letterSpacing: "-0.02em", margin: "9px 0 6px", overflowWrap: "anywhere" }}>{value}</div>
       {(hi || sub) && (
         <div style={{ fontSize: 13, color: "var(--acc-body-muted)" }}>
           {hi && <span style={{ color: "var(--acc-accent)", fontWeight: 700 }}>{hi}</span>} {sub}

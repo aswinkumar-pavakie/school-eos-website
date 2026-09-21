@@ -31,6 +31,8 @@ export function StatTile({
         border: "1px solid var(--fac-border)",
         borderRadius: "var(--fac-radius-card)",
         padding: "18px 20px",
+        minWidth: 0,
+        overflow: "hidden",
       }}
     >
       <span className="flex items-center justify-between">
@@ -39,7 +41,7 @@ export function StatTile({
           style={{ width: 30, height: 30, borderRadius: 8, background: "var(--fac-tint)", display: "block" }}
         />
       </span>
-      <span style={{ display: "block", font: "700 40px/1.1 var(--fac-font-sans)", marginTop: 12, color: "var(--fac-ink)" }}>
+      <span style={{ display: "block", font: "700 40px/1.1 var(--fac-font-sans)", marginTop: 12, color: "var(--fac-ink)", overflowWrap: "anywhere" }}>
         {value}
       </span>
       {(strong || sub) && (

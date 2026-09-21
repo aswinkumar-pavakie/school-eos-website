@@ -19,6 +19,7 @@ import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { NavIcon } from "./icons";
 import { ACADEMIC_COORDINATOR_NAV } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/academic-coordinator/academic-coordinator-theme.css";
 
 const hankenGrotesk = Hanken_Grotesk({
@@ -100,6 +101,7 @@ export function AcademicCoordinatorShell({
   }
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!profileOpen) return;
@@ -120,7 +122,16 @@ export function AcademicCoordinatorShell({
 
   return (
     <FlashProvider>
-    <div className={`academic-coordinator-scope ${hankenGrotesk.variable} ${ibmPlexMono.variable}`} style={{ display: "flex", alignItems: "flex-start", minHeight: "100vh" }}>
+    <div
+      className={`academic-coordinator-scope ${hankenGrotesk.variable} ${ibmPlexMono.variable}`}
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        minHeight: "100vh",
+        marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+        transition: "margin-right 300ms ease",
+      }}
+    >
       <div style={{ width: 264, flex: "0 0 264px", background: "var(--acc-surface)", borderRight: "1px solid var(--acc-border)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "17px 18px", borderBottom: "1px solid var(--acc-divider)" }}>
           <div style={{ width: 38, height: 38, borderRadius: 10, background: "var(--acc-navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, letterSpacing: "0.03em" }}>
@@ -217,6 +228,7 @@ export function AcademicCoordinatorShell({
             <input placeholder="students, teachers, notices…" style={{ border: 0, background: "transparent", outline: "none", flex: 1, fontSize: 14, color: "var(--acc-text)", minWidth: 60 }} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <AskAiWidget onOpenChange={setAiChatOpen} />
             {stageOptions.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--acc-border)", borderRadius: 10, padding: "6px 10px", background: "#fff" }}>
                 <span style={{ fontSize: 11, letterSpacing: "0.07em", color: "var(--acc-tertiary)", fontWeight: 700 }}>SCOPE</span>

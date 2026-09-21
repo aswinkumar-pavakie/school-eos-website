@@ -95,7 +95,8 @@ export function buildFacultyNavGroups(params: {
   // fully working, just no longer linked from here.
   if (isCoordinator) more.unshift({ href: "/academic-coordinator", label: "Academic Coordinator", icon: "coordinator" });
   if (hasSportsTeams) more.push({ href: "/sports", label: "Sports", icon: "sports" });
-  more.push({ href: "/faculty/ai-chat", label: "Ask the Assistant", icon: "assistant" });
+  // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
+  // sidebar entry, matching the reference design.
   groups.push({ label: "MORE", items: more });
 
   return groups;

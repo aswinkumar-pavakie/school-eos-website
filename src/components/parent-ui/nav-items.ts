@@ -60,10 +60,8 @@ export const PARENT_NAV: ParentNavGroup[] = [
       { id: "leave", icon: "documents", label: "Leave requests", href: "/parent/leave" },
       { id: "bus", icon: "timetable", label: "My Bus", href: "/parent/bus" },
       { id: "settings", icon: "documents", label: "Settings", href: "/parent/settings" },
-      // Not in the design's own nav (new feature, added after the pixel
-      // replication) -- reuses the "myclass" icon path, otherwise unused
-      // anywhere in this module, rather than inventing a new one.
-      { id: "assistant", icon: "myclass", label: "Ask the Assistant", href: "/parent/ai-chat" },
+      // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
+      // sidebar entry, matching the reference design.
     ],
   },
 ];

@@ -47,7 +47,8 @@ const FULL_NAV_ITEMS: ShellNavItem[] = [
   // src/app/(dashboard)/finance/library/page.tsx. Principal's narrower nav below
   // doesn't get this; Library fines aren't Principal's concern.
   { href: "/finance/library", label: "Library", icon: "academics" },
-  { href: "/finance/ai-chat", label: "Ask the Assistant", icon: "assistant" },
+  // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
+  // -- no longer a sidebar entry, matching the reference design.
 ];
 
 const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [

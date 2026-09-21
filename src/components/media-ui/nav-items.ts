@@ -1,5 +1,5 @@
 import type { ComponentType, CSSProperties } from "react";
-import { AnalyticsIcon, AssistantIcon, CalendarIcon, DashboardIcon, IndentIcon, InventoryIcon, ShootsIcon, SocialIcon, TeamIcon } from "./icons";
+import { AnalyticsIcon, CalendarIcon, DashboardIcon, IndentIcon, InventoryIcon, ShootsIcon, SocialIcon, TeamIcon } from "./icons";
 
 export interface MediaNavItem {
   id: string;
@@ -43,10 +43,6 @@ export const MEDIA_NAV: MediaNavGroup[] = [
       { id: "team", Icon: TeamIcon, label: "Media team", href: "/media/team" },
     ],
   },
-  {
-    // Not in the design's own nav (new feature, added after the pixel
-    // replication).
-    title: "System",
-    items: [{ id: "assistant", Icon: AssistantIcon, label: "Ask the Assistant", href: "/media/ai-chat" }],
-  },
+  // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
+  // sidebar entry, matching the reference design.
 ];

@@ -88,6 +88,43 @@ export async function listTeachingOfferings(): Promise<TeachingOffering[]> {
 }
 
 // ============================================================
+// My staff profile — GET /staff/me (staff.controller.ts). Self-scoped
+// (resolved from the caller's own personId server-side, never a
+// client-supplied id) -- FACULTY was missing from this endpoint's own
+// @Roles() until now, even though every field below (including the
+// qualification/training columns) was already real and already being
+// selected for exactly this purpose; see staff.controller.ts's own
+// comment on GET /staff/me.
+// ============================================================
+export interface MyStaffProfile {
+  employeeNo: string;
+  designation: string | null;
+  teacherCategory: string | null;
+  postType: string | null;
+  isTeaching: boolean;
+  dateOfJoining: string;
+  experienceYears: number | null;
+  status: string;
+  employmentType: string | null;
+  staffRoom: string | null;
+  bloodGroup: string | null;
+  email: string | null;
+  mobile: string | null;
+  highestQualification: string | null;
+  specialization: string | null;
+  university: string | null;
+  yearOfGraduation: number | null;
+  tetNetCleared: boolean | null;
+  areasOfExpertise: string | null;
+  certifications: string | null;
+  workshopsTraining: string | null;
+  achievementsAwards: string | null;
+}
+export async function getMyStaffProfile(): Promise<MyStaffProfile> {
+  return (await get<ApiEnvelope<MyStaffProfile>>("/staff/me")).data;
+}
+
+// ============================================================
 // Student Attendance
 // ============================================================
 

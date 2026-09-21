@@ -10,7 +10,6 @@ import {
   IndentsIcon,
   InjuriesIcon,
   InventoryIcon,
-  MessagesIcon,
   OdIcon,
   PtIcon,
   SessionsIcon,
@@ -71,12 +70,6 @@ export const SPORTS_NAV: SportsNavGroup[] = [
       { id: "budget", Icon: BudgetIcon, label: "Budget & approvals", href: "/sports-admin/budget" },
     ],
   },
-  {
-    // Not in the design's own nav (new feature, added after the pixel
-    // replication) -- reuses MessagesIcon, the module's own pre-existing
-    // chat-bubble glyph that's otherwise unused since Messages itself is
-    // out of scope, rather than inventing a new icon.
-    title: "System",
-    items: [{ id: "ai-chat", Icon: MessagesIcon, label: "Ask the Assistant", href: "/sports-admin/ai-chat" }],
-  },
+  // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
+  // sidebar entry, matching the reference design.
 ];

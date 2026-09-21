@@ -1,21 +1,31 @@
 "use client";
 
 // Shared chat UI for the "Ask the Assistant" feature, reused verbatim by
-// every role's own thin page.tsx (e.g. (dashboard)/admin/ai-chat/page.tsx).
-// Talks ONLY to this app's own same-origin /api/ai-chat route -- never the
-// bot's URL directly, which stays server-only. Holds nothing but local
-// message list + input + an opaque conversationId (the bot's own backend
-// owns conversation history; this never resends it).
+// every role's own thin page.tsx (e.g. (dashboard)/admin/ai-chat/page.tsx)
+// and by AskAiWidget's slide-in panel. Talks ONLY to this app's own
+// same-origin /api/ai-chat route -- never the bot's URL directly, which
+// stays server-only. Holds nothing but local message list + input + an
+// opaque conversationId (the bot's own backend owns conversation history;
+// this never resends it).
+//
+// The dotted background (DotGridBackground) is always present behind the
+// conversation, matching the user's own reference design; the big 3D logo
+// empty state (AiChatEmptyState) is shown ONLY while messages.length === 0
+// -- it disappears the instant the first question is sent (not after the
+// reply arrives), same as the reference's own "first open only" behavior,
+// and never reappears for the rest of this conversation.
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { DotGridBackground } from "./DotGridBackground";
+import { AiChatEmptyState } from "./AiChatEmptyState";
 
 interface ChatMessage {
   role: "user" | "assistant";
   text: string;
 }
 
-export function AiChatScreen() {
+export function AiChatScreen({ className }: { className?: string } = {}) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -65,25 +75,33 @@ export function AiChatScreen() {
     }
   }
 
+  const isEmpty = messages.length === 0;
+
   return (
-    <div className="flex h-[calc(100vh-140px)] flex-col rounded-[14px] border border-border bg-surface">
-      <div className="flex-1 overflow-y-auto p-5 space-y-3">
-        {messages.length === 0 && (
-          <p className="text-sm text-text-muted">Ask a question about school records, policies or anything else — the assistant will help.</p>
-        )}
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[75%] whitespace-pre-wrap rounded-[11px] px-4 py-2.5 text-sm ${
-                m.role === "user" ? "bg-primary text-white" : "bg-field text-text"
-              }`}
-            >
-              {m.text}
+    <div className={className ?? "flex h-[calc(100vh-140px)] flex-col rounded-[14px] border border-border bg-surface"}>
+      <div className="relative flex-1 overflow-y-auto">
+        <DotGridBackground />
+        <div className="relative z-10 flex h-full flex-col p-5">
+          {isEmpty ? (
+            <AiChatEmptyState />
+          ) : (
+            <div className="space-y-3">
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[75%] whitespace-pre-wrap rounded-[11px] px-4 py-2.5 text-sm shadow-sm ${
+                      m.role === "user" ? "bg-primary text-white" : "bg-surface text-text"
+                    }`}
+                  >
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+              {sending && <p className="text-sm text-text-muted">Thinking…</p>}
             </div>
-          </div>
-        ))}
-        {sending && <p className="text-sm text-text-muted">Thinking…</p>}
-        {error && <p className="text-sm text-[var(--color-error-text)]">{error}</p>}
+          )}
+          {error && <p className="mt-2 text-sm text-[var(--color-error-text)]">{error}</p>}
+        </div>
       </div>
 
       <form
@@ -91,7 +109,7 @@ export function AiChatScreen() {
           e.preventDefault();
           void send();
         }}
-        className="flex items-center gap-2.5 border-t border-border p-4"
+        className="relative z-10 flex items-center gap-2.5 border-t border-border bg-surface p-4"
       >
         <input
           type="text"

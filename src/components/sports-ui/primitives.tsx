@@ -196,11 +196,43 @@ export function TableCard({
 // label 11px/0.1em, value 38px/800/-0.02em, line1 13.5px #4E5D70, line2
 // 12.5px #98A3B2 -- the one stat-tile block the design reuses on Dashboard,
 // Houses and everywhere else `page.hasStats` is true.
+//
+// The fixed 38px value size assumed short values (counts like "2", "12").
+// A long alphanumeric value (a register/admission number) at that size
+// overflowed its own card into the next one once the page's own content
+// width could shrink -- the AI chat panel's "push" layout (AskAiWidget)
+// made this visible for the first time, but the bug was really that this
+// card never adapted to its own width at all. Fixed two ways: the grid
+// item itself is now allowed to shrink below its content's natural
+// min-content width (minWidth: 0 -- a plain CSS grid item defaults to
+// min-width: auto, which is exactly what was forcing the column wider
+// than its 1fr share instead of letting the text wrap), and the value's
+// own font size now scales down for longer strings so it fits its card at
+// any width instead of relying on wrapping alone.
+function valueFontSize(value: string | number): number {
+  const length = String(value).length;
+  if (length > 10) return 20;
+  if (length > 7) return 26;
+  return 38;
+}
+
 export function StatTile({ label, value, sub, sub2 }: { label: string; value: string | number; sub?: string; sub2?: string }) {
   return (
-    <Card hover style={{ padding: "20px 22px" }}>
+    <Card hover style={{ padding: "20px 22px", minWidth: 0, overflow: "hidden" }}>
       <div style={{ fontSize: 11, letterSpacing: "0.1em", fontWeight: 700, color: "var(--sport-tertiary-2)" }}>{label}</div>
-      <div style={{ fontSize: 38, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--sport-heading)", marginTop: 6, lineHeight: 1.1 }}>{value}</div>
+      <div
+        style={{
+          fontSize: valueFontSize(value),
+          fontWeight: 800,
+          letterSpacing: "-0.02em",
+          color: "var(--sport-heading)",
+          marginTop: 6,
+          lineHeight: 1.15,
+          overflowWrap: "anywhere",
+        }}
+      >
+        {value}
+      </div>
       {sub ? <div style={{ fontSize: 13.5, color: "var(--sport-body-muted)", marginTop: 4 }}>{sub}</div> : null}
       {sub2 ? <div style={{ fontSize: 12.5, color: "var(--sport-tertiary-3)", marginTop: 2 }}>{sub2}</div> : null}
     </Card>

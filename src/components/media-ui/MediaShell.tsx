@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { BellIcon, SearchIcon } from "./icons";
 import { MEDIA_NAV } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/media/media-theme.css";
 
 export function MediaShell({
@@ -26,6 +27,7 @@ export function MediaShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const initials = personName
     .split(" ")
     .filter(Boolean)
@@ -37,7 +39,17 @@ export function MediaShell({
 
   return (
     <FlashProvider>
-      <div className="media-scope" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+      <div
+        className="media-scope"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          overflow: "hidden",
+          marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+          transition: "margin-right 300ms ease",
+        }}
+      >
         <div style={{ height: 76, flex: "none", background: "#fff", borderBottom: "1px solid var(--med-border)", display: "flex", alignItems: "center", gap: 14, padding: "0 22px", minWidth: 0, overflowX: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: "0 1 230px" }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, background: "var(--med-navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, letterSpacing: 0.5, flexShrink: 0 }}>PPS</div>
@@ -51,6 +63,7 @@ export function MediaShell({
             <input placeholder="Search shoots, indents, equipment..." style={{ flex: 1, minWidth: 0, border: "none", outline: "none", fontSize: 14, color: "var(--med-ink)", background: "transparent", fontFamily: "inherit" }} />
           </div>
           <div style={{ flex: 1 }} />
+          <AskAiWidget onOpenChange={setAiChatOpen} />
           <div style={{ display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--med-border)", borderRadius: 20, height: 42, padding: "0 16px", flexShrink: 0 }}>
             <span style={{ fontSize: 15 }}>🎓</span>
             <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--med-ink)", whiteSpace: "nowrap" }}>Media room head</span>

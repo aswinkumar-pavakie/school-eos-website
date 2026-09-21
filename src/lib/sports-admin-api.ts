@@ -233,28 +233,12 @@ export async function updateEquipmentItem(id: string, input: { name?: string; sp
 }
 
 // ---------- Trials & selection (real -- see migration 0022_sports_trials.sql) ----------
-
-export const TRIAL_ROUNDS = ["ROUND_1", "ROUND_2", "FINAL_ROUND"] as const;
-export type TrialRound = (typeof TRIAL_ROUNDS)[number];
-export const TRIAL_STATUSES = ["PENDING", "HOLD", "SELECTED", "NOT_SELECTED"] as const;
-export type TrialStatus = (typeof TRIAL_STATUSES)[number];
-
-export interface SportsTrial {
-  id: string;
-  studentId: string;
-  studentFirstName: string;
-  studentLastName: string | null;
-  gradeName: string | null;
-  sectionName: string | null;
-  sportId: string;
-  sportName: string;
-  round: TrialRound;
-  trialDate: string;
-  score: string | null;
-  status: TrialStatus;
-  notes: string | null;
-  createdAt: string;
-}
+// Constants/types live in sports-admin-trial-types.ts (zero runtime deps of
+// its own) and are re-exported here so every existing import of them from
+// this module keeps working unchanged -- see that file's own header comment
+// for why the split exists.
+export { TRIAL_ROUNDS, TRIAL_STATUSES, type TrialRound, type TrialStatus, type SportsTrial } from "./sports-admin-trial-types";
+import type { TrialRound, TrialStatus, SportsTrial } from "./sports-admin-trial-types";
 
 export async function listTrials(): Promise<SportsTrial[]> {
   const res = await apiFetch("/sports/trials");

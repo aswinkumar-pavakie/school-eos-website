@@ -4,7 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { FieldLabel, PrimaryButton, SecondaryButton, Select, TextInput } from "@/components/sports-ui/primitives";
 import { DeleteButton } from "@/components/sports-ui/DeleteButton";
 import { useFlash } from "@/components/sports-ui/FlashContext";
-import { TRIAL_ROUNDS, type SportsTrial, type TrialStatus } from "@/lib/sports-admin-api";
+import { TRIAL_ROUNDS, type SportsTrial, type TrialStatus } from "@/lib/sports-admin-trial-types";
 import { deleteTrialAction, updateTrialAction, updateTrialStatusAction, type FormState } from "./actions";
 
 const STATUS_OPTIONS: TrialStatus[] = ["PENDING", "HOLD", "SELECTED", "NOT_SELECTED"];

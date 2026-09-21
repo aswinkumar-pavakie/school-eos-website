@@ -111,7 +111,8 @@ const CORRESPONDENT_NAV_ITEMS: ShellNavItem[] = [
   // ADMINISTRATION or OPERATIONS.
   { href: "/correspondent/finance", label: "Finance", icon: "finance", group: "FINANCE" },
 
-  { href: "/correspondent/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "ADMINISTRATION" },
+  // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
+  // -- no longer a sidebar entry, matching the reference design.
 ];
 
 // Initials for the sidebar's logo/avatar tiles -- same simple first-letter-of-

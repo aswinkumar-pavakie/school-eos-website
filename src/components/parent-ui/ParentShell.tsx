@@ -15,6 +15,7 @@ import { NavIcon } from "./icons";
 import { PARENT_NAV } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
 import "../../app/(dashboard)/parent/parent-theme.css";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 
 export interface ParentChildOption {
   studentId: string;
@@ -53,6 +54,7 @@ export function ParentShell({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
 
   const requestedId = searchParams.get("studentId");
   const selectedChild = childOptions.find((c) => c.studentId === requestedId) ?? childOptions[0]!;
@@ -68,7 +70,15 @@ export function ParentShell({
 
   return (
     <FlashProvider>
-      <div className="parent-scope" style={{ minHeight: "100vh", display: "flex" }}>
+      <div
+        className="parent-scope"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+          transition: "margin-right 300ms ease",
+        }}
+      >
         {/* Sidebar */}
         <div style={{ width: 248, flexShrink: 0, background: "#fff", borderRight: "1px solid var(--par-border)", display: "flex", flexDirection: "column", padding: "24px 16px", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 24px" }}>
@@ -179,6 +189,7 @@ export function ParentShell({
               <span style={{ position: "absolute", right: 10, top: 8, fontSize: 11, color: "var(--par-tertiary)", background: "var(--par-tint-strong)", borderRadius: 5, padding: "3px 6px", fontFamily: "monospace" }}>Ctrl K</span>
             </div>
             <div style={{ flex: 1 }} />
+            <AskAiWidget onOpenChange={setAiChatOpen} />
             <div style={{ background: "var(--par-panel)", borderRadius: 9, padding: "9px 16px", fontSize: 14, fontWeight: 600, color: "var(--par-navy)" }}>Parent · {classLabel}</div>
             <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 9, padding: "9px 16px", fontSize: 14, fontWeight: 600, color: "var(--par-navy)" }}>{academicYearLabel}</div>
             {termLabel && <div style={{ background: "var(--par-navy)", color: "#fff", borderRadius: 9, padding: "9px 16px", fontSize: 14, fontWeight: 700 }}>{termLabel}</div>}

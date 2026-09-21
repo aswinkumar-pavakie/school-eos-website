@@ -76,9 +76,8 @@ export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
     items: [
       { id: "complaints", label: "Issues & maintenance", href: "/hostel-warden/issues" },
       { id: "reports", label: "Reports", href: "/hostel-warden/reports" },
-      // Not in the design's own nav (new feature, added after the pixel
-      // replication).
-      { id: "assistant", label: "Ask the Assistant", href: "/hostel-warden/ai-chat" },
+      // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
+      // sidebar entry, matching the reference design.
     ],
   },
 ];

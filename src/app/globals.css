@@ -120,3 +120,93 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--color-text);
   transition: background-color 600000s 0s, color 600000s 0s;
 }
+
+/* Ask the Assistant's empty-state 3D logo (AiChatScreen) -- reworked twice
+   per explicit follow-up feedback. Depth still comes from real extrusion
+   (a stack of darkened copies of the same flat image sit a few pixels
+   "behind" the front copy on the Z axis, .pavakie-logo-layer/translateZ,
+   all inside one preserve-3d stage -- rotating the stage reveals a real
+   edge/thickness between the layers, which is what actually reads as 3D,
+   not the rotation alone) and the shadow is still one static, soft ambient
+   drop-shadow (never pulsing, never competing with the mark).
+   The motion itself was rebuilt a second time: an oscillating +/-9deg
+   swing read as barely-there and was rejected as "still not lively" --
+   replaced with a genuine continuous "turntable" spin, a full slow 360deg
+   rotateY loop (16s, linear, so its speed never eases to a visible
+   stop/start -- slowed down further from an initial 6s pass that read as
+   too fast/spinny for an elegant brand mark), so the mark is always
+   visibly turning, with no hover needed. The spin lives on its own element
+   (.pavakie-logo-spin) and a
+   separate, independent vertical bob lives on a nested child
+   (.pavakie-logo-bob) -- two different elements because a single element
+   can't run two keyframe animations that both drive `transform` at once
+   without one silently overriding the other; nesting them lets the spin
+   and the bob compose freely, the way a real object can rotate AND drift
+   up and down at the same time. */
+@keyframes pavakie-logo-in {
+  0% { opacity: 0; transform: perspective(1000px) scale(0.6) rotateY(-32deg) rotateX(9deg) translateY(14px); }
+  60% { opacity: 1; transform: perspective(1000px) scale(1.03) rotateY(7deg) rotateX(-2deg) translateY(-3px); }
+  100% { opacity: 1; transform: perspective(1000px) scale(1) rotateY(0deg) rotateX(0deg) translateY(0px); }
+}
+@keyframes pavakie-logo-spin {
+  0% { transform: perspective(1000px) rotateY(0deg); }
+  100% { transform: perspective(1000px) rotateY(360deg); }
+}
+@keyframes pavakie-logo-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes pavakie-logo-sheen {
+  0% { background-position: -140% -140%; }
+  100% { background-position: 140% 140%; }
+}
+.pavakie-logo-stage {
+  perspective: 1000px;
+  filter: drop-shadow(0 8px 12px rgba(89, 27, 223, 0.16));
+}
+/* Every element between the perspective-root (.pavakie-logo-stage) and the
+   translateZ'd depth layers must carry transform-style: preserve-3d, or the
+   browser flattens that link of the chain to 2D and the perspective set on
+   the stage never reaches the nested rotate/translateZ layers -- the fix
+   for an earlier bug where this was only set on .pavakie-logo-spin, so the
+   rotation rendered as a flat squish with almost no visible motion instead
+   of a real turntable. */
+.pavakie-logo-anim {
+  animation: pavakie-logo-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-style: preserve-3d;
+}
+.pavakie-logo-spin {
+  animation: pavakie-logo-spin 16000ms linear 1100ms infinite;
+  transform-style: preserve-3d;
+}
+.pavakie-logo-bob {
+  animation: pavakie-logo-bob 3400ms ease-in-out infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.pavakie-logo-layer {
+  position: absolute;
+  inset: 0;
+}
+.pavakie-logo-sheen {
+  -webkit-mask-image: url("/brand/pavakie-logo.png");
+  mask-image: url("/brand/pavakie-logo.png");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background-image: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.85) 50%, transparent 65%);
+  background-size: 260% 260%;
+  mix-blend-mode: overlay;
+  animation: pavakie-logo-sheen 3400ms ease-in-out 1400ms infinite;
+}
+/* No prefers-reduced-motion override here on purpose: this logo is the
+   one deliberately-branded animated moment of the whole chat widget, and
+   an earlier version that disabled it under that media query is the
+   likely reason it looked completely static in testing -- Windows' own
+   "Show animations" setting (Settings > Accessibility > Visual effects)
+   maps directly to prefers-reduced-motion: reduce, and it's off by
+   default on plenty of machines/battery-saver profiles, silently killing
+   every animation on this page that respects it, including this one. */

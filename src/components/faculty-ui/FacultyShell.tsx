@@ -10,6 +10,7 @@ import { ToastProvider } from "./toast/ToastProvider";
 import type { FacultyNavGroup } from "./nav-items";
 import { FacultyModal } from "./Modal";
 import { Messenger, type MessengerMessage, type MessengerThread } from "./messenger/Messenger";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/faculty/faculty-theme.css";
 
 // Font is loaded only inside this route group -- other roles' bundles never
@@ -68,6 +69,7 @@ export function FacultyShell({
   children: ReactNode;
 }) {
   const [messagesOpen, setMessagesOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const activeHref = useMemo(() => findActiveHref(pathname, navGroups), [pathname, navGroups]);
@@ -124,7 +126,15 @@ export function FacultyShell({
 
   return (
     <ToastProvider>
-      <div className={`faculty-scope ${outfit.variable}`} style={{ display: "flex", minHeight: "100vh" }}>
+      <div
+        className={`faculty-scope ${outfit.variable}`}
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+          transition: "margin-right 300ms ease",
+        }}
+      >
         <aside
           style={{
             width: 266,
@@ -361,6 +371,7 @@ export function FacultyShell({
               )}
             </div>
             <div style={{ flex: 1 }} />
+            <AskAiWidget onOpenChange={setAiChatOpen} />
             <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--fac-divider)", borderRadius: 8, padding: "8px 14px", font: "500 13.5px/1 var(--fac-font-sans)", color: "var(--fac-navy)" }}>
               {sectionRoleLabel}
             </div>

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { SearchIcon } from "./icons";
 import { SPORTS_NAV } from "./nav-items";
 import { FlashProvider } from "./FlashContext";
+import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/sports-admin/sports-theme.css";
 
 export function SportsShell({
@@ -24,6 +25,7 @@ export function SportsShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const initials = personName
     .split(" ")
     .filter(Boolean)
@@ -35,7 +37,18 @@ export function SportsShell({
 
   return (
     <FlashProvider>
-      <div className="sports-scope" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
+      <div
+        className="sports-scope"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          overflow: "hidden",
+          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+          marginRight: aiChatOpen ? AI_CHAT_PANEL_WIDTH : 0,
+          transition: "margin-right 300ms ease",
+        }}
+      >
         <div style={{ height: 76, flex: "none", background: "#fff", borderBottom: "1px solid var(--sport-border-soft)", display: "flex", alignItems: "center", gap: 14, padding: "0 22px", minWidth: 0, overflowX: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: "0 1 230px" }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: "var(--sport-navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, letterSpacing: 0.5, flexShrink: 0 }}>PPS</div>
@@ -50,6 +63,7 @@ export function SportsShell({
             <span style={{ fontFamily: "var(--sport-mono)", fontSize: 11, color: "var(--sport-tertiary-2)", background: "var(--sport-panel)", borderRadius: 6, padding: "3px 7px" }}>Ctrl K</span>
           </div>
           <div style={{ flex: 1 }} />
+          <AskAiWidget onOpenChange={setAiChatOpen} />
           <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--sport-menu-border)", borderRadius: 10, padding: "10px 16px", flexShrink: 0 }}>
             <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--sport-heading)", whiteSpace: "nowrap" }}>Sports admin · School</span>
           </div>

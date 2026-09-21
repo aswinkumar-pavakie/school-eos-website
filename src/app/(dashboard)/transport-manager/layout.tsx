@@ -142,9 +142,8 @@ export default async function TransportManagerLayout({ children }: { children: R
 
     { href: "/transport-manager/reports", label: "Reports", icon: "reports", group: "REPORTS" },
 
-    // No mockup equivalent for this new feature either -- same shared SVG
-    // icon as every other no-mockup item above, no guessed materialIcon name.
-    { href: "/transport-manager/ai-chat", label: "Ask the Assistant", icon: "assistant", group: "REPORTS" },
+    // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
+    // -- no longer a sidebar entry, matching the reference design.
   ];
 
   return (
