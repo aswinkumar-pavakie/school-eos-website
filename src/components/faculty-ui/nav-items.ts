@@ -45,6 +45,7 @@ export function buildFacultyNavGroups(params: {
       label: "OVERVIEW",
       items: [
         { href: "/faculty", label: "Dashboard", icon: "dashboard" },
+        { href: "/faculty/message", label: "Message", icon: "sub-message" },
         { href: "/faculty/reports", label: "Reports", icon: "reports" },
         { href: "/faculty/announcements", label: "Notice", icon: "notice" },
         { href: "/faculty/calendar", label: "Academic Calendar", icon: "calendar" },
@@ -72,7 +73,6 @@ export function buildFacultyNavGroups(params: {
         { href: "/faculty/subject-exams", label: "Exams", icon: "sub-exams" },
         { href: "/faculty/marks-entry", label: "Entry marks", icon: "sub-marks" },
         { href: "/faculty/correction-requests", label: "Correction requests", icon: "sub-marks" },
-        { href: "/faculty/message", label: "Message", icon: "sub-message" },
       ],
     },
     {

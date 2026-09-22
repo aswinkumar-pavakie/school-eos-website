@@ -11,8 +11,16 @@
 
 import type { DiscoveryItem } from "../messaging-actions";
 
+interface CachedPerson {
+  name: string;
+  // Same Discovery-only provenance as name above -- never fetched separately,
+  // never fabricated. Absent for a conversation opened without ever having
+  // gone through Discovery on this browser.
+  designation: string | null;
+}
+
 const STORAGE_KEY = "messaging-v2:person-name-cache";
-const memoryCache = new Map<string, string>();
+const memoryCache = new Map<string, CachedPerson>();
 let hydrated = false;
 
 function hydrate(): void {
@@ -21,8 +29,11 @@ function hydrate(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
-    const entries = JSON.parse(raw) as [string, string][];
-    for (const [id, name] of entries) memoryCache.set(id, name);
+    const entries = JSON.parse(raw) as [string, string | CachedPerson][];
+    for (const [id, value] of entries) {
+      // Back-compat with the older cache shape (a plain name string).
+      memoryCache.set(id, typeof value === "string" ? { name: value, designation: null } : value);
+    }
   } catch {
     // A corrupt/missing cache just means names resolve to the fallback until
     // re-learned from Discovery -- never worth failing anything over.
@@ -41,8 +52,10 @@ export function rememberNamesFromDiscovery(items: DiscoveryItem[]): void {
   hydrate();
   let changed = false;
   for (const item of items) {
-    if (memoryCache.get(item.userId) !== item.displayName) {
-      memoryCache.set(item.userId, item.displayName);
+    const designation = item.designation ?? item.role ?? null;
+    const existing = memoryCache.get(item.userId);
+    if (!existing || existing.name !== item.displayName || existing.designation !== designation) {
+      memoryCache.set(item.userId, { name: item.displayName, designation });
       changed = true;
     }
   }
@@ -51,5 +64,10 @@ export function rememberNamesFromDiscovery(items: DiscoveryItem[]): void {
 
 export function resolveDisplayName(personId: string): string {
   hydrate();
-  return memoryCache.get(personId) ?? "School EOS user";
+  return memoryCache.get(personId)?.name ?? "School EOS user";
+}
+
+export function resolveDesignation(personId: string): string | null {
+  hydrate();
+  return memoryCache.get(personId)?.designation ?? null;
 }

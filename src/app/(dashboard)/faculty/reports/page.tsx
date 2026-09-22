@@ -1,207 +1,254 @@
-// Pixel-rebuilt to match Class Teacher Portal.dc.html's "isReports" screen.
-// CORRECTED: there is no dedicated faculty-scoped report endpoint (confirmed
-// -- the existing reports.controller.ts is ADMIN/PRINCIPAL/VICE_PRINCIPAL-
-// only and school-wide, and no faculty-reports lib file exists in the
-// mobile app either), but every number this screen needs is already real
-// data available through OTHER endpoints this build already uses
-// (listClassResultExams/getClassResults for exam results, getAttendanceHistory
-// for attendance) -- so this composes a genuinely real report from those,
-// rather than showing a gap notice for a whole screen worth of data most of
-// which is actually available.
+// Faculty "Reports & Analytics" -- net-new pixel-rebuilt screen (nav already
+// linked this at /faculty/reports with no page behind it). Every figure is a
+// real read against this teacher's own scope: listTeachingOfferings for
+// classes handled, listExamsForOffering + getMarksRoster for exam records/
+// pass rates, getAttendanceHistory (advisor-only, same backend rule as the
+// dashboard's own attendance card) for the weekly trend. Nothing fabricated
+// -- an advisor-less teacher simply sees an honest empty state on the trend
+// chart instead of invented numbers.
 
 import { redirect } from "next/navigation";
-import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { listAdvisorSections, listClassResultExams, getClassResults, getAttendanceHistory } from "@/lib/faculty-api";
-import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
+import {
+  getAttendanceHistory,
+  getMarksRoster,
+  listAdvisorSections,
+  listExamsForOffering,
+  listTeachingOfferings,
+} from "@/lib/faculty-api";
+import { Card } from "@/components/faculty-ui/Card";
 import { StatTile } from "@/components/faculty-ui/StatTile";
+import { ErrorState } from "@/components/ui/EmptyState";
 
-function monthRange(monthsAgo: number): { start: string; end: string; label: string } {
-  const now = new Date();
-  const d = new Date(now.getFullYear(), now.getMonth() - monthsAgo, 1);
-  const start = new Date(d.getFullYear(), d.getMonth(), 1);
-  const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-  return {
-    start: start.toISOString().slice(0, 10),
-    end: end.toISOString().slice(0, 10),
-    label: start.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
-  };
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+function startOfWeek(d: Date): Date {
+  const s = new Date(d);
+  const dow = (s.getDay() + 6) % 7; // 0 = Monday
+  s.setDate(s.getDate() - dow);
+  s.setHours(0, 0, 0, 0);
+  return s;
+}
+function addDays(d: Date, n: number): Date {
+  const s = new Date(d);
+  s.setDate(s.getDate() + n);
+  return s;
 }
 
-export default async function ReportsPage() {
+export default async function FacultyReportsPage({ searchParams }: { searchParams: Promise<{ from?: string; to?: string }> }) {
   try {
-    const sections = await listAdvisorSections();
-    if (sections.length === 0) {
-      return (
-        <div>
-          <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Reports</h1>
-          <div style={{ marginTop: 22 }}>
-            <FacultyEmptyState message="You are not a class advisor -- reports are only available to the section's own class advisor." />
-          </div>
-        </div>
-      );
+    const params = await searchParams;
+    const today = new Date();
+    const to = params.to ? new Date(params.to) : today;
+    const from = params.from ? new Date(params.from) : addDays(startOfWeek(today), -7 * 7);
+    const fromIso = isoDate(from);
+    const toIso = isoDate(to);
+
+    const [advisorSections, teachingOfferings] = await Promise.all([
+      listAdvisorSections().catch(() => []),
+      listTeachingOfferings().catch(() => []),
+    ]);
+    const advisedSection = advisorSections[0] ?? null;
+    const sectionLabel = advisedSection ? `${advisedSection.gradeName}-${advisedSection.sectionName}` : null;
+    const subjectCount = new Set(teachingOfferings.map((o) => o.subjectId)).size;
+
+    // ---- Exam records / pass rates -- one roster fetch per (class, subject,
+    // exam) this teacher actually owns, entirely real. ----
+    const examLists = await Promise.all(
+      teachingOfferings.map((o) => listExamsForOffering(o.subjectOfferingId).catch(() => [])),
+    );
+    const examRows = teachingOfferings.flatMap((o, i) => examLists[i].map((exam) => ({ offering: o, exam })));
+    const rosters = await Promise.all(examRows.map((r) => getMarksRoster(r.exam.examSubjectId).catch(() => null)));
+
+    const examStats = examRows.map((r, i) => {
+      const roster = rosters[i];
+      const rows = roster?.roster ?? [];
+      const entered = rows.filter((x) => x.marksObtained !== null || x.isAbsent).length;
+      const attempted = rows.filter((x) => !x.isAbsent && x.marksObtained !== null);
+      const passMarks = r.exam.passMarks;
+      const passed = passMarks === null ? attempted.length : attempted.filter((x) => (x.marksObtained ?? 0) >= passMarks).length;
+      const passPct = attempted.length > 0 ? Math.round((passed / attempted.length) * 1000) / 10 : null;
+      return {
+        key: r.exam.examSubjectId,
+        label: `${r.offering.gradeName}-${r.offering.sectionName} · ${r.exam.examName}`,
+        classSubject: `${r.offering.gradeName}-${r.offering.sectionName} (${r.offering.subjectName})`,
+        strength: rows.length,
+        entered,
+        passPct,
+      };
+    });
+    const totalEntered = examStats.reduce((s, e) => s + e.entered, 0);
+    const gradedExams = examStats.filter((e) => e.passPct !== null);
+    const totalAttempted = examRows.reduce((sum, r, i) => {
+      const rows = rosters[i]?.roster ?? [];
+      return sum + rows.filter((x) => !x.isAbsent && x.marksObtained !== null).length;
+    }, 0);
+    const totalPassed = examRows.reduce((sum, r, i) => {
+      const rows = rosters[i]?.roster ?? [];
+      const passMarks = r.exam.passMarks;
+      const attempted = rows.filter((x) => !x.isAbsent && x.marksObtained !== null);
+      return sum + (passMarks === null ? attempted.length : attempted.filter((x) => (x.marksObtained ?? 0) >= passMarks).length);
+    }, 0);
+    const overallPassPct = totalAttempted > 0 ? Math.round((totalPassed / totalAttempted) * 1000) / 10 : null;
+
+    // ---- Weekly attendance trend -- advisor-scoped (same backend rule as
+    // the dashboard's own attendance card: getHistory is advisor-only). ----
+    const weeks: { start: Date; end: Date }[] = [];
+    for (let ws = startOfWeek(from); ws <= to; ws = addDays(ws, 7)) {
+      const we = addDays(ws, 6);
+      weeks.push({ start: ws, end: we > to ? to : we });
     }
-    const section = sections[0];
-
-    const exams = await listClassResultExams(section.sectionId);
-    const publishedExams = exams.filter((e) => e.examState === "PUBLISHED");
-    const resultAttempts = await Promise.all(
-      publishedExams.map(async (e) => {
-        try {
-          return { exam: e, r: await getClassResults(section.sectionId, e.examId), failed: false as const };
-        } catch {
-          return { exam: e, r: null, failed: true as const };
-        }
-      }),
-    );
-    // A failed fetch (transient network/server error) is never treated the
-    // same as "not published yet" -- silently dropping it would make a real
-    // exam's results look like they don't exist. Surfaced separately below
-    // instead of being swallowed into the table.
-    const failedExamNames = resultAttempts.filter((x) => x.failed).map((x) => x.exam.examName);
-    const validResults = resultAttempts.filter(
-      (x): x is { exam: typeof x.exam; r: NonNullable<typeof x.r>; failed: false } => !x.failed && x.r !== null && x.r.classAvg !== null,
-    );
-
-    // Subject-wise average per exam, real: derived from each exam's real
-    // per-student per-subject marks (the same data Performance already uses).
-    const subjectNames = [...new Set(validResults.flatMap(({ r }) => r.students.flatMap((s) => s.subjects.map((sub) => sub.subjectName))))];
-    const subjectRows = subjectNames.map((subjectName) => {
-      const perExam = validResults.map(({ exam, r }) => {
-        const marks = r.students
-          .flatMap((s) => s.subjects.filter((sub) => sub.subjectName === subjectName && !sub.isAbsent))
-          .map((sub) => sub.marksObtained)
-          .filter((v): v is number => v !== null);
-        const avg = marks.length > 0 ? Math.round((marks.reduce((a, b) => a + b, 0) / marks.length) * 10) / 10 : null;
-        return { examName: exam.examName, avg };
-      });
-      const allAvgs = perExam.map((p) => p.avg).filter((v): v is number => v !== null);
-      const below40 = validResults.reduce(
-        (count, { r }) => count + r.students.filter((s) => s.subjects.some((sub) => sub.subjectName === subjectName && !sub.isAbsent && sub.marksObtained !== null && sub.marksObtained < 40)).length,
-        0,
-      );
-      return { subjectName, perExam, avg: allAvgs.length > 0 ? Math.round((allAvgs.reduce((a, b) => a + b, 0) / allAvgs.length) * 10) / 10 : null, below40 };
+    const history = advisedSection ? await getAttendanceHistory(advisedSection.sectionId, fromIso, toIso).catch(() => []) : [];
+    const weeklyTrend = weeks.map((w) => {
+      const days = history.filter((d) => d.date >= isoDate(w.start) && d.date <= isoDate(w.end));
+      const total = days.reduce((s, d) => s + d.total, 0);
+      const present = days.reduce((s, d) => s + d.present, 0);
+      return {
+        label: w.start.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }),
+        pct: total > 0 ? Math.round((present / total) * 1000) / 10 : null,
+      };
     });
-
-    const months = [0, 1, 2].map(monthRange);
-    const attendanceAttempts = await Promise.all(
-      months.map(async (m) => {
-        try {
-          return { days: await getAttendanceHistory(section.sectionId, m.start, m.end), failed: false };
-        } catch {
-          return { days: [] as Awaited<ReturnType<typeof getAttendanceHistory>>, failed: true };
-        }
-      }),
-    );
-    const failedAttendanceMonths = months.filter((_, i) => attendanceAttempts[i].failed).map((m) => m.label);
-    const monthlyAttendance = months.map((m, i) => {
-      const { days, failed } = attendanceAttempts[i];
-      const totalPresent = days.reduce((sum, d) => sum + d.present, 0);
-      const totalStudents = days.reduce((sum, d) => sum + d.total, 0);
-      const pct = totalStudents > 0 ? Math.round((totalPresent / totalStudents) * 100) : null;
-      return { label: m.label, pct, daysMarked: days.length, failed };
-    });
-
-    const latest = validResults[validResults.length - 1];
-    const supportList = latest
-      ? [...latest.r.students].filter((s) => (s.percent ?? 100) < 60).sort((a, b) => (a.percent ?? 0) - (b.percent ?? 0)).slice(0, 6)
-      : [];
+    const maxPct = Math.max(1, ...weeklyTrend.map((w) => w.pct ?? 0));
 
     return (
       <div>
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
-            <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Reports</h1>
-            <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
-              Class {section.gradeName}-{section.sectionName} · exams, results and attendance
+            <h1 style={{ margin: 0, font: "700 32px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Reports &amp; Analytics</h1>
+            <p style={{ margin: "8px 0 0", font: "400 14.5px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
+              Across the classes you handle{sectionLabel ? ` · ${sectionLabel}` : ""}
             </p>
           </div>
+          <form className="flex items-center gap-2.5 flex-wrap" style={{ font: "500 12.5px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
+            <label className="flex items-center gap-2">
+              From
+              <input type="date" name="from" defaultValue={fromIso} style={{ border: "1px solid var(--fac-border)", borderRadius: 8, padding: "8px 10px", font: "400 13px/1 var(--fac-font-sans)" }} />
+            </label>
+            <label className="flex items-center gap-2">
+              To
+              <input type="date" name="to" defaultValue={toIso} style={{ border: "1px solid var(--fac-border)", borderRadius: 8, padding: "8px 10px", font: "400 13px/1 var(--fac-font-sans)" }} />
+            </label>
+            <button type="submit" style={{ border: 0, background: "var(--fac-primary)", color: "#fff", cursor: "pointer", font: "600 12.5px/1 var(--fac-font-sans)", borderRadius: 8, padding: "9px 14px" }}>
+              Apply
+            </button>
+          </form>
         </div>
 
-        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-3" style={{ marginTop: 24 }}>
-          <StatTile label="Latest class average" value={latest?.r.classAvg !== null && latest?.r.classAvg !== undefined ? `${latest.r.classAvg}%` : "--"} sub={latest?.exam.examName ?? "No published exam yet"} />
-          <StatTile label="Latest pass rate" value={latest ? `${latest.r.pass.count}/${latest.r.pass.total}` : "--"} sub="students passed" />
-          <StatTile label="Attendance this month" value={monthlyAttendance[0]?.pct !== null ? `${monthlyAttendance[0].pct}%` : "--"} sub={monthlyAttendance[0]?.label ?? ""} />
+        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4" style={{ marginTop: 24 }}>
+          <StatTile label="Classes handled" value={String(teachingOfferings.length)} sub={`${subjectCount} subject${subjectCount === 1 ? "" : "s"}`} />
+          <StatTile label="Exam records entered" value={String(totalEntered)} sub={`across ${gradedExams.length || examRows.length} exam record${examRows.length === 1 ? "" : "s"}`} />
+          <StatTile label="Overall pass percentage" value={overallPassPct !== null ? `${overallPassPct}%` : "—"} sub="from published/entered marks" />
+          <StatTile label="Class advisor" value={advisedSection ? "Yes" : "No"} sub={sectionLabel ?? "Not assigned"} />
         </div>
 
-        {(failedExamNames.length > 0 || failedAttendanceMonths.length > 0) && (
-          <div style={{ marginTop: 14, background: "var(--fac-red-bg)", border: "1px solid var(--fac-red-text)", borderRadius: 10, padding: "12px 16px", font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-red-text)" }}>
-            {failedExamNames.length > 0 && <>Couldn&rsquo;t load results for {failedExamNames.join(", ")}. </>}
-            {failedAttendanceMonths.length > 0 && <>Couldn&rsquo;t load attendance for {failedAttendanceMonths.join(", ")}. </>}
-            These are not included below -- try refreshing this page.
-          </div>
-        )}
-
-        {subjectRows.length === 0 ? (
-          <div style={{ marginTop: 18 }}>
-            <FacultyEmptyState message="No published exam results yet -- subject-wise results appear once the exam cell publishes marks." />
-          </div>
-        ) : (
-          <div style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", marginTop: 18, overflow: "hidden" }}>
-            <div style={{ padding: "18px 20px 6px" }}>
-              <h3 style={{ margin: 0, font: "700 20px/1.2 var(--fac-font-sans)" }}>Exam results · subject wise</h3>
-              <p style={{ margin: "5px 0 0", font: "400 13.5px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>Class average per subject, across published exams</p>
-            </div>
-            <div className="overflow-x-auto">
-              <div style={{ minWidth: 560 }}>
-                <div className="grid" style={{ gridTemplateColumns: `1.6fr repeat(${validResults.length}, minmax(0,1fr)) 1.1fr`, padding: "14px 20px", borderBottom: "1px solid var(--fac-border)", background: "var(--fac-panel)", font: "600 11px/1 var(--fac-font-sans)", letterSpacing: ".07em", color: "var(--fac-body-muted)" }}>
-                  <div>SUBJECT</div>
-                  {validResults.map(({ exam }) => (
-                    <div key={exam.examId} style={{ textAlign: "right" }}>{exam.examName.toUpperCase()}</div>
-                  ))}
-                  <div style={{ textAlign: "right" }}>BELOW 40</div>
-                </div>
-                {subjectRows.map((row) => (
-                  <div key={row.subjectName} className="fac-hover-lift grid items-center" style={{ gridTemplateColumns: `1.6fr repeat(${validResults.length}, minmax(0,1fr)) 1.1fr`, padding: "15px 20px", borderBottom: "1px solid var(--fac-divider)" }}>
-                    <span style={{ font: "600 14.5px/1.2 var(--fac-font-sans)" }}>{row.subjectName}</span>
-                    {row.perExam.map((p, i) => (
-                      <span key={i} className="fac-font-mono" style={{ textAlign: "right", font: "500 14.5px/1 var(--fac-font-mono)" }}>{p.avg ?? "--"}</span>
-                    ))}
-                    <span className="fac-font-mono" style={{ textAlign: "right", font: "500 14.5px/1 var(--fac-font-mono)", color: row.below40 > 0 ? "var(--fac-red-text)" : "var(--fac-body)" }}>{row.below40}</span>
+        <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-2" style={{ marginTop: 18, alignItems: "start" }}>
+          <Card>
+            <h3 style={{ margin: 0, font: "700 17px/1.2 var(--fac-font-sans)" }}>Weekly attendance trend</h3>
+            <p style={{ margin: "4px 0 20px", font: "400 12.5px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
+              {advisedSection ? "Real attendance for the class you advise, by week" : "You are not a class advisor -- no attendance trend to show"}
+            </p>
+            {advisedSection && weeklyTrend.length > 0 ? (
+              <div className="flex items-end gap-3" style={{ height: 150 }}>
+                {weeklyTrend.map((w, i) => (
+                  <div key={i} className="flex flex-col items-center" style={{ flex: 1, minWidth: 0, height: "100%" }}>
+                    <span style={{ font: "600 11px/1 var(--fac-font-mono)", color: "var(--fac-tertiary)", marginBottom: 6 }}>
+                      {w.pct !== null ? `${w.pct}%` : "—"}
+                    </span>
+                    <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "flex-end" }}>
+                      <div
+                        style={{
+                          width: "100%",
+                          borderRadius: "6px 6px 0 0",
+                          background: "var(--fac-primary)",
+                          height: w.pct !== null ? `${Math.max(4, (w.pct / maxPct) * 100)}%` : "2%",
+                          opacity: w.pct !== null ? 1 : 0.25,
+                        }}
+                      />
+                    </div>
+                    <span style={{ font: "400 10.5px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 6 }}>{w.label}</span>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-2" style={{ marginTop: 18 }}>
-          <div style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "18px 20px" }}>
-            <h3 style={{ margin: "0 0 12px", font: "700 20px/1.2 var(--fac-font-sans)" }}>Monthly attendance</h3>
-            {monthlyAttendance.map((m) => (
-              <div key={m.label} className="fac-hover-lift" style={{ padding: "11px 0", borderBottom: "1px solid var(--fac-divider)" }}>
-                <div className="flex justify-between" style={{ font: "500 14px/1.3 var(--fac-font-sans)" }}>
-                  <span>{m.label}</span>
-                  <span className="fac-font-mono" style={{ color: m.failed ? "var(--fac-red-text)" : "var(--fac-primary)" }}>
-                    {m.failed ? "couldn't load" : m.pct !== null ? `${m.pct}%` : "no data"}
-                  </span>
-                </div>
-                <div style={{ height: 6, borderRadius: 4, background: "var(--fac-border)", marginTop: 9, overflow: "hidden" }}>
-                  <div style={{ height: "100%", background: "var(--fac-primary)", width: `${m.pct ?? 0}%` }} />
-                </div>
-                <div style={{ font: "400 12px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 7 }}>{m.daysMarked} day{m.daysMarked === 1 ? "" : "s"} marked</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: "18px 20px" }}>
-            <h3 style={{ margin: "0 0 12px", font: "700 20px/1.2 var(--fac-font-sans)" }}>Students needing support</h3>
-            {supportList.length === 0 ? (
-              <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>No students below 60% in the latest published exam.</p>
             ) : (
-              supportList.map((s) => (
-                <div key={s.studentId} className="fac-hover-lift flex items-center gap-3" style={{ padding: "11px 0", borderBottom: "1px solid var(--fac-divider)" }}>
-                  <span style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fac-tint)", color: "var(--fac-primary)", display: "flex", alignItems: "center", justifyContent: "center", font: "600 12.5px/1 var(--fac-font-sans)" }}>
-                    {s.studentName.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+              <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)", padding: "20px 0" }}>No attendance data for this range.</p>
+            )}
+          </Card>
+
+          <Card>
+            <h3 style={{ margin: "0 0 16px", font: "700 17px/1.2 var(--fac-font-sans)" }}>Pass percentage by exam</h3>
+            {examStats.length === 0 ? (
+              <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>No exam marks entered yet.</p>
+            ) : (
+              examStats.map((e) => (
+                <div key={e.key} style={{ padding: "10px 0" }}>
+                  <div className="flex items-center justify-between gap-3">
+                    <span style={{ font: "600 13px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)" }}>{e.label}</span>
+                    <span style={{ font: "700 13px/1 var(--fac-font-mono)", color: "var(--fac-primary)", flex: "0 0 auto" }}>
+                      {e.passPct !== null ? `${e.passPct}%` : "—"}
+                    </span>
+                  </div>
+                  <span style={{ display: "block", height: 7, borderRadius: 4, background: "var(--fac-border)", marginTop: 8, overflow: "hidden" }}>
+                    <span style={{ display: "block", height: "100%", borderRadius: 4, background: "var(--fac-primary)", width: `${e.passPct ?? 0}%` }} />
                   </span>
-                  <span style={{ flex: 1 }}>
-                    <span style={{ display: "block", font: "600 14px/1.3 var(--fac-font-sans)" }}>{s.studentName}</span>
-                    <span style={{ display: "block", font: "400 12.5px/1.3 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>Roll {s.rollNo ?? "--"} · {latest!.exam.examName}</span>
-                  </span>
-                  <span style={{ font: "500 12px/1 var(--fac-font-sans)", color: "var(--fac-primary)", background: "var(--fac-tint)", borderRadius: 20, padding: "6px 10px" }}>{s.percent}%</span>
                 </div>
               ))
             )}
-          </div>
+          </Card>
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <Card padding="0">
+            <div style={{ padding: "18px 22px 4px" }}>
+              <h3 style={{ margin: 0, font: "700 17px/1.2 var(--fac-font-sans)" }}>Class-wise summary</h3>
+            </div>
+            {examStats.length === 0 ? (
+              <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)", padding: "12px 22px 22px" }}>No exam records to summarize yet.</p>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      {["CLASS & SUBJECT", "STRENGTH", "ENTERED", "PASS %"].map((h) => (
+                        <th
+                          key={h}
+                          style={{
+                            textAlign: h === "CLASS & SUBJECT" ? "left" : "right",
+                            font: "600 11px/1 var(--fac-font-sans)",
+                            letterSpacing: ".06em",
+                            color: "var(--fac-tertiary)",
+                            padding: "12px 22px",
+                            borderTop: "1px solid var(--fac-divider)",
+                            borderBottom: "1px solid var(--fac-divider)",
+                          }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {examStats.map((e) => (
+                      <tr key={e.key}>
+                        <td style={{ font: "600 13.5px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)", padding: "14px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+                          {e.classSubject}
+                        </td>
+                        <td style={{ textAlign: "right", font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-body)", padding: "14px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+                          {e.strength}
+                        </td>
+                        <td style={{ textAlign: "right", font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-body)", padding: "14px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+                          {e.entered}
+                        </td>
+                        <td style={{ textAlign: "right", font: "700 13.5px/1 var(--fac-font-mono)", color: "var(--fac-primary)", padding: "14px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+                          {e.passPct !== null ? `${e.passPct}%` : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
         </div>
       </div>
     );

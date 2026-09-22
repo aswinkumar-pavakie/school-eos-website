@@ -8,8 +8,6 @@ import { NavIcon } from "./icons";
 import { SearchIcon, CloseIcon, ChevronRightIcon } from "./icons";
 import { ToastProvider } from "./toast/ToastProvider";
 import type { FacultyNavGroup } from "./nav-items";
-import { FacultyModal } from "./Modal";
-import { Messenger, type MessengerMessage, type MessengerThread } from "./messenger/Messenger";
 import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/faculty/faculty-theme.css";
 
@@ -43,10 +41,6 @@ export function FacultyShell({
   sectionRoleLabel,
   academicYear,
   navGroups,
-  messengerThreads,
-  messengerClassFilters,
-  onLoadMessages,
-  onSendMessage,
   children,
 }: {
   personName: string;
@@ -55,20 +49,8 @@ export function FacultyShell({
   sectionRoleLabel: string;
   academicYear: string;
   navGroups: FacultyNavGroup[];
-  /** Real conversation data + real Server Actions for the global "Message
-   * parents" modal (topbar button) -- reuses the exact same Messenger
-   * component and /faculty/message actions as the full-page Message screen.
-   * Functions passed here must be Server Actions (async, "use server"), the
-   * one kind of function a Server Component parent (the faculty layout) can
-   * hand to this Client Component -- a plain closure could not cross that
-   * boundary. */
-  messengerThreads: MessengerThread[];
-  messengerClassFilters: string[];
-  onLoadMessages: (conversationId: string) => Promise<MessengerMessage[]>;
-  onSendMessage: (conversationId: string, body: string) => Promise<{ error?: string }>;
   children: ReactNode;
 }) {
-  const [messagesOpen, setMessagesOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -386,7 +368,7 @@ export function FacultyShell({
             </button>
             <button
               type="button"
-              onClick={() => setMessagesOpen(true)}
+              onClick={() => router.push("/faculty/message")}
               style={{ border: 0, cursor: "pointer", background: "var(--fac-primary)", color: "#fff", font: "600 13.5px/1 var(--fac-font-sans)", borderRadius: 8, padding: "10px 16px" }}
             >
               Message parents
@@ -396,12 +378,6 @@ export function FacultyShell({
           <main style={{ flex: 1, padding: "28px 26px 56px", maxWidth: 1480, width: "100%" }}>{children}</main>
         </div>
       </div>
-
-      <FacultyModal open={messagesOpen} onClose={() => setMessagesOpen(false)} title="Message parents" width={1060}>
-        <div style={{ marginTop: 16 }}>
-          <Messenger threads={messengerThreads} classFilters={messengerClassFilters} onLoadMessages={onLoadMessages} onSend={onSendMessage} />
-        </div>
-      </FacultyModal>
     </ToastProvider>
   );
 }

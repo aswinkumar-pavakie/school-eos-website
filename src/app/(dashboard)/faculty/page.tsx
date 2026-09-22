@@ -5,22 +5,28 @@
 // homework, announcements, timetable, permission activities, conversations)
 // -- nothing fabricated. Stat-tile labels are the design's own generic
 // {label,value,strong,sub,pct,note} shape, populated with this teacher's
-// real, currently-available metrics (the design's own sample data used
-// student-roster stats that would require net-new backend aggregation this
-// phase doesn't add).
+// real, currently-available metrics.
+//
+// "Today" / "This term" toggle (?view=today|term) switches the class
+// advisor's attendance figure between today's own roster and a real
+// term-to-date aggregate off /faculty/attendance/history -- the term's
+// real start date comes from /academic-terms' isCurrent row (falling back
+// to the academic year's own start date if no term rows exist yet).
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AuthExpiredError, apiFetch } from "@/lib/api";
 import {
+  getAttendanceHistory,
   getAttendanceRoster,
+  getClassTeacherDashboard,
   listAdvisorSections,
   listAnnouncements,
   listStudentLeaveRequests,
-  listTeachingOfferings,
   listHomework,
 } from "@/lib/faculty-api";
-import { getWeeklyTimetable } from "@/lib/faculty-academics-api";
+import { getFacultyCalendar, getWeeklyTimetable } from "@/lib/faculty-academics-api";
+import { listAcademicTerms } from "@/lib/academic-term-api";
 import { listEvents } from "@/lib/faculty-permissions-api";
 import { isUpcoming } from "@/lib/faculty-time";
 import { listConversations } from "@/lib/faculty-messages-api";
@@ -45,13 +51,43 @@ function todayDow(): number {
 function initialsOf(name: string): string {
   return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
 }
+function formatClock(hms: string): string {
+  const [hStr, mStr] = hms.split(":");
+  let h = parseInt(hStr, 10);
+  const ampm = h >= 12 ? "pm" : "am";
+  h = h % 12 || 12;
+  return `${h}:${mStr} ${ampm}`;
+}
+function tabStyle(active: boolean): React.CSSProperties {
+  return {
+    display: "inline-block",
+    padding: "8px 16px",
+    borderRadius: 7,
+    font: "600 13.5px/1 var(--fac-font-sans)",
+    color: active ? "var(--fac-navy)" : "var(--fac-tertiary)",
+    background: active ? "var(--fac-white)" : "transparent",
+    boxShadow: active ? "0 1px 2px rgba(15,23,42,.08)" : "none",
+  };
+}
 
-export default async function FacultyDashboardPage() {
+function MiniStat({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div>
+      <div style={{ font: "500 12.5px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>{label}</div>
+      <div style={{ font: "700 26px/1.2 var(--fac-font-sans)", color: "var(--fac-ink)", marginTop: 6, overflowWrap: "anywhere" }}>{value}</div>
+      <div style={{ font: "400 12px/1.3 var(--fac-font-sans)", color: "var(--fac-body-muted)", marginTop: 2 }}>{sub}</div>
+    </div>
+  );
+}
+
+export default async function FacultyDashboardPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   try {
-    const [advisorSections, teachingOfferings, leaveRequests, homework, personRes, announcements, timetable, events, conversations] =
+    const params = await searchParams;
+    const view: "today" | "term" = params.view === "term" ? "term" : "today";
+
+    const [advisorSections, leaveRequests, homework, personRes, announcements, timetable, events, conversations, calendar, terms] =
       await Promise.all([
         listAdvisorSections().catch(() => []),
-        listTeachingOfferings().catch(() => []),
         listStudentLeaveRequests().catch(() => []),
         listHomework().catch(() => null),
         apiFetch("/auth/me"),
@@ -61,13 +97,16 @@ export default async function FacultyDashboardPage() {
         // backend the mobile app's own "Events" feature uses successfully.
         listEvents().catch(() => []),
         listConversations().catch(() => []),
+        getFacultyCalendar().catch(() => null),
+        listAcademicTerms().catch(() => []),
       ]);
     const upcomingEvents = events.filter((e) => isUpcoming(e.endsAt));
 
     const person = personRes.ok ? ((await personRes.json()) as { data: { person: { firstName: string; lastName: string | null } } }).data.person : null;
     const personName = person ? [person.firstName, person.lastName].filter(Boolean).join(" ") : "";
     const pendingLeave = leaveRequests.filter((r) => r.state === "PENDING").length;
-    const subjectCount = new Set(teachingOfferings.map((o) => o.subjectId)).size;
+    const resolvedLeave = leaveRequests.length - pendingLeave;
+    const leavePct = leaveRequests.length > 0 ? Math.round((resolvedLeave / leaveRequests.length) * 100) : 100;
 
     const advisedSection = advisorSections[0] ?? null;
     const sectionLabel = advisedSection ? `${advisedSection.gradeName}-${advisedSection.sectionName}` : null;
@@ -77,12 +116,43 @@ export default async function FacultyDashboardPage() {
     const presentCount = roster ? roster.records.filter((r) => ["PRESENT", "LATE", "HALF_DAY"].includes(r.status)).length : 0;
     const absentees = roster ? roster.records.filter((r) => r.status === "ABSENT") : [];
 
+    const currentTerm = terms.find((t) => t.isCurrent) ?? null;
+    const termStart = currentTerm?.startDate ?? calendar?.academicYear?.startDate ?? null;
+    const termHistory =
+      view === "term" && advisedSection && termStart
+        ? await getAttendanceHistory(advisedSection.sectionId, termStart, todayIso()).catch(() => [])
+        : [];
+
+    const classDashboard = advisedSection ? await getClassTeacherDashboard(advisedSection.sectionId).catch(() => null) : null;
+
+    let attendancePct: number | null = null;
+    let attendanceNote: string | undefined;
+    if (view === "today") {
+      attendancePct = rosterTotal > 0 ? Math.round((presentCount / rosterTotal) * 1000) / 10 : null;
+      attendanceNote = advisedSection ? (absentees.length > 0 ? `${absentees.length} student${absentees.length === 1 ? "" : "s"} absent today` : "Full attendance today") : undefined;
+    } else {
+      const totalStudentDays = termHistory.reduce((s, d) => s + d.total, 0);
+      const presentStudentDays = termHistory.reduce((s, d) => s + d.present, 0);
+      attendancePct = totalStudentDays > 0 ? Math.round((presentStudentDays / totalStudentDays) * 1000) / 10 : null;
+      attendanceNote = advisedSection ? `${termHistory.length} day${termHistory.length === 1 ? "" : "s"} recorded this term` : undefined;
+    }
+
     const todayPeriods = timetable
       ? timetable.days
           .find((d) => d.dayOfWeek === todayDow())
           ?.slots.slice()
           .sort((a, b) => a.periodNo - b.periodNo) ?? []
       : [];
+    const nowHM = new Date().toTimeString().slice(0, 8);
+    const takenCount = todayPeriods.filter((p) => p.endTime <= nowHM).length;
+    const remainingCount = todayPeriods.length - takenCount;
+    const nextPeriod = todayPeriods.find((p) => p.endTime > nowHM) ?? null;
+    const classesTodayPct = todayPeriods.length > 0 ? Math.round((takenCount / todayPeriods.length) * 100) : 0;
+    const lastPeriodEnd = todayPeriods.length > 0 ? todayPeriods[todayPeriods.length - 1].endTime : null;
+
+    const homeworkTotalSeats = homework?.items.reduce((s, i) => s + i.total, 0) ?? 0;
+    const homeworkGradedSeats = homework?.items.reduce((s, i) => s + i.gradedCount, 0) ?? 0;
+    const homeworkPct = homeworkTotalSeats > 0 ? Math.round((homeworkGradedSeats / homeworkTotalSeats) * 100) : 0;
 
     const attentionItems: { title: string; sub: string }[] = [];
     if (roster && absentees.length > 0) {
@@ -106,55 +176,81 @@ export default async function FacultyDashboardPage() {
 
     return (
       <div>
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <h1 style={{ font: "700 38px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em", color: "var(--fac-ink)" }}>
-              {greeting()}{personName ? `, ${personName}` : ""}
-            </h1>
-            <p style={{ font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)", margin: "9px 0 0" }}>
-              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-              {sectionLabel ? ` · Class ${sectionLabel}` : ""}
-              {rosterTotal > 0 ? ` · ${rosterTotal} students on roll` : ""}
-            </p>
-          </div>
-          <div className="flex gap-2.5">
+        <div>
+          <h1 style={{ font: "700 38px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em", color: "var(--fac-ink)" }}>
+            {greeting()}{personName ? `, ${personName}` : ""}
+          </h1>
+          <p style={{ font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)", margin: "9px 0 0" }}>
+            {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            {` · ${todayPeriods.length} class${todayPeriods.length === 1 ? "" : "es"} today`}
+            {lastPeriodEnd ? ` · attendance window closes at ${formatClock(lastPeriodEnd)}` : ""}
+          </p>
+          <div className="flex flex-wrap items-center gap-2.5" style={{ marginTop: 18 }}>
+            <div style={{ display: "flex", background: "var(--fac-tint)", borderRadius: 9, padding: 3, gap: 2 }}>
+              <Link href="/faculty" style={tabStyle(view === "today")}>Today</Link>
+              <Link href="/faculty?view=term" style={tabStyle(view === "term")}>This term</Link>
+            </div>
             <Link
               href="/faculty/attendance"
               className="fac-hover-lift"
-              style={{ border: "1px solid var(--fac-border)", background: "var(--fac-white)", font: "600 14px/1 var(--fac-font-sans)", color: "var(--fac-navy)", borderRadius: 9, padding: "12px 18px", display: "inline-block" }}
-            >
-              Mark attendance
-            </Link>
-            <Link
-              href="/faculty/message"
               style={{ border: 0, background: "var(--fac-primary)", color: "#fff", font: "600 14px/1 var(--fac-font-sans)", borderRadius: 9, padding: "12px 18px", display: "inline-block" }}
             >
-              Message parents
+              Mark attendance
             </Link>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4" style={{ marginTop: 26 }}>
-          <Link href="/faculty/class-teacher">
-            <StatTile label="Classes I advise" value={String(advisorSections.length)} sub={advisorSections.length > 0 ? advisorSections.map((s) => `${s.gradeName}-${s.sectionName}`).join(", ") : "Not a class advisor"} />
-          </Link>
-          <Link href="/faculty/subject-records">
-            <StatTile label="Subjects I teach" value={String(subjectCount)} sub={`across ${teachingOfferings.length} class${teachingOfferings.length === 1 ? "" : "es"}`} />
+          <StatTile
+            label="Classes today"
+            value={String(todayPeriods.length)}
+            sub={todayPeriods.length > 0 ? `${takenCount} taken · ${remainingCount} remaining` : "No classes scheduled today"}
+            pct={`${classesTodayPct}%`}
+            note={
+              todayPeriods.length === 0
+                ? undefined
+                : remainingCount === 0
+                  ? "No more classes today"
+                  : nextPeriod
+                    ? `Next: ${nextPeriod.subjectName} at ${formatClock(nextPeriod.startTime)}`
+                    : undefined
+            }
+          />
+          <Link href="/faculty/attendance">
+            <StatTile
+              label="My class attendance"
+              value={attendancePct !== null ? `${attendancePct}%` : "—"}
+              sub={advisedSection ? `${sectionLabel} · ${classDashboard?.stats.strength ?? rosterTotal} students · ${view === "today" ? "today" : "this term"}` : "Not a class advisor"}
+              pct={`${attendancePct ?? 0}%`}
+              note={attendanceNote}
+            />
           </Link>
           <Link href="/faculty/student-leave">
-            <StatTile label="Leave requests pending" value={String(pendingLeave)} sub={pendingLeave > 0 ? "waiting for your decision" : "all caught up"} />
+            <StatTile
+              label="Leave requests pending"
+              value={String(pendingLeave)}
+              sub={pendingLeave > 0 ? "waiting for your decision" : "all caught up"}
+              pct={`${leavePct}%`}
+              note={leaveRequests.length > 0 ? `${resolvedLeave} of ${leaveRequests.length} resolved` : undefined}
+            />
           </Link>
           <Link href="/faculty/homework">
-            <StatTile label="Homework open" value={String(homework?.stats.open ?? 0)} sub={`${homework?.stats.dueToday ?? 0} due today · ${homework?.stats.ungraded ?? 0} to review`} />
+            <StatTile
+              label="Homework open"
+              value={String(homework?.stats.open ?? 0)}
+              sub={`${homework?.stats.dueToday ?? 0} due today · ${homework?.stats.ungraded ?? 0} to review`}
+              pct={`${homeworkPct}%`}
+              note={homeworkTotalSeats > 0 ? `${homeworkGradedSeats} of ${homeworkTotalSeats} submissions graded` : undefined}
+            />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[1.15fr_1fr_1fr]" style={{ marginTop: 18, alignItems: "start" }}>
           <Card>
             <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
-              <h3 style={{ margin: 0, font: "700 19px/1.2 var(--fac-font-sans)" }}>Today&rsquo;s timetable</h3>
+              <h3 style={{ margin: 0, font: "700 19px/1.2 var(--fac-font-sans)" }}>Up next</h3>
               <Link href="/faculty/timetable" style={{ border: 0, background: "none", font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-primary)" }}>
-                Full week
+                Full timetable
               </Link>
             </div>
             {todayPeriods.length === 0 ? (
@@ -205,15 +301,15 @@ export default async function FacultyDashboardPage() {
           <Card>
             <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
               <h3 style={{ margin: 0, font: "700 19px/1.2 var(--fac-font-sans)" }}>Notices</h3>
-              <Link href="/faculty/announcements" style={{ border: 0, background: "var(--fac-primary)", color: "#fff", font: "600 12.5px/1 var(--fac-font-sans)", borderRadius: 7, padding: "8px 12px" }}>
-                Post
+              <Link href="/faculty/announcements" style={{ border: 0, background: "none", font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-primary)" }}>
+                View all
               </Link>
             </div>
             {announcements.length === 0 ? (
               <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)", padding: "14px 0" }}>No notices yet.</p>
             ) : (
               announcements.slice(0, 4).map((n) => (
-                <div key={n.id} className="fac-hover-lift" style={{ padding: "11px 0", borderBottom: "1px solid var(--fac-divider)" }}>
+                <Link key={n.id} href="/faculty/announcements" className="fac-hover-lift block" style={{ padding: "11px 0", borderBottom: "1px solid var(--fac-divider)" }}>
                   <div className="flex items-center gap-2.5">
                     <span style={{ font: "600 10.5px/1 var(--fac-font-sans)", letterSpacing: ".08em", color: "var(--fac-primary)", background: "var(--fac-tint)", borderRadius: 5, padding: "4px 7px" }}>
                       {n.category ?? "NOTICE"}
@@ -223,11 +319,39 @@ export default async function FacultyDashboardPage() {
                     </span>
                   </div>
                   <div style={{ font: "600 14px/1.35 var(--fac-font-sans)", marginTop: 7, color: "var(--fac-ink)" }}>{n.title}</div>
-                </div>
+                </Link>
               ))
             )}
           </Card>
         </div>
+
+        {advisedSection && classDashboard && (
+          <div style={{ marginTop: 18 }}>
+            <Card>
+              <div className="flex items-center justify-between flex-wrap gap-2.5" style={{ marginBottom: 16 }}>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 style={{ margin: 0, font: "700 19px/1.2 var(--fac-font-sans)" }}>My class · {sectionLabel}</h3>
+                  <span style={{ font: "500 12px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", background: "var(--fac-tint)", borderRadius: 20, padding: "5px 10px" }}>
+                    Class advisor view
+                  </span>
+                </div>
+                <Link href="/faculty/class-teacher" style={{ border: 0, background: "none", font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-primary)" }}>
+                  Class board
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-[14px] sm:grid-cols-4">
+                <MiniStat label="Students" value={String(classDashboard.stats.strength)} sub={sectionLabel ?? ""} />
+                <MiniStat
+                  label="Mean attendance"
+                  value={attendancePct !== null ? `${attendancePct}%` : "—"}
+                  sub={view === "today" ? "today" : "this term"}
+                />
+                <MiniStat label="Pending requests" value={String(pendingLeave)} sub="leave" />
+                <MiniStat label="On leave today" value={String(classDashboard.stats.onLeaveToday)} sub={sectionLabel ?? ""} />
+              </div>
+            </Card>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-2" style={{ marginTop: 18 }}>
           <Card>

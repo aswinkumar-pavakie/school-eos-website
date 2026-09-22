@@ -3,16 +3,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FacultyShell } from "@/components/faculty-ui/FacultyShell";
 import { buildFacultyNavGroups } from "@/components/faculty-ui/nav-items";
-import type { MessengerThread } from "@/components/faculty-ui/messenger/Messenger";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getCoordinatorMe } from "@/lib/faculty-coordinator-api";
-import { listAdvisorSections, listStudentLeaveRequests, listTeachingOfferings } from "@/lib/faculty-api";
+import { listAdvisorSections, listStudentLeaveRequests } from "@/lib/faculty-api";
 import { listMyTeams } from "@/lib/sports-faculty-api";
-import { listConversations } from "@/lib/faculty-messages-api";
 import { listEvents } from "@/lib/faculty-permissions-api";
 import { isUpcoming } from "@/lib/faculty-time";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
-import { loadMessagesAction, sendMessageAction } from "./message/actions";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -44,44 +41,18 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
 
   // Real, live checks -- never cached, never assumed from a role on the login
   // token. Same posture the previous flat-nav layout already established.
-  const [coordinatorMe, myTeams, sections, pendingLeave, conversations, offerings, events] = await Promise.all([
+  const [coordinatorMe, myTeams, sections, pendingLeave, events] = await Promise.all([
     getCoordinatorMe().catch(() => ({ isCoordinator: false })),
     listMyTeams().catch(() => []),
     listAdvisorSections().catch(() => []),
     listStudentLeaveRequests()
       .then((rows) => rows.filter((r) => r.state === "PENDING").length)
       .catch(() => 0),
-    // Feeds the global "Message parents" modal (topbar, every screen) --
-    // same real legacy /messages data the full Message screen itself uses.
-    listConversations().catch(() => []),
-    listTeachingOfferings().catch(() => []),
     // Real: /faculty/events -- badge = upcoming (not-yet-past) consent
     // requests needing attention, same convention as the leave badge.
     listEvents().catch(() => []),
   ]);
   const pendingPermissions = events.filter((e) => isUpcoming(e.endsAt)).length;
-
-  const messengerThreads: MessengerThread[] = conversations.map((c) => ({
-    id: c.id,
-    name: c.student?.name ?? c.directParticipant?.name ?? "Conversation",
-    sub: c.student ? `Parent of ${c.student.name}${c.grade ? ` · ${c.grade.name}-${c.section?.name}` : ""}` : "",
-    classLabel: c.grade && c.section ? `${c.grade.name}-${c.section.name}` : null,
-    lastMessageAt: c.lastMessageAt,
-    lastMessagePreview: c.lastMessage?.body ?? "No messages yet",
-    unreadCount: c.unreadCount,
-  }));
-  const messengerClassFilters = [...new Set(offerings.map((o) => `${o.gradeName}-${o.sectionName}`))];
-
-  async function onLoadMessages(conversationId: string) {
-    "use server";
-    const messages = await loadMessagesAction(conversationId);
-    return messages.map((m) => ({ id: m.id, text: m.body, createdAt: m.createdAt, fromMe: m.senderId === actor.personId }));
-  }
-  async function onSendMessage(conversationId: string, body: string) {
-    "use server";
-    const result = await sendMessageAction(conversationId, body);
-    return { error: result.error };
-  }
 
   // "8-B", "9-A" etc -- the design's own "MY CLASS · 8-B" / "Class teacher ·
   // 8-B" convention. A faculty member with multiple advised sections (rare)
@@ -119,10 +90,6 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
         sectionRoleLabel={sectionRoleLabel}
         academicYear={academicYear}
         navGroups={navGroups}
-        messengerThreads={messengerThreads}
-        messengerClassFilters={messengerClassFilters}
-        onLoadMessages={onLoadMessages}
-        onSendMessage={onSendMessage}
       >
         {children}
       </FacultyShell>

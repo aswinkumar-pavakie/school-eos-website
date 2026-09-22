@@ -1,9 +1,14 @@
 "use client";
 
+// Real, working E2EE thread pane -- same logic as the site's earlier
+// full-page ConversationClient (join/poll/decrypt/send/accept-decline),
+// just restyled to sit in the right-hand pane of the split "Messages" view
+// instead of owning its own page/BackButton. Nothing about the crypto,
+// polling, or request-decision flow changed.
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BackButton } from "@/components/faculty-ui/BackButton";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
-import { resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
 import { ensureConversationJoined } from "@/lib/e2ee/welcome";
 import { decryptMessageCached, encryptMessage } from "@/lib/e2ee/cipher";
 import { getSentPlaintext, saveSentPlaintext } from "@/lib/e2ee/storage";
@@ -28,19 +33,23 @@ interface DecryptedMessage {
 }
 
 // No live WebSocket for this V1 website build -- a deliberate, disclosed
-// scope reduction (see this feature's own final report): the mobile app's
-// realtime socket authenticates with the raw access token directly from the
-// client, which this site's httpOnly-cookie auth model doesn't expose to
-// client JS by design. Polling while a conversation is open is the safe
-// interim approximation; a real Socket.IO integration through a short-lived,
-// purpose-minted token is real, separate follow-up work.
+// scope reduction: the mobile app's realtime socket authenticates with the
+// raw access token directly from the client, which this site's httpOnly-
+// cookie auth model doesn't expose to client JS by design. Polling while a
+// conversation is open is the safe interim approximation.
 const POLL_INTERVAL_MS = 8000;
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 }
+function formatDateDivider(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+}
+function initialsOf(name: string): string {
+  return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
+}
 
-export function ConversationClient({ conversationId, personId }: { conversationId: string; personId: string }) {
+export function ConversationPane({ conversationId, personId, onBack }: { conversationId: string; personId: string; onBack?: () => void }) {
   useE2eeBootstrap(personId);
 
   const [conversation, setConversation] = useState<(ConversationSummary & { ownLastReadSequence: number }) | null>(null);
@@ -95,6 +104,9 @@ export function ConversationClient({ conversationId, personId }: { conversationI
   }, [conversationId]);
 
   useEffect(() => {
+    // Parent remounts this component (React `key={conversationId}`) on
+    // conversation switch, so all state above already starts fresh here --
+    // no reset needed.
     (async () => {
       try {
         await loadConversationAndJoin();
@@ -157,33 +169,46 @@ export function ConversationClient({ conversationId, personId }: { conversationI
 
   if (error) {
     return (
-      <div>
-        <BackButton href="/faculty/message" label="Back to messages" />
-        <p style={{ marginTop: 30, textAlign: "center", font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-red-text)" }}>{error}</p>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-red-text)" }}>{error}</p>
       </div>
     );
   }
   if (!conversation) {
     return (
-      <div>
-        <BackButton href="/faculty/message" label="Back to messages" />
-        <p style={{ marginTop: 30, textAlign: "center", font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Loading…</p>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Loading…</p>
       </div>
     );
   }
 
   const otherPersonId = conversation.personAId === personId ? conversation.personBId : conversation.personAId;
   const otherName = resolveDisplayName(otherPersonId);
+  const otherDesignation = resolveDesignation(otherPersonId);
   const isRecipient = pendingRequest?.recipientPersonId === personId;
   const canSend = !pendingRequest;
 
+  let lastDateDivider = "";
+
   return (
-    <div>
-      <BackButton href="/faculty/message" label="Back to messages" />
-      <h1 style={{ margin: "18px 0 0", font: "700 30px/1.2 var(--fac-font-sans)", letterSpacing: "-.02em", color: "var(--fac-navy)" }}>{otherName}</h1>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div className="flex items-center gap-3" style={{ padding: "16px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+        {onBack && (
+          <button type="button" onClick={onBack} aria-label="Back to messages" style={{ border: 0, background: "none", cursor: "pointer", font: "600 18px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
+            ←
+          </button>
+        )}
+        <span style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--fac-ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "600 13px/1 var(--fac-font-sans)", flex: "0 0 38px" }}>
+          {initialsOf(otherName)}
+        </span>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ font: "700 15px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)" }}>{otherName}</div>
+          {otherDesignation && <div style={{ font: "400 12.5px/1.3 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 1 }}>{otherDesignation}</div>}
+        </div>
+      </div>
 
       {pendingRequest && (
-        <div style={{ marginTop: 14, background: "#fff6e5", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
+        <div style={{ margin: "14px 22px 0", background: "#fff6e5", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
           {isRecipient ? (
             <>
               <p style={{ font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-ink)" }}>
@@ -208,7 +233,7 @@ export function ConversationClient({ conversationId, personId }: { conversationI
         </div>
       )}
 
-      <div ref={listRef} style={{ marginTop: 16, height: 440, overflow: "auto", background: "var(--fac-panel)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: 18 }}>
+      <div ref={listRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 22px", background: "var(--fac-panel)" }}>
         {messages === null ? (
           <p style={{ textAlign: "center", font: "400 13px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Loading…</p>
         ) : messages.length === 0 ? (
@@ -216,21 +241,33 @@ export function ConversationClient({ conversationId, personId }: { conversationI
         ) : (
           messages.map((m) => {
             const isOwn = m.senderPersonId === personId;
+            const divider = formatDateDivider(m.createdAt);
+            const showDivider = divider !== lastDateDivider;
+            lastDateDivider = divider;
             return (
-              <div key={m.id} style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start", marginBottom: 12 }}>
-                <div>
-                  <div
-                    style={{
-                      maxWidth: 420,
-                      borderRadius: 16,
-                      padding: "10px 14px",
-                      background: isOwn ? "var(--fac-primary)" : "var(--fac-divider)",
-                      color: isOwn ? "#fff" : "var(--fac-ink)",
-                    }}
-                  >
-                    <div style={{ font: "400 14px/1.5 var(--fac-font-sans)" }}>{m.plaintext}</div>
+              <div key={m.id}>
+                {showDivider && (
+                  <div style={{ textAlign: "center", margin: "4px 0 16px" }}>
+                    <span style={{ font: "600 11px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: 20, padding: "6px 13px" }}>
+                      {divider}
+                    </span>
                   </div>
-                  <div style={{ font: "400 11px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
+                )}
+                <div style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start", marginBottom: 14 }}>
+                  <div style={{ maxWidth: "62%" }}>
+                    <div
+                      style={{
+                        borderRadius: 14,
+                        padding: "10px 14px",
+                        background: isOwn ? "var(--fac-primary)" : "var(--fac-white)",
+                        border: isOwn ? "none" : "1px solid var(--fac-border)",
+                        color: isOwn ? "#fff" : "var(--fac-ink)",
+                      }}
+                    >
+                      <div style={{ font: "400 14px/1.5 var(--fac-font-sans)" }}>{m.plaintext}</div>
+                    </div>
+                    <div style={{ font: "400 11px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
+                  </div>
                 </div>
               </div>
             );
@@ -239,25 +276,25 @@ export function ConversationClient({ conversationId, personId }: { conversationI
       </div>
 
       {canSend && (
-        <div className="flex items-end gap-2.5" style={{ marginTop: 12 }}>
-          <textarea
+        <div className="flex items-center gap-2.5" style={{ padding: "16px 22px", borderTop: "1px solid var(--fac-divider)" }}>
+          <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === "Enter") {
                 e.preventDefault();
                 handleSend();
               }
             }}
-            placeholder="Message…"
-            rows={1}
-            style={{ flex: 1, border: "1px solid var(--fac-border)", borderRadius: 22, padding: "12px 18px", font: "400 14.5px/1.4 var(--fac-font-sans)", resize: "none" }}
+            placeholder="Type a message…"
+            style={{ flex: 1, border: "1px solid var(--fac-border)", borderRadius: 22, padding: "12px 18px", font: "400 14px/1.4 var(--fac-font-sans)" }}
           />
           <button
             type="button"
             onClick={handleSend}
             disabled={sending || !draft.trim()}
-            style={{ width: 46, height: 46, flex: "0 0 46px", border: 0, borderRadius: "50%", background: "var(--fac-primary)", color: "#fff", cursor: "pointer", opacity: sending ? 0.7 : 1 }}
+            aria-label="Send message"
+            style={{ width: 42, height: 42, flex: "0 0 42px", border: 0, borderRadius: "50%", background: "var(--fac-primary)", color: "#fff", cursor: "pointer", opacity: sending || !draft.trim() ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}
           >
             ➤
           </button>

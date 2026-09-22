@@ -337,6 +337,7 @@ export interface Announcement {
   publishAt: string | null;
   expiresAt: string | null;
   createdBy: string;
+  createdByName: string | null;
   approvedBy: string | null;
   state: string;
   createdAt: string;
