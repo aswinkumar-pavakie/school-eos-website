@@ -1,8 +1,10 @@
 // Faculty "Online class" -- targets online-classes.controller.ts, real and
-// @Roles('FACULTY')-permitted, confirmed live Google Calendar/Meet
-// integration. No custom video-call UI is built here -- Start/Resume opens
-// the real meetingUrl (a genuine Google Meet link) in a new tab, which is
-// the CORRECT behavior for this integration (not a gap to work around).
+// @Roles('FACULTY')-permitted. Start/Resume/End now go through the in-app
+// LiveKit call (call-token/end-call/participants-mute) instead of an
+// external Google Meet hand-off -- see online-class-call/[id] for the
+// actual video UI. The old Google Calendar/Meet integration is still live
+// in the backend for any historical row that has a meetingUrl, but nothing
+// here calls Google for a class scheduled from this point on.
 
 import { randomUUID } from "crypto";
 import { apiFetch } from "./api";
@@ -78,9 +80,29 @@ export async function scheduleOnlineClass(input: {
   const idempotencyKey = randomUUID();
   return (await post<ApiEnvelope<OnlineClassDetail>>("/online-classes", input, { "Idempotency-Key": idempotencyKey })).data;
 }
-export async function startOnlineClass(id: string): Promise<OnlineClassDetail> {
-  return (await patch<ApiEnvelope<OnlineClassDetail>>(`/online-classes/${id}/start`)).data;
-}
 export async function cancelOnlineClass(id: string, reason: string): Promise<OnlineClassDetail> {
   return (await patch<ApiEnvelope<OnlineClassDetail>>(`/online-classes/${id}/cancel`, { reason })).data;
+}
+
+export interface OnlineClassCallCredentials {
+  url: string;
+  token: string;
+  roomName: string;
+}
+
+/** "Start"/"Resume" -- mints a moderator LiveKit token, transitioning
+ * SCHEDULED -> LIVE on first call. */
+export async function requestFacultyOnlineClassToken(id: string): Promise<OnlineClassCallCredentials> {
+  return (await post<ApiEnvelope<OnlineClassCallCredentials>>(`/online-classes/${id}/call-token`)).data;
+}
+
+/** "End" -- ends the call for everyone and transitions LIVE -> COMPLETED. */
+export async function endOnlineClassCall(id: string): Promise<OnlineClassDetail> {
+  return (await post<ApiEnvelope<OnlineClassDetail>>(`/online-classes/${id}/end-call`)).data;
+}
+
+/** Faculty roster moderation from inside the call -- identity is exactly what
+ * LiveKit reports for that participant. */
+export async function muteOnlineClassParticipant(id: string, identity: string, muted: boolean): Promise<void> {
+  await post(`/online-classes/${id}/participants/mute`, { identity, muted });
 }

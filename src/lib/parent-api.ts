@@ -617,6 +617,18 @@ export async function createParentMeetingBooking(input: { slotId: string; studen
   return res.data;
 }
 
+// LiveKit join credentials -- see faculty-staff-api.ts's own
+// requestFacultyCallToken for the matching Faculty-side call.
+export interface MeetingCallCredentials {
+  url: string;
+  token: string;
+  roomName: string;
+}
+export async function requestParentCallToken(bookingId: string): Promise<MeetingCallCredentials> {
+  const res = await post<ApiEnvelope<MeetingCallCredentials>>(`/parent/meeting-bookings/${bookingId}/call-token`);
+  return res.data;
+}
+
 // ============================================================
 // Profile
 // ============================================================
@@ -736,10 +748,10 @@ export async function getReceipt(receiptId: string): Promise<ReceiptDetail> {
 // ============================================================
 // Online class -- real ParentOnlineClassesService (a genuinely separate,
 // read-only + join code path from Faculty's own OnlineClassesService; see
-// online-classes.controller.ts's own header comment). A real Google Meet
-// link (meetingUrl), not a custom video call UI -- Start/Resume opens the
-// real link in a new tab, same integration pattern Faculty's own rebuilt
-// Online class screen already uses.
+// online-classes.controller.ts's own header comment). Join now mints an
+// in-app LiveKit token (requestOnlineClassCallToken) instead of returning an
+// external Google Meet link -- see online-class-call/[id] for the actual
+// video UI, shared with Faculty's own call screen.
 // ============================================================
 
 export type OnlineClassStatus = "DRAFT" | "SCHEDULED" | "LIVE" | "COMPLETED" | "CANCELLED";
@@ -768,7 +780,12 @@ export async function getOnlineClass(id: string): Promise<ParentOnlineClass> {
   const res = await get<ApiEnvelope<ParentOnlineClass>>(`/online-classes/${id}`);
   return res.data;
 }
-export async function joinOnlineClass(id: string): Promise<{ meetingUrl: string; status: OnlineClassStatus }> {
-  const res = await get<ApiEnvelope<{ meetingUrl: string; status: OnlineClassStatus }>>(`/online-classes/${id}/join`);
+export interface OnlineClassCallCredentials {
+  url: string;
+  token: string;
+  roomName: string;
+}
+export async function requestOnlineClassCallToken(id: string): Promise<OnlineClassCallCredentials> {
+  const res = await post<ApiEnvelope<OnlineClassCallCredentials>>(`/online-classes/${id}/call-token`);
   return res.data;
 }

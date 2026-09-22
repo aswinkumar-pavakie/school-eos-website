@@ -1,20 +1,21 @@
 // Online class -- pixel-rebuilt from the design's own isOnlineClass screen
 // (Upcoming/Completed/Cancelled tabs). Real ParentOnlineClassesService data
-// (listOnlineClasses/joinOnlineClass) -- a real Google Meet link, not a
-// custom video call/waiting-room mockup: Join opens the real meetingUrl in
-// a new tab, same integration pattern Faculty's own Online class screen
-// already uses. Scoped to every one of this account's active wards at once
-// (the real backend has no per-child filter on this endpoint -- it's
-// section-derived from all active guardian_links), so grade/section on
-// each row identifies which child it belongs to.
+// (listOnlineClasses). Join now navigates to the in-app LiveKit call screen
+// (online-class-call/[id]) instead of opening an external Google Meet link
+// -- same shared call surface Faculty's Start/Resume uses. A parent can join
+// as soon as the class is SCHEDULED (not just once it's LIVE) -- LiveKit
+// creates the room on whoever gets there first. Scoped to every one of this
+// account's active wards at once (the real backend has no per-child filter
+// on this endpoint -- it's section-derived from all active guardian_links),
+// so grade/section on each row identifies which child it belongs to.
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
 import { AuthExpiredError } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import { listOnlineClasses, type OnlineClassStatus, type OnlineClassView } from "@/lib/parent-api";
-import { JoinButton } from "./JoinButton";
 
 const TABS: { key: OnlineClassView; label: string }[] = [
   { key: "upcoming", label: "Upcoming" },
@@ -35,12 +36,18 @@ function time(value: string): string {
 }
 
 export default async function ParentOnlineClassPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  let activeView: OnlineClassView;
+  let classes: Awaited<ReturnType<typeof listOnlineClasses>>;
   try {
     const { view } = await searchParams;
-    const activeView: OnlineClassView = view === "completed" || view === "cancelled" ? view : "upcoming";
-    const classes = await listOnlineClasses(activeView);
+    activeView = view === "completed" || view === "cancelled" ? view : "upcoming";
+    classes = await listOnlineClasses(activeView);
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load online classes."} />;
+  }
 
-    return (
+  return (
       <div className="parent-scope">
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Online class</div>
@@ -80,7 +87,21 @@ export default async function ParentOnlineClassPage({ searchParams }: { searchPa
                 )}
 
                 {(c.status === "SCHEDULED" || c.status === "LIVE") && (
-                  <JoinButton classId={c.id} label={c.status === "LIVE" ? "Join now" : "Join when live"} />
+                  <Link
+                    href={`/online-class-call/${c.id}`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      borderRadius: 9,
+                      padding: "9px 18px",
+                      fontSize: 13.5,
+                      fontWeight: 700,
+                      color: "#fff",
+                      background: "var(--par-primary)",
+                    }}
+                  >
+                    {c.status === "LIVE" ? "Join now" : "Join"}
+                  </Link>
                 )}
                 {c.status === "COMPLETED" && c.recordingUrl && (
                   <a href={c.recordingUrl} target="_blank" rel="noreferrer" style={{ fontSize: 13.5, fontWeight: 700, color: "var(--par-primary)" }}>
@@ -95,9 +116,5 @@ export default async function ParentOnlineClassPage({ searchParams }: { searchPa
           </div>
         )}
       </div>
-    );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load online classes."} />;
-  }
+  );
 }

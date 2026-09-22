@@ -1,22 +1,21 @@
 // Pixel-rebuilt to match Class Teacher Portal.dc.html's "isOnline" screen
 // (list/schedule/recordings sub-views). Real data via faculty-online-
-// classes-api.ts against online-classes.controller.ts (real, confirmed
-// live Google Calendar/Meet integration).
+// classes-api.ts against online-classes.controller.ts.
 //
-// Deliberate deviation from the design's "Live call" full-screen mockup: the
-// design mocks a custom in-app video-call UI, but the real backend
-// integration is Google Meet-based (a real meetingUrl), not custom WebRTC --
-// building a from-scratch video call screen here would be WRONG for this
-// integration, not a gap to fill. "Start"/"Resume" opens the real Meet link
-// in a new tab instead, which is the correct behavior.
+// Start/Resume now navigate to the in-app LiveKit call screen
+// (online-class-call/[id]) instead of opening an external Google Meet link
+// -- see that route's CallRoom.tsx for the actual video UI. The old
+// Google Calendar/Meet integration stays live in the backend for any
+// historical row that still has a meetingUrl, but nothing here uses it for
+// a class scheduled from this point on.
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { listOnlineClasses, myOnlineClassOfferings, scheduleOnlineClass, startOnlineClass, type OnlineClassDetail } from "@/lib/faculty-online-classes-api";
+import { listOnlineClasses, myOnlineClassOfferings, scheduleOnlineClass, type OnlineClassDetail } from "@/lib/faculty-online-classes-api";
 import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
 import { ChevronLeftIcon } from "@/components/faculty-ui/icons";
-import { revalidatePath } from "next/cache";
 
 function ArrowBackButton({ href }: { href: string }) {
   return (
@@ -33,28 +32,42 @@ function isToday(dateStr: string): boolean {
   return dateStr.slice(0, 10) === new Date().toISOString().slice(0, 10);
 }
 
-export default async function OnlineClassPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
-  try {
-    const { view } = await searchParams;
+/** A short, deterministic display code derived from the real class id -- purely
+ * cosmetic (matches the design's "pps-mat-882" style session code), never a
+ * separately-stored/fabricated value. */
+function sessionCode(s: OnlineClassDetail): string {
+  const subjectPart = s.subjectName.replace(/[^a-z]/gi, "").slice(0, 3).toLowerCase() || "cls";
+  const numeric = parseInt(s.id.replace(/-/g, "").slice(0, 6), 16) % 1000;
+  return `pps-${subjectPart}-${String(numeric).padStart(3, "0")}`;
+}
 
-    if (view === "schedule") return <ScheduleView />;
-    if (view === "recordings") return <RecordingsView />;
-    return <ListView />;
+/** Minutes until this class's scheduled start (negative if already started). Purely a
+ * UI affordance to gray out "Start" until close to the scheduled time -- the backend
+ * itself doesn't restrict when a faculty can start their own class. */
+function minutesUntilStart(s: OnlineClassDetail): number {
+  const startsAt = new Date(`${s.scheduledDate}T${s.startTime}`);
+  return (startsAt.getTime() - Date.now()) / 60000;
+}
+
+const JOINABLE_LEAD_MINUTES = 15;
+
+export default async function OnlineClassPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  let view: string | undefined;
+  try {
+    ({ view } = await searchParams);
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return <ErrorState message="Couldn't load online classes. Nothing was changed -- try again." />;
   }
+
+  if (view === "schedule") return <ScheduleView />;
+  if (view === "recordings") return <RecordingsView />;
+  return <ListView />;
 }
 
 async function ListView() {
   const sessions = await listOnlineClasses("upcoming");
   const todays = sessions.filter((s) => isToday(s.scheduledDate));
-
-  async function start(id: string) {
-    "use server";
-    await startOnlineClass(id);
-    revalidatePath("/faculty/online-class");
-  }
 
   return (
     <div>
@@ -93,17 +106,15 @@ async function ListView() {
               </div>
               <div style={{ font: "500 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body)", marginTop: 13 }}>{s.topic}</div>
               <div className="flex items-center justify-between" style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--fac-divider)" }}>
-                <span className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-tertiary)" }}>{s.meetingUrl ? "meet.google.com" : "Link pending"}</span>
-                {s.status === "LIVE" && s.meetingUrl ? (
-                  <a href={s.meetingUrl} target="_blank" rel="noreferrer" style={{ border: 0, cursor: "pointer", borderRadius: 9, padding: "11px 22px", font: "600 14px/1 var(--fac-font-sans)", background: "var(--fac-primary)", color: "#fff" }}>
+                <span className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-tertiary)" }}>{sessionCode(s)}</span>
+                {s.status === "LIVE" ? (
+                  <Link href={`/online-class-call/${s.id}`} style={{ border: 0, cursor: "pointer", borderRadius: 9, padding: "11px 22px", font: "600 14px/1 var(--fac-font-sans)", background: "var(--fac-primary)", color: "#fff" }}>
                     Resume
-                  </a>
-                ) : s.meetingUrl ? (
-                  <form action={start.bind(null, s.id)}>
-                    <button type="submit" style={{ border: 0, cursor: "pointer", borderRadius: 9, padding: "11px 22px", font: "600 14px/1 var(--fac-font-sans)", background: "var(--fac-primary)", color: "#fff" }}>
-                      Start
-                    </button>
-                  </form>
+                  </Link>
+                ) : minutesUntilStart(s) <= JOINABLE_LEAD_MINUTES ? (
+                  <Link href={`/online-class-call/${s.id}`} style={{ border: 0, cursor: "pointer", borderRadius: 9, padding: "11px 22px", font: "600 14px/1 var(--fac-font-sans)", background: "var(--fac-primary)", color: "#fff" }}>
+                    Start
+                  </Link>
                 ) : (
                   <span style={{ font: "600 14px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Not yet</span>
                 )}

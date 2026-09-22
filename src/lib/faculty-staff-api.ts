@@ -267,3 +267,17 @@ export async function deleteMeetingSlot(id: string): Promise<void> {
 export async function decideMeetingBooking(bookingId: string, decision: "APPROVED" | "REJECTED"): Promise<void> {
   await post(`/faculty/parent-meetings/bookings/${bookingId}/decide`, { decision });
 }
+
+// LiveKit join credentials -- both this and parent-api.ts's own
+// requestParentCallToken return this exact shape (see LiveKitService.
+// mintJoinToken on the backend). Duplicated here rather than shared since
+// faculty-staff-api.ts and parent-api.ts don't otherwise import from each
+// other in this codebase.
+export interface MeetingCallCredentials {
+  url: string;
+  token: string;
+  roomName: string;
+}
+export async function requestFacultyCallToken(bookingId: string): Promise<MeetingCallCredentials> {
+  return (await post<ApiEnvelope<MeetingCallCredentials>>(`/faculty/parent-meetings/bookings/${bookingId}/call-token`)).data;
+}
