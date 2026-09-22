@@ -10,6 +10,7 @@ import {
   IndentsIcon,
   InjuriesIcon,
   InventoryIcon,
+  MessagesIcon,
   OdIcon,
   PtIcon,
   SessionsIcon,
@@ -68,6 +69,7 @@ export const SPORTS_NAV: SportsNavGroup[] = [
       { id: "indents", Icon: IndentsIcon, label: "Indents", href: "/sports-admin/indents", countKey: "indents" },
       { id: "injuries", Icon: InjuriesIcon, label: "Injuries & incidents", href: "/sports-admin/injuries" },
       { id: "budget", Icon: BudgetIcon, label: "Budget & approvals", href: "/sports-admin/budget" },
+      { id: "messages", Icon: MessagesIcon, label: "Messages", href: "/sports-admin/messages" },
     ],
   },
   // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a

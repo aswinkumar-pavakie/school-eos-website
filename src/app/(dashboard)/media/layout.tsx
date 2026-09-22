@@ -5,6 +5,7 @@ import { MediaShell } from "@/components/media-ui/MediaShell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getMediaDashboard, getMediaInventoryOverview } from "@/lib/media-api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
@@ -39,15 +40,18 @@ export default async function MediaLayout({ children }: { children: ReactNode })
   const academicYearLabel = now.getMonth() >= 5 ? `${now.getFullYear()}-${String(now.getFullYear() + 1).slice(2)}` : `${now.getFullYear() - 1}-${String(now.getFullYear()).slice(2)}`;
 
   return (
-    <MediaShell
-      personName={personName}
-      personEmail={personEmail}
-      academicYearLabel={academicYearLabel}
-      inventoryCount={inventoryOverview?.total ?? 0}
-      indentCount={dashboard?.pendingIndents ?? 0}
-      onSignOut={logoutAction}
-    >
-      {children}
-    </MediaShell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <MediaShell
+        personName={personName}
+        personEmail={personEmail}
+        academicYearLabel={academicYearLabel}
+        inventoryCount={inventoryOverview?.total ?? 0}
+        indentCount={dashboard?.pendingIndents ?? 0}
+        onSignOut={logoutAction}
+      >
+        {children}
+      </MediaShell>
+    </>
   );
 }

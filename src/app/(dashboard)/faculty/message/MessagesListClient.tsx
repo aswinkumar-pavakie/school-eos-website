@@ -144,10 +144,11 @@ export function MessagesListClient({ personId, initialConversationId }: { person
                         className="fac-hover-lift flex items-center gap-3 w-full text-left"
                         style={{
                           padding: "13px 16px",
+                          borderTop: "none",
+                          borderRight: "none",
                           borderLeft: active ? "3px solid var(--fac-primary)" : "3px solid transparent",
-                          background: active ? "var(--fac-tint)" : "transparent",
-                          border: 0,
                           borderBottom: "1px solid var(--fac-divider)",
+                          background: active ? "var(--fac-tint)" : "transparent",
                           cursor: "pointer",
                         }}
                       >

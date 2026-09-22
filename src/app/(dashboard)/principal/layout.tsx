@@ -8,6 +8,7 @@ import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { listApprovals, listAcademicYears, getSchoolProfile } from "@/lib/finance-api";
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 // logoutAction is genuinely shared across Admin/Finance/Library/Principal -- see
 // finance/layout.tsx's own comment for why it lives under admin/ rather than a
 // since-removed placeholder route.
@@ -76,6 +77,7 @@ const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   // "Audit Log" nav entry removed (explicit user request) -- route/backend
   // still exists and works, just no longer surfaced in the sidebar.
   { href: "/principal/requests", label: "Requests & approvals", icon: "requests", group: "ADMINISTRATION" },
+  { href: "/principal/messages", label: "Messages", icon: "messages", group: "ADMINISTRATION" },
   // Labelled "Notices" per the mockup -- same real Announcements route/page,
   // only the sidebar chrome label changed.
   { href: "/principal/announcements", label: "Notices", icon: "announcements", group: "ADMINISTRATION" },
@@ -175,6 +177,7 @@ export default async function PrincipalLayout({ children }: { children: ReactNod
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
+      <E2eeBootstrapMount personId={actor.personId} />
       <Shell
         personName={personName}
         roleLabel="Principal"

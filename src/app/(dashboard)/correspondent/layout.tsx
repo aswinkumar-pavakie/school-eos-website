@@ -9,6 +9,7 @@ import { listApprovals, listAcademicYears, getSchoolProfile } from "@/lib/financ
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
 import { listNotifications } from "@/lib/notifications-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 // logoutAction is genuinely shared across Admin/Finance/Library/Principal -- see
 // finance/layout.tsx's own comment for why it lives under admin/ rather than a
 // since-removed placeholder route.
@@ -90,6 +91,7 @@ const CORRESPONDENT_NAV_ITEMS: ShellNavItem[] = [
   { href: "/correspondent/compliance", label: "Compliance", icon: "audit", group: "OPERATIONS" },
 
   { href: "/correspondent/requests", label: "Requests & approvals", icon: "requests", group: "ADMINISTRATION" },
+  { href: "/correspondent/messages", label: "Messages", icon: "messages", group: "ADMINISTRATION" },
   { href: "/correspondent/announcements", label: "Notices", icon: "announcements", group: "ADMINISTRATION" },
   { href: "/correspondent/notifications", label: "Notifications", icon: "requests", group: "ADMINISTRATION" },
   // Phase 7 addition -- same real GET /admin/reports-summary data Principal's
@@ -196,6 +198,7 @@ export default async function CorrespondentLayout({ children }: { children: Reac
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
+      <E2eeBootstrapMount personId={actor.personId} />
       <Shell
         personName={personName}
         roleLabel="Correspondent"

@@ -7,6 +7,7 @@ import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 // own comment for why it lives under admin/ rather than a since-removed placeholder route.
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { nowMs } from "@/lib/library-time";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -50,8 +51,11 @@ export default async function LibraryLayout({ children }: { children: ReactNode 
   const academicYear = `${startYear}–${String(startYear + 1).slice(-2)}`;
 
   return (
-    <LibraryShell personName={personName} academicYear={academicYear} onSignOut={logoutAction}>
-      {children}
-    </LibraryShell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <LibraryShell personName={personName} academicYear={academicYear} onSignOut={logoutAction}>
+        {children}
+      </LibraryShell>
+    </>
   );
 }

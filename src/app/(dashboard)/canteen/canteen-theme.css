@@ -45,8 +45,18 @@
   --can-radius-btn-sm: 9px;
   --can-radius-pill: 20px;
   --can-radius-full: 999px;
+  --can-radius-modal: 16px;
 
+  --can-scrim: rgba(15, 23, 42, 0.45);
   --can-shadow-popover-strong: 0 18px 40px rgba(15, 23, 42, 0.14);
+  /* Enterprise-grade resting elevation -- a very soft ambient shadow under
+     every surface card, not just on hover (the Faculty portal's own
+     hover-only elevation reads as "flat admin panel"; a subtle resting
+     shadow plus the existing hover-lift reads as a premium product). */
+  --can-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.05);
+  --can-shadow-card-hover: 0 8px 24px rgba(29, 78, 216, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
+  --can-gradient-accent: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  --can-tint-2: #dbeafe;
 
   --can-font-sans: var(--font-outfit-can), ui-sans-serif, system-ui, sans-serif;
   --can-font-mono: var(--font-ibm-plex-mono-can), ui-monospace, "SFMono-Regular", monospace;
@@ -77,4 +87,93 @@
 .can-hover-lift:active {
   transform: translateY(-1px);
   transition-duration: 0.12s;
+}
+
+/* History's expandable rows -- hide the browser's default disclosure
+   triangle (both engines) so the row's own chevron-free summary layout is
+   the only visual affordance; a plain click-to-expand row. */
+.canteen-scope details > summary::-webkit-details-marker {
+  display: none;
+}
+.canteen-scope details > summary::marker {
+  content: "";
+}
+.canteen-scope details > summary:hover {
+  background: var(--can-tint);
+}
+
+/* Product card image zoom -- a small, premium touch: the photo scales up
+   slightly on card hover, same moment the card itself lifts. */
+.can-product-card {
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+.can-product-card:hover {
+  box-shadow: var(--can-shadow-card-hover);
+  transform: translateY(-4px);
+  border-color: var(--can-border-hover) !important;
+}
+.can-product-card:hover .can-product-image {
+  transform: scale(1.05);
+}
+.can-product-image {
+  transition: transform 0.3s ease;
+}
+
+/* Icon-only action buttons (edit/delete on a product card) -- a filled
+   tint background appears only on hover/focus, keeping the resting card
+   uncluttered. */
+.can-icon-btn {
+  transition: background-color 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+}
+.can-icon-btn:hover {
+  background: var(--can-tint) !important;
+  border-color: var(--can-border-hover) !important;
+  color: var(--can-primary) !important;
+}
+.can-icon-btn.can-icon-btn-danger:hover {
+  background: var(--can-red-bg) !important;
+  border-color: #fecaca !important;
+  color: var(--can-red-text) !important;
+}
+
+/* Module-wide input focus ring -- every text/number/date field in Canteen
+   gets a consistent, visible focus state without needing per-input inline
+   styling (a plain unstyled focus outline reads as unfinished on an
+   otherwise polished surface). */
+.canteen-scope input:not([type="file"]):not([type="checkbox"]),
+.canteen-scope select,
+.canteen-scope textarea {
+  transition: border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.canteen-scope input:not([type="file"]):not([type="checkbox"]):focus,
+.canteen-scope select:focus,
+.canteen-scope textarea:focus {
+  outline: none;
+  border-color: var(--can-primary) !important;
+  box-shadow: 0 0 0 3px var(--can-tint);
+}
+
+/* The Add/Edit product photo box -- clickable as a whole, with a
+   "Change photo" overlay that fades in on hover, like a real product-photo
+   uploader rather than a plain bordered box with a separate button. */
+.can-photo-drop {
+  cursor: pointer;
+  position: relative;
+}
+.can-photo-drop .can-photo-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font: 600 11px/1.3 var(--can-font-sans);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  padding: 6px;
+}
+.can-photo-drop:hover .can-photo-overlay {
+  opacity: 1;
 }

@@ -32,7 +32,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 const NAV_ITEMS = [
   { href: "/canteen", label: "Dashboard", icon: "dashboard" as const },
   { href: "/canteen/ledger", label: "Ledger", icon: "ledger" as const },
-  { href: "/canteen/history", label: "History", icon: "history" as const },
+  { href: "/canteen/inventory", label: "Inventory", icon: "inventory" as const },
+  { href: "/canteen/reports", label: "Reports", icon: "reports" as const },
+  { href: "/canteen/history", label: "Ledger History", icon: "history" as const },
 ];
 
 function isActive(pathname: string, href: string): boolean {

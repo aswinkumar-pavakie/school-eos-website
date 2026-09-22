@@ -28,11 +28,10 @@ import {
 import { getFacultyCalendar, getWeeklyTimetable } from "@/lib/faculty-academics-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
 import { listEvents } from "@/lib/faculty-permissions-api";
+import { RecentMessagesCard } from "./RecentMessagesCard";
 import { isUpcoming } from "@/lib/faculty-time";
-import { listConversations } from "@/lib/faculty-messages-api";
 import { Card } from "@/components/faculty-ui/Card";
 import { StatTile } from "@/components/faculty-ui/StatTile";
-import { Avatar } from "@/components/faculty-ui/Avatar";
 import { ErrorState } from "@/components/ui/EmptyState";
 
 function greeting(): string {
@@ -47,9 +46,6 @@ function todayIso(): string {
 function todayDow(): number {
   const jsDay = new Date().getDay();
   return jsDay === 0 ? 6 : jsDay;
-}
-function initialsOf(name: string): string {
-  return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
 }
 function formatClock(hms: string): string {
   const [hStr, mStr] = hms.split(":");
@@ -85,7 +81,7 @@ export default async function FacultyDashboardPage({ searchParams }: { searchPar
     const params = await searchParams;
     const view: "today" | "term" = params.view === "term" ? "term" : "today";
 
-    const [advisorSections, leaveRequests, homework, personRes, announcements, timetable, events, conversations, calendar, terms] =
+    const [advisorSections, leaveRequests, homework, personRes, announcements, timetable, events, calendar, terms] =
       await Promise.all([
         listAdvisorSections().catch(() => []),
         listStudentLeaveRequests().catch(() => []),
@@ -96,13 +92,12 @@ export default async function FacultyDashboardPage({ searchParams }: { searchPar
         // Real: student-events.controller.ts's /faculty/events, the same
         // backend the mobile app's own "Events" feature uses successfully.
         listEvents().catch(() => []),
-        listConversations().catch(() => []),
         getFacultyCalendar().catch(() => null),
         listAcademicTerms().catch(() => []),
       ]);
     const upcomingEvents = events.filter((e) => isUpcoming(e.endsAt));
 
-    const person = personRes.ok ? ((await personRes.json()) as { data: { person: { firstName: string; lastName: string | null } } }).data.person : null;
+    const person = personRes.ok ? ((await personRes.json()) as { data: { person: { id: string; firstName: string; lastName: string | null } } }).data.person : null;
     const personName = person ? [person.firstName, person.lastName].filter(Boolean).join(" ") : "";
     const pendingLeave = leaveRequests.filter((r) => r.state === "PENDING").length;
     const resolvedLeave = leaveRequests.length - pendingLeave;
@@ -354,37 +349,7 @@ export default async function FacultyDashboardPage({ searchParams }: { searchPar
         )}
 
         <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-2" style={{ marginTop: 18 }}>
-          <Card>
-            <h3 style={{ margin: "0 0 14px", font: "700 19px/1.2 var(--fac-font-sans)" }}>Recent parent messages</h3>
-            {conversations.length === 0 ? (
-              <p style={{ font: "400 13.5px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>No conversations yet.</p>
-            ) : (
-              conversations.slice(0, 3).map((c) => {
-                const name = c.student?.name ?? c.directParticipant?.name ?? "Conversation";
-                return (
-                  <Link
-                    key={c.id}
-                    href="/faculty/message"
-                    className="fac-hover-lift flex gap-3"
-                    style={{ padding: "11px 0", borderBottom: "1px solid var(--fac-divider)" }}
-                  >
-                    <Avatar initials={initialsOf(name)} size="sm" />
-                    <span style={{ flex: 1, minWidth: 0 }}>
-                      <span className="flex items-center justify-between gap-2.5">
-                        <span style={{ font: "600 14px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)" }}>{name}</span>
-                        <span style={{ font: "400 12px/1.3 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
-                          {c.lastMessageAt ? new Date(c.lastMessageAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : ""}
-                        </span>
-                      </span>
-                      <span style={{ display: "block", font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-body)", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {c.lastMessage?.body ?? "No messages yet"}
-                      </span>
-                    </span>
-                  </Link>
-                );
-              })
-            )}
-          </Card>
+          <RecentMessagesCard personId={person?.id ?? ""} />
           <Card>
             <h3 style={{ margin: "0 0 14px", font: "700 19px/1.2 var(--fac-font-sans)" }}>Consent requests</h3>
             {upcomingEvents.length === 0 ? (

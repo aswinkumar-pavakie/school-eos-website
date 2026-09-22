@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { AuthExpiredError, getCurrentActor } from "@/lib/api";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { ConversationClient } from "./ConversationClient";
+import { MessagesListClient } from "../MessagesListClient";
 
 export default async function ParentConversationPage({ params }: { params: Promise<{ conversationId: string }> }) {
   try {
@@ -9,7 +9,7 @@ export default async function ParentConversationPage({ params }: { params: Promi
     const actor = await getCurrentActor();
     return (
       <div className="parent-scope">
-        <ConversationClient conversationId={conversationId} personId={actor.personId} />
+        <MessagesListClient personId={actor.personId} initialConversationId={conversationId} />
       </div>
     );
   } catch (err) {

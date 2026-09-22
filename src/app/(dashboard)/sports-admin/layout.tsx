@@ -5,6 +5,7 @@ import { SportsShell } from "@/components/sports-ui/SportsShell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { listOdRequests, listEquipmentIndents } from "@/lib/sports-admin-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
@@ -38,14 +39,17 @@ export default async function SportsAdminLayout({ children }: { children: ReactN
   const academicYearLabel = now.getMonth() >= 5 ? `${now.getFullYear()}–${String(now.getFullYear() + 1).slice(2)}` : `${now.getFullYear() - 1}–${String(now.getFullYear()).slice(2)}`;
 
   return (
-    <SportsShell
-      personName={personName}
-      academicYearLabel={academicYearLabel}
-      odCount={odCount}
-      indentsCount={indentsCount}
-      onSignOut={logoutAction}
-    >
-      {children}
-    </SportsShell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <SportsShell
+        personName={personName}
+        academicYearLabel={academicYearLabel}
+        odCount={odCount}
+        indentsCount={indentsCount}
+        onSignOut={logoutAction}
+      >
+        {children}
+      </SportsShell>
+    </>
   );
 }

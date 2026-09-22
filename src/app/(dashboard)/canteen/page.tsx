@@ -15,6 +15,7 @@ import { formatMoneyDetail } from "@/lib/format";
 import { Card, StatTile } from "@/components/canteen-ui/primitives";
 import { PeopleIcon, ReceiptIcon, TrendIcon, WalletIcon } from "@/components/canteen-ui/icons";
 import { WeeklySalesChart, HourlySalesChart, GradeBreakdownDonut, hourLabel } from "@/components/canteen-ui/charts";
+import { ProductFormModal } from "./inventory/ProductFormModal";
 
 interface MeResponse {
   data: { person: { firstName: string; lastName: string | null } };
@@ -64,7 +65,21 @@ export default async function CanteenDashboardPage() {
             {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
-        <div className="flex gap-2.5">
+        <div className="flex gap-2.5 flex-wrap">
+          <Link
+            href="/canteen/inventory"
+            className="can-hover-lift"
+            style={{ border: "1px solid var(--can-border)", background: "var(--can-white)", font: "600 14px/1 var(--can-font-sans)", color: "var(--can-navy)", borderRadius: 9, padding: "12px 18px", display: "inline-block" }}
+          >
+            Manage inventory
+          </Link>
+          <Link
+            href="/canteen/reports"
+            className="can-hover-lift"
+            style={{ border: "1px solid var(--can-border)", background: "var(--can-white)", font: "600 14px/1 var(--can-font-sans)", color: "var(--can-navy)", borderRadius: 9, padding: "12px 18px", display: "inline-block" }}
+          >
+            View reports
+          </Link>
           <Link
             href="/canteen/history"
             className="can-hover-lift"
@@ -74,7 +89,7 @@ export default async function CanteenDashboardPage() {
           </Link>
           <Link
             href="/canteen/ledger"
-            style={{ border: 0, background: "var(--can-primary)", color: "#fff", font: "600 14px/1 var(--can-font-sans)", borderRadius: 9, padding: "12px 18px", display: "inline-block" }}
+            style={{ border: 0, background: "var(--can-gradient-accent)", color: "#fff", font: "600 14px/1 var(--can-font-sans)", borderRadius: 9, padding: "12px 18px", display: "inline-block", boxShadow: "0 4px 14px rgba(29,78,216,.28)" }}
           >
             New charge
           </Link>
@@ -86,6 +101,44 @@ export default async function CanteenDashboardPage() {
         <StatTile label="Transactions today" value={String(data.todayTransactionCount)} icon={<ReceiptIcon />} deltaPct={data.transactionsDeltaPct} />
         <StatTile label="Students served" value={String(data.todayUniqueStudents)} icon={<PeopleIcon />} sub="unique today" />
         <StatTile label="Avg. transaction" value={formatMoneyDetail(data.todayAvgTransactionPaise)} icon={<TrendIcon />} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-3" style={{ marginTop: 18 }}>
+        <Link href="/canteen/inventory" className="can-hover-lift block" style={{ textDecoration: "none" }}>
+          <Card>
+            <div className="flex items-center justify-between">
+              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "#475569" }}>Stock value</span>
+              <span style={{ width: 30, height: 30, borderRadius: 8, background: "var(--can-tint)", display: "flex", alignItems: "center", justifyContent: "center" }}><WalletIcon /></span>
+            </div>
+            <p style={{ margin: "12px 0 0", font: "700 26px/1.2 var(--can-font-sans)", color: "var(--can-ink)" }}>{formatMoneyDetail(data.inventoryValuePaise)}</p>
+            <p style={{ margin: "6px 0 0", font: "500 12.5px/1.4 var(--can-font-sans)", color: "var(--can-tertiary)" }}>{data.inventoryUnits} units · {data.inventoryProductCount} products</p>
+          </Card>
+        </Link>
+        <Link href="/canteen/inventory" className="can-hover-lift block" style={{ textDecoration: "none" }}>
+          <Card>
+            <div className="flex items-center justify-between">
+              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "#475569" }}>Low stock</span>
+              <span style={{ width: 30, height: 30, borderRadius: 8, background: data.lowStockCount > 0 ? "var(--can-red-bg)" : "var(--can-tint)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 14px/1 var(--can-font-sans)", color: data.lowStockCount > 0 ? "var(--can-red-text)" : "var(--can-primary)" }}>
+                !
+              </span>
+            </div>
+            <p style={{ margin: "12px 0 0", font: "700 26px/1.2 var(--can-font-sans)", color: data.lowStockCount > 0 ? "var(--can-red-text)" : "var(--can-ink)" }}>{data.lowStockCount}</p>
+            <p style={{ margin: "6px 0 0", font: "500 12.5px/1.4 var(--can-font-sans)", color: "var(--can-tertiary)" }}>
+              {data.lowStockProducts.length > 0 ? data.lowStockProducts.slice(0, 3).map((p) => p.name).join(", ") : "Everything is well stocked"}
+            </p>
+          </Card>
+        </Link>
+        <ProductFormModal
+          trigger={
+            <div className="can-hover-lift" style={{ cursor: "pointer", height: "100%" }}>
+              <Card style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", border: "1.5px dashed var(--can-border-hover)" }}>
+                <span style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--can-tint)", color: "var(--can-primary)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 20px/1 var(--can-font-sans)" }}>+</span>
+                <p style={{ margin: "10px 0 0", font: "700 14px/1.3 var(--can-font-sans)", color: "var(--can-ink)" }}>Add a product</p>
+                <p style={{ margin: "3px 0 0", font: "400 12px/1.4 var(--can-font-sans)", color: "var(--can-tertiary)" }}>Quick action</p>
+              </Card>
+            </div>
+          }
+        />
       </div>
 
       {data.declinedToday > 0 && (

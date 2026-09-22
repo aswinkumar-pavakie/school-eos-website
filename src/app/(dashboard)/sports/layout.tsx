@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -53,16 +54,19 @@ export default async function SportsFacultyLayout({ children }: { children: Reac
   const personName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
 
   return (
-    <Shell
-      personName={personName}
-      roleLabel="Sports Faculty"
-      onSignOut={logoutAction}
-      pendingRequestsCount={0}
-      navItems={NAV_ITEMS}
-      requestsHref="/sports/od-requests"
-      showGlobalSearch={false}
-    >
-      {children}
-    </Shell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <Shell
+        personName={personName}
+        roleLabel="Sports Faculty"
+        onSignOut={logoutAction}
+        pendingRequestsCount={0}
+        navItems={NAV_ITEMS}
+        requestsHref="/sports/od-requests"
+        showGlobalSearch={false}
+      >
+        {children}
+      </Shell>
+    </>
   );
 }

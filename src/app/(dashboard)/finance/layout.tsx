@@ -7,6 +7,7 @@ import { getPurchaseOrdersSummary, getPurchaseRequestsSummary, listApprovals } f
 // logoutAction is genuinely shared with the Admin Console — see its own file for why
 // it lives there rather than in a since-removed placeholder /dashboard route.
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -47,6 +48,7 @@ const FULL_NAV_ITEMS: ShellNavItem[] = [
   // src/app/(dashboard)/finance/library/page.tsx. Principal's narrower nav below
   // doesn't get this; Library fines aren't Principal's concern.
   { href: "/finance/library", label: "Library", icon: "academics" },
+  { href: "/finance/messages", label: "Messages", icon: "messages" },
   // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
   // -- no longer a sidebar entry, matching the reference design.
 ];
@@ -102,16 +104,19 @@ export default async function FinanceLayout({ children }: { children: ReactNode 
     .catch(() => 0);
 
   return (
-    <Shell
-      personName={personName}
-      roleLabel={roleLabel}
-      onSignOut={logoutAction}
-      pendingRequestsCount={pendingRequestsCount}
-      navItems={navItems}
-      requestsHref="/finance/approvals"
-      showGlobalSearch={false}
-    >
-      {children}
-    </Shell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <Shell
+        personName={personName}
+        roleLabel={roleLabel}
+        onSignOut={logoutAction}
+        pendingRequestsCount={pendingRequestsCount}
+        navItems={navItems}
+        requestsHref="/finance/approvals"
+        showGlobalSearch={false}
+      >
+        {children}
+      </Shell>
+    </>
   );
 }

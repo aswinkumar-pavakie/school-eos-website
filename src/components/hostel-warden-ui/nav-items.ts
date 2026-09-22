@@ -43,6 +43,7 @@ export const HOSTEL_WARDEN_TITLES: Record<string, [string, string]> = {
   complaints: ["Issues & maintenance", "Issues the warden notes on the block round or hears from a student in person"],
   reports: ["Reports", "Generated statements and exports"],
   assistant: ["Ask the Assistant", "Ask a question about school records, policies or anything else"],
+  messages: ["Messages", "Real, end-to-end encrypted messages with staff and parents"],
 };
 
 export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
@@ -76,6 +77,7 @@ export const HOSTEL_WARDEN_NAV: HostelWardenNavGroup[] = [
     items: [
       { id: "complaints", label: "Issues & maintenance", href: "/hostel-warden/issues" },
       { id: "reports", label: "Reports", href: "/hostel-warden/reports" },
+      { id: "messages", label: "Messages", href: "/hostel-warden/messages" },
       // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
       // sidebar entry, matching the reference design.
     ],

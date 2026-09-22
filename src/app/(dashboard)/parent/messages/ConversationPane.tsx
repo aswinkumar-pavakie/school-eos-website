@@ -1,7 +1,14 @@
 "use client";
 
+// Real, working E2EE thread pane -- same logic as the site's earlier
+// full-page ConversationClient (join/poll/decrypt/send/accept-decline),
+// just restyled to sit in the right-hand pane of the split "Messages" view
+// instead of owning its own page/back-link. Nothing about the crypto,
+// polling, or request-decision flow changed. Mirrors Faculty's own
+// message/ConversationPane.tsx exactly (same split-pane pattern), styled to
+// Parent's own --par-* tokens.
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
 import { resolveDisplayName } from "@/lib/e2ee/nameCache";
 import { ensureConversationJoined } from "@/lib/e2ee/welcome";
@@ -27,18 +34,24 @@ interface DecryptedMessage {
   createdAt: string;
 }
 
-// No live WebSocket for this V1 website build -- same deliberate, disclosed
-// scope reduction as Faculty's own Message screen: this site's httpOnly-
-// cookie auth model doesn't expose the raw access token to client JS, which
-// the mobile app's realtime socket needs. Polling while open is the safe
-// interim approximation.
+// No live WebSocket for this V1 website build -- a deliberate, disclosed
+// scope reduction: the mobile app's realtime socket authenticates with the
+// raw access token directly from the client, which this site's httpOnly-
+// cookie auth model doesn't expose to client JS by design. Polling while a
+// conversation is open is the safe interim approximation.
 const POLL_INTERVAL_MS = 8000;
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
 }
+function formatDateDivider(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+}
+function initialsOf(name: string): string {
+  return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
+}
 
-export function ConversationClient({ conversationId, personId }: { conversationId: string; personId: string }) {
+export function ConversationPane({ conversationId, personId, onBack }: { conversationId: string; personId: string; onBack?: () => void }) {
   useE2eeBootstrap(personId);
 
   const [conversation, setConversation] = useState<(ConversationSummary & { ownLastReadSequence: number }) | null>(null);
@@ -93,6 +106,9 @@ export function ConversationClient({ conversationId, personId }: { conversationI
   }, [conversationId]);
 
   useEffect(() => {
+    // Parent remounts this component (key={conversationId} in
+    // MessagesListClient) on conversation switch, so all state above already
+    // starts fresh here -- no reset needed.
     (async () => {
       try {
         await loadConversationAndJoin();
@@ -153,25 +169,17 @@ export function ConversationClient({ conversationId, personId }: { conversationI
     }
   }
 
-  const backLink = (
-    <Link href="/parent/messages" style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--par-border)", background: "#fff", borderRadius: 9, padding: "10px 15px", fontSize: 13.5, fontWeight: 700, color: "var(--par-navy)", textDecoration: "none" }}>
-      ‹ Back to messages
-    </Link>
-  );
-
   if (error) {
     return (
-      <div>
-        {backLink}
-        <div style={{ marginTop: 30, textAlign: "center", fontSize: 14, color: "var(--par-red)" }}>{error}</div>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ fontSize: 14, color: "var(--par-red)" }}>{error}</p>
       </div>
     );
   }
   if (!conversation) {
     return (
-      <div>
-        {backLink}
-        <div style={{ marginTop: 30, textAlign: "center", fontSize: 14, color: "var(--par-tertiary)" }}>Loading…</div>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ fontSize: 14, color: "var(--par-tertiary)" }}>Loading…</p>
       </div>
     );
   }
@@ -181,20 +189,35 @@ export function ConversationClient({ conversationId, personId }: { conversationI
   const isRecipient = pendingRequest?.recipientPersonId === personId;
   const canSend = !pendingRequest;
 
+  let lastDateDivider = "";
+
   return (
-    <div>
-      {backLink}
-      <div style={{ marginTop: 18, fontSize: 30, fontWeight: 800, letterSpacing: "-0.01em", color: "var(--par-ink)" }}>{otherName}</div>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div className="flex items-center gap-3" style={{ padding: "16px 22px", borderBottom: "1px solid var(--par-divider)" }}>
+        {onBack && (
+          <button type="button" onClick={onBack} aria-label="Back to messages" style={{ border: 0, background: "none", cursor: "pointer", fontSize: 18, color: "var(--par-tertiary)" }}>
+            ←
+          </button>
+        )}
+        <span style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--par-ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, flex: "0 0 38px" }}>
+          {initialsOf(otherName)}
+        </span>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--par-ink)" }}>{otherName}</div>
+        </div>
+      </div>
 
       {pendingRequest && (
-        <div style={{ marginTop: 14, background: "var(--par-amber-bg)", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
+        <div style={{ margin: "14px 22px 0", background: "var(--par-amber-bg)", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
           {isRecipient ? (
             <>
-              <div style={{ fontSize: 13, color: "var(--par-ink)" }}>This person wants to message you. Only one message is allowed until you respond.</div>
+              <p style={{ fontSize: 13, color: "var(--par-ink)" }}>
+                This person wants to message you. Only one message is allowed until you respond.
+              </p>
               {deciding ? (
-                <div style={{ fontSize: 12.5, color: "var(--par-tertiary)", marginTop: 8 }}>Working…</div>
+                <p style={{ fontSize: 12.5, color: "var(--par-tertiary)", marginTop: 8 }}>Working…</p>
               ) : (
-                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                <div className="flex gap-2.5" style={{ marginTop: 10 }}>
                   <button type="button" onClick={() => decide("decline")} style={{ flex: 1, border: "1px solid var(--par-border)", background: "#fff", cursor: "pointer", borderRadius: 10, padding: "10px 0", fontSize: 13, fontWeight: 700, color: "var(--par-body-muted)" }}>
                     Decline
                   </button>
@@ -205,26 +228,46 @@ export function ConversationClient({ conversationId, personId }: { conversationI
               )}
             </>
           ) : (
-            <div style={{ fontSize: 13, color: "var(--par-ink)" }}>Waiting for a response to your message request.</div>
+            <p style={{ fontSize: 13, color: "var(--par-ink)" }}>Waiting for a response to your message request.</p>
           )}
         </div>
       )}
 
-      <div ref={listRef} style={{ marginTop: 16, height: 440, overflow: "auto", background: "var(--par-panel-2)", border: "1px solid var(--par-border)", borderRadius: "var(--par-radius-card)", padding: 18 }}>
+      <div ref={listRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 22px", background: "var(--par-panel-2)" }}>
         {messages === null ? (
-          <div style={{ textAlign: "center", fontSize: 13, color: "var(--par-tertiary)" }}>Loading…</div>
+          <p style={{ textAlign: "center", fontSize: 13, color: "var(--par-tertiary)" }}>Loading…</p>
         ) : messages.length === 0 ? (
-          <div style={{ textAlign: "center", fontSize: 13, color: "var(--par-tertiary)" }}>No messages yet.</div>
+          <p style={{ textAlign: "center", fontSize: 13, color: "var(--par-tertiary)" }}>No messages yet.</p>
         ) : (
           messages.map((m) => {
             const isOwn = m.senderPersonId === personId;
+            const divider = formatDateDivider(m.createdAt);
+            const showDivider = divider !== lastDateDivider;
+            lastDateDivider = divider;
             return (
-              <div key={m.id} style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start", marginBottom: 12 }}>
-                <div>
-                  <div style={{ maxWidth: 420, borderRadius: 16, padding: "10px 14px", background: isOwn ? "var(--par-primary)" : "var(--par-divider)", color: isOwn ? "#fff" : "var(--par-ink)" }}>
-                    <div style={{ fontSize: 14 }}>{m.plaintext}</div>
+              <div key={m.id}>
+                {showDivider && (
+                  <div style={{ textAlign: "center", margin: "4px 0 16px" }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "var(--par-tertiary)", background: "#fff", border: "1px solid var(--par-border)", borderRadius: 20, padding: "6px 13px" }}>
+                      {divider}
+                    </span>
                   </div>
-                  <div style={{ fontSize: 11, color: "var(--par-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
+                )}
+                <div style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start", marginBottom: 14 }}>
+                  <div style={{ maxWidth: "62%" }}>
+                    <div
+                      style={{
+                        borderRadius: 14,
+                        padding: "10px 14px",
+                        background: isOwn ? "var(--par-primary)" : "#fff",
+                        border: isOwn ? "none" : "1px solid var(--par-border)",
+                        color: isOwn ? "#fff" : "var(--par-ink)",
+                      }}
+                    >
+                      <div style={{ fontSize: 14, lineHeight: 1.5 }}>{m.plaintext}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--par-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
+                  </div>
                 </div>
               </div>
             );
@@ -233,21 +276,26 @@ export function ConversationClient({ conversationId, personId }: { conversationI
       </div>
 
       {canSend && (
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 10, marginTop: 12 }}>
-          <textarea
+        <div className="flex items-center gap-2.5" style={{ padding: "16px 22px", borderTop: "1px solid var(--par-divider)" }}>
+          <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === "Enter") {
                 e.preventDefault();
                 handleSend();
               }
             }}
-            placeholder="Message…"
-            rows={1}
-            style={{ flex: 1, border: "1px solid var(--par-border)", borderRadius: 22, padding: "12px 18px", fontSize: 14.5, fontFamily: "inherit", resize: "none" }}
+            placeholder="Type a message…"
+            style={{ flex: 1, border: "1px solid var(--par-border)", borderRadius: 22, padding: "12px 18px", fontSize: 14 }}
           />
-          <button type="button" onClick={handleSend} disabled={sending || !draft.trim()} style={{ width: 46, height: 46, flexShrink: 0, border: 0, borderRadius: "50%", background: "var(--par-primary)", color: "#fff", cursor: "pointer", opacity: sending ? 0.7 : 1 }}>
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={sending || !draft.trim()}
+            aria-label="Send message"
+            style={{ width: 42, height: 42, flex: "0 0 42px", border: 0, borderRadius: "50%", background: "var(--par-primary)", color: "#fff", cursor: "pointer", opacity: sending || !draft.trim() ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}
+          >
             ➤
           </button>
         </div>

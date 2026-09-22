@@ -9,17 +9,28 @@ import { discoverUsersAction, type DiscoveryItem } from "@/lib/messaging-actions
 
 // Directory pages cap at 100 (the backend's own hard limit) -- walks every
 // page via nextCursor and hands the screen one combined list, scoped
-// contacts first then everyone else. Identical approach to the mobile app's
-// own useDiscoverUsers.
+// contacts first then everyone else.
 const PAGE_LIMIT = 100;
 const MAX_PAGES = 200;
 
-async function discoverAll(search: string): Promise<DiscoveryItem[]> {
+// Walks the ENTIRE directory exactly once (unfiltered -- the backend's own
+// `search` param only filters within whatever page is already being walked,
+// so real cross-directory search always meant walking every page regardless
+// of the query). This replaced calling the walk per keystroke, which re-hit
+// all ~7-10+ pages on every character typed -- with the directory now
+// spanning every messaging-enabled role, a few keystrokes inside one
+// debounce window was enough to exhaust the messaging service's own
+// directory-search rate limit (30 requests/minute/person, a deliberate
+// anti-scraping control -- directory.controller.ts), surfacing as a real
+// RATE_LIMITED 403. Fetching the full list once per mount and filtering
+// client-side (same substring-over-displayName match the backend itself
+// uses) gets identical results without typing ever touching the network.
+async function discoverAll(): Promise<DiscoveryItem[]> {
   const items: DiscoveryItem[] = [];
   const seen = new Set<string>();
   let cursor: string | undefined;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const { data } = await discoverUsersAction({ search: search || undefined, cursor, limit: PAGE_LIMIT });
+    const { data } = await discoverUsersAction({ cursor, limit: PAGE_LIMIT });
     for (const item of data.items) {
       if (seen.has(item.userId)) continue;
       seen.add(item.userId);
@@ -35,7 +46,7 @@ async function discoverAll(search: string): Promise<DiscoveryItem[]> {
 export function DiscoveryClient() {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [items, setItems] = useState<DiscoveryItem[] | null>(null);
+  const [allItems, setAllItems] = useState<DiscoveryItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<DiscoveryItem | null>(null);
   const [draft, setDraft] = useState("");
@@ -43,17 +54,15 @@ export function DiscoveryClient() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(true);
-      discoverAll(search)
-        .then(setItems)
-        .finally(() => setLoading(false));
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+    discoverAll()
+      .then(setAllItems)
+      .finally(() => setLoading(false));
+  }, []);
 
-  const scoped = (items ?? []).filter((i) => i.scope === "SCOPED");
-  const unscoped = (items ?? []).filter((i) => i.scope === "UNSCOPED");
+  const needle = search.trim().toLowerCase();
+  const items = needle ? (allItems ?? []).filter((i) => i.displayName.toLowerCase().includes(needle)) : allItems ?? [];
+  const scoped = items.filter((i) => i.scope === "SCOPED");
+  const unscoped = items.filter((i) => i.scope === "UNSCOPED");
 
   async function handleSend() {
     if (!selected) return;

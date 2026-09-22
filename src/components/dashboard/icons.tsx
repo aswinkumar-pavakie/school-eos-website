@@ -289,6 +289,15 @@ export function AssistantIcon({ className }: IconProps) {
   );
 }
 
+export function MessagesIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden>
+      <path d="M3 6.5h18v11H8l-4 3.5v-3.5H3z" />
+      <path d="M7.5 11h9M7.5 14h6" />
+    </svg>
+  );
+}
+
 export const NAV_ICONS = {
   dashboard: DashboardIcon,
   students: StudentsIcon,
@@ -316,4 +325,5 @@ export const NAV_ICONS = {
   coordinator: CoordinatorIcon,
   sports: SportsIcon,
   assistant: AssistantIcon,
+  messages: MessagesIcon,
 } as const;

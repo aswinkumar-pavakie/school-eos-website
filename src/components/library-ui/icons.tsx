@@ -22,7 +22,8 @@ export type LibraryIconId =
   | "settings"
   | "reservations"
   | "audit"
-  | "assistant";
+  | "assistant"
+  | "messages";
 
 const PATHS: Record<LibraryIconId, ReactNode> = {
   dashboard: (
@@ -120,6 +121,14 @@ const PATHS: Record<LibraryIconId, ReactNode> = {
     <>
       <path d="M3 4.5h14v9.5H8l-3.5 3v-3H3z" />
       <path d="M6.5 8.5h7M6.5 11h4.5" />
+    </>
+  ),
+  // Real E2EE messaging, no design source -- same 2-stroke-path idiom,
+  // distinct from the assistant icon above.
+  messages: (
+    <>
+      <path d="M2.5 5h15v9H9l-3 2.5V14h-3.5z" />
+      <path d="M6 8.5h7.5M6 11h5" />
     </>
   ),
 };

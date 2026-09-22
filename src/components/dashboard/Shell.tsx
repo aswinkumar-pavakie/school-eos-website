@@ -62,10 +62,10 @@ export type ShellNavItem = {
 // parents" is this app's own addition (not in the reference's own nav at
 // all) for the same reason: real parent-account-creation + student-linking,
 // previously only reachable via a modal buried on the Parents list page, now
-// a first-class admissions destination too. One item the reference's nav
-// names still has NO real page behind it anywhere in this app and is
-// deliberately NOT added as a dead link: "Inbox" (no messaging/inbox module
-// exists in this schema at all). "Subjects & mapping" used to be in that same
+// a first-class admissions destination too. The reference's own "Inbox" item
+// is now real too -- "Messages" below, wired to the real E2EE messaging
+// microservice (the user's own later instruction to connect messaging for
+// every role except device-credential-only logins). "Subjects & mapping" used to be in that same
 // bucket (Admin's own Subjects data only lived inside Academics' own tab bar)
 // -- it now has its own dedicated, real-write page at
 // /admin/academics/subjects-mapping (see that page.tsx's own header comment),
@@ -127,6 +127,7 @@ const ADMIN_NAV_ITEMS: ShellNavItem[] = [
   { href: "/admin/health", label: "Health & Infirmary", icon: "requests", group: "OPERATIONS" },
 
   { href: "/admin/requests", label: "Requests & approvals", icon: "requests", group: "ADMINISTRATION" },
+  { href: "/admin/messages", label: "Messages", icon: "messages", group: "ADMINISTRATION" },
   // Labelled "Notices" per the reference's own wording, matching Principal's
   // already-established choice for this same real Announcements route.
   { href: "/admin/announcements", label: "Notices", icon: "announcements", group: "ADMINISTRATION" },

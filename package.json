@@ -12,6 +12,8 @@
     "@noble/ciphers": "^2.1.1",
     "@noble/curves": "^2.0.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "leaflet": "^1.9.4",
     "next": "16.3.4",
     "postcss": "^8.5.27",

@@ -15,7 +15,8 @@ export type HostelWardenIconId =
   | "fees"
   | "complaints"
   | "reports"
-  | "assistant";
+  | "assistant"
+  | "messages";
 
 const PATHS: Record<HostelWardenIconId, string> = {
   dashboard: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-5H3zM13 8h8V3h-8z",
@@ -38,6 +39,9 @@ const PATHS: Record<HostelWardenIconId, string> = {
   // New feature (AI assistant chat), no reference design equivalent -- same
   // 24px/chat-bubble convention as the icons above.
   assistant: "M4 5.5h16v11H9l-4 3.5v-3.5H4zM8 10h8M8 13h5",
+  // Real E2EE messaging, no reference design equivalent -- same
+  // chat-bubble convention, distinct path from the assistant icon above.
+  messages: "M3 6.5h18v11H8l-4 3.5v-3.5H3zM7.5 11h9M7.5 14h6",
 };
 
 export function NavIcon({ id, stroke, size = 18 }: { id: HostelWardenIconId; stroke: string; size?: number }) {

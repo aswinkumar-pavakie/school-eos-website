@@ -105,6 +105,15 @@ export function BellIcon() {
     </svg>
   );
 }
+// Real E2EE messaging, no design source -- same 18x18/stroke-1.7 convention.
+export function MessagesIcon({ style }: { style?: CSSProperties }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" style={style}>
+      <path d="M2.5 4h13v9H9l-3 2.5V13H2.5z" />
+      <path d="M6 7.5h7M6 10h4.5" />
+    </svg>
+  );
+}
 
 export const KIND_COLOR: Record<string, string> = { POSTER: "#1d4ed8", VIDEO: "#7c3aed", COVERAGE: "#15803d" };
 export const KIND_ICON: Record<string, string> = { POSTER: "\u{1F5BC}", VIDEO: "\u{1F3A5}", COVERAGE: "\u{1F4F7}" };

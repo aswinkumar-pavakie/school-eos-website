@@ -4,9 +4,11 @@
 // under its own /canteen/ledger route (was the module's default landing
 // page) once Dashboard became the real default at /canteen.
 
+import { listCanteenProducts } from "@/lib/canteen-api";
 import { LedgerForm } from "./LedgerForm";
 
-export default function CanteenLedgerPage() {
+export default async function CanteenLedgerPage() {
+  const products = await listCanteenProducts().catch(() => []);
   return (
     <div>
       <h1 style={{ margin: 0, font: "700 36px/1.1 var(--can-font-sans)", letterSpacing: "-.02em", color: "var(--can-ink)" }}>Ledger</h1>
@@ -14,7 +16,7 @@ export default function CanteenLedgerPage() {
         Charge a student&rsquo;s prepaid wallet for a canteen purchase.
       </p>
       <div style={{ marginTop: 24 }}>
-        <LedgerForm />
+        <LedgerForm products={products} />
       </div>
     </div>
   );

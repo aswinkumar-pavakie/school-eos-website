@@ -5,6 +5,7 @@ import { HostelWardenShell } from "@/components/hostel-warden-ui/HostelWardenShe
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { listEmergencyExitRequests, listGatePassRequests } from "@/lib/hostel-warden-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -57,8 +58,11 @@ export default async function HostelWardenLayout({ children }: { children: React
   }
 
   return (
-    <HostelWardenShell personName={personName} pendingApprovalsCount={pendingApprovalsCount} onSignOut={logoutAction}>
-      {children}
-    </HostelWardenShell>
+    <>
+      <E2eeBootstrapMount personId={actor.personId} />
+      <HostelWardenShell personName={personName} pendingApprovalsCount={pendingApprovalsCount} onSignOut={logoutAction}>
+        {children}
+      </HostelWardenShell>
+    </>
   );
 }

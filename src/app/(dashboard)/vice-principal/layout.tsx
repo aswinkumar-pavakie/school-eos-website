@@ -7,6 +7,7 @@ import { ReframeHeaderChrome } from "@/components/dashboard/ReframeHeaderChrome"
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { listAcademicYears, getSchoolProfile } from "@/lib/finance-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 // logoutAction is genuinely shared across Admin/Finance/Library/Principal/Vice
 // Principal -- see finance/layout.tsx's own comment for why it lives under
 // admin/ rather than a since-removed placeholder route.
@@ -87,6 +88,7 @@ const VICE_PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
 
   { href: "/vice-principal/community", label: "Communities", icon: "community", group: "COMMUNICATION" },
   { href: "/vice-principal/announcements", label: "Announcements", icon: "announcements", group: "COMMUNICATION" },
+  { href: "/vice-principal/messages", label: "Messages", icon: "messages", group: "COMMUNICATION" },
 
   // No Audit Log, no Requests & Approvals here -- VP is not authorized for
   // either (see this file's own header comment).
@@ -158,6 +160,7 @@ export default async function VicePrincipalLayout({ children }: { children: Reac
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
+      <E2eeBootstrapMount personId={actor.personId} />
       <Shell
         personName={personName}
         roleLabel="Vice Principal"

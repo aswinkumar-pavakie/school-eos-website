@@ -44,6 +44,7 @@ export const LIBRARY_NAV_GROUPS: LibraryNavGroup[] = [
     items: [
       { href: "/library/reports", label: "Reports", icon: "reports" },
       { href: "/library/configuration", label: "Settings", icon: "settings" },
+      { href: "/library/messages", label: "Messages", icon: "messages" },
     ],
   },
   {

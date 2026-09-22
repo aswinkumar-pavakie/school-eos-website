@@ -10,6 +10,7 @@ import { ACCESS_TOKEN_COOKIE, apiFetch, getCurrentActor } from "@/lib/api";
 // finance/layout.tsx's own comment for why it lives under admin/) -- Transport
 // Manager reuses the exact same one, not a new sign-out implementation.
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -142,6 +143,8 @@ export default async function TransportManagerLayout({ children }: { children: R
 
     { href: "/transport-manager/reports", label: "Reports", icon: "reports", group: "REPORTS" },
 
+    { href: "/transport-manager/messages", label: "Messages", icon: "messages", group: "REPORTS", materialIcon: "chat" },
+
     // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
     // -- no longer a sidebar entry, matching the reference design.
   ];
@@ -163,6 +166,7 @@ export default async function TransportManagerLayout({ children }: { children: R
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,200..500,0,-25..0"
       />
       <TransportReframeThemeStyle scope={REFRAME_SCOPE} />
+      <E2eeBootstrapMount personId={actor.personId} />
       <Shell
         personName={personName}
         roleLabel="Transport Manager"

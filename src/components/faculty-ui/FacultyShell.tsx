@@ -366,13 +366,11 @@ export function FacultyShell({
             >
               Term 1
             </button>
-            <button
-              type="button"
-              onClick={() => router.push("/faculty/message")}
-              style={{ border: 0, cursor: "pointer", background: "var(--fac-primary)", color: "#fff", font: "600 13.5px/1 var(--fac-font-sans)", borderRadius: 8, padding: "10px 16px" }}
-            >
-              Message parents
-            </button>
+            {/* Removed the duplicate "Message parents" button that used to sit
+                here -- the sidebar's own "Message" nav item (OVERVIEW group)
+                is the one real entry point into messaging now; having a
+                second button here that led to the exact same screen was
+                redundant clutter, not a second real feature. */}
           </header>
 
           <main style={{ flex: 1, padding: "28px 26px 56px", maxWidth: 1480, width: "100%" }}>{children}</main>

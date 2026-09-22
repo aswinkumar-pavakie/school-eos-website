@@ -13,6 +13,7 @@ export function Card({ children, style, hover = false }: { children: ReactNode; 
         border: "1px solid var(--can-border)",
         borderRadius: "var(--can-radius-card)",
         padding: "18px 20px",
+        boxShadow: "var(--can-shadow-card)",
         ...style,
       }}
     >

@@ -60,6 +60,34 @@ export function WeeklySalesChart({ data }: { data: { date: string; totalPaise: n
   );
 }
 
+// Reports' own date-ranged trend -- same visual language as
+// WeeklySalesChart but no fixed 7-day/"today" highlight, since a report's
+// range is arbitrary (a custom From/To pair).
+export function RangeSalesChart({ data }: { data: { date: string; totalPaise: number }[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={220}>
+      <BarChart data={data} margin={{ left: 0, right: 12, top: 8, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+        <XAxis
+          dataKey="date"
+          tickFormatter={(v: string) => new Date(v).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+          tick={{ fontSize: 11, fill: AXIS_TICK_MUTED }}
+          tickLine={false}
+          axisLine={false}
+          interval="preserveStartEnd"
+        />
+        <YAxis tickFormatter={(v: number) => formatMoneySummary(v)} tick={{ fontSize: 11, fill: AXIS_TICK_MUTED }} tickLine={false} axisLine={false} width={64} />
+        <Tooltip
+          formatter={(value) => [formatMoneyDetail(value as number), "Sales"] as [string, string]}
+          labelFormatter={(value) => new Date(String(value)).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+          contentStyle={{ borderRadius: 10, border: `1px solid ${GRID_STROKE}`, fontSize: 12 }}
+        />
+        <Bar dataKey="totalPaise" radius={[6, 6, 0, 0]} maxBarSize={28} fill={CAN_BLUE} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
 export function hourLabel(hour: number): string {
   const h = hour % 12 === 0 ? 12 : hour % 12;
   return `${h}${hour < 12 ? "am" : "pm"}`;

@@ -7,6 +7,7 @@ import { ReframeHeaderChrome } from "@/components/dashboard/ReframeHeaderChrome"
 import { ACCESS_TOKEN_COOKIE, apiFetch } from "@/lib/api";
 import { listAcademicYears, listApprovals, getSchoolProfile } from "@/lib/finance-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
+import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 import { logoutAction } from "./actions";
 
 // Same first-letter-of-each-word initials helper Principal's layout uses for
@@ -102,6 +103,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
+      <E2eeBootstrapMount personId={data.person.id} />
       <Shell
         personName={personName}
         roleLabel={roleLabel}

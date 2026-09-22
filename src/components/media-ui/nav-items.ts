@@ -1,5 +1,5 @@
 import type { ComponentType, CSSProperties } from "react";
-import { AnalyticsIcon, CalendarIcon, DashboardIcon, IndentIcon, InventoryIcon, ShootsIcon, SocialIcon, TeamIcon } from "./icons";
+import { AnalyticsIcon, CalendarIcon, DashboardIcon, IndentIcon, InventoryIcon, MessagesIcon, ShootsIcon, SocialIcon, TeamIcon } from "./icons";
 
 export interface MediaNavItem {
   id: string;
@@ -41,6 +41,7 @@ export const MEDIA_NAV: MediaNavGroup[] = [
       { id: "inventory", Icon: InventoryIcon, label: "Inventory", href: "/media/inventory", countKey: "inventory" },
       { id: "indent", Icon: IndentIcon, label: "Raise indent", href: "/media/raise-indent", countKey: "indent" },
       { id: "team", Icon: TeamIcon, label: "Media team", href: "/media/team" },
+      { id: "messages", Icon: MessagesIcon, label: "Messages", href: "/media/messages" },
     ],
   },
   // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
