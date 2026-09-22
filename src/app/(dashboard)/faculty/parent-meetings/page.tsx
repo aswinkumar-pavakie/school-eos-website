@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { PlainButton } from "@/components/ui/Button";
@@ -10,8 +11,15 @@ import { SlotModal } from "./SlotModal";
 import { decideBookingAction, deleteSlotAction } from "./actions";
 
 export default async function ParentMeetingsPage() {
+  let slots: Awaited<ReturnType<typeof listMeetingSlots>>;
   try {
-    const slots = await listMeetingSlots();
+    slots = await listMeetingSlots();
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load parent meetings. Nothing was changed — try again." />;
+  }
+
+  {
     const booked = slots.filter((s) => s.booking).length;
     const pending = slots.filter((s) => s.booking?.state === "PENDING").length;
 
@@ -68,6 +76,13 @@ export default async function ParentMeetingsPage() {
                           <PlainButton type="submit" variant="danger">Reject</PlainButton>
                         </form>
                       </div>
+                    ) : slot.booking.state === "APPROVED" ? (
+                      <Link
+                        href={`/meeting-call/${slot.booking.id}`}
+                        className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-input)] bg-[color:var(--color-success,#1E8A4C)] px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                      >
+                        Join call
+                      </Link>
                     ) : null}
                   </div>
                 ) : (
@@ -79,8 +94,5 @@ export default async function ParentMeetingsPage() {
         )}
       </div>
     );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message="Couldn't load parent meetings. Nothing was changed — try again." />;
   }
 }

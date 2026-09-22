@@ -9,6 +9,7 @@
 // Honestly omitted rather than faked; a slot's own approved state is the
 // only real signal this screen can show.
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
@@ -28,15 +29,25 @@ function time(value: string): string {
 }
 
 export default async function ParentMeetingsPage({ searchParams }: { searchParams: Promise<{ studentId?: string }> }) {
+  let selected: ReturnType<typeof resolveSelectedChild> | null = null;
+  let slots: Awaited<ReturnType<typeof listParentMeetingSlots>> = [];
+  let loadError: string | null = null;
   try {
     const { studentId: requestedStudentId } = await searchParams;
     const children = await listChildren();
-    const selected = resolveSelectedChild(children, requestedStudentId);
-    if (!selected) return <ErrorState message="No children linked to this account." />;
+    selected = resolveSelectedChild(children, requestedStudentId);
+    if (selected) {
+      slots = await listParentMeetingSlots(selected.studentId);
+    }
+  } catch (err) {
+    if (err instanceof AuthExpiredError) redirect("/login");
+    loadError = err instanceof Error ? err.message : "Couldn't load meeting slots.";
+  }
 
-    const slots = await listParentMeetingSlots(selected.studentId);
+  if (loadError) return <ErrorState message={loadError} />;
+  if (!selected) return <ErrorState message="No children linked to this account." />;
 
-    return (
+  return (
       <div className="parent-scope">
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Meetings</div>
@@ -65,7 +76,28 @@ export default async function ParentMeetingsPage({ searchParams }: { searchParam
                 </div>
 
                 {slot.booking ? (
-                  slot.booking.notes && <div style={{ fontSize: 13.5, color: "var(--par-body-muted)", marginTop: 10 }}>Your note: {slot.booking.notes}</div>
+                  <>
+                    {slot.booking.notes && <div style={{ fontSize: 13.5, color: "var(--par-body-muted)", marginTop: 10 }}>Your note: {slot.booking.notes}</div>}
+                    {slot.booking.state === "APPROVED" && (
+                      <Link
+                        href={`/meeting-call/${slot.booking.id}`}
+                        style={{
+                          marginTop: 10,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 8,
+                          borderRadius: "var(--par-radius-input)",
+                          padding: "8px 16px",
+                          fontSize: 13,
+                          fontWeight: 700,
+                          color: "#fff",
+                          background: "#1E8A4C",
+                        }}
+                      >
+                        Join call
+                      </Link>
+                    )}
+                  </>
                 ) : (
                   <RequestMeetingPanel studentId={selected.studentId} slotId={slot.id} facultyName={slot.facultyName} />
                 )}
@@ -74,9 +106,5 @@ export default async function ParentMeetingsPage({ searchParams }: { searchParam
           </div>
         )}
       </div>
-    );
-  } catch (err) {
-    if (err instanceof AuthExpiredError) redirect("/login");
-    return <ErrorState message={err instanceof Error ? err.message : "Couldn't load meeting slots."} />;
-  }
+  );
 }
