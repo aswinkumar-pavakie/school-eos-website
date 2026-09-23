@@ -16,7 +16,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatMoneyDetail, formatMoneySummary } from "@/lib/format";
 
-const CAN_BLUE = "#1d4ed8";
+const CAN_BLUE = "#1f6feb";
 const CAN_BLUE_LIGHT = "#bfdbfe";
 const CAN_AMBER = "#f59e0b";
 const GRID_STROKE = "#eaecf0";

@@ -15,21 +15,27 @@
  */
 
 .canteen-scope {
-  --can-primary: #1d4ed8;
-  --can-navy: #12275c;
-  --can-ink: #0f172a;
-  --can-body: #334155;
-  --can-body-muted: #64748b;
-  --can-tertiary: #94a3b8;
+  /* Primary/ink/border values aligned to the same core reframe palette
+   * Admin/Correspondent/Principal/Vice Principal/Transport Manager/Finance
+   * all share (ReframeTheme.tsx) -- previously matched Faculty's own
+   * slightly different blue (#1d4ed8); per explicit instruction the whole
+   * product should read as one consistent design, with Admin/Principal as
+   * the canonical reference, not Faculty. */
+  --can-primary: #1f6feb;
+  --can-navy: #10243f;
+  --can-ink: #10243f;
+  --can-body: #44536b;
+  --can-body-muted: #5c6b82;
+  --can-tertiary: #8593a8;
 
   --can-white: #ffffff;
-  --can-tint: #eff6ff;
+  --can-tint: #eef4ff;
   --can-panel: #f8fafc;
-  --can-divider: #f1f5f9;
+  --can-divider: #eef1f6;
   --can-chip: #eef2f7;
 
-  --can-border: #e2e8f0;
-  --can-border-hover: #dbeafe;
+  --can-border: #e4e9f2;
+  --can-border-hover: #dbe7ff;
   --can-border-focus: #bfdbfe;
   --can-outline-hover: #93b4f5;
 
@@ -54,8 +60,8 @@
      hover-only elevation reads as "flat admin panel"; a subtle resting
      shadow plus the existing hover-lift reads as a premium product). */
   --can-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.05);
-  --can-shadow-card-hover: 0 8px 24px rgba(29, 78, 216, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
-  --can-gradient-accent: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  --can-shadow-card-hover: 0 8px 24px rgba(31, 111, 235, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
+  --can-gradient-accent: linear-gradient(135deg, #1f6feb 0%, #1f4fa8 100%);
   --can-tint-2: #dbeafe;
 
   --can-font-sans: var(--font-outfit-can), ui-sans-serif, system-ui, sans-serif;

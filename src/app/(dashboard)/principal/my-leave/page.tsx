@@ -1,60 +1,60 @@
+// Now renders the shared src/components/shared-ui/LeaveOdView shell, the
+// same canonical Apply/History tabbed screen Faculty's own
+// staff-leave/page.tsx renders. Real staff_leave_request data
+// (listMyLeaveRequests) -- same real data as before, filtered to non-OD
+// here (see principal/my-od/page.tsx for the OD-only screen, split out to
+// match Faculty's own separate Leave/OD screens instead of one folded list).
+// The real "Withdraw" action (WithdrawButton) is preserved as the shared
+// view's per-row action slot.
+
 import { redirect } from "next/navigation";
-import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 import { listMyLeaveRequests } from "@/lib/principal-staff-api";
+import { LeaveOdView, type LeaveOdRequestRow } from "@/components/shared-ui/LeaveOdView";
 import { RequestModal } from "./RequestModal";
 import { WithdrawButton } from "./WithdrawButton";
 
-const LEAVE_LABELS: Record<string, string> = { CASUAL: "Casual", MEDICAL: "Medical", EARNED: "Earned", ON_DUTY: "On duty" };
+const LEAVE_LABELS: Record<string, string> = { CASUAL: "Casual leave", MEDICAL: "Medical leave", EARNED: "Earned leave" };
 
-export default async function PrincipalMyLeavePage() {
-  // Data fetching kept in its own try/catch, separate from the JSX below --
-  // React doesn't actually catch render errors via a JS try/catch around
-  // constructed JSX (only a real error boundary does).
+export default async function PrincipalMyLeavePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams;
+  const activeTab = tab === "History" ? "History" : "Apply";
+
   let requests: Awaited<ReturnType<typeof listMyLeaveRequests>>;
   try {
-    requests = await listMyLeaveRequests();
+    requests = (await listMyLeaveRequests()).filter((r) => r.leaveType !== "ON_DUTY");
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
     return <ErrorState message="Couldn't load your requests. Nothing was changed — try again." />;
   }
 
-  return (
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">My Leave</h1>
-            <p className="mt-1 text-sm text-text-muted">Your own leave &amp; on-duty requests.</p>
-          </div>
-          <RequestModal />
-        </div>
+  const rows: LeaveOdRequestRow[] = requests.map((r) => {
+    const state = r.approvalState ?? r.state;
+    return {
+      id: r.id,
+      typeLabel: LEAVE_LABELS[r.leaveType] ?? r.leaveType,
+      fromDate: r.fromDate,
+      toDate: r.toDate,
+      reason: r.reason,
+      state,
+      action: state === "PENDING" ? <WithdrawButton id={r.id} /> : null,
+    };
+  });
 
-        {requests.length === 0 ? (
-          <EmptyState title="No leave requests" body="Nothing has been submitted yet." />
-        ) : (
-          <div className="flex flex-col gap-3">
-            {requests.map((r) => (
-              <div key={r.id} className="card-hover rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-bold text-text">{LEAVE_LABELS[r.leaveType] ?? r.leaveType}</p>
-                    <p className="text-xs text-text-muted">{formatDate(r.fromDate)} – {formatDate(r.toDate)}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <StatusPill state={r.approvalState ?? r.state} />
-                    {/* r.state itself stays a stale "PENDING" after withdrawal
-                        (see staff-leave-request.repository.ts's own comment) --
-                        approvalState is the real current status. */}
-                    {(r.approvalState ?? r.state) === "PENDING" && <WithdrawButton id={r.id} />}
-                  </div>
-                </div>
-                <p className="mt-2 text-sm text-text">{r.reason}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  return (
+    <LeaveOdView
+      title="Leave"
+      subtitle="Your own leave requests"
+      basePath="/principal/my-leave"
+      activeTab={activeTab}
+      applySlot={
+        <div style={{ marginTop: 18, padding: 40, textAlign: "center", background: "var(--eos-white)", border: "1px solid var(--eos-border)", borderRadius: "var(--eos-radius-card)" }}>
+          <p style={{ font: "400 14.5px/1.5 var(--eos-font-sans)", color: "var(--eos-body-muted)", marginBottom: 16 }}>Submit a new leave request.</p>
+          <RequestModal defaultType="CASUAL" triggerLabel="+ New leave request" />
+        </div>
+      }
+      requests={rows}
+    />
+  );
 }

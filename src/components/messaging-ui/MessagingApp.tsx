@@ -13,28 +13,22 @@
 // thread, new message, requests) live in one component/one route instead of
 // four sub-routes, since there's no per-role page tree to duplicate here.
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
-import { rememberNamesFromDiscovery, resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
-import { ensureConversationJoined } from "@/lib/e2ee/welcome";
-import { decryptMessageCached, encryptMessage } from "@/lib/e2ee/cipher";
-import { getSentPlaintext, saveSentPlaintext } from "@/lib/e2ee/storage";
+import { rememberNamesFromDiscovery, resolveDisplayName } from "@/lib/e2ee/nameCache";
 import { createMessageRequest, startDirectConversation } from "@/lib/e2ee/conversationCreation";
 import {
   acceptRequestAction,
   declineRequestAction,
   discoverUsersAction,
-  getConversationAction,
   listConversationsAction,
-  listMessagesAction,
   listRequestsAction,
-  markReadAction,
-  sendMessageAction,
   type ConversationSummary,
   type DiscoveryItem,
   type RequestSummary,
 } from "@/lib/messaging-actions";
+import { ConversationPane } from "@/components/shared-ui/messaging/ConversationPane";
 
 type View = "list" | "thread" | "new" | "requests";
 const POLL_INTERVAL_MS = 8000;
@@ -110,15 +104,15 @@ export function MessagingApp({
     <div>
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
-          <h1 className="text-[32px] font-bold leading-[1.1] tracking-[-0.02em] text-text">{title}</h1>
-          <p className="mt-2 text-sm text-text-muted">End-to-end encrypted — only you and the recipient can read these</p>
+          <h1 style={{ margin: 0, font: "700 32px/1.1 var(--eos-font-sans)", letterSpacing: "-.02em", color: "var(--eos-ink)" }}>{title}</h1>
+          <p style={{ margin: "8px 0 0", font: "400 14px/1.4 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>End-to-end encrypted — only you and the recipient can read these</p>
         </div>
         <div className="flex items-center gap-2.5">
           {pendingCount > 0 && (
             <button
               type="button"
               onClick={() => setView("requests")}
-              className="rounded-[10px] border border-border bg-surface px-4 py-2.5 text-sm font-bold text-text hover:bg-field"
+              style={{ borderRadius: 10, border: "1px solid var(--eos-border)", background: "var(--eos-white)", padding: "10px 16px", font: "600 14px/1 var(--eos-font-sans)", color: "var(--eos-ink)", cursor: "pointer" }}
             >
               {pendingCount} request{pendingCount === 1 ? "" : "s"}
             </button>
@@ -126,34 +120,38 @@ export function MessagingApp({
           <button
             type="button"
             onClick={() => setView("new")}
-            className="rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:opacity-90"
+            style={{ borderRadius: 10, border: 0, background: "var(--eos-primary)", padding: "10px 16px", font: "600 14px/1 var(--eos-font-sans)", color: "#fff", cursor: "pointer" }}
           >
             + New message
           </button>
         </div>
       </div>
 
-      <div className="mt-6 flex overflow-hidden rounded-[16px] border border-border bg-surface" style={{ height: 640 }}>
-        <div className={`${view === "list" || view === "new" || view === "requests" ? "flex" : "hidden lg:flex"} w-[320px] flex-shrink-0 flex-col border-r border-border`}>
-          <div className="p-4">
+      <div className="mt-6 flex overflow-hidden" style={{ borderRadius: "var(--eos-radius-card)", border: "1px solid var(--eos-border)", background: "var(--eos-white)", height: 640 }}>
+        <div
+          className={view === "list" || view === "new" || view === "requests" ? "flex" : "hidden lg:flex"}
+          style={{ width: 320, flex: "0 0 320px", borderRight: "1px solid var(--eos-divider)", flexDirection: "column", minHeight: 0 }}
+        >
+          <div style={{ padding: "18px 18px 14px" }}>
+            <div style={{ font: "700 16px/1.2 var(--eos-font-sans)", color: "var(--eos-ink)", marginBottom: 12 }}>Messages</div>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search conversations…"
-              className="w-full rounded-[10px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none focus:border-primary"
+              placeholder="Search people to message"
+              style={{ width: "100%", border: "1px solid var(--eos-border)", background: "var(--eos-panel)", borderRadius: 10, padding: "10px 14px", font: "400 13.5px/1 var(--eos-font-sans)" }}
             />
           </div>
-          <div className="flex-1 overflow-auto">
+          <div style={{ flex: 1, overflow: "auto" }}>
             {error ? (
-              <div className="p-6 text-center">
-                <p className="text-sm text-critical-text">{error}</p>
-                <button type="button" onClick={loadList} className="mt-2 rounded-[9px] border border-border px-3 py-1.5 text-xs font-bold text-text">Retry</button>
+              <div style={{ padding: 24, textAlign: "center" }}>
+                <p style={{ font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-red-text)" }}>{error}</p>
+                <button type="button" onClick={loadList} style={{ marginTop: 8, border: "1px solid var(--eos-border)", background: "var(--eos-white)", cursor: "pointer", borderRadius: 9, padding: "7px 14px", font: "600 12px/1 var(--eos-font-sans)" }}>Retry</button>
               </div>
             ) : conversations === null ? (
-              <p className="p-6 text-center text-sm text-text-muted">Loading…</p>
+              <p style={{ textAlign: "center", padding: 30, font: "400 13.5px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Loading…</p>
             ) : filtered && filtered.length === 0 ? (
-              <p className="p-6 text-center text-sm text-text-muted">
-                {conversations.length === 0 ? "No conversations yet. Tap “+ New message” to start one." : "No matches."}
+              <p style={{ textAlign: "center", padding: 30, font: "400 13.5px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>
+                {conversations.length === 0 ? <>No conversations yet.<br />Tap &ldquo;+ New message&rdquo; to start one.</> : "No matches."}
               </p>
             ) : (
               filtered?.map((c) => {
@@ -168,17 +166,28 @@ export function MessagingApp({
                       setSelectedId(c.id);
                       setView("thread");
                     }}
-                    className={`flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left hover:bg-field ${active ? "bg-field" : ""}`}
+                    className="flex items-center gap-3 w-full text-left"
+                    style={{
+                      padding: "13px 16px",
+                      borderTop: "none",
+                      borderRight: "none",
+                      borderLeft: active ? "3px solid var(--eos-primary)" : "3px solid transparent",
+                      borderBottom: "1px solid var(--eos-divider)",
+                      background: active ? "var(--eos-tint)" : "transparent",
+                      cursor: "pointer",
+                    }}
                   >
-                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-text text-xs font-bold text-white">
+                    <span style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--eos-ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "600 12.5px/1 var(--eos-font-sans)", flex: "0 0 38px" }}>
                       {initialsOf(name)}
                     </span>
-                    <span className="min-w-0 flex-1">
+                    <span style={{ flex: 1, minWidth: 0 }}>
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-bold text-text">{name}</span>
-                        <span className="flex-shrink-0 text-xs text-text-muted">{formatTimestamp(c.lastMessageAt)}</span>
+                        <span style={{ font: "700 14px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)" }}>{name}</span>
+                        <span style={{ font: "400 11px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", flex: "0 0 auto" }}>{formatTimestamp(c.lastMessageAt)}</span>
                       </span>
-                      <span className="block truncate text-xs text-text-muted">{c.mlsWelcome ? "New conversation" : "Encrypted message"}</span>
+                      <span style={{ display: "block", font: "400 12.5px/1.4 var(--eos-font-sans)", color: "var(--eos-tertiary)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {c.mlsWelcome ? "New conversation" : "Encrypted message"}
+                      </span>
                     </span>
                   </button>
                 );
@@ -187,7 +196,7 @@ export function MessagingApp({
           </div>
         </div>
 
-        <div className={`${view === "list" || view === "new" || view === "requests" ? "hidden lg:flex" : "flex"} min-w-0 flex-1 flex-col`}>
+        <div className={view === "list" || view === "new" || view === "requests" ? "hidden lg:flex" : "flex"} style={{ minWidth: 0, flex: 1, flexDirection: "column" }}>
           {view === "new" && (
             <NewMessagePane
               personId={personId}
@@ -220,258 +229,13 @@ export function MessagingApp({
               }}
             />
           ) : view === "list" ? (
-            <div className="flex flex-1 flex-col items-center justify-center gap-1.5">
-              <p className="text-base font-bold text-text">Select a conversation</p>
-              <p className="text-sm text-text-muted">Choose someone from the list to view messages</p>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <p style={{ font: "600 15px/1.3 var(--eos-font-sans)", color: "var(--eos-body)" }}>Select a conversation</p>
+              <p style={{ font: "400 13px/1.4 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Choose someone from the list to view messages</p>
             </div>
           ) : null}
         </div>
       </div>
-    </div>
-  );
-}
-
-// ============================================================
-// Thread pane -- real join/poll/decrypt/send, identical logic to Faculty's
-// own ConversationPane, generic-styled.
-// ============================================================
-
-interface DecryptedMessage {
-  id: string;
-  senderPersonId: string;
-  sequence: number;
-  plaintext: string;
-  createdAt: string;
-}
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
-}
-function formatDateDivider(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-}
-
-function ConversationPane({ conversationId, personId, onBack }: { conversationId: string; personId: string; onBack: () => void }) {
-  const [conversation, setConversation] = useState<(ConversationSummary & { ownLastReadSequence: number }) | null>(null);
-  const [joined, setJoined] = useState(false);
-  const [messages, setMessages] = useState<DecryptedMessage[] | null>(null);
-  const [pendingRequest, setPendingRequest] = useState<RequestSummary | null>(null);
-  const [draft, setDraft] = useState("");
-  const [sending, setSending] = useState(false);
-  const [deciding, setDeciding] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-
-  async function loadConversationAndJoin() {
-    const { data } = await getConversationAction(conversationId);
-    setConversation(data);
-    await ensureConversationJoined(data);
-    setJoined(true);
-  }
-  async function loadMessages() {
-    const { data } = await listMessagesAction(conversationId);
-    const decrypted: DecryptedMessage[] = [];
-    for (const message of data) {
-      let plaintext: string;
-      if (message.senderPersonId === personId) {
-        plaintext = (await getSentPlaintext(conversationId, message.clientMessageId)) ?? "[Unable to decrypt this message]";
-      } else {
-        try {
-          plaintext = await decryptMessageCached(conversationId, message.id, message.ciphertext);
-        } catch {
-          plaintext = "[Unable to decrypt this message]";
-        }
-      }
-      decrypted.push({ id: message.id, senderPersonId: message.senderPersonId, sequence: message.sequence, plaintext, createdAt: message.createdAt });
-    }
-    setMessages(decrypted);
-    const last = decrypted[decrypted.length - 1];
-    if (last && last.senderPersonId !== personId) {
-      await markReadAction(conversationId, last.sequence).catch(() => {});
-    }
-  }
-  async function loadRequests() {
-    const [incoming, outgoing] = await Promise.all([
-      listRequestsAction({ status: "PENDING", as: "recipient" }),
-      listRequestsAction({ status: "PENDING", as: "requester" }),
-    ]);
-    const found = incoming.data.find((r) => r.conversationId === conversationId) ?? outgoing.data.find((r) => r.conversationId === conversationId);
-    setPendingRequest(found ?? null);
-  }
-
-  useEffect(() => {
-    (async () => {
-      try {
-        await loadConversationAndJoin();
-        await loadRequests();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Couldn't open this conversation.");
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- conversationId change remounts this component via the parent's key={selectedId}
-  }, []);
-
-  useEffect(() => {
-    if (!joined) return;
-    const initial = setTimeout(() => {
-      loadMessages().catch((err) => setError(err instanceof Error ? err.message : "Couldn't load messages."));
-    }, 0);
-    const interval = setInterval(() => {
-      loadMessages().catch(() => {});
-      loadRequests().catch(() => {});
-    }, POLL_INTERVAL_MS);
-    return () => {
-      clearTimeout(initial);
-      clearInterval(interval);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joined]);
-
-  useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-  }, [messages]);
-
-  async function handleSend() {
-    const trimmed = draft.trim();
-    if (!trimmed) return;
-    setSending(true);
-    setDraft("");
-    try {
-      const encrypted = await encryptMessage(conversationId, trimmed);
-      const clientMessageId = crypto.randomUUID();
-      await sendMessageAction(conversationId, { clientMessageId, ciphertext: encrypted.ciphertext, encryptionVersion: encrypted.encryptionVersion });
-      await saveSentPlaintext(conversationId, clientMessageId, trimmed);
-      await loadMessages();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Message not sent.");
-      setDraft(trimmed);
-    } finally {
-      setSending(false);
-    }
-  }
-  async function decide(action: "accept" | "decline") {
-    if (!pendingRequest) return;
-    setDeciding(true);
-    try {
-      if (action === "accept") await acceptRequestAction(pendingRequest.id);
-      else await declineRequestAction(pendingRequest.id);
-      await loadRequests();
-    } finally {
-      setDeciding(false);
-    }
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-critical-text">{error}</p>
-      </div>
-    );
-  }
-  if (!conversation) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-text-muted">Loading…</p>
-      </div>
-    );
-  }
-
-  const otherPersonId = conversation.personAId === personId ? conversation.personBId : conversation.personAId;
-  const otherName = resolveDisplayName(otherPersonId);
-  const otherDesignation = resolveDesignation(otherPersonId);
-  const isRecipient = pendingRequest?.recipientPersonId === personId;
-  const canSend = !pendingRequest;
-
-  let lastDateDivider = "";
-
-  return (
-    <div className="flex flex-1 flex-col min-w-0">
-      <div className="flex items-center gap-3 border-b border-border p-4">
-        <button type="button" onClick={onBack} className="text-lg text-text-muted lg:hidden" aria-label="Back to messages">←</button>
-        <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-text text-xs font-bold text-white">{initialsOf(otherName)}</span>
-        <div className="min-w-0">
-          <div className="truncate text-sm font-bold text-text">{otherName}</div>
-          {otherDesignation && <div className="truncate text-xs text-text-muted">{otherDesignation}</div>}
-        </div>
-      </div>
-
-      {pendingRequest && (
-        <div className="m-4 rounded-[12px] border border-[#f2dca0] bg-[#fff6e5] p-3.5">
-          {isRecipient ? (
-            <>
-              <p className="text-xs text-text">This person wants to message you. Only one message is allowed until you respond.</p>
-              {deciding ? (
-                <p className="mt-2 text-xs text-text-muted">Working…</p>
-              ) : (
-                <div className="mt-2.5 flex gap-2.5">
-                  <button type="button" onClick={() => decide("decline")} className="flex-1 rounded-[10px] border border-border bg-surface py-2 text-xs font-bold text-text-muted">Decline</button>
-                  <button type="button" onClick={() => decide("accept")} className="flex-1 rounded-[10px] bg-primary py-2 text-xs font-bold text-white">Accept</button>
-                </div>
-              )}
-            </>
-          ) : (
-            <p className="text-xs text-text">Waiting for a response to your message request.</p>
-          )}
-        </div>
-      )}
-
-      <div ref={listRef} className="flex-1 overflow-auto bg-field/40 p-5">
-        {messages === null ? (
-          <p className="text-center text-sm text-text-muted">Loading…</p>
-        ) : messages.length === 0 ? (
-          <p className="text-center text-sm text-text-muted">No messages yet.</p>
-        ) : (
-          messages.map((m) => {
-            const isOwn = m.senderPersonId === personId;
-            const divider = formatDateDivider(m.createdAt);
-            const showDivider = divider !== lastDateDivider;
-            lastDateDivider = divider;
-            return (
-              <div key={m.id}>
-                {showDivider && (
-                  <div className="my-3 text-center">
-                    <span className="rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] font-bold text-text-muted">{divider}</span>
-                  </div>
-                )}
-                <div className={`mb-3.5 flex ${isOwn ? "justify-end" : "justify-start"}`}>
-                  <div className="max-w-[62%]">
-                    <div className={`rounded-[14px] px-3.5 py-2.5 ${isOwn ? "bg-primary text-white" : "border border-border bg-surface text-text"}`}>
-                      <div className="text-sm">{m.plaintext}</div>
-                    </div>
-                    <div className={`mt-1 text-[11px] text-text-muted ${isOwn ? "text-right" : "text-left"}`}>{formatTime(m.createdAt)}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {canSend && (
-        <div className="flex items-center gap-2.5 border-t border-border p-4">
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            placeholder="Type a message…"
-            className="flex-1 rounded-full border border-border bg-field px-4 py-3 text-sm text-text outline-none focus:border-primary"
-          />
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={sending || !draft.trim()}
-            aria-label="Send message"
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white disabled:opacity-50"
-          >
-            ➤
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -549,29 +313,29 @@ function NewMessagePane({ personId, onBack, onSent }: { personId: string; onBack
   }
 
   return (
-    <div className="flex flex-1 flex-col min-w-0 overflow-auto p-5">
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflow: "auto", padding: 20 }}>
       <div className="flex items-center gap-2.5">
-        <button type="button" onClick={onBack} className="text-lg text-text-muted lg:hidden" aria-label="Back">←</button>
-        <h2 className="text-lg font-bold text-text">New message</h2>
+        <button type="button" onClick={onBack} style={{ font: "600 18px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", border: 0, background: "none", cursor: "pointer" }} className="lg:hidden" aria-label="Back">←</button>
+        <h2 style={{ font: "700 18px/1.2 var(--eos-font-sans)", color: "var(--eos-ink)" }}>New message</h2>
       </div>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search people…"
-        className="mt-4 w-full rounded-[10px] border border-border bg-field px-3.5 py-2.5 text-sm text-text outline-none focus:border-primary"
+        style={{ marginTop: 16, width: "100%", border: "1px solid var(--eos-border)", background: "var(--eos-panel)", borderRadius: 10, padding: "10px 14px", font: "400 13.5px/1 var(--eos-font-sans)" }}
       />
-      <div className="mt-3 max-h-[380px] overflow-auto rounded-[12px] border border-border">
+      <div style={{ marginTop: 12, maxHeight: 380, overflow: "auto", border: "1px solid var(--eos-border)", borderRadius: "var(--eos-radius-card)" }}>
         {loading ? (
-          <p className="p-6 text-center text-sm text-text-muted">Loading…</p>
+          <p style={{ padding: 24, textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Loading…</p>
         ) : scoped.length === 0 && unscoped.length === 0 ? (
-          <p className="p-6 text-center text-sm text-text-muted">No matches.</p>
+          <p style={{ padding: 24, textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>No matches.</p>
         ) : (
           <>
-            {scoped.length > 0 && <div className="px-4 pt-3.5 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-text-muted">People you can message directly</div>}
+            {scoped.length > 0 && <div style={{ padding: "14px 16px 6px", font: "700 11px/1 var(--eos-font-sans)", letterSpacing: ".07em", color: "var(--eos-tertiary)", textTransform: "uppercase" }}>People you can message directly</div>}
             {scoped.map((item) => (
               <DiscoveryRow key={item.userId} item={item} active={selected?.userId === item.userId} onClick={() => setSelected(item)} />
             ))}
-            {unscoped.length > 0 && <div className="px-4 pt-3.5 pb-1.5 text-[11px] font-bold uppercase tracking-wide text-text-muted">Other School EOS users</div>}
+            {unscoped.length > 0 && <div style={{ padding: "14px 16px 6px", font: "700 11px/1 var(--eos-font-sans)", letterSpacing: ".07em", color: "var(--eos-tertiary)", textTransform: "uppercase" }}>Other School EOS users</div>}
             {unscoped.map((item) => (
               <DiscoveryRow key={item.userId} item={item} active={selected?.userId === item.userId} onClick={() => setSelected(item)} />
             ))}
@@ -580,27 +344,27 @@ function NewMessagePane({ personId, onBack, onSent }: { personId: string; onBack
       </div>
 
       {selected && (
-        <div className="mt-4 rounded-[12px] border border-border bg-field p-4">
+        <div style={{ marginTop: 16, border: "1px solid var(--eos-border)", background: "var(--eos-panel)", borderRadius: "var(--eos-radius-card)", padding: 16 }}>
           <div className="flex items-center justify-between">
-            <div className="text-sm font-bold text-text">
+            <div style={{ font: "700 14px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)" }}>
               {selected.messagingMode === "REQUEST" ? `Send a message request to ${selected.displayName}` : `Message ${selected.displayName}`}
             </div>
-            <button type="button" onClick={() => setSelected(null)} className="text-sm text-text-muted">✕</button>
+            <button type="button" onClick={() => setSelected(null)} style={{ font: "400 14px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", border: 0, background: "none", cursor: "pointer" }}>✕</button>
           </div>
-          {error && <p className="mt-2 text-xs text-critical-text">{error}</p>}
-          <div className="mt-2.5 flex items-end gap-2.5">
+          {error && <p style={{ marginTop: 8, font: "400 12px/1.4 var(--eos-font-sans)", color: "var(--eos-red-text)" }}>{error}</p>}
+          <div className="flex items-end gap-2.5" style={{ marginTop: 10 }}>
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={selected.messagingMode === "REQUEST" ? "Write your one message (required)…" : "Write a message (optional)…"}
               rows={2}
-              className="flex-1 rounded-[14px] border border-border bg-surface px-4 py-2.5 text-sm text-text outline-none focus:border-primary"
+              style={{ flex: 1, border: "1px solid var(--eos-border)", background: "var(--eos-white)", borderRadius: 14, padding: "10px 16px", font: "400 14px/1.4 var(--eos-font-sans)" }}
             />
             <button
               type="button"
               onClick={handleSend}
               disabled={sending || (selected.messagingMode === "REQUEST" && !draft.trim())}
-              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white disabled:opacity-50"
+              style={{ width: 44, height: 44, flexShrink: 0, border: 0, borderRadius: "50%", background: "var(--eos-primary)", color: "#fff", cursor: "pointer", opacity: sending ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}
             >
               {sending ? "…" : "➤"}
             </button>
@@ -616,24 +380,24 @@ function DiscoveryRow({ item, active, onClick }: { item: DiscoveryItem; active: 
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 border-b border-border px-4 py-2.5 text-left last:border-b-0 hover:bg-field ${active ? "bg-field" : "bg-surface"}`}
+      className="flex w-full items-center gap-3 text-left"
+      style={{ padding: "11px 16px", borderBottom: "1px solid var(--eos-divider)", background: active ? "var(--eos-tint)" : "var(--eos-white)" }}
     >
-      <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-field text-xs font-bold text-text">
+      <span style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--eos-panel)", color: "var(--eos-ink)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 12px/1 var(--eos-font-sans)", flexShrink: 0 }}>
         {item.displayName.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
       </span>
-      <span className="flex-1 min-w-0">
-        <span className="block truncate text-sm font-bold text-text">{item.displayName}</span>
-        <span className="mt-1 flex items-center gap-1.5">
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", font: "700 14px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.displayName}</span>
+        <span className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
           <span
-            className="rounded-[6px] px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wide"
-            style={{ background: item.role ? "var(--color-field)" : "#fee2e2", color: item.role ? "var(--color-primary)" : "#b91c1c" }}
+            style={{ borderRadius: 6, padding: "3px 7px", font: "700 10.5px/1 var(--eos-font-sans)", letterSpacing: ".04em", textTransform: "uppercase", background: item.role ? "var(--eos-tint)" : "var(--eos-red-bg)", color: item.role ? "var(--eos-primary)" : "var(--eos-red-text)" }}
           >
             {item.role ?? "No role on file"}
           </span>
-          {item.designation && <span className="truncate text-xs text-text-muted">{item.designation}</span>}
+          {item.designation && <span style={{ font: "400 12px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.designation}</span>}
         </span>
       </span>
-      {item.messagingMode === "REQUEST" && <span className="text-[10px] font-bold uppercase text-primary">Request</span>}
+      {item.messagingMode === "REQUEST" && <span style={{ font: "700 10px/1 var(--eos-font-sans)", letterSpacing: ".05em", textTransform: "uppercase", color: "var(--eos-primary)" }}>Request</span>}
     </button>
   );
 }
@@ -674,40 +438,40 @@ function RequestsPane({ onBack, onOpen, onDecided }: { onBack: () => void; onOpe
   }
 
   return (
-    <div className="flex flex-1 flex-col min-w-0 overflow-auto p-5">
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflow: "auto", padding: 20 }}>
       <div className="flex items-center gap-2.5">
-        <button type="button" onClick={onBack} className="text-lg text-text-muted lg:hidden" aria-label="Back">←</button>
-        <h2 className="text-lg font-bold text-text">Message requests</h2>
+        <button type="button" onClick={onBack} style={{ font: "600 18px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", border: 0, background: "none", cursor: "pointer" }} className="lg:hidden" aria-label="Back">←</button>
+        <h2 style={{ font: "700 18px/1.2 var(--eos-font-sans)", color: "var(--eos-ink)" }}>Message requests</h2>
       </div>
-      <div className="mt-4">
+      <div style={{ marginTop: 16 }}>
         {error ? (
-          <p className="p-8 text-center text-sm text-critical-text">{error}</p>
+          <p style={{ padding: 30, textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-red-text)" }}>{error}</p>
         ) : requests === null ? (
-          <p className="p-8 text-center text-sm text-text-muted">Loading…</p>
+          <p style={{ padding: 30, textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Loading…</p>
         ) : requests.length === 0 ? (
-          <p className="p-8 text-center text-sm text-text-muted">No pending message requests.</p>
+          <p style={{ padding: 30, textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>No pending message requests.</p>
         ) : (
-          <div className="overflow-hidden rounded-[12px] border border-border">
+          <div style={{ overflow: "hidden", border: "1px solid var(--eos-border)", borderRadius: "var(--eos-radius-card)" }}>
             {requests.map((r) => {
               const name = resolveDisplayName(r.requesterPersonId);
               const deciding = decidingId === r.id;
               return (
-                <div key={r.id} className="flex items-center gap-3.5 border-b border-border px-4 py-3.5 last:border-b-0">
-                  <button type="button" onClick={() => onOpen(r.conversationId)} className="flex flex-1 min-w-0 items-center gap-3.5 text-left">
-                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-field text-sm font-bold text-text">
+                <div key={r.id} className="flex items-center gap-3.5" style={{ padding: "14px 16px", borderBottom: "1px solid var(--eos-divider)" }}>
+                  <button type="button" onClick={() => onOpen(r.conversationId)} className="flex flex-1 items-center gap-3.5 text-left" style={{ minWidth: 0 }}>
+                    <span style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--eos-panel)", color: "var(--eos-ink)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 14px/1 var(--eos-font-sans)", flexShrink: 0 }}>
                       {initialsOf(name)}
                     </span>
                     <span>
-                      <span className="block text-sm font-bold text-text">{name}</span>
-                      <span className="block text-xs text-text-muted">Wants to send you a message</span>
+                      <span style={{ display: "block", font: "700 14px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)" }}>{name}</span>
+                      <span style={{ display: "block", font: "400 12px/1.4 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Wants to send you a message</span>
                     </span>
                   </button>
                   {deciding ? (
-                    <span className="text-xs text-text-muted">Working…</span>
+                    <span style={{ font: "400 12px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Working…</span>
                   ) : (
                     <div className="flex gap-2">
-                      <button type="button" onClick={() => decide(r.id, "decline")} className="rounded-[9px] border border-border px-3.5 py-2 text-xs font-bold text-text-muted">Decline</button>
-                      <button type="button" onClick={() => decide(r.id, "accept")} className="rounded-[9px] bg-primary px-3.5 py-2 text-xs font-bold text-white">Accept</button>
+                      <button type="button" onClick={() => decide(r.id, "decline")} style={{ border: "1px solid var(--eos-border)", background: "var(--eos-white)", cursor: "pointer", borderRadius: 9, padding: "8px 14px", font: "700 12px/1 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>Decline</button>
+                      <button type="button" onClick={() => decide(r.id, "accept")} style={{ border: 0, background: "var(--eos-primary)", cursor: "pointer", borderRadius: 9, padding: "8px 14px", font: "700 12px/1 var(--eos-font-sans)", color: "#fff" }}>Accept</button>
                     </div>
                   )}
                 </div>

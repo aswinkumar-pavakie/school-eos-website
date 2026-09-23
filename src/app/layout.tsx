@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { IBM_Plex_Mono, JetBrains_Mono, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
@@ -7,6 +7,17 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-plus-jakarta-sans",
+});
+
+// Same face/weights as faculty-ui/FacultyShell.tsx's own Outfit() call --
+// loaded again here (harmless, Next dedupes identical font requests) so the
+// site-wide shared feature components (src/components/shared-ui/*) render
+// with the exact same font wherever they're dropped in, without every
+// role's own Shell needing to load it individually.
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-outfit",
 });
 
 // Data font -- used only where figures are compared down a column (money, marks,
@@ -36,7 +47,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} ${ibmPlexMono.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" className={`${plusJakartaSans.variable} ${ibmPlexMono.variable} ${jetBrainsMono.variable} ${outfit.variable}`}>
       <body className="font-sans bg-bg text-text">{children}</body>
     </html>
   );

@@ -79,9 +79,12 @@ export function ParentShell({
           transition: "margin-right 300ms ease",
         }}
       >
-        {/* Sidebar */}
-        <div style={{ width: 248, flexShrink: 0, background: "#fff", borderRight: "1px solid var(--par-border)", display: "flex", flexDirection: "column", padding: "24px 16px", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 24px" }}>
+        {/* Sidebar -- same 272px width / 64px header-zone / 14px-18px nav
+           padding as the shared core Shell (src/components/dashboard/
+           Shell.tsx), matching Admin/Principal's own chrome dimensions
+           exactly, not just its colors. */}
+        <div style={{ width: 272, flexShrink: 0, background: "#fff", borderRight: "1px solid var(--par-border)", display: "flex", flexDirection: "column", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+          <div style={{ height: 64, flexShrink: 0, display: "flex", alignItems: "center", gap: 10, padding: "0 20px", borderBottom: "1px solid var(--par-border)" }}>
             <div style={{ width: 38, height: 38, borderRadius: 9, background: "var(--par-primary)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14 }}>PP</div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 15, lineHeight: 1.2 }}>Pavakie</div>
@@ -89,6 +92,7 @@ export function ParentShell({
             </div>
           </div>
 
+          <div style={{ flex: 1, overflowY: "auto", padding: "18px 14px" }}>
           <div onClick={() => setSwitcherOpen((o) => !o)} style={{ background: "var(--par-panel)", borderRadius: 12, padding: 12, display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer", flex: "none" }}>
             <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--par-primary)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
               {initialsOf(selectedChild.studentName)}
@@ -113,15 +117,15 @@ export function ParentShell({
                     padding: "12px 14px",
                     cursor: "pointer",
                     background: c.studentId === selectedChild.studentId ? "var(--par-tint-strong)" : "#fff",
-                    borderBottom: i < childOptions.length - 1 ? "1px solid #EDEFF5" : undefined,
+                    borderBottom: i < childOptions.length - 1 ? "1px solid var(--par-divider)" : undefined,
                   }}
                 >
                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--par-tint-strong)", color: "var(--par-primary-strong)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0 }}>
                     {initialsOf(c.studentName)}
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1F2937" }}>{c.studentName}</div>
-                    <div style={{ fontSize: 12, color: "#8A90A0", marginTop: 1 }}>{[c.gradeName, c.sectionName].filter(Boolean).join("-") || "—"}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--par-ink)" }}>{c.studentName}</div>
+                    <div style={{ fontSize: 12, color: "var(--par-tertiary-2)", marginTop: 1 }}>{[c.gradeName, c.sectionName].filter(Boolean).join("-") || "—"}</div>
                   </div>
                 </div>
               ))}
@@ -130,7 +134,7 @@ export function ParentShell({
 
           {PARENT_NAV.map((group) => (
             <div key={group.title}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#9AA1B2", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0 8px", margin: "16px 0 8px" }}>{group.title}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--par-tertiary)", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0 8px", margin: "16px 0 8px" }}>{group.title}</div>
               {group.items.map((item) => {
                 const active = isActive(pathname, item.href);
                 const count = item.countKey === "homework" ? homeworkPendingCount : item.countKey === "fees" ? feesOverdueCount : 0;
@@ -142,16 +146,18 @@ export function ParentShell({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      padding: "10px 12px",
-                      borderRadius: 9,
+                      minHeight: 44,
+                      padding: "11px 12px",
+                      borderRadius: 10,
                       marginBottom: 2,
                       textDecoration: "none",
                       background: active ? "var(--par-tint)" : "transparent",
-                      color: active ? "var(--par-primary)" : "#374151",
+                      color: active ? "var(--par-primary)" : "var(--par-body)",
+                      fontWeight: active ? 600 : 500,
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <NavIcon id={item.icon} style={{ color: active ? "var(--par-primary)" : "#5B6478" }} />
+                      <NavIcon id={item.icon} style={{ color: active ? "var(--par-primary)" : "var(--par-tertiary-2)" }} />
                       <span style={{ fontSize: 14, fontWeight: active ? 600 : 400 }}>{item.label}</span>
                     </div>
                     {count > 0 && (
@@ -162,23 +168,25 @@ export function ParentShell({
               })}
             </div>
           ))}
+          </div>
 
-          <div style={{ flex: 1 }} />
-          <Link href={`/parent/profile?studentId=${selectedChild.studentId}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 8px", borderTop: "1px solid var(--par-divider)", marginTop: 12, textDecoration: "none", color: "inherit" }}>
-            <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--par-panel)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, color: "var(--par-primary)" }}>
-              {initialsOf(personName)}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{personName}</div>
-              <div style={{ fontSize: 11, color: "var(--par-body-muted)" }}>Parent</div>
-            </div>
-            <div style={{ fontSize: 13, color: "#9AA1B2" }}>›</div>
-          </Link>
+          <div style={{ flexShrink: 0, borderTop: "1px solid var(--par-border)", padding: "16px 18px" }}>
+            <Link href={`/parent/profile?studentId=${selectedChild.studentId}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit" }}>
+              <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--par-panel)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, color: "var(--par-primary)" }}>
+                {initialsOf(personName)}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{personName}</div>
+                <div style={{ fontSize: 11, color: "var(--par-body-muted)" }}>Parent</div>
+              </div>
+              <div style={{ fontSize: 13, color: "var(--par-tertiary)" }}>›</div>
+            </Link>
+          </div>
         </div>
 
         {/* Main column */}
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          <div style={{ height: 68, flexShrink: 0, background: "#fff", borderBottom: "1px solid var(--par-border)", display: "flex", alignItems: "center", gap: 16, padding: "0 28px", position: "sticky", top: 0, zIndex: 5 }}>
+          <div style={{ height: 64, flexShrink: 0, background: "#fff", borderBottom: "1px solid var(--par-border)", display: "flex", alignItems: "center", gap: 16, padding: "0 28px", position: "sticky", top: 0, zIndex: 5 }}>
             <div style={{ flex: 1, maxWidth: 420, position: "relative" }}>
               <input
                 type="text"

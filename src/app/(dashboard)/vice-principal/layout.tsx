@@ -100,6 +100,7 @@ const VICE_PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   // agreed placement.
   { href: "/vice-principal/my-attendance", label: "My Attendance", icon: "attendance", group: "MY RECORD" },
   { href: "/vice-principal/my-leave", label: "My Leave", icon: "requests", group: "MY RECORD" },
+  { href: "/vice-principal/my-od", label: "My OD", icon: "requests", group: "MY RECORD" },
 
   // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
   // -- no longer a sidebar entry, matching the reference design.

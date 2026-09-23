@@ -57,6 +57,38 @@
 
 :root {
   color-scheme: light;
+
+  /* ---- Shared feature-screen design tokens (--eos-*) ---------------------
+   * Literal copies of faculty-theme.css's own --fac-* values -- Faculty's
+   * screens are the canonical/"core" pixel design (Design Architecture per
+   * the real .dc.html mockups). These live here, global, specifically so
+   * src/components/shared-ui/* (Academic Calendar, Timetable, My Attendance,
+   * Leave, OD, Library, Messages) render pixel-identically inside ANY role's
+   * dashboard, not only inside Faculty's own faculty-theme.css scope. Never
+   * edit these without checking faculty-theme.css's own --fac-* first --
+   * they must stay numerically identical, that's what "one global design"
+   * means here. */
+  --eos-font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --eos-primary: #1d4ed8;
+  --eos-navy: #12275c;
+  --eos-ink: #0f172a;
+  --eos-body: #334155;
+  --eos-body-muted: #64748b;
+  --eos-tertiary: #94a3b8;
+  --eos-white: #ffffff;
+  --eos-tint: #eff6ff;
+  --eos-panel: #f8fafc;
+  --eos-divider: #f1f5f9;
+  --eos-border: #e2e8f0;
+  --eos-red: #dc2626;
+  --eos-red-bg: #fee2e2;
+  --eos-red-text: #b91c1c;
+  --eos-green-text: #15803d;
+  --eos-green-bg: #f0fdf4;
+  --eos-amber: #fbbf24;
+  --eos-radius-card: 12px;
+  --eos-radius-input: 10px;
+  --eos-radius-pill: 20px;
 }
 
 * {

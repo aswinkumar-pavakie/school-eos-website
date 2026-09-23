@@ -33,29 +33,29 @@ export function StaffLeaveForm({ defaultType = "CASUAL" }: { defaultType?: strin
   }
 
   return (
-    <form action={handleSubmit} style={{ background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: "var(--fac-radius-card)", padding: 24, marginTop: 18 }}>
+    <form action={handleSubmit} style={{ background: "var(--eos-white)", border: "1px solid var(--eos-border)", borderRadius: "var(--eos-radius-card)", padding: 24, marginTop: 18 }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <div>
-          <div style={{ font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-body)", marginBottom: 9 }}>Leave type</div>
-          <select name="leaveType" defaultValue={defaultType} style={{ width: "100%", border: "1px solid var(--fac-border)", borderRadius: 10, padding: "13px 14px", font: "400 14.5px/1 var(--fac-font-sans)", background: "var(--fac-white)" }}>
+          <div style={{ font: "600 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body)", marginBottom: 9 }}>Leave type</div>
+          <select name="leaveType" defaultValue={defaultType} style={{ width: "100%", border: "1px solid var(--eos-border)", borderRadius: 10, padding: "13px 14px", font: "400 14.5px/1 var(--eos-font-sans)", background: "var(--eos-white)" }}>
             {LEAVE_TYPES.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
         </div>
         <div>
-          <div style={{ font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-body)", marginBottom: 9 }}>From date</div>
-          <input type="date" name="fromDate" required style={{ width: "100%", border: "1px solid var(--fac-border)", borderRadius: 10, padding: "12px 14px", font: "400 14.5px/1 var(--fac-font-sans)" }} />
+          <div style={{ font: "600 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body)", marginBottom: 9 }}>From date</div>
+          <input type="date" name="fromDate" required style={{ width: "100%", border: "1px solid var(--eos-border)", borderRadius: 10, padding: "12px 14px", font: "400 14.5px/1 var(--eos-font-sans)" }} />
         </div>
         <div>
-          <div style={{ font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-body)", marginBottom: 9 }}>To date</div>
-          <input type="date" name="toDate" required style={{ width: "100%", border: "1px solid var(--fac-border)", borderRadius: 10, padding: "12px 14px", font: "400 14.5px/1 var(--fac-font-sans)" }} />
+          <div style={{ font: "600 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body)", marginBottom: 9 }}>To date</div>
+          <input type="date" name="toDate" required style={{ width: "100%", border: "1px solid var(--eos-border)", borderRadius: 10, padding: "12px 14px", font: "400 14.5px/1 var(--eos-font-sans)" }} />
         </div>
       </div>
-      <div style={{ font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-body)", margin: "18px 0 9px" }}>Reason</div>
-      <textarea name="reason" required minLength={3} placeholder="Describe the reason for your leave" style={{ width: "100%", minHeight: 110, border: "1px solid var(--fac-border)", borderRadius: 10, padding: "13px 14px", font: "400 14.5px/1.6 var(--fac-font-sans)", resize: "vertical" }} />
-      {error && <p style={{ font: "400 12.5px/1.4 var(--fac-font-sans)", color: "var(--fac-red-text)", marginTop: 10 }}>{error}</p>}
-      <button type="submit" disabled={pending} style={{ width: "100%", marginTop: 18, border: 0, cursor: "pointer", borderRadius: 11, padding: 16, font: "600 15.5px/1 var(--fac-font-sans)", color: "#fff", background: "var(--fac-primary)", opacity: pending ? 0.7 : 1 }}>
+      <div style={{ font: "600 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body)", margin: "18px 0 9px" }}>Reason</div>
+      <textarea name="reason" required minLength={3} placeholder="Describe the reason for your leave" style={{ width: "100%", minHeight: 110, border: "1px solid var(--eos-border)", borderRadius: 10, padding: "13px 14px", font: "400 14.5px/1.6 var(--eos-font-sans)", resize: "vertical" }} />
+      {error && <p style={{ font: "400 12.5px/1.4 var(--eos-font-sans)", color: "var(--eos-red-text)", marginTop: 10 }}>{error}</p>}
+      <button type="submit" disabled={pending} style={{ width: "100%", marginTop: 18, border: 0, cursor: "pointer", borderRadius: 11, padding: 16, font: "600 15.5px/1 var(--eos-font-sans)", color: "#fff", background: "var(--eos-primary)", opacity: pending ? 0.7 : 1 }}>
         {pending ? "Submitting…" : "Submit leave request"}
       </button>
     </form>

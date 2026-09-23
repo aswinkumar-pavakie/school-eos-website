@@ -1,10 +1,13 @@
 "use client";
 
-// Real, working E2EE thread pane -- same logic as the site's earlier
-// full-page ConversationClient (join/poll/decrypt/send/accept-decline),
-// just restyled to sit in the right-hand pane of the split "Messages" view
-// instead of owning its own page/BackButton. Nothing about the crypto,
-// polling, or request-decision flow changed.
+// Shared, real E2EE thread pane -- the canonical pixel design ported from
+// Faculty's own message/ConversationPane.tsx (Faculty's screen is the
+// source of truth), restyled to the site-wide --eos-* tokens (globals.css)
+// so it renders pixel-identically inside Faculty's own screen, Parent's own
+// screen, and the 10-role shared MessagingApp alike -- one real component,
+// not three copies to keep in sync. Nothing about the crypto, polling, or
+// request-decision flow differs from the original: join/poll/decrypt/send/
+// accept-decline against the real school-eos-messaging microservice.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
@@ -38,6 +41,12 @@ interface DecryptedMessage {
 // cookie auth model doesn't expose to client JS by design. Polling while a
 // conversation is open is the safe interim approximation.
 const POLL_INTERVAL_MS = 8000;
+
+// Reference design's own suggestion chips ("Noted, thank you" / "Will check
+// and reply" / "Can we talk after class?") -- clicking one sends that exact
+// text as a real E2EE message immediately (same handleSend path as typing
+// and pressing Enter), it's not a draft-filler.
+const QUICK_REPLIES = ["Noted, thank you", "Will check and reply", "Can we talk after class?"];
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
@@ -104,7 +113,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
   }, [conversationId]);
 
   useEffect(() => {
-    // Parent remounts this component (React `key={conversationId}`) on
+    // Callers remount this component (React `key={conversationId}`) on
     // conversation switch, so all state above already starts fresh here --
     // no reset needed.
     (async () => {
@@ -136,11 +145,11 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [messages]);
 
-  async function handleSend() {
-    const trimmed = draft.trim();
+  async function handleSend(overrideText?: string) {
+    const trimmed = (overrideText ?? draft).trim();
     if (!trimmed) return;
     setSending(true);
-    setDraft("");
+    if (!overrideText) setDraft("");
     try {
       const encrypted = await encryptMessage(conversationId, trimmed);
       const clientMessageId = crypto.randomUUID();
@@ -149,7 +158,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
       await loadMessages();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Message not sent.");
-      setDraft(trimmed);
+      if (!overrideText) setDraft(trimmed);
     } finally {
       setSending(false);
     }
@@ -170,14 +179,14 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
   if (error) {
     return (
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-red-text)" }}>{error}</p>
+        <p style={{ font: "400 14px/1.5 var(--eos-font-sans)", color: "var(--eos-red-text)" }}>{error}</p>
       </div>
     );
   }
   if (!conversation) {
     return (
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ font: "400 14px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Loading…</p>
+        <p style={{ font: "400 14px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Loading…</p>
       </div>
     );
   }
@@ -192,18 +201,18 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-      <div className="flex items-center gap-3" style={{ padding: "16px 22px", borderBottom: "1px solid var(--fac-divider)" }}>
+      <div className="flex items-center gap-3" style={{ padding: "16px 22px", borderBottom: "1px solid var(--eos-divider)" }}>
         {onBack && (
-          <button type="button" onClick={onBack} aria-label="Back to messages" style={{ border: 0, background: "none", cursor: "pointer", font: "600 18px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>
+          <button type="button" onClick={onBack} aria-label="Back to messages" style={{ border: 0, background: "none", cursor: "pointer", font: "600 18px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>
             ←
           </button>
         )}
-        <span style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--fac-ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "600 13px/1 var(--fac-font-sans)", flex: "0 0 38px" }}>
+        <span style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--eos-ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "600 13px/1 var(--eos-font-sans)", flex: "0 0 38px" }}>
           {initialsOf(otherName)}
         </span>
         <div style={{ minWidth: 0 }}>
-          <div style={{ font: "700 15px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)" }}>{otherName}</div>
-          {otherDesignation && <div style={{ font: "400 12.5px/1.3 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 1 }}>{otherDesignation}</div>}
+          <div style={{ font: "700 15px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)" }}>{otherName}</div>
+          {otherDesignation && <div style={{ font: "400 12.5px/1.3 var(--eos-font-sans)", color: "var(--eos-tertiary)", marginTop: 1 }}>{otherDesignation}</div>}
         </div>
       </div>
 
@@ -211,33 +220,33 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
         <div style={{ margin: "14px 22px 0", background: "#fff6e5", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
           {isRecipient ? (
             <>
-              <p style={{ font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-ink)" }}>
+              <p style={{ font: "400 13px/1.4 var(--eos-font-sans)", color: "var(--eos-ink)" }}>
                 This person wants to message you. Only one message is allowed until you respond.
               </p>
               {deciding ? (
-                <p style={{ font: "400 12.5px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 8 }}>Working…</p>
+                <p style={{ font: "400 12.5px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", marginTop: 8 }}>Working…</p>
               ) : (
                 <div className="flex gap-2.5" style={{ marginTop: 10 }}>
-                  <button type="button" onClick={() => decide("decline")} style={{ flex: 1, border: "1px solid var(--fac-border)", background: "var(--fac-white)", cursor: "pointer", borderRadius: 10, padding: "10px 0", font: "600 13px/1 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
+                  <button type="button" onClick={() => decide("decline")} style={{ flex: 1, border: "1px solid var(--eos-border)", background: "var(--eos-white)", cursor: "pointer", borderRadius: 10, padding: "10px 0", font: "600 13px/1 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>
                     Decline
                   </button>
-                  <button type="button" onClick={() => decide("accept")} style={{ flex: 1, border: 0, background: "var(--fac-primary)", cursor: "pointer", borderRadius: 10, padding: "10px 0", font: "600 13px/1 var(--fac-font-sans)", color: "#fff" }}>
+                  <button type="button" onClick={() => decide("accept")} style={{ flex: 1, border: 0, background: "var(--eos-primary)", cursor: "pointer", borderRadius: 10, padding: "10px 0", font: "600 13px/1 var(--eos-font-sans)", color: "#fff" }}>
                     Accept
                   </button>
                 </div>
               )}
             </>
           ) : (
-            <p style={{ font: "400 13px/1.4 var(--fac-font-sans)", color: "var(--fac-ink)" }}>Waiting for a response to your message request.</p>
+            <p style={{ font: "400 13px/1.4 var(--eos-font-sans)", color: "var(--eos-ink)" }}>Waiting for a response to your message request.</p>
           )}
         </div>
       )}
 
-      <div ref={listRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 22px", background: "var(--fac-panel)" }}>
+      <div ref={listRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "18px 22px", background: "var(--eos-panel)" }}>
         {messages === null ? (
-          <p style={{ textAlign: "center", font: "400 13px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>Loading…</p>
+          <p style={{ textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>Loading…</p>
         ) : messages.length === 0 ? (
-          <p style={{ textAlign: "center", font: "400 13px/1.5 var(--fac-font-sans)", color: "var(--fac-tertiary)" }}>No messages yet.</p>
+          <p style={{ textAlign: "center", font: "400 13px/1.5 var(--eos-font-sans)", color: "var(--eos-tertiary)" }}>No messages yet.</p>
         ) : (
           messages.map((m) => {
             const isOwn = m.senderPersonId === personId;
@@ -248,7 +257,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
               <div key={m.id}>
                 {showDivider && (
                   <div style={{ textAlign: "center", margin: "4px 0 16px" }}>
-                    <span style={{ font: "600 11px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", background: "var(--fac-white)", border: "1px solid var(--fac-border)", borderRadius: 20, padding: "6px 13px" }}>
+                    <span style={{ font: "600 11px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", background: "var(--eos-white)", border: "1px solid var(--eos-border)", borderRadius: 20, padding: "6px 13px" }}>
                       {divider}
                     </span>
                   </div>
@@ -259,14 +268,14 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
                       style={{
                         borderRadius: 14,
                         padding: "10px 14px",
-                        background: isOwn ? "var(--fac-primary)" : "var(--fac-white)",
-                        border: isOwn ? "none" : "1px solid var(--fac-border)",
-                        color: isOwn ? "#fff" : "var(--fac-ink)",
+                        background: isOwn ? "var(--eos-primary)" : "var(--eos-white)",
+                        border: isOwn ? "none" : "1px solid var(--eos-border)",
+                        color: isOwn ? "#fff" : "var(--eos-ink)",
                       }}
                     >
-                      <div style={{ font: "400 14px/1.5 var(--fac-font-sans)" }}>{m.plaintext}</div>
+                      <div style={{ font: "400 14px/1.5 var(--eos-font-sans)" }}>{m.plaintext}</div>
                     </div>
-                    <div style={{ font: "400 11px/1 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
+                    <div style={{ font: "400 11px/1 var(--eos-font-sans)", color: "var(--eos-tertiary)", marginTop: 4, textAlign: isOwn ? "right" : "left" }}>{formatTime(m.createdAt)}</div>
                   </div>
                 </div>
               </div>
@@ -276,28 +285,43 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
       </div>
 
       {canSend && (
-        <div className="flex items-center gap-2.5" style={{ padding: "16px 22px", borderTop: "1px solid var(--fac-divider)" }}>
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            placeholder="Type a message…"
-            style={{ flex: 1, border: "1px solid var(--fac-border)", borderRadius: 22, padding: "12px 18px", font: "400 14px/1.4 var(--fac-font-sans)" }}
-          />
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={sending || !draft.trim()}
-            aria-label="Send message"
-            style={{ width: 42, height: 42, flex: "0 0 42px", border: 0, borderRadius: "50%", background: "var(--fac-primary)", color: "#fff", cursor: "pointer", opacity: sending || !draft.trim() ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}
-          >
-            ➤
-          </button>
+        <div style={{ padding: "14px 22px 16px", borderTop: "1px solid var(--eos-divider)" }}>
+          <div className="flex flex-wrap gap-2" style={{ marginBottom: 12 }}>
+            {QUICK_REPLIES.map((text) => (
+              <button
+                key={text}
+                type="button"
+                onClick={() => handleSend(text)}
+                disabled={sending}
+                style={{ border: "1px solid var(--eos-border)", background: "var(--eos-white)", cursor: "pointer", borderRadius: 20, padding: "8px 14px", font: "500 12.5px/1 var(--eos-font-sans)", color: "var(--eos-body)", opacity: sending ? 0.6 : 1 }}
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2.5">
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder="Type a message…"
+              style={{ flex: 1, border: "1px solid var(--eos-border)", borderRadius: 22, padding: "12px 18px", font: "400 14px/1.4 var(--eos-font-sans)" }}
+            />
+            <button
+              type="button"
+              onClick={() => handleSend()}
+              disabled={sending || !draft.trim()}
+              aria-label="Send message"
+              style={{ width: 42, height: 42, flex: "0 0 42px", border: 0, borderRadius: "50%", background: "var(--eos-primary)", color: "#fff", cursor: "pointer", opacity: sending || !draft.trim() ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}
+            >
+              ➤
+            </button>
+          </div>
         </div>
       )}
     </div>

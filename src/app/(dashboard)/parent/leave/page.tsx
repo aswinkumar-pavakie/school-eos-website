@@ -1,24 +1,27 @@
-// Parent Leave -- Apply + History. No attachment upload here (deliberately,
-// same as the mobile app's own Leave screen -- no storage bucket exists for
-// leave attachments yet); a past request's attachment field, if ever
-// non-null, is shown as plain text only, never a picker.
+// Parent Leave -- now renders the shared src/components/shared-ui/LeaveOdView
+// shell, the same canonical Apply/History tabbed screen Faculty's own
+// staff-leave/page.tsx renders. Real leave_request data (listLeaveRequests)
+// -- same real data as before, only the presentation (tabs instead of a
+// side-by-side layout) is now shared. No attachment upload here
+// (deliberately, same as the mobile app's own Leave screen -- no storage
+// bucket exists for leave attachments yet); a past request's attachment
+// field, if ever non-null, is shown as plain text only, never a picker.
 
 import { redirect } from "next/navigation";
 import { ChildSwitcher } from "@/components/dashboard/ChildSwitcher";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { StatusPill } from "@/components/ui/StatusPill";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 import { listChildren, listLeaveRequests, resolveSelectedChild } from "@/lib/parent-api";
+import { LeaveOdView, type LeaveOdRequestRow } from "@/components/shared-ui/LeaveOdView";
 import { LeaveRequestForm } from "./LeaveRequestForm";
 
 export default async function ParentLeavePage({
   searchParams,
 }: {
-  searchParams: Promise<{ studentId?: string }>;
+  searchParams: Promise<{ studentId?: string; tab?: string }>;
 }) {
   try {
-    const { studentId: requestedStudentId } = await searchParams;
+    const { studentId: requestedStudentId, tab } = await searchParams;
     const children = await listChildren();
     const selected = resolveSelectedChild(children, requestedStudentId);
 
@@ -26,56 +29,32 @@ export default async function ParentLeavePage({
       return <EmptyState title="No children linked" body="This account has no linked students yet." />;
     }
 
+    const activeTab = tab === "History" ? "History" : "Apply";
     const requests = await listLeaveRequests(selected.studentId);
 
+    const rows: LeaveOdRequestRow[] = requests.map((r) => ({
+      id: r.id,
+      typeLabel: "Leave",
+      fromDate: r.fromDate,
+      toDate: r.toDate,
+      reason: r.reason + (r.skipSchoolTransport ? " (bus will not stop for these days)" : ""),
+      state: r.state,
+      decidedLine: r.decidedAt ? `Decided on ${new Date(r.decidedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : null,
+    }));
+
     return (
-      <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-text">Leave</h1>
-            <p className="mt-1 text-sm text-text-muted">Apply for leave and track past requests for {selected.studentName}.</p>
-          </div>
+      <div>
+        <div className="mb-4 flex justify-end">
           <ChildSwitcher students={children} selectedStudentId={selected.studentId} />
         </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <LeaveRequestForm studentId={selected.studentId} />
-          </div>
-
-          <div className="lg:col-span-3">
-            <h2 className="text-[15px] font-extrabold leading-[20px] text-text">History</h2>
-            {requests.length === 0 ? (
-              <div className="mt-3">
-                <EmptyState title="No leave requests yet" body="Requests you submit for this child will appear here." />
-              </div>
-            ) : (
-              <div className="mt-3 flex flex-col gap-3">
-                {requests.map((r) => (
-                  <div key={r.id} className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-bold text-text">
-                          {formatDate(r.fromDate)} – {formatDate(r.toDate)}
-                        </p>
-                        <p className="mt-1 text-xs text-text-muted">Applied {formatDate(r.createdAt)}</p>
-                      </div>
-                      <StatusPill state={r.state} />
-                    </div>
-                    <p className="mt-2 text-sm text-text">{r.reason}</p>
-                    {r.skipSchoolTransport ? (
-                      <p className="mt-1 text-xs text-text-muted">Bus will not stop for these days</p>
-                    ) : null}
-                    <p className="mt-2 text-xs text-text-muted">
-                      {r.attachmentFileName ? `Attachment: ${r.attachmentFileName}` : "No attachment"}
-                    </p>
-                    {r.decidedAt ? <p className="mt-1 text-xs text-text-muted">Decided on {formatDate(r.decidedAt)}</p> : null}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        <LeaveOdView
+          title="Leave"
+          subtitle={`Apply for leave and track past requests for ${selected.studentName}`}
+          basePath={`/parent/leave?studentId=${selected.studentId}`}
+          activeTab={activeTab}
+          applySlot={<LeaveRequestForm studentId={selected.studentId} />}
+          requests={rows}
+        />
       </div>
     );
   } catch (err) {

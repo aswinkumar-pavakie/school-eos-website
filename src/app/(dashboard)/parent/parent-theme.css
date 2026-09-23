@@ -1,36 +1,41 @@
-/* Parent portal theme -- tokens read directly off
-   brain/Copy of Parent web login design/*.dc.html (measured, not
-   approximated): system font stack (the design never loads a webfont),
-   primary #3B5BDB, navy ink #0B0F19/#12172B, 16px cards, 9-10px controls. */
+/* Parent portal theme -- token VALUES aligned to the same core design system
+   every other role's own portal uses (Admin/Correspondent/Principal/Vice
+   Principal/Transport Manager/Finance's own ReframeTheme.tsx palette/font),
+   per explicit instruction that the whole product read as one consistent
+   enterprise design, not a per-role reskin. Token NAMES (--par-*) are
+   unchanged -- every existing Parent page keeps working exactly as before,
+   unmodified; only what these tokens resolve to changed, so the whole
+   portal now renders in the same colors/font/radii as Admin/Principal
+   without touching a single page file. */
 .parent-scope {
-  --par-font: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --par-primary: #3B5BDB;
-  --par-primary-strong: #2F55E8;
-  --par-ink: #0B0F19;
-  --par-navy: #12172B;
-  --par-body: #374151;
-  --par-body-muted: #6B7280;
-  --par-tertiary: #9AA1B2;
-  --par-tertiary-2: #8A90A0;
-  --par-border: #E7E9F0;
-  --par-divider: #F0F2FA;
-  --par-panel: #F0F2FA;
-  --par-panel-2: #F6F7FB;
-  --par-tint: #EEF1FF;
-  --par-tint-strong: #E3E9FF;
-  --par-red: #E94D4D;
-  --par-red-bg: #FDEEEE;
-  --par-amber: #B5590C;
-  --par-amber-bg: #FFF1E6;
-  --par-green: #3DD56D;
+  --par-font: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --par-primary: #1f6feb;
+  --par-primary-strong: #1f4fa8;
+  --par-ink: #10243f;
+  --par-navy: #10243f;
+  --par-body: #44536b;
+  --par-body-muted: #5c6b82;
+  --par-tertiary: #8593a8;
+  --par-tertiary-2: #9aa7ba;
+  --par-border: #e4e9f2;
+  --par-divider: #eef1f6;
+  --par-panel: #f8fafc;
+  --par-panel-2: #f8fafc;
+  --par-tint: #eef4ff;
+  --par-tint-strong: #dbe7ff;
+  --par-red: #c0362c;
+  --par-red-bg: #fdeeee;
+  --par-amber: #b5590c;
+  --par-amber-bg: #fff1e6;
+  --par-green: #1f7a4d;
   --par-radius-card: 16px;
   --par-radius-card-sm: 14px;
-  --par-radius-input: 10px;
+  --par-radius-input: 12px;
   --par-radius-btn: 9px;
   color-scheme: light;
   font-family: var(--par-font);
   color: var(--par-ink);
-  background: #fff;
+  background: #fbfcfe;
 }
 .parent-scope * { box-sizing: border-box; }
 .parent-scope a { color: var(--par-primary); text-decoration: none; }

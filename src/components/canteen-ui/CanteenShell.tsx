@@ -96,8 +96,8 @@ export function CanteenShell({
     <div className={`canteen-scope ${outfit.variable} ${ibmPlexMono.variable}`} style={{ display: "flex", minHeight: "100vh" }}>
       <aside
         style={{
-          width: 266,
-          flex: "0 0 266px",
+          width: 272,
+          flex: "0 0 272px",
           background: "var(--can-white)",
           borderRight: "1px solid var(--can-border)",
           display: "flex",
@@ -107,9 +107,15 @@ export function CanteenShell({
           height: "100vh",
         }}
       >
+        {/* Same 272px sidebar width / 64px header zone / 14px-18px nav
+           padding as the shared core Shell (src/components/dashboard/
+           Shell.tsx), matching Admin/Principal's own chrome dimensions
+           exactly -- superseding this file's earlier "matched to
+           FacultyShell" convention now that Admin/Principal is the single
+           reference for every login's chrome. */}
         <div
           className="can-hover-lift"
-          style={{ display: "flex", alignItems: "center", gap: 11, padding: "18px 18px 16px", borderBottom: "1px solid var(--can-divider)" }}
+          style={{ height: 64, flexShrink: 0, display: "flex", alignItems: "center", gap: 11, padding: "0 20px", borderBottom: "1px solid var(--can-divider)" }}
         >
           <div
             style={{
@@ -134,7 +140,7 @@ export function CanteenShell({
           </div>
         </div>
 
-        <nav style={{ flex: 1, overflow: "auto", padding: "16px 12px 8px" }}>
+        <nav style={{ flex: 1, overflow: "auto", padding: "18px 14px" }}>
           <div style={{ font: "600 10.5px/1 var(--can-font-sans)", letterSpacing: ".1em", color: "var(--can-tertiary)", padding: "0 12px 9px" }}>
             OVERVIEW
           </div>
@@ -150,10 +156,11 @@ export function CanteenShell({
                     alignItems: "center",
                     gap: 10,
                     width: "100%",
+                    minHeight: 44,
                     textAlign: "left",
-                    padding: "9px 12px",
-                    borderRadius: 9,
-                    font: "500 14px/1.25 var(--can-font-sans)",
+                    padding: "11px 12px",
+                    borderRadius: 10,
+                    font: `${active ? 600 : 500} 15px/1.25 var(--can-font-sans)`,
                     background: active ? "var(--can-tint)" : "transparent",
                     color: active ? "var(--can-primary)" : "var(--can-body)",
                   }}
@@ -169,7 +176,7 @@ export function CanteenShell({
         <Link
           href="#"
           className="can-hover-lift"
-          style={{ display: "flex", alignItems: "center", gap: 11, width: "100%", textAlign: "left", padding: "14px 16px", border: 0, borderTop: "1px solid var(--can-divider)", background: "var(--can-white)" }}
+          style={{ display: "flex", alignItems: "center", gap: 11, width: "100%", flexShrink: 0, textAlign: "left", padding: "16px 18px", border: 0, borderTop: "1px solid var(--can-border)", background: "var(--can-white)" }}
         >
           <span
             style={{ width: 36, height: 36, flex: "0 0 36px", borderRadius: "50%", background: "var(--can-navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", font: "600 13px/1 var(--can-font-sans)" }}
@@ -197,13 +204,15 @@ export function CanteenShell({
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         <header
           style={{
+            height: 64,
+            flexShrink: 0,
             position: "sticky",
             top: 0,
             zIndex: 20,
             display: "flex",
             alignItems: "center",
             gap: 14,
-            padding: "13px 26px",
+            padding: "0 26px",
             background: "var(--can-white)",
             borderBottom: "1px solid var(--can-border)",
           }}

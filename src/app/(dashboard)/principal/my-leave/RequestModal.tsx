@@ -9,12 +9,12 @@ import { createMyLeaveAction, type FormState } from "./actions";
 
 const initial: FormState = {};
 
-export function RequestModal() {
+export function RequestModal({ defaultType = "CASUAL", triggerLabel = "+ New request" }: { defaultType?: string; triggerLabel?: string }) {
   const [state, formAction] = useActionState(createMyLeaveAction, initial);
   return (
-    <Modal title="Request leave / OD" trigger={<PlainButton variant="primary">+ New request</PlainButton>}>
+    <Modal title="Request leave / OD" trigger={<PlainButton variant="primary">{triggerLabel}</PlainButton>}>
       <form action={formAction} className="flex flex-col gap-4">
-        <SelectField label="Type" name="leaveType" defaultValue="CASUAL">
+        <SelectField label="Type" name="leaveType" defaultValue={defaultType}>
           <option value="CASUAL">Casual leave</option>
           <option value="MEDICAL">Medical leave</option>
           <option value="EARNED">Earned leave</option>

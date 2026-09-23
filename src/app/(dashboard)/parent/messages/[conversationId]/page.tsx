@@ -1,16 +1,19 @@
 import { redirect } from "next/navigation";
 import { AuthExpiredError, getCurrentActor } from "@/lib/api";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { MessagesListClient } from "../MessagesListClient";
+import { MessagesListClient } from "@/components/shared-ui/messaging/MessagesListClient";
 
 export default async function ParentConversationPage({ params }: { params: Promise<{ conversationId: string }> }) {
   try {
     const { conversationId } = await params;
     const actor = await getCurrentActor();
     return (
-      <div className="parent-scope">
-        <MessagesListClient personId={actor.personId} initialConversationId={conversationId} />
-      </div>
+      <MessagesListClient
+        personId={actor.personId}
+        initialConversationId={conversationId}
+        newMessageHref="/parent/messages/new"
+        requestsHref="/parent/messages/requests"
+      />
     );
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");

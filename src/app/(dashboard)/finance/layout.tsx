@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import { ReframeThemeStyle, reframeThemeClassName } from "@/components/dashboard/ReframeTheme";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getPurchaseOrdersSummary, getPurchaseRequestsSummary, listApprovals } from "@/lib/finance-api";
 // logoutAction is genuinely shared with the Admin Console — see its own file for why
@@ -11,6 +12,8 @@ import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
+
+const REFRAME_SCOPE = "finance-theme";
 
 // Same Shell as the Admin Console (src/components/dashboard/Shell.tsx) — one design
 // system, not a second one invented for Finance. Only the nav items, role label and
@@ -104,7 +107,8 @@ export default async function FinanceLayout({ children }: { children: ReactNode 
     .catch(() => 0);
 
   return (
-    <>
+    <div className={reframeThemeClassName(REFRAME_SCOPE)}>
+      <ReframeThemeStyle scope={REFRAME_SCOPE} />
       <E2eeBootstrapMount personId={actor.personId} />
       <Shell
         personName={personName}
@@ -117,6 +121,6 @@ export default async function FinanceLayout({ children }: { children: ReactNode 
       >
         {children}
       </Shell>
-    </>
+    </div>
   );
 }
