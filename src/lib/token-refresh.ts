@@ -26,6 +26,19 @@ export function decodeAccessTokenExpiry(token: string): number | null {
   }
 }
 
+/** Role codes carried in the access token -- decoded for UX routing only
+ * (never authorization; the backend re-checks every request). */
+export function decodeAccessTokenRoles(token: string): string[] | null {
+  try {
+    const payload = token.split(".")[1];
+    const json = Buffer.from(payload, "base64url").toString("utf8");
+    const decoded = JSON.parse(json) as { roles?: unknown };
+    return Array.isArray(decoded.roles) ? decoded.roles.filter((r): r is string => typeof r === "string") : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isExpiredOrExpiringSoon(token: string): boolean {
   const exp = decodeAccessTokenExpiry(token);
   if (exp === null) return true;

@@ -15,7 +15,8 @@
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { AuthExpiredError, apiFetch } from "@/lib/api";
+import { AuthExpiredError, apiFetch, getCurrentActor } from "@/lib/api";
+import { ClassTeacherDashboard } from "./ClassTeacherDashboard";
 import {
   getAttendanceHistory,
   getAttendanceRoster,
@@ -80,6 +81,11 @@ export default async function FacultyDashboardPage({ searchParams }: { searchPar
   try {
     const params = await searchParams;
     const view: "today" | "term" = params.view === "term" ? "term" : "today";
+
+    // A Class Teacher login has no FACULTY role: its dashboard is the class
+    // view, not the subject-teaching one below.
+    const actor = await getCurrentActor();
+    if (!actor.roles.includes("FACULTY")) return <ClassTeacherDashboard />;
 
     const [advisorSections, leaveRequests, homework, personRes, announcements, timetable, events, calendar, terms] =
       await Promise.all([

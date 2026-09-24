@@ -99,5 +99,47 @@ export function buildFacultyNavGroups(params: {
   // sidebar entry, matching the reference design.
   groups.push({ label: "MORE", items: more });
 
-  return groups;
+  // "MY CLASS" is the class advisor's own group. A faculty member with no
+  // advised section on THIS login -- including one whose advisor duty now
+  // lives on a separate Class Teacher login (reached via the account
+  // switcher) -- would only see empty class screens there, so the group is
+  // omitted until a section is actually resolved.
+  return sectionLabel ? groups : groups.filter((g) => !g.label.startsWith("MY CLASS"));
+}
+
+/**
+ * The Class Teacher login's nav -- the same console and screens as Faculty,
+ * but only what a class advisor's own login can use (mirrors the mobile
+ * Class Teacher app: Home + Class, no subject-teaching, employee or
+ * sports/bus items, which need the FACULTY role the backend requires).
+ */
+export function buildClassTeacherNavGroups(params: {
+  sectionLabel: string | null;
+  pendingLeaveCount?: number;
+}): FacultyNavGroup[] {
+  const { sectionLabel, pendingLeaveCount } = params;
+  return [
+    {
+      label: "OVERVIEW",
+      items: [
+        { href: "/faculty", label: "Dashboard", icon: "dashboard" },
+        { href: "/faculty/message", label: "Message", icon: "sub-message" },
+        { href: "/faculty/announcements", label: "Notice", icon: "notice" },
+        { href: "/faculty/calendar", label: "Academic Calendar", icon: "calendar" },
+        { href: "/faculty/timetable", label: "Class timetable", icon: "timetable" },
+      ],
+    },
+    {
+      label: sectionLabel ? `MY CLASS · ${sectionLabel}` : "MY CLASS",
+      items: [
+        { href: "/faculty/students", label: "Student data", icon: "students" },
+        { href: "/faculty/class-teacher", label: "Class board", icon: "performance" },
+        { href: "/faculty/attendance", label: "Attendance", icon: "attendance" },
+        { href: "/faculty/class-exams", label: "Exams", icon: "exam" },
+        { href: "/faculty/fees", label: "Fees", icon: "fees" },
+        { href: "/faculty/student-leave", label: "Approve leave", icon: "leave", badge: pendingLeaveCount },
+        { href: "/faculty/parent-meetings", label: "Parent meetings", icon: "permissions" },
+      ],
+    },
+  ];
 }

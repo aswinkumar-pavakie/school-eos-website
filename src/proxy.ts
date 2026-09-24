@@ -19,14 +19,48 @@
 // do the refresh-and-persist here, once, before the page ever renders.
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isExpiredOrExpiringSoon, refreshTokens } from "@/lib/token-refresh";
+import { decodeAccessTokenRoles, isExpiredOrExpiringSoon, refreshTokens } from "@/lib/token-refresh";
 
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 
+// The only /faculty screens a Class Teacher login (CLASS_ADVISOR without
+// FACULTY) can use -- kept in step with buildClassTeacherNavGroups. Any other
+// /faculty URL (homework, marks entry, employee screens...) needs the FACULTY
+// role on the backend, so it is sent back to the Class Teacher dashboard
+// instead of a wall of 403 error boxes.
+const CLASS_TEACHER_PATHS = [
+  "/faculty/message",
+  "/faculty/announcements",
+  "/faculty/calendar",
+  "/faculty/timetable",
+  "/faculty/students",
+  "/faculty/class-teacher",
+  "/faculty/attendance",
+  "/faculty/class-exams",
+  "/faculty/fees",
+  "/faculty/student-leave",
+  "/faculty/parent-meetings",
+  "/faculty/profile",
+  "/faculty/ai-chat",
+];
+
+function isAllowedForClassTeacher(pathname: string): boolean {
+  if (pathname === "/faculty" || pathname === "/faculty/") return true;
+  return CLASS_TEACHER_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+
+  const { pathname } = request.nextUrl;
+  if (accessToken && pathname.startsWith("/faculty")) {
+    const roles = decodeAccessTokenRoles(accessToken);
+    if (roles && roles.includes("CLASS_ADVISOR") && !roles.includes("FACULTY") && !isAllowedForClassTeacher(pathname)) {
+      return NextResponse.redirect(new URL("/faculty", request.url));
+    }
+  }
 
   if (!refreshToken || (accessToken && !isExpiredOrExpiringSoon(accessToken))) {
     return NextResponse.next();

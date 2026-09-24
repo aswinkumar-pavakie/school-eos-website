@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
 import { resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { NoGroupStateError } from "@/lib/e2ee/cipher";
 import { ensureConversationJoined } from "@/lib/e2ee/welcome";
 import { decryptMessageCached, encryptMessage } from "@/lib/e2ee/cipher";
 import { getSentPlaintext, saveSentPlaintext } from "@/lib/e2ee/storage";
@@ -56,6 +57,18 @@ function formatDateDivider(iso: string): string {
 }
 function initialsOf(name: string): string {
   return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
+}
+
+// End-to-end encryption ties a conversation to the browser/device that joined
+// it: if this browser has no saved group state (the conversation was started or
+// joined on another device or browser, or this browser's storage was cleared)
+// the history can't be read here. Say so plainly instead of showing the raw
+// protocol error.
+function describeError(err: unknown, fallback: string): string {
+  if (err instanceof NoGroupStateError || (err instanceof Error && err.message.startsWith("Could not join this conversation"))) {
+    return "This conversation was started on another device or browser, so this browser can't read it. Start a new message to this person to chat from here.";
+  }
+  return err instanceof Error ? err.message : fallback;
 }
 
 export function ConversationPane({ conversationId, personId, onBack }: { conversationId: string; personId: string; onBack?: () => void }) {
@@ -121,7 +134,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
         await loadConversationAndJoin();
         await loadRequests();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Couldn't open this conversation.");
+        setError(describeError(err, "Couldn't open this conversation."));
       }
     })();
   }, [loadConversationAndJoin, loadRequests]);
@@ -129,7 +142,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
   useEffect(() => {
     if (!joined) return;
     const initial = setTimeout(() => {
-      loadMessages().catch((err) => setError(err instanceof Error ? err.message : "Couldn't load messages."));
+      loadMessages().catch((err) => setError(describeError(err, "Couldn't load messages.")));
     }, 0);
     const interval = setInterval(() => {
       loadMessages().catch(() => {});
@@ -157,7 +170,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
       await saveSentPlaintext(conversationId, clientMessageId, trimmed);
       await loadMessages();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Message not sent.");
+      setError(describeError(err, "Message not sent."));
       if (!overrideText) setDraft(trimmed);
     } finally {
       setSending(false);

@@ -8,6 +8,7 @@ import { NavIcon } from "./icons";
 import { SearchIcon, CloseIcon, ChevronRightIcon } from "./icons";
 import { ToastProvider } from "./toast/ToastProvider";
 import type { FacultyNavGroup } from "./nav-items";
+import { AccountSwitcher, type SwitcherData } from "./AccountSwitcher";
 import { AskAiWidget, AI_CHAT_PANEL_WIDTH } from "../ai-chat/AskAiWidget";
 import "../../app/(dashboard)/faculty/faculty-theme.css";
 
@@ -41,8 +42,13 @@ export function FacultyShell({
   sectionRoleLabel,
   academicYear,
   navGroups,
+  switcher,
   children,
 }: {
+  /** Present only when this login can switch (Faculty with a class login, or
+   * a Class Teacher login); omitted for a plain Faculty with nothing to
+   * switch to, so their footer is unchanged. */
+  switcher?: SwitcherData;
   personName: string;
   /** e.g. "Class teacher · 8-B" -- shown identically in both the sidebar
    * footer and the topbar pill, matching the design exactly. */
@@ -206,6 +212,15 @@ export function FacultyShell({
             ))}
           </nav>
 
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderTop: "1px solid var(--fac-divider)",
+              background: "var(--fac-white)",
+              paddingRight: switcher ? 12 : 0,
+            }}
+          >
           <Link
             href="/faculty/profile"
             className="fac-hover-lift"
@@ -213,11 +228,11 @@ export function FacultyShell({
               display: "flex",
               alignItems: "center",
               gap: 11,
-              width: "100%",
+              flex: 1,
+              minWidth: 0,
               textAlign: "left",
               padding: "14px 16px",
               border: 0,
-              borderTop: "1px solid var(--fac-divider)",
               background: "var(--fac-white)",
             }}
           >
@@ -243,6 +258,8 @@ export function FacultyShell({
             </span>
             <ChevronRightIcon />
           </Link>
+          {switcher ? <AccountSwitcher data={switcher} /> : null}
+          </div>
         </aside>
 
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
