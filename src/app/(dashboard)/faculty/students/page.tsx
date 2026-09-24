@@ -79,6 +79,16 @@ export default async function StudentsPage({
           {students.length} students in Class {section.gradeName}-{section.sectionName} · search by name or roll number
         </p>
 
+        <div style={{ marginTop: 14 }}>
+          <Link
+            href="/faculty/class-teacher"
+            className="fac-hover-lift"
+            style={{ display: "inline-block", border: "1px solid var(--fac-border)", background: "var(--fac-white)", borderRadius: 9, padding: "10px 15px", font: "600 13.5px/1 var(--fac-font-sans)", color: "var(--fac-navy)" }}
+          >
+            Class duties &amp; officers
+          </Link>
+        </div>
+
         <Card padding="20px 22px" className="mt-[18px]">
           <form action={`/faculty/students`} className="flex flex-wrap items-center gap-3.5">
             <input type="hidden" name="sectionId" value={sectionId} />

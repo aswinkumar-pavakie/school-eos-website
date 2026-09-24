@@ -83,6 +83,31 @@ export interface TeachingOffering {
 export async function listAdvisorSections(): Promise<ScopedSection[]> {
   return (await get<ApiEnvelope<ScopedSection[]>>("/faculty/scope/advisor-sections")).data;
 }
+// The Class Teacher logins a Faculty member can switch into (one per class
+// they advise, each with its own login email -- never a password). Empty
+// `classes` / hasClassTeacherLogin:false for a faculty member with none.
+export interface ClassTeacherLoginRef {
+  gradeId: string;
+  gradeName: string;
+  sectionName: string;
+  email: string | null;
+}
+export type ClassTeacherLink =
+  | { hasClassTeacherLogin: false }
+  | { hasClassTeacherLogin: true; gradeId: string; sectionName: string; classes: ClassTeacherLoginRef[] };
+export async function getClassTeacherLink(): Promise<ClassTeacherLink> {
+  return (await get<ApiEnvelope<ClassTeacherLink>>("/faculty/scope/class-teacher-link")).data;
+}
+// Drives which optional "MORE" item a faculty member sees: Hostel (resides in
+// hostel), My bus (uses school transport), or neither (own vehicle) -- the
+// same rule the mobile app's 5th tab uses.
+export interface FacultyCommute {
+  isHosteller: boolean;
+  usesSchoolTransport: boolean;
+}
+export async function getFacultyCommute(): Promise<FacultyCommute> {
+  return (await get<ApiEnvelope<FacultyCommute>>("/faculty/scope/commute")).data;
+}
 export async function listTeachingOfferings(): Promise<TeachingOffering[]> {
   return (await get<ApiEnvelope<TeachingOffering[]>>("/faculty/scope/teaching-offerings")).data;
 }

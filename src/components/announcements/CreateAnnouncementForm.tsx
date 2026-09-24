@@ -33,7 +33,7 @@ const ROLES: [string, string][] = [
 
 export function CreateAnnouncementForm({
   revalidatePathOverride,
-  triggerLabel = "+ New announcement",
+  triggerLabel = "+ New notice",
   triggerClassName = "rounded-[11px] bg-primary px-4 py-2.5 text-sm font-bold text-white",
 }: {
   // Additive, defaults to Admin's own page -- Principal's page passes its own
@@ -184,7 +184,7 @@ export function CreateAnnouncementForm({
           disabled={isPending}
           className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
         >
-          {isPending ? "Sending…" : "Send announcement"}
+          {isPending ? "Sending…" : "Send notice"}
         </button>
       </div>
     </form>

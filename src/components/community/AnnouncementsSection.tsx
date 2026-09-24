@@ -33,13 +33,13 @@ export function AnnouncementsSection({ communityId, announcements }: { community
   return (
     <div className="rounded-[16px] border border-border bg-surface p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Announcements</h2>
+        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Notices</h2>
         <span className="text-xs text-text-muted">{announcements.length} announcements</span>
       </div>
 
       {announcements.length === 0 && (
         <p className="mt-3 rounded-[11px] border border-dashed border-border bg-field px-3.5 py-3 text-sm text-text-muted">
-          No announcements yet.
+          No notices yet.
         </p>
       )}
 
@@ -51,7 +51,7 @@ export function AnnouncementsSection({ communityId, announcements }: { community
 
       {!adding ? (
         <button type="button" onClick={() => setAdding(true)} className="mt-3 text-[13px] font-semibold text-primary">
-          + New announcement
+          + New notice
         </button>
       ) : (
         <form action={formAction} className="mt-4 flex flex-col gap-3 rounded-[11px] bg-field p-3.5">
@@ -88,7 +88,7 @@ export function AnnouncementsSection({ communityId, announcements }: { community
               disabled={isPending}
               className="rounded-[11px] bg-primary px-3.5 py-2 text-sm font-bold text-white disabled:opacity-60"
             >
-              {isPending ? "Creating…" : "Create announcement"}
+              {isPending ? "Creating…" : "Create notice"}
             </button>
           </div>
         </form>

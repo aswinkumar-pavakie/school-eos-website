@@ -10,6 +10,7 @@
 // so grade/section on each row identifies which child it belongs to.
 
 import Link from "next/link";
+import { AutoRefresh } from "@/components/shared-ui/AutoRefresh";
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { EmptyPanel, StatusPill, type PillTone } from "@/components/parent-ui/primitives";
@@ -49,6 +50,7 @@ export default async function ParentOnlineClassPage({ searchParams }: { searchPa
 
   return (
       <div className="parent-scope">
+        <AutoRefresh />
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 6, color: "var(--par-ink)" }}>Online class</div>
           <div style={{ fontSize: 15, color: "var(--par-body-muted)" }}>Join live classes and revisit recordings.</div>

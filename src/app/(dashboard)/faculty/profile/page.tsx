@@ -13,7 +13,7 @@
 
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { AuthExpiredError, apiFetch } from "@/lib/api";
+import { AuthExpiredError, apiFetch, getCurrentActor } from "@/lib/api";
 import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { BackButton } from "@/components/faculty-ui/BackButton";
 import { getMyStaffProfile, listAdvisorSections, listTeachingOfferings, type MyStaffProfile } from "@/lib/faculty-api";
@@ -56,6 +56,9 @@ export default async function ProfilePage() {
     const initials = personName.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
 
     const staff = staffResult.data;
+    // A Class Teacher login is a per-section login with no employee record
+    // of its own -- the employee details live on the Faculty login.
+    const isClassTeacherLogin = !(await getCurrentActor()).roles.includes("FACULTY");
     const subjectCount = new Set(teachingOfferings.map((o) => o.subjectId)).size;
 
     return (
@@ -84,7 +87,13 @@ export default async function ProfilePage() {
           </div>
 
           {!staff ? (
-            <ErrorState message={staffResult.error ?? "Could not load employee details."} />
+            <ErrorState
+              message={
+                isClassTeacherLogin
+                  ? "This is a class login, so it has no employee record. Employee details are on your Faculty account -- use the switch button to change accounts."
+                  : (staffResult.error ?? "Could not load employee details.")
+              }
+            />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
               <Section title="Employment">

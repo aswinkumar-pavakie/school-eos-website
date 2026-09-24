@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { setAuthCookies } from "@/lib/api";
+import { labelForRoles, resetSwitchState, setActiveIdentity } from "@/lib/account-switch";
+import { ensureDeviceId } from "@/lib/device-id";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -69,6 +71,12 @@ const WEB_ALLOWED_ROLES = [
   // (Ledger, History); every real endpoint lives under
   // school-eos-backend/src/modules/canteen/, @Roles('CANTEEN_VENDOR') only.
   "CANTEEN_VENDOR",
+  // A Class Teacher login -- a synthetic, per-section login (one per grade +
+  // section, see backend class_teacher_login) carrying ONLY CLASS_ADVISOR. It
+  // signs into the same /faculty console as Faculty, in its Class Teacher
+  // view (see faculty/layout.tsx), and is what the Faculty <-> Class Teacher
+  // account switcher swaps to.
+  "CLASS_ADVISOR",
 ];
 
 export interface LoginState {
@@ -89,11 +97,12 @@ export async function loginAction(
     return { error: "Password is required." };
   }
 
+  const deviceId = ensureDeviceId(await cookies());
   let res: Response;
   try {
     res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Device-Id": deviceId },
       body: JSON.stringify({ identifier, password }),
       cache: "no-store",
     });
@@ -130,6 +139,13 @@ export async function loginAction(
 
   const cookieStore = await cookies();
   setAuthCookies(cookieStore, { accessToken, refreshToken });
+  // A fresh sign-in replaces the whole session: drop any accounts saved by a
+  // previous person on this browser, and record who is active now.
+  resetSwitchState(cookieStore);
+  setActiveIdentity(cookieStore, {
+    label: labelForRoles(roles.map((r) => r.role_code)),
+    identifier: identifier.trim(),
+  });
 
   // Each web-allowed role lands on the module built for it: Admin on the Admin
   // Console, Finance on the Finance module, Principal on its own Principal Console
@@ -167,6 +183,9 @@ export async function loginAction(
     // Every FACULTY login (including Sports Faculty) lands on the general
     // Faculty Console -- Sports is reached from there via its own nav item
     // (see faculty/layout.tsx), not a separate landing page.
+    redirect("/faculty");
+  }
+  if (roleCodes.includes("CLASS_ADVISOR")) {
     redirect("/faculty");
   }
   if (roleCodes.includes("PARENT")) {

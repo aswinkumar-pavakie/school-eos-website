@@ -47,6 +47,14 @@ const NAV_ICON_PATHS: Record<string, [string, string]> = {
   // New feature (AI assistant chat), no reference design equivalent -- same
   // 2-path/1.7-stroke placeholder convention as coordinator/sports/bus above.
   assistant: ["M4 5.5h16v11H9l-4 3.5v-3.5H4z", "M8 10h8 M8 13h5"],
+  // Campus + mobile-parity items (Food Court, Medical, Feedback, House, Hostel, Events) -- same
+  // 2-path/1.7-stroke convention as the rest of this set.
+  food: ["M6 3v8a2 2 0 0 0 2 2v8 M10 3v8 M18 3c-2 1.5-3 4-3 7h3v11", ""],
+  medical: ["M12 5v14 M5 12h14", "M4 4h16v16H4z"],
+  feedback: ["M4 5h16v11H9l-5 4z", "M8 9h8 M8 12h5"],
+  house: ["M4 11l8-7 8 7", "M6 10v10h12V10 M10 20v-5h4v5"],
+  hostel: ["M3 20V9l9-5 9 5v11", "M3 20h18 M8 20v-6h8v6"],
+  events: ["M4 6h16v14H4z", "M8 3v4 M16 3v4 M9 14l2 2 4-4"],
 };
 
 export function NavIcon({

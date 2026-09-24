@@ -80,7 +80,7 @@ export default async function AnnouncementsPage({
     <div className="mx-auto max-w-[1100px]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Announcements</h1>
+          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Notices</h1>
           <p className="mt-1 text-sm text-text-muted">Send a message to everyone, or to specific roles.</p>
         </div>
         <CreateAnnouncementForm />
@@ -107,7 +107,7 @@ export default async function AnnouncementsPage({
       <ul className="mt-6 flex flex-col gap-3">
         {announcements.length === 0 && (
           <li className="rounded-[16px] border border-dashed border-border bg-surface p-8 text-center text-sm text-text-muted">
-            No announcements yet.
+            No notices yet.
           </li>
         )}
         {announcements.map((a) => (

@@ -6,8 +6,8 @@
 
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { AuthExpiredError } from "@/lib/api";
-import { getWeeklyTimetable } from "@/lib/faculty-academics-api";
+import { AuthExpiredError, getCurrentActor } from "@/lib/api";
+import { getAdvisorSectionTimetable, getWeeklyTimetable } from "@/lib/faculty-academics-api";
 import { TimetableView, type TimetableCell } from "@/components/shared-ui/TimetableView";
 
 function todayDow(): number {
@@ -20,24 +20,46 @@ export default async function TimetablePage({ searchParams }: { searchParams: Pr
     const { view, day } = await searchParams;
     const isWeek = view === "week";
     const selectedDay = day ? Math.min(Math.max(Number(day), 1), 6) : Math.min(todayDow(), 6);
-    const { periods, days } = await getWeeklyTimetable();
+    // A Class Teacher login (no FACULTY role) sees its whole class's
+    // timetable -- every subject with its teacher -- instead of the
+    // subjects a faculty member teaches.
+    const actor = await getCurrentActor();
+    const isClassTeacherLogin = !actor.roles.includes("FACULTY");
 
-    const cells: TimetableCell[] = days.flatMap((d) =>
-      d.slots.map((s) => ({
-        periodId: s.periodId,
-        dayOfWeek: d.dayOfWeek,
-        title: s.subjectName,
-        subtitle: [s.gradeName, s.sectionName].filter(Boolean).join(" "),
-        tag: s.room ?? null,
-      })),
-    );
+    let periods;
+    let cells: TimetableCell[];
+    if (isClassTeacherLogin) {
+      const timetable = await getAdvisorSectionTimetable();
+      periods = timetable.periods;
+      cells = timetable.days.flatMap((d) =>
+        d.slots.map((s) => ({
+          periodId: s.periodId,
+          dayOfWeek: d.dayOfWeek,
+          title: s.subjectName,
+          subtitle: s.teacherName ?? "",
+          tag: s.room ?? null,
+        })),
+      );
+    } else {
+      const weekly = await getWeeklyTimetable();
+      periods = weekly.periods;
+      cells = weekly.days.flatMap((d) =>
+        d.slots.map((s) => ({
+          periodId: s.periodId,
+          dayOfWeek: d.dayOfWeek,
+          title: s.subjectName,
+          subtitle: [s.gradeName, s.sectionName].filter(Boolean).join(" "),
+          tag: s.room ?? null,
+        })),
+      );
+    }
 
     return (
       <TimetableView
         periods={periods}
         cells={cells}
         basePath="/faculty/timetable"
-        subtitle="Your real weekly schedule"
+        subtitle={isClassTeacherLogin ? "Your class's weekly schedule" : "Your real weekly schedule"}
         isWeek={isWeek}
         selectedDay={selectedDay}
       />

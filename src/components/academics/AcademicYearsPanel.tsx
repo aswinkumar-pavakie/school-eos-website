@@ -91,7 +91,14 @@ function YearRow({ year }: { year: AcademicYear }) {
           {canSetCurrent && (
             <button
               type="button"
-              onClick={() => setCurrentAcademicYearAction(year.id)}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Make ${year.name} the current year?\n\nClass teacher logins keep pointing at the old year until you run "Roll logins" on the Class teacher logins tab, so until then they will show no students.`,
+                  )
+                )
+                  setCurrentAcademicYearAction(year.id);
+              }}
               className="text-[13px] font-semibold text-primary"
             >
               Set current

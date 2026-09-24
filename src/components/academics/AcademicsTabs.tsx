@@ -6,7 +6,8 @@ import { GradesPanel, type Grade } from "./GradesPanel";
 import { SectionsPanel, type Section } from "./SectionsPanel";
 import { SubjectsPanel, type Subject } from "./SubjectsPanel";
 import { DepartmentsPanel, type Department } from "./DepartmentsPanel";
-import { ClassAdvisorsPanel, type ClassAdvisorAssignment } from "./ClassAdvisorsPanel";
+import { ClassTeacherLoginsPanel } from "./ClassTeacherLoginsPanel";
+import type { ClassLoginList } from "@/lib/class-login-types";
 import { CoordinatorsPanel, type CoordinatorAssignment } from "./CoordinatorsPanel";
 
 const TABS = [
@@ -15,7 +16,7 @@ const TABS = [
   "Sections",
   "Subjects",
   "Departments",
-  "Class Advisors",
+  "Class teacher logins",
   "Coordinators & Roles",
 ] as const;
 type Tab = (typeof TABS)[number];
@@ -27,7 +28,7 @@ export function AcademicsTabs({
   subjects,
   departments,
   mediums,
-  classAdvisorAssignments,
+  classLogins,
   coordinatorAssignments,
 }: {
   years: AcademicYear[];
@@ -36,7 +37,7 @@ export function AcademicsTabs({
   subjects: Subject[];
   departments: Department[];
   mediums: { id: string; name: string }[];
-  classAdvisorAssignments: ClassAdvisorAssignment[];
+  classLogins: ClassLoginList | null;
   coordinatorAssignments: CoordinatorAssignment[];
 }) {
   const currentYearId = years.find((y) => y.isCurrent)?.id;
@@ -69,14 +70,7 @@ export function AcademicsTabs({
         {tab === "Sections" && <SectionsPanel sections={sections} years={years} grades={grades} mediums={mediums} />}
         {tab === "Subjects" && <SubjectsPanel subjects={subjects} />}
         {tab === "Departments" && <DepartmentsPanel departments={departments} />}
-        {tab === "Class Advisors" && (
-          <ClassAdvisorsPanel
-            sections={sections}
-            grades={grades}
-            assignments={classAdvisorAssignments}
-            academicYearId={currentYearId}
-          />
-        )}
+        {tab === "Class teacher logins" && <ClassTeacherLoginsPanel data={classLogins} />}
         {tab === "Coordinators & Roles" && (
           <CoordinatorsPanel grades={grades} assignments={coordinatorAssignments} academicYearId={currentYearId} />
         )}

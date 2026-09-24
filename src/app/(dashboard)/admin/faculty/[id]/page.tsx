@@ -12,6 +12,7 @@ import { CertificatesSection, type CertificateDocument } from "@/components/dash
 import { HeaderButtonSlot } from "@/components/dashboard/HeaderButtonPortal";
 import { PersonPhotoEditor } from "@/components/dashboard/PersonPhotoEditor";
 import { ExitStaffDialog } from "@/components/faculty/ExitStaffDialog";
+import { LinkedPhonesSection, type LinkedPhoneRow } from "@/components/faculty/LinkedPhonesSection";
 import { FacultyLoginSecuritySection } from "@/components/faculty/FacultyLoginSecuritySection";
 import { FacultyProfileForm, FACULTY_SAVE_BUTTON_SLOT } from "@/components/faculty/FacultyProfileForm";
 import { FacultySubjectsSection, type TaughtOffering } from "@/components/faculty/FacultySubjectsSection";
@@ -24,6 +25,7 @@ import {
 import { TimetableSlot } from "@/components/academics/TimetableGrid";
 import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/format";
+import type { ClassLoginList, ClassLoginSeat } from "@/lib/class-login-types";
 
 interface LoginIdentifier {
   identifierType: string;
@@ -59,7 +61,7 @@ export default async function FacultyDetailPage({
   const { data: staff } = (await res.json()) as { data: StaffDetail };
   const isActive = staff.status !== "EXITED";
 
-  const [timetableRes, rolesRes, documentsRes, attendanceRes, subjectOfferingsRes, gradesRes, sectionsRes] =
+  const [timetableRes, rolesRes, documentsRes, attendanceRes, subjectOfferingsRes, gradesRes, sectionsRes, classLoginsRes, linkedPhonesRes] =
     await Promise.all([
       apiFetch(`/staff/${id}/timetable`),
       apiFetch(`/role-assignments?personId=${staff.personId}`),
@@ -68,7 +70,19 @@ export default async function FacultyDetailPage({
       apiFetch(`/subject-offerings/by-teacher/${id}`),
       apiFetch("/grades"),
       apiFetch("/sections?status=ACTIVE"),
+      apiFetch("/class-teacher-logins"),
+      apiFetch(`/persons/${staff.personId}/linked-accounts`),
     ]);
+  const linkedPhones: LinkedPhoneRow[] = linkedPhonesRes.ok
+    ? ((await linkedPhonesRes.json()) as { data: LinkedPhoneRow[] }).data
+    : [];
+  // The class logins this teacher currently holds (read-only here; changed from
+  // Academics -> Class teacher logins).
+  const heldSeats: ClassLoginSeat[] = classLoginsRes.ok
+    ? ((await classLoginsRes.json()) as { data: ClassLoginList }).data.seats.filter(
+        (s) => s.holderPersonId === staff.personId,
+      )
+    : [];
   const timetableSlots: TimetableSlot[] = timetableRes.ok
     ? ((await timetableRes.json()) as { data: TimetableSlot[] }).data
     : [];
@@ -128,6 +142,33 @@ export default async function FacultyDetailPage({
       }
       extraSections={
         <>
+          {heldSeats.length > 0 && (
+            <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Class teacher login</h2>
+                <Link href="/admin/academics" className="text-[13px] font-semibold text-primary">
+                  Change in Academics
+                </Link>
+              </div>
+              <ul className="mt-3 divide-y divide-border text-sm">
+                {heldSeats.map((s) => (
+                  <li key={s.loginPersonId} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
+                    <span className="font-semibold text-text">
+                      {s.gradeName}-{s.sectionName}
+                    </span>
+                    <span className="font-mono text-[13px] text-text-muted">{s.email}</span>
+                    <span className="text-text-muted">{s.studentCount} students</span>
+                  </li>
+                ))}
+              </ul>
+              {isActive && (
+                <p className="mt-2 text-[13px] text-text-muted">
+                  Marking this teacher as exited releases the class and renews its shared password.
+                </p>
+              )}
+            </section>
+          )}
+          {heldSeats.length > 0 && <LinkedPhonesSection personId={staff.personId} phones={linkedPhones} />}
           <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
             <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Edit profile &amp; address</h2>
             <p className="mt-1 text-[13px] text-text-muted">

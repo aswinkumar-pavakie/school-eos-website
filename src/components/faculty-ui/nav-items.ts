@@ -12,92 +12,121 @@ export type FacultyNavItem = {
 export type FacultyNavGroup = { label: string; items: FacultyNavItem[] };
 
 /**
- * The design's 25-item, 4-group nav (brain/SIS Class teacher/Class Teacher
- * Portal.dc.html's own nav()), mapped onto this app's real routes -- plus a
- * 5th "MORE" group preserving Academic Coordinator / Sports / My Bus, three
- * real, currently-working nav items the design has no entry for at all (it
- * never modeled that persona). Dropping them would break real functionality
- * for coordinators / sports staff / bus-riding students' teachers.
+ * The website's Faculty and Class Teacher navigation. Its feature set is the
+ * mobile app's, one for one -- no more, no fewer -- laid out in the website's
+ * own sidebar design. The mobile groups map onto sidebar groups:
  *
- * `sectionLabel` fills the "MY CLASS · 8-B"-style group header -- pass
- * `null` while no section is resolved yet (mirrors today's layout.tsx
- * pattern of resolving section from listAdvisorSections()).
+ *   Faculty (mobile tabs Home / Class / Progress / Campus + a conditional 5th):
+ *     HOME     -> Dashboard
+ *     CLASS    -> the mobile Class hub's tiles
+ *     PROGRESS -> the mobile Progress hub's tiles (own attendance, leave, HR)
+ *     CAMPUS   -> the mobile Campus hub's tiles
+ *     MORE     -> Coordinator Hub (only for a coordinator) and, by the
+ *                 faculty member's own commute record, Hostel or My Bus (both
+ *                 absent for someone with their own vehicle)
+ *
+ *   Class Teacher (mobile tabs Home / Class):
+ *     HOME     -> Dashboard, Message, Notice (the mobile Home's own menu)
+ *     CLASS    -> the mobile Class Teacher hub's tiles
+ *
+ * The Class Teacher login is a separate per-section login (see
+ * faculty/layout.tsx); the two are joined by the account switcher.
  */
+
 export function buildFacultyNavGroups(params: {
-  sectionLabel: string | null;
   pendingLeaveCount?: number;
   pendingPermissionsCount?: number;
-  pendingFeesCount?: number;
   isCoordinator: boolean;
-  hasSportsTeams: boolean;
+  isHosteller: boolean;
+  usesSchoolTransport: boolean;
 }): FacultyNavGroup[] {
-  const {
-    sectionLabel,
-    pendingLeaveCount,
-    pendingPermissionsCount,
-    pendingFeesCount,
-    isCoordinator,
-    hasSportsTeams,
-  } = params;
+  const { pendingLeaveCount, pendingPermissionsCount, isCoordinator, isHosteller, usesSchoolTransport } = params;
 
   const groups: FacultyNavGroup[] = [
     {
-      label: "OVERVIEW",
-      items: [
-        { href: "/faculty", label: "Dashboard", icon: "dashboard" },
-        { href: "/faculty/message", label: "Message", icon: "sub-message" },
-        { href: "/faculty/reports", label: "Reports", icon: "reports" },
-        { href: "/faculty/announcements", label: "Notice", icon: "notice" },
-        { href: "/faculty/calendar", label: "Academic Calendar", icon: "calendar" },
-        { href: "/faculty/timetable", label: "Timetable", icon: "timetable" },
-      ],
+      label: "HOME",
+      items: [{ href: "/faculty", label: "Dashboard", icon: "dashboard" }],
     },
     {
-      label: sectionLabel ? `MY CLASS · ${sectionLabel}` : "MY CLASS",
+      label: "CLASS",
       items: [
-        { href: "/faculty/students", label: "Students", icon: "students" },
-        { href: "/faculty/attendance", label: "Attendance", icon: "attendance" },
-        { href: "/faculty/class-results", label: "Performance", icon: "performance" },
-        { href: "/faculty/fees", label: "Fees", icon: "fees", badge: pendingFeesCount },
-        { href: "/faculty/student-leave", label: "Approve leave", icon: "leave", badge: pendingLeaveCount },
-        { href: "/faculty/exams", label: "Exam", icon: "exam" },
-        { href: "/faculty/permissions", label: "Ask permissions", icon: "permissions", badge: pendingPermissionsCount },
-      ],
-    },
-    {
-      label: "MY SUBJECTS",
-      items: [
-        { href: "/faculty/homework", label: "Upload homework", icon: "sub-homework" },
+        { href: "/faculty/attendance", label: "Student attendance", icon: "attendance" },
         { href: "/faculty/online-class", label: "Online class", icon: "sub-online" },
-        { href: "/faculty/lms", label: "Current term", icon: "sub-term" },
-        { href: "/faculty/subject-exams", label: "Exams", icon: "sub-exams" },
-        { href: "/faculty/marks-entry", label: "Entry marks", icon: "sub-marks" },
-        { href: "/faculty/correction-requests", label: "Correction requests", icon: "sub-marks" },
+        { href: "/faculty/announcements", label: "Notices", icon: "notice" },
+        { href: "/faculty/timetable", label: "Timetable", icon: "timetable" },
+        { href: "/faculty/calendar", label: "Calendar", icon: "calendar" },
+        { href: "/faculty/class-exams", label: "Exams", icon: "exam" },
+        { href: "/faculty/marks-entry", label: "Marks entry", icon: "sub-marks" },
+        { href: "/faculty/class-results", label: "Class results", icon: "performance" },
+        { href: "/faculty/subject-records", label: "Subject records", icon: "sub-exams" },
+        { href: "/faculty/lms", label: "LMS", icon: "sub-term" },
+        { href: "/faculty/homework", label: "Homework", icon: "sub-homework" },
+        { href: "/faculty/student-leave", label: "Student leave", icon: "leave", badge: pendingLeaveCount },
+        { href: "/faculty/parent-meetings", label: "Parent meetings", icon: "permissions" },
+        { href: "/faculty/message", label: "Messages", icon: "sub-message" },
+        { href: "/faculty/permissions", label: "Events", icon: "events", badge: pendingPermissionsCount },
       ],
     },
     {
-      label: "EMPLOYEE",
+      label: "PROGRESS",
       items: [
-        { href: "/faculty/my-attendance", label: "My attendance", icon: "emp-attendance" },
-        { href: "/faculty/staff-leave", label: "Staff leave", icon: "emp-leave" },
-        { href: "/faculty/staff-od", label: "Staff OD", icon: "emp-od" },
+        { href: "/faculty/my-attendance", label: "Attendance", icon: "emp-attendance" },
+        { href: "/faculty/staff-leave", label: "Leave", icon: "emp-leave" },
+        { href: "/faculty/staff-od", label: "OD", icon: "emp-od" },
         { href: "/faculty/hr-requests", label: "HR payroll", icon: "emp-payroll" },
         { href: "/faculty/payslip", label: "Payslip", icon: "emp-payslip" },
         { href: "/faculty/appraisal", label: "Appraisal", icon: "emp-appraisal" },
+      ],
+    },
+    {
+      label: "CAMPUS",
+      items: [
+        { href: "/faculty/campus/food-court", label: "Food court", icon: "food" },
+        { href: "/faculty/campus/medical", label: "Medical", icon: "medical" },
+        { href: "/faculty/campus/feedback", label: "Feedback", icon: "feedback" },
+        { href: "/faculty/campus/house", label: "House", icon: "house" },
         { href: "/faculty/library", label: "Library", icon: "emp-library" },
       ],
     },
   ];
 
-  const more: FacultyNavItem[] = [{ href: "/faculty/bus", label: "My Bus", icon: "bus" }];
-  // Points at the new, pixel-perfect, standalone Academic Coordinator portal
-  // (see brain/SIS ACAD co-ord) -- /faculty/coordinator/* stays in place,
-  // fully working, just no longer linked from here.
-  if (isCoordinator) more.unshift({ href: "/academic-coordinator", label: "Academic Coordinator", icon: "coordinator" });
-  if (hasSportsTeams) more.push({ href: "/sports", label: "Sports", icon: "sports" });
-  // "Ask the Assistant" moved to the navbar AskAiWidget -- no longer a
-  // sidebar entry, matching the reference design.
-  groups.push({ label: "MORE", items: more });
+  const more: FacultyNavItem[] = [];
+  // Points at the standalone Academic Coordinator portal.
+  if (isCoordinator) more.push({ href: "/academic-coordinator", label: "Coordinator hub", icon: "coordinator" });
+  // Hostel wins if both are somehow set, exactly as on mobile.
+  if (isHosteller) more.push({ href: "/faculty/hostel", label: "Hostel", icon: "hostel" });
+  else if (usesSchoolTransport) more.push({ href: "/faculty/bus", label: "My bus", icon: "bus" });
+  if (more.length > 0) groups.push({ label: "MORE", items: more });
 
   return groups;
+}
+
+export function buildClassTeacherNavGroups(params: {
+  sectionLabel: string | null;
+  pendingLeaveCount?: number;
+}): FacultyNavGroup[] {
+  const { sectionLabel, pendingLeaveCount } = params;
+  return [
+    {
+      label: "HOME",
+      items: [
+        { href: "/faculty", label: "Dashboard", icon: "dashboard" },
+        { href: "/faculty/message", label: "Message", icon: "sub-message" },
+        { href: "/faculty/announcements", label: "Notice", icon: "notice" },
+      ],
+    },
+    {
+      label: sectionLabel ? `CLASS · ${sectionLabel}` : "CLASS",
+      items: [
+        { href: "/faculty/students", label: "Student data", icon: "students" },
+        { href: "/faculty/attendance", label: "Attendance", icon: "attendance" },
+        { href: "/faculty/timetable", label: "Time table", icon: "timetable" },
+        { href: "/faculty/calendar", label: "Calendar", icon: "calendar" },
+        { href: "/faculty/class-exams", label: "Exams", icon: "exam" },
+        { href: "/faculty/parent-meetings", label: "Parent meetings", icon: "permissions" },
+        { href: "/faculty/student-leave", label: "Leave", icon: "leave", badge: pendingLeaveCount },
+        { href: "/faculty/fees", label: "Fees", icon: "fees" },
+      ],
+    },
+  ];
 }

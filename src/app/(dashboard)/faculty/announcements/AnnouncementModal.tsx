@@ -25,8 +25,8 @@ export function AnnouncementModal({
 
   return (
     <Modal
-      title={announcement ? "Edit announcement" : "New announcement"}
-      trigger={<PlainButton variant={announcement ? "secondary" : "primary"}>{announcement ? "Edit" : "+ New announcement"}</PlainButton>}
+      title={announcement ? "Edit notice" : "New notice"}
+      trigger={<PlainButton variant={announcement ? "secondary" : "primary"}>{announcement ? "Edit" : "+ New notice"}</PlainButton>}
     >
       <form action={formAction} className="flex flex-col gap-4">
         <TextField label="Title" name="title" defaultValue={announcement?.title} required />
@@ -63,7 +63,7 @@ export function AnnouncementModal({
         </div>
 
         <FieldError message={state.error} />
-        <Button variant="primary" pendingLabel="Saving…">{announcement ? "Save changes" : "Post announcement"}</Button>
+        <Button variant="primary" pendingLabel="Saving…">{announcement ? "Save changes" : "Post notice"}</Button>
       </form>
     </Modal>
   );

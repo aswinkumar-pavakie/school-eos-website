@@ -87,7 +87,7 @@ const VICE_PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   { href: "/vice-principal/finance", label: "Finance", icon: "finance", group: "FINANCE" },
 
   { href: "/vice-principal/community", label: "Communities", icon: "community", group: "COMMUNICATION" },
-  { href: "/vice-principal/announcements", label: "Announcements", icon: "announcements", group: "COMMUNICATION" },
+  { href: "/vice-principal/announcements", label: "Notices", icon: "announcements", group: "COMMUNICATION" },
   { href: "/vice-principal/messages", label: "Messages", icon: "messages", group: "COMMUNICATION" },
 
   // No Audit Log, no Requests & Approvals here -- VP is not authorized for

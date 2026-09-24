@@ -26,7 +26,7 @@ export async function createAnnouncementAction(_prev: FormState, formData: FormD
       targetSectionIds,
     });
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Could not post announcement." };
+    return { error: err instanceof Error ? err.message : "Could not post notice." };
   }
   revalidatePath("/faculty/announcements");
   return {};

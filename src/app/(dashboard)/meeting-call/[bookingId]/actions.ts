@@ -15,7 +15,10 @@ import { requestParentCallToken } from "@/lib/parent-api";
 
 export async function requestCallTokenAction(bookingId: string): Promise<MeetingCallCredentials> {
   const actor = await getCurrentActor();
-  if (actor.roles.includes("FACULTY")) {
+  // A Class Teacher login (CLASS_ADVISOR only) hosts parent meetings too --
+  // the backend's faculty call-token endpoint accepts it, so it must not be
+  // treated as the parent side.
+  if (actor.roles.includes("FACULTY") || actor.roles.includes("CLASS_ADVISOR")) {
     return requestFacultyCallToken(bookingId);
   }
   return requestParentCallToken(bookingId);
