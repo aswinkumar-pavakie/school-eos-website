@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { setAuthCookies } from "@/lib/api";
 import { labelForRoles, resetSwitchState, setActiveIdentity } from "@/lib/account-switch";
+import { ensureDeviceId } from "@/lib/device-id";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -96,11 +97,12 @@ export async function loginAction(
     return { error: "Password is required." };
   }
 
+  const deviceId = ensureDeviceId(await cookies());
   let res: Response;
   try {
     res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-Device-Id": deviceId },
       body: JSON.stringify({ identifier, password }),
       cache: "no-store",
     });

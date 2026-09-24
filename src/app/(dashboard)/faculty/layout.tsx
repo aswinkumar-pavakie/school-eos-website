@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import { FacultyShell } from "@/components/faculty-ui/FacultyShell";
 import { buildClassTeacherNavGroups, buildFacultyNavGroups } from "@/components/faculty-ui/nav-items";
 import type { SwitcherData } from "@/components/faculty-ui/AccountSwitcher";
-import { labelForRoles, listSavedAccounts, readActiveIdentity } from "@/lib/account-switch";
+import { labelForRoles, readActiveClass, readActiveIdentity, readHomeAccount } from "@/lib/account-switch";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getCoordinatorMe } from "@/lib/faculty-coordinator-api";
-import { getClassTeacherLink, listAdvisorSections, listStudentLeaveRequests } from "@/lib/faculty-api";
-import { listMyTeams } from "@/lib/sports-faculty-api";
+import { apiFetch } from "@/lib/api";
+import { getFacultyCommute, listAdvisorSections, listStudentLeaveRequests } from "@/lib/faculty-api";
 import { listEvents } from "@/lib/faculty-permissions-api";
 import { isUpcoming } from "@/lib/faculty-time";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
@@ -50,9 +50,9 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
   // token. Same posture the previous flat-nav layout already established.
   // Coordinator / sports / consent-event reads are Faculty-only on the
   // backend, so a Class Teacher login skips them instead of collecting 403s.
-  const [coordinatorMe, myTeams, sections, pendingLeave, events, classTeacherLink] = await Promise.all([
+  const [coordinatorMe, commute, sections, pendingLeave, events] = await Promise.all([
     isClassTeacherLogin ? Promise.resolve({ isCoordinator: false }) : getCoordinatorMe().catch(() => ({ isCoordinator: false })),
-    isClassTeacherLogin ? Promise.resolve([]) : listMyTeams().catch(() => []),
+    isClassTeacherLogin ? Promise.resolve(null) : getFacultyCommute().catch(() => null),
     listAdvisorSections().catch(() => []),
     listStudentLeaveRequests()
       .then((rows) => rows.filter((r) => r.state === "PENDING").length)
@@ -60,7 +60,6 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
     // Real: /faculty/events -- badge = upcoming (not-yet-past) consent
     // requests needing attention, same convention as the leave badge.
     isClassTeacherLogin ? Promise.resolve([]) : listEvents().catch(() => []),
-    isClassTeacherLogin ? Promise.resolve(null) : getClassTeacherLink().catch(() => null),
   ]);
   const pendingPermissions = events.filter((e) => isUpcoming(e.endsAt)).length;
 
@@ -77,17 +76,23 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
   // to switch to, so a plain Faculty's footer is unchanged.
   const cookieStoreForSwitch = await cookies();
   const activeIdentity = readActiveIdentity(cookieStoreForSwitch);
-  const savedOthers = listSavedAccounts(cookieStoreForSwitch).map((a) => ({ identifier: a.identifier, label: a.label }));
-  const classLogins = classTeacherLink && classTeacherLink.hasClassTeacherLogin ? classTeacherLink.classes : [];
-  const switcher: SwitcherData | undefined =
-    isClassTeacherLogin || savedOthers.length > 0 || classLogins.length > 0
-      ? {
-          activeLabel: activeIdentity?.label ?? labelForRoles(actor.roles),
-          activeIdentifier: activeIdentity?.identifier ?? null,
-          others: savedOthers,
-          classes: classLogins,
-        }
-      : undefined;
+  const home = readHomeAccount(cookieStoreForSwitch);
+  // The classes the ADMIN has mapped to this Faculty login (the backend is the
+  // authority). Class Teacher logins have nothing to add -- only a way back.
+  const available: SwitcherData["available"] = isClassTeacherLogin
+    ? []
+    : await apiFetch("/auth/linked-accounts/available")
+        .then(async (r) => (r.ok ? ((await r.json()) as { data: SwitcherData["available"] }).data : []))
+        .catch(() => []);
+  // Always offered: a teacher the admin has not mapped to a class yet still sees the
+  // switcher (with "no class assigned yet"), so it is there the moment they are mapped.
+  const switcher: SwitcherData = {
+    activeLabel: activeIdentity?.label ?? labelForRoles(actor.roles),
+    activeIdentifier: activeIdentity?.identifier ?? null,
+    activeClass: readActiveClass(cookieStoreForSwitch),
+    home: home ? { personId: home.personId, title: home.title } : null,
+    available,
+  };
 
   // Display-only "2026–27"-style label for the topbar pill -- ScopedSection's
   // own academicYearId is an opaque id, not a display label, and there's no
@@ -101,16 +106,12 @@ export default async function FacultyLayout({ children }: { children: ReactNode 
   const navGroups = isClassTeacherLogin
     ? buildClassTeacherNavGroups({ sectionLabel, pendingLeaveCount: pendingLeave })
     : buildFacultyNavGroups({
-    sectionLabel,
-    pendingLeaveCount: pendingLeave,
-    pendingPermissionsCount: pendingPermissions,
-    // Fees has no real FACULTY-authorized backend at all (confirmed both in
-    // the backend's own @Roles() decorators and in the mobile app, which has
-    // no fee-related faculty lib file either) -- badge stays unset, never a
-    // placeholder count.
-    isCoordinator: coordinatorMe.isCoordinator,
-    hasSportsTeams: myTeams.length > 0,
-  });
+        pendingLeaveCount: pendingLeave,
+        pendingPermissionsCount: pendingPermissions,
+        isCoordinator: coordinatorMe.isCoordinator,
+        isHosteller: commute?.isHosteller ?? false,
+        usesSchoolTransport: commute?.usesSchoolTransport ?? false,
+      });
 
   return (
     <>

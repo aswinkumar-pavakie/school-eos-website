@@ -74,7 +74,14 @@ export default async function RequestsPage({
   query.set("page", String(page));
   query.set("limit", "50");
 
-  const res = await apiFetch(`/approval-requests?${query.toString()}`);
+  // Both sources load together (the generic approvals list is independent of the
+  // 6-type module's own list); a failure there shows none rather than breaking the page.
+  const genericStatus =
+    view === "pending" ? "PENDING" : view === "approved" ? "APPROVED" : view === "rejected" ? "REJECTED" : undefined;
+  const [res, genericRequests] = await Promise.all([
+    apiFetch(`/approval-requests?${query.toString()}`),
+    genericStatus ? listApprovals({ status: genericStatus }).catch(() => []) : Promise.resolve([]),
+  ]);
 
   if (!res.ok) {
     return (
@@ -101,8 +108,6 @@ export default async function RequestsPage({
   // status filter (ListApprovalsQueryDto), so "sent back" / "all history"
   // simply show none from this source -- the 6-type module above still covers
   // those views for its own requests.
-  const genericStatus = view === "pending" ? "PENDING" : view === "approved" ? "APPROVED" : view === "rejected" ? "REJECTED" : undefined;
-  const genericRequests = genericStatus ? await listApprovals({ status: genericStatus }) : [];
 
   const pendingCount = view === "pending" ? meta.total + genericRequests.length : undefined;
 

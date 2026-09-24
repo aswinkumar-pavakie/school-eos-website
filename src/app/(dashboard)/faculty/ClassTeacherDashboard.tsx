@@ -31,12 +31,14 @@ function todayIso(): string {
 }
 
 const SHORTCUTS: { href: string; label: string; sub: string }[] = [
-  { href: "/faculty/students", label: "Student data", sub: "Roster and student profiles" },
+  { href: "/faculty/students", label: "Student data", sub: "Roster, student profiles, duties" },
   { href: "/faculty/attendance", label: "Attendance", sub: "Mark and review today" },
+  { href: "/faculty/timetable", label: "Time table", sub: "Your class's weekly schedule" },
+  { href: "/faculty/calendar", label: "Calendar", sub: "Academic calendar and events" },
   { href: "/faculty/class-exams", label: "Exams", sub: "Upcoming, finished and marks" },
-  { href: "/faculty/fees", label: "Fees", sub: "Class fee status" },
-  { href: "/faculty/student-leave", label: "Approve leave", sub: "Requests from parents" },
   { href: "/faculty/parent-meetings", label: "Parent meetings", sub: "Slots and bookings" },
+  { href: "/faculty/student-leave", label: "Leave", sub: "Requests from parents" },
+  { href: "/faculty/fees", label: "Fees", sub: "Class fee status" },
 ];
 
 export async function ClassTeacherDashboard() {

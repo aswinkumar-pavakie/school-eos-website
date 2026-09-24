@@ -101,35 +101,6 @@ export async function updateDepartmentAction(id: string, _prev: FormActionState,
 // roles (role_assignment.role_code), the same system every other role in this app
 // uses (see query.md for how a first draft nearly duplicated this into a new
 // table before catching that 56 real CLASS_ADVISOR assignments already existed).
-export async function assignClassAdvisorAction(
-  sectionId: string,
-  currentAssignmentId: string | undefined,
-  academicYearId: string,
-  _prev: FormActionState,
-  formData: FormData,
-): Promise<FormActionState> {
-  if (currentAssignmentId) {
-    const revokeRes = await apiFetch(`/role-assignments/${currentAssignmentId}/revoke`, { method: "POST" });
-    if (!revokeRes.ok) return { error: await readError(revokeRes) };
-  }
-
-  const res = await apiFetch("/role-assignments", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      personId: formData.get("personId"),
-      roleCode: "CLASS_ADVISOR",
-      scopeType: "SECTION",
-      scopeId: sectionId,
-      academicYearId,
-    }),
-  });
-
-  if (!res.ok) return { error: await readError(res) };
-  revalidatePath("/admin/academics");
-  return {};
-}
-
 export async function endStaffRoleAssignmentAction(id: string): Promise<void> {
   await apiFetch(`/role-assignments/${id}/revoke`, { method: "POST" });
   revalidatePath("/admin/academics");

@@ -34,12 +34,12 @@ export default async function AcademicsPage() {
 
   // Real role_assignment rows (see query.md) -- fetched per role_code rather than
   // one unfiltered call, since PARENT alone has 955 active rows in this dataset.
-  const [advisorsRes, academicCoordRes, sportsFacultyRes] = await Promise.all([
-    apiFetch("/role-assignments?roleCode=CLASS_ADVISOR&status=ACTIVE"),
+  const [classLoginsRes, academicCoordRes, sportsFacultyRes] = await Promise.all([
+    apiFetch("/class-teacher-logins"),
     apiFetch("/role-assignments?roleCode=ACADEMIC_COORDINATOR&status=ACTIVE"),
     apiFetch("/role-assignments?roleCode=SPORTS_FACULTY&status=ACTIVE"),
   ]);
-  const classAdvisorAssignments = advisorsRes.ok ? (await advisorsRes.json()).data : [];
+  const classLogins = classLoginsRes.ok ? (await classLoginsRes.json()).data : null;
   const academicCoordinators = academicCoordRes.ok ? (await academicCoordRes.json()).data : [];
   const sportsFaculty = sportsFacultyRes.ok ? (await sportsFacultyRes.json()).data : [];
   const coordinatorAssignments = [...academicCoordinators, ...sportsFaculty];
@@ -58,7 +58,7 @@ export default async function AcademicsPage() {
           subjects={subjects}
           departments={departments}
           mediums={mediums}
-          classAdvisorAssignments={classAdvisorAssignments}
+          classLogins={classLogins}
           coordinatorAssignments={coordinatorAssignments}
         />
       </div>

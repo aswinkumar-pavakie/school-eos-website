@@ -9,7 +9,7 @@ const FORMATS: { value: string; label: string }[] = [
   { value: "POST", label: "Post" },
   { value: "PHOTO_CAROUSEL", label: "Photo carousel" },
   { value: "VIDEO", label: "Video" },
-  { value: "ANNOUNCEMENT_CARD", label: "Announcement card" },
+  { value: "ANNOUNCEMENT_CARD", label: "Notice card" },
 ];
 const CATEGORIES: { value: string; label: string }[] = [
   { value: "EVENT", label: "Event" },

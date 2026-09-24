@@ -24,7 +24,9 @@ export interface ActiveIdentity {
 export interface SavedAccount extends ActiveIdentity, TokenPair {}
 
 const ACTIVE_IDENTITY_COOKIE = "activeIdentity";
-const SAVED_PREFIX = "otherAcct_";
+const SAVED_PREFIX = "otherAcct_"; // legacy: old builds saved the other account's tokens in cookies
+const HOME_ACCOUNT_COOKIE = "homeAccount";
+const ACTIVE_CLASS_COOKIE = "activeClass";
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 
 /** The only roles the switcher links -- it exists for the Faculty <-> Class
@@ -115,9 +117,44 @@ export function activateAccount(cookieStore: CookieStore, account: SavedAccount)
   setActiveIdentity(cookieStore, { label: account.label, identifier: account.identifier });
 }
 
-/** Login/logout paths call this so a fresh sign-in never inherits another
- * person's saved accounts. */
+// ---- Linked account switching (server-backed) ---------------------------------------
+// This browser keeps tokens for the ACTIVE account only. The account we switched OUT of
+// is remembered by id (never by token) so the switcher can offer "back"; the server
+// decides whether a switch is allowed. Design: rnd-linked-account-switching.md.
+
+export interface HomeAccount {
+  personId: string;
+  label: IdentityLabel;
+  title: string;
+}
+
+export function readHomeAccount(cookieStore: CookieStore): HomeAccount | null {
+  const v = parseJson<HomeAccount>(cookieStore.get(HOME_ACCOUNT_COOKIE)?.value);
+  return v && typeof v.personId === "string" && typeof v.title === "string" ? v : null;
+}
+
+export function setHomeAccount(cookieStore: CookieStore, home: HomeAccount): void {
+  cookieStore.set(HOME_ACCOUNT_COOKIE, JSON.stringify(home), cookieOptions());
+}
+
+export function clearHomeAccount(cookieStore: CookieStore): void {
+  cookieStore.delete(HOME_ACCOUNT_COOKIE);
+  cookieStore.delete(ACTIVE_CLASS_COOKIE);
+}
+
+/** e.g. "5-B" while signed into a class account (display only). */
+export function readActiveClass(cookieStore: CookieStore): string | null {
+  return cookieStore.get(ACTIVE_CLASS_COOKIE)?.value ?? null;
+}
+
+export function setActiveClass(cookieStore: CookieStore, className: string): void {
+  cookieStore.set(ACTIVE_CLASS_COOKIE, className, cookieOptions());
+}
+
+/** Login/logout paths call this so a fresh sign-in never inherits another person's
+ * switch state (and any legacy saved-account cookies are dropped). */
 export function resetSwitchState(cookieStore: CookieStore): void {
   clearSavedAccounts(cookieStore);
+  clearHomeAccount(cookieStore);
   cookieStore.delete(ACTIVE_IDENTITY_COOKIE);
 }

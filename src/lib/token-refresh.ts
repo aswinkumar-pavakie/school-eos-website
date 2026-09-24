@@ -45,10 +45,10 @@ export function isExpiredOrExpiringSoon(token: string): boolean {
   return exp - Math.floor(Date.now() / 1000) <= EXPIRY_SKEW_SECONDS;
 }
 
-export async function refreshTokens(refreshToken: string): Promise<TokenPair | null> {
+export async function refreshTokens(refreshToken: string, deviceId: string | null = null): Promise<TokenPair | null> {
   const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(deviceId ? { "X-Device-Id": deviceId } : {}) },
     body: JSON.stringify({ refreshToken }),
     cache: "no-store",
   });

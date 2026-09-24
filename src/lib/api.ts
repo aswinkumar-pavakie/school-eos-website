@@ -12,6 +12,7 @@
 // most page.tsx files in this app do.
 
 import { cookies } from "next/headers";
+import { deviceHeader, readDeviceId } from "./device-id";
 import {
   decodeAccessTokenExpiry,
   isExpiredOrExpiringSoon,
@@ -109,10 +110,11 @@ const API_BASE_URL =
 
 export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const accessToken = await getValidAccessToken();
+  const deviceId = readDeviceId(await cookies());
   const doFetch = (token: string) =>
     fetch(`${API_BASE_URL}${path}`, {
       ...init,
-      headers: { ...init.headers, Authorization: `Bearer ${token}` },
+      headers: { ...init.headers, ...deviceHeader(deviceId), Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
   let res = await doFetch(accessToken);
@@ -120,7 +122,7 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
     if (!refreshToken) throw new AuthExpiredError();
-    const refreshed = await refreshTokens(refreshToken);
+    const refreshed = await refreshTokens(refreshToken, deviceId);
     if (!refreshed) {
       await clearAuthCookies(cookieStore);
       throw new AuthExpiredError();

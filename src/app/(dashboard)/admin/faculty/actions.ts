@@ -595,3 +595,12 @@ export async function assignSubjectTeacherAction(
   revalidatePath(facultyDetailPath);
   return { success: true };
 }
+
+/** Admin cut-off for a teacher's linked phones (POST /persons/:id/revoke-linked-accounts). */
+export async function revokeLinkedAccountsAction(personId: string): Promise<{ error?: string; revoked?: number }> {
+  const res = await apiFetch(`/persons/${personId}/revoke-linked-accounts`, { method: "POST" });
+  if (!res.ok) return { error: await readError(res) };
+  const body = (await res.json().catch(() => null)) as { data?: { revoked?: number } } | null;
+  revalidatePath("/admin/faculty");
+  return { revoked: body?.data?.revoked ?? 0 };
+}

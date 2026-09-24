@@ -27,8 +27,11 @@ export function StaffPersonPicker({
 }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<StaffHit | null>(null);
-  const [results, setResults] = useState<StaffHit[]>([]);
+  const [fetched, setFetched] = useState<StaffHit[]>([]);
   const [open, setOpen] = useState(false);
+  // Hits only count while a search is active; deriving this (rather than
+  // clearing state inside the effect) avoids a cascading re-render.
+  const results = !selected && query.trim().length >= 2 ? fetched : [];
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,16 +47,13 @@ export function StaffPersonPicker({
   }, [open]);
 
   useEffect(() => {
-    if (selected || query.trim().length < 2) {
-      setResults([]);
-      return;
-    }
+    if (selected || query.trim().length < 2) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       const res = await fetch(`/api/staff-search?search=${encodeURIComponent(query)}`);
       if (res.ok) {
         const body = (await res.json()) as { data: StaffHit[] };
-        setResults(body.data);
+        setFetched(body.data);
         setOpen(true);
       }
     }, 300);

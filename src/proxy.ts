@@ -18,6 +18,7 @@
 // onto the outgoing response (so the browser actually keeps it). That's the fix:
 // do the refresh-and-persist here, once, before the page ever renders.
 import { NextResponse } from "next/server";
+import { DEVICE_ID_COOKIE, deviceCookieOptions, newDeviceId, readDeviceId } from "@/lib/device-id";
 import type { NextRequest } from "next/server";
 import { decodeAccessTokenRoles, isExpiredOrExpiringSoon, refreshTokens } from "@/lib/token-refresh";
 
@@ -50,7 +51,7 @@ function isAllowedForClassTeacher(pathname: string): boolean {
   return CLASS_TEACHER_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-export async function proxy(request: NextRequest) {
+async function handle(request: NextRequest) {
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
@@ -66,7 +67,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const refreshed = await refreshTokens(refreshToken);
+  const refreshed = await refreshTokens(refreshToken, readDeviceId(request.cookies));
   if (!refreshed) {
     // Refresh token is gone/invalid -- let the page's own auth check redirect
     // to /login rather than duplicating that logic here.
@@ -88,6 +89,16 @@ export async function proxy(request: NextRequest) {
     ...common,
     maxAge: 60 * 60 * 24 * 30,
   });
+  return response;
+}
+
+/** Every covered page load also makes sure this browser has a device id (an old session
+ * binds to it at its next token refresh). */
+export async function proxy(request: NextRequest) {
+  const response = await handle(request);
+  if (!readDeviceId(request.cookies)) {
+    response.cookies.set(DEVICE_ID_COOKIE, newDeviceId(), deviceCookieOptions());
+  }
   return response;
 }
 

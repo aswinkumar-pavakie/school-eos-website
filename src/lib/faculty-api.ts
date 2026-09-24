@@ -98,6 +98,16 @@ export type ClassTeacherLink =
 export async function getClassTeacherLink(): Promise<ClassTeacherLink> {
   return (await get<ApiEnvelope<ClassTeacherLink>>("/faculty/scope/class-teacher-link")).data;
 }
+// Drives which optional "MORE" item a faculty member sees: Hostel (resides in
+// hostel), My bus (uses school transport), or neither (own vehicle) -- the
+// same rule the mobile app's 5th tab uses.
+export interface FacultyCommute {
+  isHosteller: boolean;
+  usesSchoolTransport: boolean;
+}
+export async function getFacultyCommute(): Promise<FacultyCommute> {
+  return (await get<ApiEnvelope<FacultyCommute>>("/faculty/scope/commute")).data;
+}
 export async function listTeachingOfferings(): Promise<TeachingOffering[]> {
   return (await get<ApiEnvelope<TeachingOffering[]>>("/faculty/scope/teaching-offerings")).data;
 }

@@ -23,13 +23,13 @@ export function PrincipalAnnouncementsSection({ announcements }: { announcements
   return (
     <div className="rounded-[16px] border border-border bg-surface p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Announcements</h2>
+        <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Notices</h2>
         <span className="text-xs text-text-muted">{announcements.length} announcements</span>
       </div>
 
       {announcements.length === 0 && (
         <p className="mt-3 rounded-[11px] border border-dashed border-border bg-field px-3.5 py-3 text-sm text-text-muted">
-          No announcements yet.
+          No notices yet.
         </p>
       )}
 

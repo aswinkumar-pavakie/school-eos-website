@@ -54,6 +54,6 @@ export async function createAnnouncementAction(
 
 export async function archiveAnnouncementAction(id: string): Promise<void> {
   const res = await apiFetch(`/announcements/${id}/archive`, { method: "POST" });
-  if (!res.ok) throw new Error("Couldn't archive this announcement. Nothing was changed.");
+  if (!res.ok) throw new Error("Couldn't archive this notice. Nothing was changed.");
   revalidatePath("/admin/announcements");
 }

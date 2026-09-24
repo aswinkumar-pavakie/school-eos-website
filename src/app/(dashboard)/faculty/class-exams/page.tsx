@@ -59,7 +59,7 @@ export default async function ClassExamsPage({ searchParams }: { searchParams: P
     <div>
       <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em", color: "var(--fac-navy)" }}>Exams</h1>
       <p style={{ margin: "8px 0 0", font: "400 15px/1.4 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
-        Every subject&apos;s exams for your class
+        Upcoming and finished exams, with student-wise marks
       </p>
 
       <div style={{ marginTop: 22 }}>
