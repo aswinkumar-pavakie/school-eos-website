@@ -14,6 +14,7 @@ import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError } from "@/lib/api";
 import { listOnlineClasses, myOnlineClassOfferings, scheduleOnlineClass, type OnlineClassDetail } from "@/lib/faculty-online-classes-api";
+import { AutoRefresh } from "@/components/shared-ui/AutoRefresh";
 import { FacultyEmptyState } from "@/components/faculty-ui/EmptyState";
 import { ChevronLeftIcon } from "@/components/faculty-ui/icons";
 
@@ -71,6 +72,7 @@ async function ListView() {
 
   return (
     <div>
+      <AutoRefresh />
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
           <h1 style={{ margin: 0, font: "700 36px/1.1 var(--fac-font-sans)", letterSpacing: "-.02em" }}>Online class</h1>
