@@ -25,7 +25,7 @@ import { StatusPill } from "@/components/dashboard/StatusPill";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError, apiFetch } from "@/lib/api";
-import { formatDate, formatRelativeTime } from "@/lib/format";
+import { formatDate, formatRelativeTime, percentOf } from "@/lib/format";
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
 
 interface CalendarEventRow {
@@ -84,11 +84,6 @@ export default async function VicePrincipalDashboardPage() {
     ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 2)
     : [];
 
-  const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
-  const yearDetail = summary.currentAcademicYear
-    ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
-    : "Set by Admin in Academics";
-
   const hostelPct = summary.hostelOccupancy.totalBeds
     ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
     : 0;
@@ -129,13 +124,14 @@ export default async function VicePrincipalDashboardPage() {
             eyebrow="Parent logins issued"
             value={String(summary.parentLoginsIssued.issued)}
             detail={`${summary.parentLoginsIssued.totalFamilies - summary.parentLoginsIssued.issued} yet to activate`}
+            bar={percentOf(summary.parentLoginsIssued.issued, summary.parentLoginsIssued.totalFamilies)}
             href="/vice-principal/parents"
           />
-          <KpiCard eyebrow="Academic year" value={yearLabel} detail={yearDetail} href="/vice-principal/academics" />
           <KpiCard
             eyebrow="Hostel occupancy"
             value={`${hostelPct}%`}
             detail={`${summary.hostelOccupancy.occupiedBeds} / ${summary.hostelOccupancy.totalBeds} beds occupied`}
+            bar={hostelPct}
             href="/vice-principal/hostel"
           />
           <KpiCard eyebrow="Transport fleet" value={String(summary.vehiclesCount)} detail="Vehicles registered" href="/vice-principal/transport" />
@@ -144,6 +140,7 @@ export default async function VicePrincipalDashboardPage() {
             eyebrow="Staff marked today"
             value={`${summary.staffMarkedToday.present} / ${summary.staffMarkedToday.total}`}
             detail={`${summary.staffMarkedToday.present} present · ${summary.staffMarkedToday.absent} absent · ${summary.staffMarkedToday.onLeave} on leave`}
+            bar={percentOf(summary.staffMarkedToday.present, summary.staffMarkedToday.total)}
           />
         </div>
 

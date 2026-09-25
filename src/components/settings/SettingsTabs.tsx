@@ -24,6 +24,7 @@ export function SettingsTabs({
   policies,
   terminals,
   vehicles,
+  staff,
 }: {
   school: School;
   campuses: Campus[];
@@ -32,6 +33,7 @@ export function SettingsTabs({
   policies: RetentionPolicy[];
   terminals: Terminal[];
   vehicles: Vehicle[];
+  staff: { id: string; firstName: string; lastName: string | null }[];
 }) {
   const [tab, setTab] = useState<Tab>("School profile");
 
@@ -55,7 +57,7 @@ export function SettingsTabs({
       <div className="mt-5 rounded-[16px] border border-border bg-surface p-[18px]">
         {tab === "School profile" && <SchoolProfilePanel school={school} />}
         {tab === "Campuses" && <CampusesPanel campuses={campuses} />}
-        {tab === "Departments" && <DepartmentsPanel departments={departments} />}
+        {tab === "Departments" && <DepartmentsPanel departments={departments} staff={staff} />}
         {tab === "Roles" && <RolesPanel roles={roles} />}
         {tab === "Document retention" && <RetentionPoliciesPanel policies={policies} />}
         {tab === "Terminals" && <TerminalsPanel terminals={terminals} vehicles={vehicles} />}
