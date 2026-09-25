@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  a { color: #1f6feb; text-decoration: none; }
+  a:hover { color: #1a4fb4; }
+  input::placeholder, textarea::placeholder { color: #9aa7ba; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #1f6feb; }
+  table { border-collapse: collapse; width: 100%; }
+</style>
+</helmet>
+<div style="display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100vh; font-family: Outfit, Helvetica, Arial, sans-serif; color: #10243f; background: #ffffff;">
+  <aside style="background: #ffffff; border-right: 1px solid #e4e9f2; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: auto;">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid #eef1f6;">
+      <div style="width: 46px; height: 46px; border-radius: 13px; background: #0f2342; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">DS</div>
+      <div style="display: flex; flex-direction: column; gap: 1px;">
+        <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Design architecture</div>
+        <div style="font-size: 12px; color: #8593a8;">School modules · v1.0</div>
+      </div>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 4px; padding: 18px 14px;">
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.13em; color: #9aa7ba; padding: 4px 10px 6px;">CONTENTS</div>
+      <sc-for list="{{ toc }}" as="t" hint-placeholder-count="12">
+        <a href="{{ t.href }}" style="display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 10px 12px; font-size: 15px; font-weight: 500; color: #3c4a61; min-height: 42px;" style-hover="background: #f4f7fc; color: #1f4fa8;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9aa7ba; width: 20px;">{{ t.n }}</span>
+          <span>{{ t.label }}</span>
+        </a>
+      </sc-for>
+    </nav>
+  </aside>
+
+  <main style="padding: 34px 28px 80px; display: flex; flex-direction: column; gap: 22px; min-width: 0; max-width: 1320px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <h1 style="margin: 0; font-size: 38px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.08;">Design architecture</h1>
+      <p style="margin: 0; font-size: 15px; color: #5c6b82; text-wrap: pretty; max-width: 760px;">The shared foundation for every school module. Copy these values exactly — colors, type, spacing, shapes, icons and components — so every module looks and behaves the same.</p>
+    </div>
+
+    <section id="principles" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">01</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Principles</div>
+        <div style="font-size: 13px; color: #8593a8;">Rules every module follows</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+        <sc-for list="{{ principles }}" as="p" hint-placeholder-count="6">
+          <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{ p.t }}</div>
+            <div style="font-size: 14px; color: #44536b; text-wrap: pretty;">{{ p.d }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="colors" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">02</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Color</div>
+        <div style="font-size: 13px; color: #8593a8;">Navy + one blue accent on white. Status colors only inside pills.</div>
+      </div>
+      <sc-for list="{{ colorGroups }}" as="g" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ g.label }}</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+            <sc-for list="{{ g.items }}" as="c" hint-placeholder-count="5">
+              <div style="border: 1px solid #e4e9f2; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="height: 64px; background: {{ c.hex }}; border-bottom: 1px solid #eef1f6;"></div>
+                <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 3px;">
+                  <span style="font-size: 14px; font-weight: 600;">{{ c.name }}</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">{{ c.hex }}</span>
+                  <span style="font-size: 12px; color: #8593a8; text-wrap: pretty;">{{ c.use }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">ELEMENT → COLOR MAP</div>
+        <div style="border: 1px solid #e4e9f2; border-radius: 14px; overflow-x: auto;">
+          <table>
+            <thead><tr style="background: #f8fafc;">
+              <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px;">AREA</th>
+              <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px;">ELEMENT</th>
+              <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px;">BACKGROUND</th>
+              <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px;">BORDER</th>
+              <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px;">TEXT / ICON</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ colorMap }}" as="m" hint-placeholder-count="10">
+                <tr style="border-top: 1px solid #eef1f6;" style-hover="background: #f6faff; box-shadow: 0 0 0 1.5px #1f6feb;">
+                  <td style="padding: 13px 14px; font-size: 13px; color: #8593a8; white-space: nowrap;">{{ m.area }}</td>
+                  <td style="padding: 13px 14px; font-size: 14px; font-weight: 600; color: #10243f;">{{ m.el }}</td>
+                  <td style="padding: 13px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">{{ m.bg }}</td>
+                  <td style="padding: 13px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">{{ m.border }}</td>
+                  <td style="padding: 13px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">{{ m.text }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="type" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">03</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Typography</div>
+        <div style="font-size: 13px; color: #8593a8;">Outfit (400/500/600/700) for UI · JetBrains Mono (400/500) for IDs, codes, numbers, dates, badges</div>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <sc-for list="{{ typeScale }}" as="ty" hint-placeholder-count="12">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 18px; align-items: center; padding: 14px 0; border-top: 1px solid #eef1f6;">
+            <span style="font-size: 14px; font-weight: 600;">{{ ty.role }}</span>
+            <span style="font-family: {{ ty.family }}; font-size: {{ ty.size }}px; font-weight: {{ ty.weight }}; letter-spacing: {{ ty.ls }}; color: {{ ty.color }}; line-height: 1.2; min-width: 0; overflow-wrap: anywhere;">{{ ty.sample }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">{{ ty.spec }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="spacing" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">04</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Spacing &amp; padding</div>
+        <div style="font-size: 13px; color: #8593a8;">Gaps between elements and inner padding of containers</div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start;">
+        <div style="display: flex; flex-direction: column;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding-bottom: 8px;">GAP SCALE</div>
+          <sc-for list="{{ gaps }}" as="s" hint-placeholder-count="9">
+            <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid #eef1f6;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; width: 44px;">{{ s.v }}px</span>
+              <span style="height: 12px; width: {{ s.v }}px; background: #1f6feb; border-radius: 3px; flex: none;"></span>
+              <span style="font-size: 13px; color: #5c6b82;">{{ s.use }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding-bottom: 8px;">CONTAINER PADDING</div>
+          <sc-for list="{{ paddings }}" as="p" hint-placeholder-count="10">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 11px 0; border-top: 1px solid #eef1f6;">
+              <span style="font-size: 14px; color: #44536b;">{{ p.k }}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #10243f; text-align: right;">{{ p.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="shapes" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">05</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Shapes, borders &amp; shadows</div>
+        <div style="font-size: 13px; color: #8593a8;">Corner radius by component size · 1px borders · shadows only on hover and overlays</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px;">
+        <sc-for list="{{ radii }}" as="r" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+            <div style="width: 100%; height: 80px; border: 1.5px solid #1f6feb; background: #eef4ff; border-radius: {{ r.v }};"></div>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">{{ r.v }}</span>
+            <span style="font-size: 12px; color: #8593a8; text-wrap: pretty;">{{ r.use }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <sc-for list="{{ shadows }}" as="s" hint-placeholder-count="4">
+          <div style="border: 1px solid {{ s.border }}; border-radius: 14px; padding: 20px; box-shadow: {{ s.v }}; display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-size: 15px; font-weight: 600;">{{ s.name }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0; word-break: break-word;">{{ s.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="icons" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">06</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Icons</div>
+        <div style="font-size: 13px; color: #8593a8;">24×24 viewBox · drawn at 20px · stroke only, round caps &amp; joins · idle #7d8ca3 @1.6 · active #1f6feb @1.7</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;">
+        <sc-for list="{{ icons }}" as="ic" hint-placeholder-count="16">
+          <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start;">
+            <div style="display: flex; gap: 10px;">
+              <span style="width: 40px; height: 40px; border-radius: 10px; background: #f4f7fc; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#7d8ca3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.d }}"></path></svg>
+              </span>
+              <span style="width: 40px; height: 40px; border-radius: 10px; background: #eef4ff; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1f6feb" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ ic.d }}"></path></svg>
+              </span>
+            </div>
+            <span style="font-size: 14px; font-weight: 600;">{{ ic.name }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="shell" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">07</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">App shell</div>
+        <div style="font-size: 13px; color: #8593a8;">grid-template-columns: 272px minmax(0, 1fr) · sidebar sticky 100vh · header sticky top, z-index 5</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 272px minmax(0, 1fr); border: 1px solid #e4e9f2; border-radius: 14px; overflow: hidden;">
+        <div style="border-right: 1px solid #e4e9f2; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid #eef1f6;">
+            <div style="width: 46px; height: 46px; border-radius: 13px; background: #0f2342; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">PPS</div>
+            <div style="display: flex; flex-direction: column; gap: 1px;">
+              <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">School name</div>
+              <div style="font-size: 12px; color: #8593a8;">Module name</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px; padding: 18px 14px;">
+            <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.13em; color: #9aa7ba; padding: 4px 10px 6px;">GROUP LABEL</div>
+            <div style="display: flex; align-items: center; gap: 10px; background: #eef4ff; border-radius: 10px; padding: 11px 12px; font-size: 15px; font-weight: 600; color: #1f4fa8; min-height: 44px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1f6feb" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"></path></svg>
+              <span style="flex: 1;">Active item</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #1f4fa8; background: #dbe7ff; border-radius: 999px; padding: 3px 8px;">96</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 11px 12px; font-size: 15px; font-weight: 500; color: #3c4a61; min-height: 44px; cursor: pointer;" style-hover="background: #f4f7fc;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#7d8ca3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"></path></svg>
+              <span style="flex: 1;">Idle item</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5c6b82; background: #f0f3f8; border-radius: 999px; padding: 3px 8px;">15</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-top: 1px solid #eef1f6; margin-top: auto;">
+            <div style="width: 40px; height: 40px; border-radius: 999px; background: #0f2342; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">AK</div>
+            <div style="display: flex; flex-direction: column; gap: 1px;">
+              <div style="font-size: 14px; font-weight: 600;">User name</div>
+              <div style="font-size: 12px; color: #8593a8;">Role</div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; min-width: 0;">
+          <div style="border-bottom: 1px solid #e4e9f2; padding: 14px 28px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: #f6f8fb; border: 1px solid #e4e9f2; border-radius: 12px; padding: 11px 14px;">
+              <span style="width: 8px; height: 8px; border-radius: 999px; border: 1.5px solid #9aa7ba; flex: none;"></span>
+              <span style="flex: 1; font-size: 15px; color: #9aa7ba;">Search…</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8593a8; background: #eef1f6; border-radius: 6px; padding: 4px 7px;">Ctrl K</span>
+            </div>
+            <div style="background: #f4f7fc; border: 1px solid #e4e9f2; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 600; color: #1f4fa8;">Role · Scope</div>
+            <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 11px 14px; font-size: 14px; font-weight: 500;">2026-2027</div>
+            <div style="background: #0f2342; border-radius: 10px; padding: 11px 14px; font-size: 14px; font-weight: 600; color: #ffffff;">Term I</div>
+          </div>
+          <div style="padding: 34px 28px; display: flex; flex-direction: column; gap: 14px; flex: 1;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">MAIN · padding 34px 28px 60px · gap 22px</div>
+            <div style="height: 60px; border: 1px dashed #dfe5ef; border-radius: 14px; display: flex; align-items: center; padding: 0 18px; font-size: 13px; color: #8593a8;">Page header</div>
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+              <div style="height: 70px; border: 1px dashed #dfe5ef; border-radius: 14px;"></div>
+              <div style="height: 70px; border: 1px dashed #dfe5ef; border-radius: 14px;"></div>
+              <div style="height: 70px; border: 1px dashed #dfe5ef; border-radius: 14px;"></div>
+              <div style="height: 70px; border: 1px dashed #dfe5ef; border-radius: 14px;"></div>
+            </div>
+            <div style="flex: 1; min-height: 90px; border: 1px dashed #dfe5ef; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #8593a8;">Section cards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="header" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">08</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Page header</div>
+        <div style="font-size: 13px; color: #8593a8;">Full header for list pages · compact header for detail pages</div>
+      </div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">FULL</div>
+      <div style="display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; border: 1px dashed #dfe5ef; border-radius: 14px; padding: 20px;">
+        <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px;">
+          <h2 style="margin: 0; font-size: 38px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.08;">Page title</h2>
+          <p style="margin: 0; font-size: 15px; color: #5c6b82;">One-line description of what this page shows</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #8593a8;">UPDATED TODAY</span>
+          <span style="background: #eef4ff; border: 1px solid #dbe7ff; color: #1f4fa8; border-radius: 999px; padding: 10px 18px; font-size: 14px; font-weight: 600;">Header pill</span>
+          <button type="button" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 46px;" style-hover="background: #1a5cc8;">+  Primary action</button>
+        </div>
+      </div>
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">COMPACT (DETAIL PAGE)</div>
+      <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap; border: 1px dashed #dfe5ef; border-radius: 14px; padding: 20px;">
+        <button type="button" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 12px; padding: 14px 22px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">← Back to list</button>
+        <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px;">
+          <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">Record name</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">ID-2026-0412 · Class 9-A</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="buttons" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">09</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Buttons &amp; tabs</div>
+        <div style="font-size: 13px; color: #8593a8;">Radius 10px · Outfit 14–15 / 600 · min-height 44–48px · hover shown live</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+        <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">PRIMARY</div>
+          <button type="button" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 46px;" style-hover="background: #1a5cc8;">+  Post a notice</button>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">bg #1f6feb → hover #1a5cc8 · 13px 20px</div>
+        </div>
+        <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">GHOST</div>
+          <button type="button" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 46px;" style-hover="background: #f4f7fc;">Export list</button>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">bg #fff · border #e4e9f2 → hover #f4f7fc</div>
+        </div>
+        <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">WITH COUNT</div>
+          <button type="button" style="display: flex; align-items: center; gap: 9px; background: #1f6feb; border: 0; border-radius: 10px; padding: 11px 18px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 44px;" style-hover="background: #1a5cc8;">Messages <span style="background: #ffffff; color: #1f6feb; border-radius: 999px; font-size: 12px; font-weight: 700; padding: 2px 8px;">10</span></button>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">count: white pill 12 / 700 · 2px 8px</div>
+        </div>
+        <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TEXT LINK · ICON CLOSE</div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <button type="button" style="background: transparent; border: 0; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1f6feb; cursor: pointer; padding: 2px 4px;">View all</button>
+            <button type="button" style="width: 40px; height: 40px; border-radius: 10px; background: #f4f7fc; border: 1px solid #e9edf4; font-family: Outfit, sans-serif; font-size: 15px; color: #5c6b82; cursor: pointer;" style-hover="background: #eef1f6;">✕</button>
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">close: 40×40 · radius 10 · #f4f7fc</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TABS — ACTIVE NAVY, IDLE OUTLINE · gap 10px · padding 12px 20px</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <sc-for list="{{ demoTabs }}" as="tab" hint-placeholder-count="4">
+            <sc-if value="{{ tab.active }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ tab.go }}" style="background: #0f2342; border: 1px solid #0f2342; border-radius: 10px; padding: 12px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 44px;">{{ tab.label }}</button>
+            </sc-if>
+            <sc-if value="{{ tab.idle }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ tab.go }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 12px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 500; color: #3c4a61; cursor: pointer; min-height: 44px;" style-hover="background: #f4f7fc;">{{ tab.label }}</button>
+            </sc-if>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">10</div>
+        <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Stat cards</div>
+        <div style="font-size: 13px; color: #8593a8;">grid repeat(auto-fit, minmax(250px, 1fr)) · gap 16 · padding 20 · radius 14 · hover: lift 4px + blue border + shadow</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 12px 26px rgba(31, 111, 235, 0.14);">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+              <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ stat.label }}</div>
+              <span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 3px 9px;">{{ stat.pct }}</span>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1;">{{ stat.value }}</span>
+              <span style="font-size: 14px; color: #8593a8;">{{ stat.unit }}</span>
+            </div>
+            <div style="height: 6px; border-radius: 999px; background: #eef1f6; overflow: hidden;">
+              <div style="height: 6px; border-radius: 999px; background: #1f6feb; width: {{ stat.bar }}%;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="font-size: 14px; color: #44536b;">{{ stat.sub }}</div>
+              <div style="font-size: 13px; color: #8593a8;">{{ stat.note }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="section" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">11</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Section card</div><div style="font-size: 13px; color: #8593a8;">Container for every content block · padding 22 · radius 16 · gap 16 · rows: grid gap 18 (e.g. 1.4fr 1fr)</div></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: start;">
+  <div style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 12px 26px rgba(31, 111, 235, 0.14);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Section title</div><div style="font-size: 13px; color: #8593a8;">Meta line · count or context</div></div>
+      <span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 5px 11px;">Optional pill</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <sc-for list="{{ bars }}" as="bar" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <span style="font-size: 14px; color: #44536b; width: 108px; flex: none;">{{ bar.label }}</span>
+          <span style="flex: 1; height: 9px; border-radius: 999px; background: #eef1f6; overflow: hidden; display: block;"><span style="display: block; height: 9px; border-radius: 999px; background: #1f6feb; width: {{ bar.pct }}%;"></span></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #10243f; white-space: nowrap;">{{ bar.value }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">progress bar: track #eef1f6 · fill #1f6feb · 9px (stat card 6px) · radius 999</div>
+  </div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Key–value</div><div style="font-size: 13px; color: #8593a8;">Detail pages, summaries</div></div>
+    <div style="display: flex; flex-direction: column;">
+      <sc-for list="{{ kv }}" as="pair" hint-placeholder-count="5">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 13px 0; border-bottom: 1px solid #eef1f6;">
+          <span style="font-size: 14px; color: #5c6b82;">{{ pair.k }}</span><span style="font-size: 14px; font-weight: 600; color: #10243f; text-align: right;">{{ pair.v }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div></section>
+<section id="tables" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">12</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Tables</div><div style="font-size: 13px; color: #8593a8;">thead #f8fafc · th 11/600/0.11em #6b7a91 · td 15px 14px · row divider #eef1f6 · hover: blue ring + light tint, no lift</div></div>
+<div style="border: 1px solid #e4e9f2; border-radius: 14px; overflow-x: auto;">
+  <table>
+    <thead><tr style="background: #f8fafc;">
+      <sc-for list="{{ tCols }}" as="col" hint-placeholder-count="5"><th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px; white-space: nowrap;">{{ col }}</th></sc-for>
+    </tr></thead>
+    <tbody>
+      <sc-for list="{{ tRows }}" as="r" hint-placeholder-count="4">
+        <tr style="border-top: 1px solid #eef1f6; cursor: pointer; transition: box-shadow 130ms ease, background 130ms ease;" style-hover="background: #f6faff; box-shadow: 0 0 0 1.5px #1f6feb; position: relative; z-index: 2;">
+          <td style="padding: 15px 14px;"><div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ r.ini }}</span>
+            <span style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 14px; font-weight: 600; color: #10243f;">{{ r.name }}</span><span style="font-size: 12px; color: #8593a8;">{{ r.sub }}</span></span>
+          </div></td>
+          <td style="padding: 15px 14px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #1f6feb;">{{ r.id }}</span></td>
+          <td style="padding: 15px 14px;"><span style="font-size: 14px; color: #44536b;">{{ r.cls }}</span></td>
+          <td style="padding: 15px 14px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ r.phone }}</span></td>
+          <td style="padding: 15px 14px;"><span style="font-size: 12px; font-weight: 600; color: {{ r.c }}; background: {{ r.bg }}; border-radius: 999px; padding: 5px 11px;">{{ r.status }}</span></td>
+        </tr>
+      </sc-for>
+    </tbody>
+  </table>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+  <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">STRONG</div><span style="font-size: 14px; font-weight: 600;">Outfit 14 / 600 #10243f</span></div>
+  <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">PLAIN</div><span style="font-size: 14px; color: #44536b;">Outfit 14 / 400 #44536b</span></div>
+  <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">MONO</div><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">Mono 13 #7a8aa0</span></div>
+  <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">LINK / ID</div><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #1f6feb;">Mono 13 / 500 #1f6feb</span></div>
+  <div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">AVATAR</div><span style="font-size: 14px; color: #44536b;">34px circle · #eef4ff / #1f4fa8</span></div>
+</div></section>
+<section id="pills" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">13</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Pills, tags &amp; badges</div><div style="font-size: 13px; color: #8593a8;">Status → rounded pill · category → square tag · counts → mono chip</div></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+  <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">STATUS PILL · 12/600 · 5px 11px · r999</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;"><span style="font-size: 12px; font-weight: 600; color: #1f7a4d; background: #e8f6ee; border-radius: 999px; padding: 5px 11px;">Active</span><span style="font-size: 12px; font-weight: 600; color: #8a5a00; background: #fdf3e0; border-radius: 999px; padding: 5px 11px;">Pending</span><span style="font-size: 12px; font-weight: 600; color: #b3261e; background: #fdecec; border-radius: 999px; padding: 5px 11px;">Rejected</span><span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 5px 11px;">Scheduled</span><span style="font-size: 12px; font-weight: 600; color: #ffffff; background: #0f2342; border-radius: 999px; padding: 5px 11px;">Final</span></div></div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">CATEGORY TAG · 11/600/0.1em · r6</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;"><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">TRANSPORT</span><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">LEAVE</span><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #8a5a00; background: #fdf3e0; border-radius: 6px; padding: 5px 10px;">HIGH PRIORITY</span></div></div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">CHIPS & COUNTS</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+      <span style="font-size: 12px; font-weight: 500; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 6px 12px;">Mathematics</span>
+      <span style="font-size: 12px; font-weight: 500; color: #44536b; background: #f4f7fc; border-radius: 999px; padding: 6px 12px;">Senior</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #44536b; border: 1px solid #e4e9f2; border-radius: 999px; padding: 8px 14px;">9-A</span>
+      <span style="min-width: 30px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #1f4fa8; background: #eef4ff; border-radius: 8px; padding: 6px 9px;">12</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #1f4fa8; background: #dbe7ff; border-radius: 999px; padding: 3px 8px;">96</span>
+    </div></div>
+</div></section>
+<section id="forms" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">14</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Forms &amp; filters</div><div style="font-size: 13px; color: #8593a8;">Label above field · gap 8 · input border #dfe5ef · focus border #1f6feb · filter bar is a bordered card</div></div>
+<div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; align-items: end;">
+  <label style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">CLASS</div><select style="appearance: none; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;"><option>All classes</option><option>Class 9-A</option></select></label>
+  <label style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">STATUS</div><select style="appearance: none; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;"><option>Any status</option></select></label>
+  <label style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">SEARCH</div><input type="text" placeholder="Name or ID" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;"></label>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+  <div style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">SEARCH FIELD (IN-PANEL)</div>
+    <div style="display: flex; align-items: center; gap: 11px; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px 17px;"><span style="width: 9px; height: 9px; border-radius: 999px; border: 1.5px solid #9aa7ba; flex: none;"></span><input type="text" placeholder="Search student, parent or staff" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f;"></div></div>
+  <div style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TEXTAREA (MODAL)</div>
+    <textarea rows="2" placeholder="Optional message" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f; width: 100%; resize: vertical;"></textarea></div>
+  <div style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">SELECTABLE OPTION (RADIO CARD)</div>
+    <div style="display: flex; align-items: center; gap: 14px; border: 1.5px solid #1f6feb; background: #f4f8ff; border-radius: 12px; padding: 15px 17px;">
+      <span style="width: 20px; height: 20px; border-radius: 999px; border: 2px solid #1f6feb; display: flex; align-items: center; justify-content: center; flex: none;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #1f6feb;"></span></span>
+      <span style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 16px; font-weight: 600;">All parents</span><span style="font-size: 13px; color: #8593a8;">1,248 recipients</span></span></div></div>
+</div></section>
+<section id="lists" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">15</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Lists &amp; record cards</div><div style="font-size: 13px; color: #8593a8;">Divider rows for dense lists · bordered cards (r14, p20) for rich records</div></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start;">
+  <div style="display: flex; flex-direction: column;">
+    <sc-for list="{{ listItems }}" as="it" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 0; border-top: 1px solid #eef1f6;">
+        <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+          <div style="display: flex; align-items: baseline; gap: 9px;"><span style="font-size: 15px; font-weight: 600;">{{ it.t }}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ it.m }}</span></div>
+          <div style="font-size: 13px; color: #8593a8;">{{ it.s }}</div>
+        </div>
+        <span style="font-size: 12px; font-weight: 600; color: {{ it.c }}; background: {{ it.bg }}; border-radius: 999px; padding: 6px 12px; white-space: nowrap;">{{ it.st }}</span>
+      </div>
+    </sc-for>
+  </div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 12px 26px rgba(31, 111, 235, 0.14);">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">PURCHASE</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">APR-2039</span><span style="font-size: 13px; color: #8593a8;">Yesterday</span></div>
+    <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.015em;">Sports store purchase — ₹48,600</div>
+    <div style="font-size: 14px; color: #5c6b82;">12 cricket bats, 4 volleyball nets and 30 shuttle tubes.</div>
+    <div style="font-size: 13px; color: #8593a8;">Raised by Physical education dept.</div>
+  </div>
+</div></section>
+<section id="modal" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">16</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Modal &amp; overlays</div><div style="font-size: 13px; color: #8593a8;">Scrim rgba(12,24,44,0.5) · panel r18 · p30 · max-width 640 · max-height 82vh · dropdown r14 with shadow</div></div>
+<div style="background: rgba(12, 24, 44, 0.5); border-radius: 14px; padding: 36px; display: flex; justify-content: center;">
+  <div style="background: #ffffff; border-radius: 18px; padding: 30px; width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 24px 70px rgba(12, 24, 44, 0.28);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">Modal title</div><div style="font-size: 14px; font-weight: 500; color: #1f6feb;">Short blue subtitle</div></div>
+      <button type="button" style="width: 40px; height: 40px; border-radius: 10px; background: #f4f7fc; border: 1px solid #e9edf4; font-family: Outfit, sans-serif; font-size: 15px; color: #5c6b82; cursor: pointer; flex: none;">✕</button>
+    </div>
+    <label style="display: flex; flex-direction: column; gap: 8px;"><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TITLE</div><input type="text" placeholder="e.g. Annual day rehearsal" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f; width: 100%;"></label>
+    <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eef1f6; padding-top: 20px;">
+      <button type="button" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #10243f; min-height: 46px;">Cancel</button>
+      <button type="button" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; min-height: 46px;">Confirm</button>
+    </div>
+  </div>
+</div></section>
+<section id="hover" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">17</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Hover &amp; motion</div><div style="font-size: 13px; color: #8593a8;">Two behaviours only · 130–140ms ease</div></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+  <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 12px 26px rgba(31, 111, 235, 0.14);">
+    <div style="font-size: 17px; font-weight: 600;">Cards — lift</div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">transform: translateY(-4px)<br>border-color: #1f6feb<br>box-shadow: 0 12px 26px rgba(31,111,235,.14)</div>
+  </div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: box-shadow 130ms ease, background 130ms ease;" style-hover="background: #f6faff; box-shadow: 0 0 0 1.5px #1f6feb;">
+    <div style="font-size: 17px; font-weight: 600;">Rows — ring, no lift</div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">background: #f6faff<br>box-shadow: 0 0 0 1.5px #1f6feb<br>(tables, route rows, list rows)</div>
+  </div>
+  <div style="border: 1px solid #e4e9f2; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+    <div style="font-size: 17px; font-weight: 600;">Controls</div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">primary → #1a5cc8<br>ghost / nav / tab → #f4f7fc<br>dropdown item → #f4f8ff</div>
+  </div>
+</div></section>
+<section id="recipe" style="border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 18px;"><div style="display: flex; flex-direction: column; gap: 4px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1f6feb;">18</div><div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">Page recipe</div><div style="font-size: 13px; color: #8593a8;">Order of blocks inside &lt;main&gt; — build every new module page this way</div></div>
+<div style="display: flex; flex-direction: column;">
+  <sc-for list="{{ recipe }}" as="r" hint-placeholder-count="6">
+    <div style="display: grid; grid-template-columns: 44px 200px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 14px 0; border-top: 1px solid #eef1f6;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #1f6feb;">{{ r.n }}</span>
+      <span style="font-size: 15px; font-weight: 600;">{{ r.t }}</span>
+      <span style="font-size: 14px; color: #44536b; text-wrap: pretty;">{{ r.d }}</span>
+    </div>
+  </sc-for>
+</div></section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { tab: 0 };
+  renderVals() {
+    const tabLabels = ["Overview", "Sections", "Advisors", "Subjects"];
+    const demoTabs = tabLabels.map((l, i) => ({ label: l, active: this.state.tab === i, idle: this.state.tab !== i, go: () => this.setState({ tab: i }) }));
+    const stats = [
+      { label: "TOTAL STUDENTS", pct: "+4%", value: "1,248", unit: "enrolled", bar: 82, sub: "LKG – Standard 12", note: "56 sections" },
+      { label: "ATTENDANCE TODAY", pct: "94%", value: "1,173", unit: "present", bar: 94, sub: "75 absent", note: "Marked by 08:45" },
+      { label: "PENDING APPROVALS", pct: "6", value: "6", unit: "requests", bar: 30, sub: "3 high priority", note: "Oldest: 10 Sept" },
+      { label: "FEE COLLECTED", pct: "71%", value: "₹84.2L", unit: "of ₹118L", bar: 71, sub: "Term I", note: "Due 30 Sept" }
+    ];
+    const toc = ["Principles","Color","Typography","Spacing & padding","Shapes & shadows","Icons","App shell","Page header","Buttons & tabs","Stat cards","Section card","Tables","Pills & badges","Forms & filters","Lists & rows","Modal & overlays","Hover states","Page recipe"];
+    const ids = ["principles","colors","type","spacing","shapes","icons","shell","header","buttons","stats","section","tables","pills","forms","lists","modal","hover","recipe"];
+    const MONO = "'JetBrains Mono', monospace", OUT = "Outfit, sans-serif";
+    const ty = (role, size, weight, ls, color, sample, family) => ({ role, size, weight, ls, color, sample, family: family || OUT,
+      spec: (family ? "Mono " : "Outfit ") + size + " / " + weight + (ls !== "0" ? " / " + ls : "") + " · " + color });
+    const G = ["#1f7a4d", "#e8f6ee"], A = ["#8a5a00", "#fdf3e0"], R = ["#b3261e", "#fdecec"], B = ["#1f4fa8", "#eef4ff"];
+    const st = (s, c) => ({ status: s, st: s, c: c[0], bg: c[1] });
+    return {
+      demoTabs, stats,
+      colorMap: [
+        ["Sidebar", "Logo tile", "#0f2342", "—", "#ffffff"],
+        ["Sidebar", "School name / role line", "—", "—", "#10243f / #8593a8"],
+        ["Sidebar", "Group label (OVERVIEW…)", "—", "—", "#9aa7ba"],
+        ["Sidebar", "Nav item — active", "#eef4ff", "—", "#1f4fa8 · icon #1f6feb"],
+        ["Sidebar", "Nav item — idle", "transparent → hover #f4f7fc", "—", "#3c4a61 · icon #7d8ca3"],
+        ["Sidebar", "Count badge — idle / active", "#f0f3f8 / #dbe7ff", "—", "#5c6b82 / #1f4fa8"],
+        ["Sidebar", "Right edge / dividers", "—", "#e4e9f2 / #eef1f6", "—"],
+        ["Top bar", "Search box", "#f6f8fb", "#e4e9f2", "#10243f · placeholder #9aa7ba"],
+        ["Top bar", "Ctrl K hint", "#eef1f6", "—", "#8593a8"],
+        ["Top bar", "Role chip (Principal · School)", "#f4f7fc", "#e4e9f2", "#1f4fa8"],
+        ["Top bar", "Year select", "#ffffff", "#e4e9f2", "#10243f"],
+        ["Top bar", "Term select", "#0f2342", "#0f2342", "#ffffff"],
+        ["Top bar", "Messages button", "#1f6feb → hover #1a5cc8", "—", "#ffffff · count pill #ffffff / #1f6feb"],
+        ["Top bar", "Bottom border", "#ffffff", "#e4e9f2", "—"],
+        ["Page header", "H1 greeting / title", "—", "—", "#10243f"],
+        ["Page header", "Subtitle", "—", "—", "#5c6b82"],
+        ["Page header", "Note (Updated just now)", "—", "—", "#8593a8"],
+        ["Page header", "Header pill", "#eef4ff", "#dbe7ff", "#1f4fa8"],
+        ["Stat card", "Card", "#ffffff", "#e4e9f2 → hover #1f6feb", "—"],
+        ["Stat card", "Label (ACTIVE STUDENTS)", "—", "—", "#6b7a91"],
+        ["Stat card", "Value (96)", "—", "—", "#10243f"],
+        ["Stat card", "Sub line", "—", "—", "#44536b"],
+        ["Stat card", "Note line", "—", "—", "#8593a8"],
+        ["Page", "Canvas", "#ffffff", "—", "—"]
+      ].map(r => ({ area: r[0], el: r[1], bg: r[2], border: r[3], text: r[4] })),
+      bars: [{ label: "Boys hostel", pct: 86, value: "172 / 200" }, { label: "Girls hostel", pct: 74, value: "111 / 150" }, { label: "Transport", pct: 91, value: "344 / 378" }, { label: "Library", pct: 58, value: "58%" }],
+      kv: [{ k: "Admission no.", v: "ADM-2026-0412" }, { k: "Class", v: "9-A" }, { k: "Date of birth", v: "14 Mar 2011" }, { k: "Blood group", v: "B+" }, { k: "Route", v: "Route 04 · Stop 6" }],
+      tCols: ["NAME", "ID", "CLASS", "PHONE", "STATUS"],
+      tRows: [
+        Object.assign({ ini: "AR", name: "Arjun R.", sub: "Roll 01", id: "ADM-0412", cls: "9-A", phone: "98430 11220" }, st("Active", G)),
+        Object.assign({ ini: "KS", name: "Kavya S.", sub: "Roll 02", id: "ADM-0413", cls: "9-A", phone: "98940 22871" }, st("Fee due", A)),
+        Object.assign({ ini: "MN", name: "Mithun N.", sub: "Roll 03", id: "ADM-0414", cls: "9-B", phone: "97890 55410" }, st("Absent", R)),
+        Object.assign({ ini: "PL", name: "Priya L.", sub: "Roll 04", id: "ADM-0415", cls: "9-B", phone: "99520 30118" }, st("Transfer", B))
+      ],
+      listItems: [
+        Object.assign({ t: "Unit Test 3 schedule", m: "EX-12", s: "Published 20 Sept · Exams office" }, st("Published", G)),
+        Object.assign({ t: "Bus 07 brake service", m: "MT-88", s: "Raised 18 Sept · Transport" }, st("In progress", A)),
+        Object.assign({ t: "Lab projector replacement", m: "MT-86", s: "Raised 16 Sept · Science block" }, st("Overdue", R)),
+        Object.assign({ t: "Library stock audit", m: "LB-04", s: "Scheduled 30 Sept" }, st("Scheduled", B))
+      ],
+      recipe: [
+        { n: "01", t: "Page header", d: "Full header (H1 38px + subtitle) on list pages; compact header with ← Back on detail pages." },
+        { n: "02", t: "Tabs (optional)", d: "Only when a page genuinely has parallel views. Navy active, outline idle. No nested tabs." },
+        { n: "03", t: "Stat row", d: "3–4 stat cards, auto-fit minmax(250px, 1fr), gap 16." },
+        { n: "04", t: "Filter bar (optional)", d: "Bordered card with label-above selects/inputs, grid minmax(220px, 1fr), gap 18." },
+        { n: "05", t: "Section rows", d: "Grid rows of section cards, gap 18. Common splits: 1fr · 1.4fr 1fr · 1fr 1fr." },
+        { n: "06", t: "Overlays", d: "Modals and dropdowns only for creation (e.g. post notice). Review screens stay read-only." }
+      ],
+      toc: toc.map((l, i) => ({ label: l, n: String(i + 1).padStart(2, "0"), href: "#" + ids[i] })),
+      principles: [
+        { t: "White canvas, bordered cards", d: "Page is always #ffffff. Structure comes from 1px #e4e9f2 borders, never grey backgrounds or heavy shadows." },
+        { t: "One accent", d: "Blue #1f6feb for primary actions, active states, links and progress. Navy #0f2342 for brand, active tabs and strong emphasis." },
+        { t: "Flat, single screen", d: "Avoid multi-step flows and nested tabs. Stat row → filters → sections, all visible on one page." },
+        { t: "Mono for data", d: "IDs, codes, counts, phone numbers, dates in tables and nav badges use JetBrains Mono." },
+        { t: "Uppercase micro-labels", d: "Field labels, column heads and group titles: 11px / 600 / 0.11em tracking, uppercase, #6b7a91." },
+        { t: "Minimum 44px hit area", d: "Every button, nav item and tab has min-height 44–48px." }
+      ],
+      colorGroups: [
+        { label: "BRAND & ACCENT", items: [
+          { name: "Navy", hex: "#0f2342", use: "Logo tile, avatar, active tab, term select, navy pill" },
+          { name: "Blue", hex: "#1f6feb", use: "Primary button, links, active icon, bars, focus border" },
+          { name: "Blue hover", hex: "#1a5cc8", use: "Primary button hover" },
+          { name: "Blue deep", hex: "#1f4fa8", use: "Text on blue tint, active nav label" },
+          { name: "Blue tint", hex: "#eef4ff", use: "Active nav bg, blue pill bg, avatar bg" },
+          { name: "Blue tint 2", hex: "#dbe7ff", use: "Active nav badge, pill border" },
+          { name: "Row hover", hex: "#f6faff", use: "Table row hover tint" },
+          { name: "Option selected", hex: "#f4f8ff", use: "Selected radio card, dropdown item hover" } ] },
+        { label: "TEXT", items: [
+          { name: "Ink", hex: "#10243f", use: "Headings, primary text, values" },
+          { name: "Body", hex: "#44536b", use: "Secondary text, table plain cells" },
+          { name: "Nav idle", hex: "#3c4a61", use: "Idle nav items, idle tabs" },
+          { name: "Muted", hex: "#5c6b82", use: "Page subtitle, KV keys, descriptions" },
+          { name: "Label", hex: "#6b7a91", use: "Uppercase labels, column heads" },
+          { name: "Mono grey", hex: "#7a8aa0", use: "Mono meta, IDs" },
+          { name: "Faint", hex: "#8593a8", use: "Meta, timestamps, notes" },
+          { name: "Icon idle", hex: "#7d8ca3", use: "Idle sidebar icons (stroke)" },
+          { name: "Placeholder", hex: "#9aa7ba", use: "Placeholders, nav group labels, search dot" },
+          { name: "White text", hex: "#ffffff", use: "Text on navy / blue fills" } ] },
+        { label: "SURFACES & LINES", items: [
+          { name: "Canvas", hex: "#ffffff", use: "Page, sidebar, header, cards" },
+          { name: "Border", hex: "#e4e9f2", use: "Cards, buttons, sidebar, header" },
+          { name: "Input border", hex: "#dfe5ef", use: "Inputs, selects, textareas" },
+          { name: "Divider", hex: "#eef1f6", use: "Row lines, inner dividers, bar track" },
+          { name: "Table head", hex: "#f8fafc", use: "thead background" },
+          { name: "Hover fill", hex: "#f4f7fc", use: "Ghost button / nav hover" },
+          { name: "Search fill", hex: "#f6f8fb", use: "Global search box" },
+          { name: "Badge idle", hex: "#f0f3f8", use: "Idle nav count badge bg" },
+          { name: "Kbd hint", hex: "#eef1f6", use: "Ctrl K hint bg" },
+          { name: "Close btn border", hex: "#e9edf4", use: "Modal ✕ button border" } ] },
+        { label: "STATUS (PILLS ONLY)", items: [
+          { name: "Success", hex: "#1f7a4d", use: "Text · bg #e8f6ee" },
+          { name: "Success bg", hex: "#e8f6ee", use: "Active, Approved, Present" },
+          { name: "Warning", hex: "#8a5a00", use: "Text · bg #fdf3e0" },
+          { name: "Warning bg", hex: "#fdf3e0", use: "Pending, High priority, Due" },
+          { name: "Danger", hex: "#b3261e", use: "Text · bg #fdecec" },
+          { name: "Danger bg", hex: "#fdecec", use: "Rejected, Overdue, Absent" } ] }
+      ],
+      typeScale: [
+        ty("Page title (H1)", 38, 700, "-0.028em", "#10243f", "Students"),
+        ty("Stat value", 38, 700, "-0.03em", "#10243f", "1,248"),
+        ty("Modal title", 26, 700, "-0.02em", "#10243f", "New notice"),
+        ty("Section title", 21, 600, "-0.015em", "#10243f", "Blocks & wardens"),
+        ty("Card title", 19, 600, "-0.015em", "#10243f", "Fee concession for 4 students"),
+        ty("Card name", 17, 600, "-0.01em", "#10243f", "Mrs. R. Deepa"),
+        ty("Nav item / body L", 15, 500, "0", "#3c4a61", "Academic calendar"),
+        ty("Body / subtitle", 15, 400, "0", "#5c6b82", "Academic year 2026–27 overview"),
+        ty("Table cell strong", 14, 600, "0", "#10243f", "Standard 9 — A"),
+        ty("Body S", 14, 400, "0", "#44536b", "Class advisor since June"),
+        ty("Meta", 13, 400, "0", "#8593a8", "Updated today · 08:20"),
+        ty("Pill", 12, 600, "0", "#1f7a4d", "Active"),
+        ty("Micro label", 11, 600, "0.11em", "#6b7a91", "TOTAL STUDENTS"),
+        ty("Nav group", 10, 600, "0.13em", "#9aa7ba", "ADMINISTRATION"),
+        ty("Mono data", 13, 400, "0", "#7a8aa0", "ADM-2026-0412", MONO),
+        ty("Mono badge", 11, 400, "0", "#1f4fa8", "96", MONO)
+      ],
+      gaps: [
+        { v: 2, use: "Stacked title + sub in tight lists" }, { v: 4, use: "Nav items, title → meta" },
+        { v: 8, use: "Label → input, chip rows" }, { v: 10, use: "Button groups, icon → label" },
+        { v: 12, use: "Stat card internals" }, { v: 14, use: "Header items, list-card stack" },
+        { v: 16, use: "Card grid, section internals" }, { v: 18, use: "Section columns, filter grid" },
+        { v: 22, use: "Main page vertical rhythm" }
+      ],
+      paddings: [
+        { k: "Main content", v: "34px 28px 60px" }, { k: "Top header", v: "14px 28px" },
+        { k: "Sidebar brand / footer", v: "20px 18px / 16px 18px" }, { k: "Sidebar nav", v: "18px 14px" },
+        { k: "Nav item", v: "11px 12px" }, { k: "Section card", v: "22px" },
+        { k: "Stat card / inner card", v: "20px" }, { k: "Modal", v: "30px" },
+        { k: "Table th / td", v: "13px 14px / 15px 14px" }, { k: "Input / select", v: "13px 14px" },
+        { k: "Button (primary / ghost)", v: "13px 20px" }, { k: "Tab", v: "12px 20px" },
+        { k: "Status pill", v: "5px 11px" }, { k: "Tag chip", v: "5px 10px" }
+      ],
+      radii: [
+        { v: "6px", use: "Tags, kbd hint" }, { v: "8px", use: "Count chip" },
+        { v: "10px", use: "Buttons, tabs, inputs, nav items" }, { v: "12px", use: "Search, modal inputs, list rows" },
+        { v: "13px", use: "Logo tile" }, { v: "14px", use: "Stat cards, inner cards" },
+        { v: "16px", use: "Section card" }, { v: "18px", use: "Modal" }, { v: "999px", use: "Pills, avatars, bars" }
+      ],
+      icons: [
+        ["Dashboard", "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"],
+        ["Person", "M12 11.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"],
+        ["Teacher / screen", "M3 5h18v11H3zM9 20h6M12 16v4"],
+        ["Columns / book", "M4 5h7v14H4zM13 5h7v14h-7z"],
+        ["Attendance", "M4 4h16v16H4zM8 12l3 3 5-6"],
+        ["Layers / mapping", "M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"],
+        ["Timetable", "M4 6h16v14H4zM4 10.5h16M8 3v4M16 3v4"],
+        ["Exam / clipboard", "M9 4h6v3H9zM6 7h12v13H6z"],
+        ["Calendar", "M4 6h16v14H4zM4 11h16M8 3v4M16 3v4"],
+        ["Inventory / box", "M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM4 7.5l8 4.5 8-4.5M12 12v9"],
+        ["Maintenance", "M14.5 4a4.5 4.5 0 00-4.2 6.1L4 16.4V20h3.6l6.3-6.3A4.5 4.5 0 0014.5 4z"],
+        ["Hostel / home", "M4 10.5L12 4l8 6.5V20H4zM9.5 20v-6h5v6"],
+        ["Transport", "M4 6h16v9H4zM4 11h16M7 15v4M17 15v4"],
+        ["Library", "M4 4h6v16H4zM12 4h3v16h-3zM17 4h3v16h-3z"],
+        ["Approvals", "M12 21a9 9 0 100-18 9 9 0 000 18zM8 12l3 3 5-6"],
+        ["Notices", "M4 10v4l10 4V6L4 10zM14 8a4 4 0 010 8"],
+        ["Inbox", "M3 6h18v12H3zM3 7l9 6 9-6"]
+      ].map(i => ({ name: i[0], d: i[1] })),
+      shadows: [
+        { name: "Rest", v: "none", border: "#e4e9f2" },
+        { name: "Card hover", v: "0 12px 26px rgba(31, 111, 235, 0.14)", border: "#1f6feb" },
+        { name: "Dropdown", v: "0 22px 48px rgba(12, 24, 44, 0.16)", border: "#e4e9f2" },
+        { name: "Modal", v: "0 24px 70px rgba(12, 24, 44, 0.28)", border: "#e4e9f2" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

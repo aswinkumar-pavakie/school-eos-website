@@ -67,9 +67,9 @@ function initialsOf(name: string): string {
 // (Fleet card seat badge, Compliance matrix) applied to licence expiry.
 function licenceState(expiry: string): { label: string; color: string; bg: string } {
   const d = daysUntil(expiry);
-  if (d < 0) return { label: "expired", color: "#1E3A8A", bg: "#DBEAFE" };
-  if (d <= 45) return { label: "due soon", color: "#2563EB", bg: "#EFF4FF" };
-  return { label: "valid", color: "#475569", bg: "#F1F5F9" };
+  if (d < 0) return { label: "expired", color: "var(--color-navy)", bg: "var(--color-tint)" };
+  if (d <= 45) return { label: "due soon", color: "var(--color-primary)", bg: "var(--color-tint)" };
+  return { label: "valid", color: "var(--color-text-muted)", bg: "var(--color-field)" };
 }
 
 export default async function TransportManagerDriversPage({
@@ -131,10 +131,10 @@ export default async function TransportManagerDriversPage({
       <form
         action="/transport-manager/drivers"
         className="mt-6 flex flex-wrap items-center gap-3 rounded-[14px] px-4 py-3.5"
-        style={{ background: "#FFFFFF", border: "1px solid #E8EDF3" }}
+        style={{ background: "var(--color-surface)", border: "1px solid var(--color-divider)" }}
       >
-        <div className="flex min-w-[280px] flex-1 items-center gap-2.5 rounded-[10px] px-3.5 py-2.5" style={{ border: "1px solid #E2E8F0" }}>
-          <MaterialIcon name="search" size={20} className="text-[#94A3B8]" />
+        <div className="flex min-w-[280px] flex-1 items-center gap-2.5 rounded-[10px] px-3.5 py-2.5" style={{ border: "1px solid var(--color-border)" }}>
+          <MaterialIcon name="search" size={20} className="text-[var(--color-text-tertiary)]" />
           <AutoSubmitSearchInput
             type="search"
             name="search"
@@ -164,19 +164,19 @@ export default async function TransportManagerDriversPage({
                 <div className="flex items-center gap-3">
                   <span
                     className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-white text-[12px] font-extrabold text-primary"
-                    style={{ border: "1px solid #C7D7F5" }}
+                    style={{ border: "1px solid var(--color-tint-2)" }}
                   >
                     {i + 1}
                   </span>
                   <span
                     className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white text-[16px] font-extrabold"
-                    style={{ color: "#1E293B" }}
+                    style={{ color: "var(--color-navy)" }}
                   >
                     {initialsOf(driver.fullName)}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[16px] font-bold text-text">{driver.fullName}</p>
-                    <p className="font-mono text-[13px]" style={{ color: "#64748B" }}>{driver.phone ?? "—"}</p>
+                    <p className="font-mono text-[13px]" style={{ color: "var(--color-text-muted)" }}>{driver.phone ?? "—"}</p>
                   </div>
                   <span className="shrink-0 rounded-[6px] px-[9px] py-[5px] text-[11px] font-bold" style={{ background: licence.bg, color: licence.color }}>
                     {licence.label}
@@ -185,32 +185,32 @@ export default async function TransportManagerDriversPage({
 
                 <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Licence no</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Licence no</p>
                     <p className="mt-[3px] truncate font-mono text-[13px] font-semibold text-text">{driver.licenceNo}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Valid till</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Valid till</p>
                     <p className="mt-[3px] text-[13px] font-semibold text-text">{formatDate(driver.licenceExpiry)}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Experience</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Experience</p>
                     <p className="mt-[3px] text-[13px] font-semibold text-text">{driver.experienceYears != null ? `${driver.experienceYears} yrs` : "not recorded"}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Assigned bus</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Assigned bus</p>
                     <p className="mt-[3px] truncate font-mono text-[13px] font-semibold text-text">{vehicle?.registrationNo ?? "—"}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Attendant</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Attendant</p>
                     <p className="mt-[3px] truncate text-[13px] font-semibold text-text">{attendant?.fullName ?? "—"}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Blood group</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Blood group</p>
                     <p className="mt-[3px] text-[13px] font-semibold text-text">{driver.bloodGroup ?? "not recorded"}</p>
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2 border-t pt-3" style={{ borderColor: "#F1F5F9" }}>
+                <div className="flex justify-end gap-2 border-t pt-3" style={{ borderColor: "var(--color-field)" }}>
                   <DriverEditForm
                     driverId={driver.id}
                     assignmentId={assignment?.id ?? null}
@@ -240,7 +240,7 @@ export default async function TransportManagerDriversPage({
                     <button
                       type="button"
                       className="inline-flex items-center gap-1.5 rounded-[9px] px-3 py-[7px] text-[12.5px] font-bold"
-                      style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}
+                      style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}
                     >
                       <MaterialIcon name="delete" size={16} /> Remove
                     </button>
@@ -264,7 +264,7 @@ export default async function TransportManagerDriversPage({
               <div key={a.id} className="card-hover flex items-center gap-3 rounded-[16px] border border-border bg-surface p-[18px]">
                 <span
                   className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold text-primary"
-                  style={{ background: "#EFF4FF" }}
+                  style={{ background: "var(--color-tint)" }}
                 >
                   {initialsOf(a.fullName)}
                 </span>

@@ -26,7 +26,7 @@ export function StatCard({
       style={{
         border: `1px solid ${highlighted ? "var(--lib-field-border)" : "var(--lib-border)"}`,
         borderRadius: "var(--lib-radius-card)",
-        padding: "22px 24px",
+        padding: "18px 20px",
         display: "flex",
         flexDirection: "column",
         gap: 14,
@@ -58,7 +58,7 @@ export function StatCard({
 // bottom panels) -- border:1px #E2E8F0, radius 14px, padding 24px.
 export function Card({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
-    <div className="lib-card-hover" style={{ border: "1px solid var(--lib-border)", borderRadius: "var(--lib-radius-card)", padding: 24, background: "var(--lib-white)", ...style }}>
+    <div className="lib-card-hover" style={{ border: "1px solid var(--lib-border)", borderRadius: "var(--lib-radius-card)", padding: "18px 20px", background: "var(--lib-white)", ...style }}>
       {children}
     </div>
   );
@@ -86,7 +86,7 @@ const TONE_STYLES: Record<PillTone, { bg: string; fg: string }> = {
 export function Pill({ label, tone }: { label: string; tone?: PillTone }) {
   const t = TONE_STYLES[tone ?? pillToneForStatus(label)];
   return (
-    <span style={{ display: "inline-block", padding: "5px 13px", borderRadius: "var(--lib-radius-pill)", font: "500 13px/1.3 var(--lib-font-sans)", background: t.bg, color: t.fg }}>
+    <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: "var(--lib-radius-pill)", font: "600 12.5px/1.3 var(--lib-font-sans)", background: t.bg, color: t.fg }}>
       {label}
     </span>
   );
@@ -140,7 +140,7 @@ export function EmptyRow({ colSpan, label = "No records found." }: { colSpan: nu
     <tr>
       <td colSpan={colSpan} style={{ padding: "64px 0" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-          <svg width="34" height="34" viewBox="0 0 20 20" fill="none" stroke="#C7D2E4" strokeWidth={1.4}>
+          <svg width="34" height="34" viewBox="0 0 20 20" fill="none" stroke="#dfe5ef" strokeWidth={1.4}>
             <circle cx="9" cy="9" r="5.6" />
             <path d="M13.2 13.2L17 17" />
           </svg>
@@ -168,7 +168,7 @@ export function PrimaryButton({ children, ...rest }: ButtonHTMLAttributes<HTMLBu
     <button
       {...rest}
       className="lib-btn-primary"
-      style={{ padding: "14px 24px", border: 0, borderRadius: "var(--lib-radius-btn)", background: "var(--lib-navy)", color: "#fff", font: "600 16px/1.2 var(--lib-font-sans)", cursor: "pointer", ...rest.style }}
+      style={{ padding: "11px 18px", border: 0, borderRadius: 10, background: "var(--lib-primary)", color: "#fff", font: "600 14px/1.2 var(--lib-font-sans)", cursor: "pointer", ...rest.style }}
     >
       {children}
     </button>
@@ -180,7 +180,7 @@ export function SecondaryButton({ children, ...rest }: ButtonHTMLAttributes<HTML
     <button
       {...rest}
       className="lib-surface-hover"
-      style={{ padding: "12px 26px", border: "1px solid var(--lib-border)", borderRadius: 10, background: "var(--lib-white)", color: "var(--lib-ink)", font: "500 15px/1.2 var(--lib-font-sans)", cursor: "pointer", ...rest.style }}
+      style={{ padding: "11px 18px", border: "1px solid var(--lib-border)", borderRadius: 10, background: "var(--lib-white)", color: "var(--lib-navy)", font: "600 14px/1.2 var(--lib-font-sans)", cursor: "pointer", ...rest.style }}
     >
       {children}
     </button>

@@ -10,7 +10,8 @@
 // accept-decline against the real school-eos-messaging microservice.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
+import { friendlyMessagingError } from "@/lib/messaging-errors";
+import { repairDeviceAfterFailedJoin, useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
 import { resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
 import { NoGroupStateError } from "@/lib/e2ee/cipher";
 import { ensureConversationJoined } from "@/lib/e2ee/welcome";
@@ -68,7 +69,7 @@ function describeError(err: unknown, fallback: string): string {
   if (err instanceof NoGroupStateError || (err instanceof Error && err.message.startsWith("Could not join this conversation"))) {
     return "This conversation was started on another device or browser, so this browser can't read it. Start a new message to this person to chat from here.";
   }
-  return err instanceof Error ? err.message : fallback;
+  return friendlyMessagingError(err, fallback);
 }
 
 export function ConversationPane({ conversationId, personId, onBack }: { conversationId: string; personId: string; onBack?: () => void }) {
@@ -102,7 +103,10 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
         try {
           plaintext = await decryptMessageCached(conversationId, message.id, message.ciphertext);
         } catch (err) {
-          console.error(`[message] decrypt failed for ${message.id}:`, err);
+          // A browser without this conversation's keys is an expected state (it is
+          // explained on screen), not a crash -- only log real failures as errors.
+          if (err instanceof NoGroupStateError) console.warn(`[message] not readable in this browser: ${message.id}`);
+          else console.error(`[message] decrypt failed for ${message.id}:`, err);
           plaintext = "[Unable to decrypt this message]";
         }
       }
@@ -135,6 +139,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
         await loadRequests();
       } catch (err) {
         setError(describeError(err, "Couldn't open this conversation."));
+        if (err instanceof Error && err.message.startsWith("Could not join this conversation")) void repairDeviceAfterFailedJoin(personId);
       }
     })();
   }, [loadConversationAndJoin, loadRequests]);
@@ -230,7 +235,7 @@ export function ConversationPane({ conversationId, personId, onBack }: { convers
       </div>
 
       {pendingRequest && (
-        <div style={{ margin: "14px 22px 0", background: "#fff6e5", border: "1px solid #f2dca0", borderRadius: 12, padding: 14 }}>
+        <div style={{ margin: "14px 22px 0", background: "var(--eos-amber-bg)", border: "1px solid var(--eos-amber-border)", borderRadius: 12, padding: 14 }}>
           {isRecipient ? (
             <>
               <p style={{ font: "400 13px/1.4 var(--eos-font-sans)", color: "var(--eos-ink)" }}>

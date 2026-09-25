@@ -62,6 +62,11 @@ export function rememberNamesFromDiscovery(items: DiscoveryItem[]): void {
   if (changed) persist();
 }
 
+export function hasCachedName(personId: string): boolean {
+  hydrate();
+  return memoryCache.has(personId);
+}
+
 export function resolveDisplayName(personId: string): string {
   hydrate();
   return memoryCache.get(personId)?.name ?? "School EOS user";

@@ -65,7 +65,7 @@ export default async function SubstituteTeacherPage({ searchParams }: { searchPa
               {openGaps.length} open
             </span>
           </div>
-          <div style={{ height: 8, background: "#eef2f8", borderRadius: 99, margin: "16px 0", overflow: "hidden" }}>
+          <div style={{ height: 8, background: "var(--acc-border)", borderRadius: 99, margin: "16px 0", overflow: "hidden" }}>
             <div style={{ height: 8, background: "var(--acc-accent)", width: gaps.length > 0 ? `${Math.round((assignedGaps.length / gaps.length) * 100)}%` : "0%" }} />
           </div>
           <div style={{ fontSize: 12.5, color: "var(--acc-tertiary)" }}>
@@ -85,7 +85,7 @@ export default async function SubstituteTeacherPage({ searchParams }: { searchPa
                 fontSize: 14,
                 cursor: "pointer",
                 background: activeTab === t.key ? "var(--acc-accent)" : "transparent",
-                color: activeTab === t.key ? "#fff" : "#334155",
+                color: activeTab === t.key ? "#fff" : "var(--acc-body)",
                 fontWeight: activeTab === t.key ? 700 : 500,
               }}
             >

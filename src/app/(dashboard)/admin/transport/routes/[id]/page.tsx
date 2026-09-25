@@ -318,7 +318,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ id
             <div className="flex items-center justify-between">
               <h2 className="text-[17px] font-bold leading-[22px] text-text">Occupancy</h2>
               {vehicle && (
-                <span className="rounded-[999px] px-2.5 py-[5px] text-[12px] font-bold" style={{ background: "#F1F5F9", color: "#334155" }}>
+                <span className="rounded-[999px] px-2.5 py-[5px] text-[12px] font-bold" style={{ background: "var(--color-field)", color: "var(--color-text-secondary)" }}>
                   {vehicle.capacity - riders} seats free
                 </span>
               )}
@@ -475,7 +475,7 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ id
                       updateAction={updateRouteStopAdminAction}
                     />
                     <form action={deleteRouteStopAdminAction.bind(null, stop.id, route.id)}>
-                      <button type="submit" className="rounded-[8px] p-1.5" style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}>
+                      <button type="submit" className="rounded-[8px] p-1.5" style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}>
                         <MaterialIcon name="delete" size={14} />
                       </button>
                     </form>
@@ -536,10 +536,10 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ id
             ["Term fee", "Not tracked"],
           ].map(([label, value]) => (
             <div key={label} className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: "#94A3B8" }}>
+              <span className="text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: "var(--color-text-tertiary)" }}>
                 {label}
               </span>
-              <span className="text-[14px] font-semibold" style={{ color: "#1E293B" }}>
+              <span className="text-[14px] font-semibold" style={{ color: "var(--color-text)" }}>
                 {value}
               </span>
             </div>

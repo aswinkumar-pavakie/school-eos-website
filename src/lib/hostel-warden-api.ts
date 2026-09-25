@@ -10,6 +10,7 @@
 // the Warden portal only reviews those requests, never creates them.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 import {
   HOSTEL_COMPLAINT_ALLOWED_TRANSITIONS,
   HOSTEL_COMPLAINT_STATES,
@@ -44,12 +45,7 @@ interface ApiEnvelope<T> {
 }
 
 async function parseOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as T;
+  return parseApiResponse<T>(res);
 }
 
 async function get<T>(path: string): Promise<T> {

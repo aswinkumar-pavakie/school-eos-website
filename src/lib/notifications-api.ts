@@ -8,6 +8,7 @@
 // client-suppliable. Mirrors reports-api.ts's own shape.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 interface ApiEnvelope<T> {
   data: T;
@@ -15,12 +16,7 @@ interface ApiEnvelope<T> {
 }
 
 async function parseOrThrow<T>(res: Response): Promise<{ data: T; meta?: ApiEnvelope<T>["meta"] }> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as ApiEnvelope<T>;
+  return parseApiResponse<ApiEnvelope<T>>(res);
 }
 
 export interface NotificationRow {

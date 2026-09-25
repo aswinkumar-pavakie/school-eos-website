@@ -52,7 +52,7 @@ export default async function LibraryBooksPage({
 
         <form action="/library/books" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ maxWidth: 480, display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", border: "1px solid var(--lib-border)", borderRadius: 11 }}>
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#8593a8" strokeWidth={1.7}>
               <circle cx="9" cy="9" r="5.6" />
               <path d="M13.2 13.2L17 17" />
             </svg>
@@ -109,7 +109,7 @@ export default async function LibraryBooksPage({
                       href={`/library/books/${b.id}`}
                       title="View copies"
                       className="lib-surface-hover"
-                      style={{ width: 34, height: 34, display: "grid", placeItems: "center", border: "1px solid var(--lib-border)", borderRadius: 9, background: "var(--lib-white)", color: "#475569" }}
+                      style={{ width: 34, height: 34, display: "grid", placeItems: "center", border: "1px solid var(--lib-border)", borderRadius: 9, background: "var(--lib-white)", color: "var(--lib-body-muted)" }}
                     >
                       <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6}>
                         <path d="M2.5 10s2.8-5.3 7.5-5.3S17.5 10 17.5 10s-2.8 5.3-7.5 5.3S2.5 10 2.5 10z" />

@@ -104,10 +104,10 @@ function busStatus(operationalStatus: string, tracking: BusTrackingResult | null
   return "At campus";
 }
 function statusColor(status: BusStatus): string {
-  if (status === "On route") return "#1D4ED8";
-  if (status === "At campus") return "#3B82F6";
-  if (status === "In depot") return "#94A3B8";
-  return "#1E3A8A";
+  if (status === "On route") return "var(--color-primary)";
+  if (status === "At campus") return "var(--color-primary)";
+  if (status === "In depot") return "var(--color-text-tertiary)";
+  return "var(--color-navy)";
 }
 
 export default async function TransportManagerVehicleDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -252,7 +252,7 @@ export default async function TransportManagerVehicleDetailPage({ params }: { pa
           >
             <VehicleDeleteTrigger />
           </RequestActionButton>
-          <Link href="/transport-manager/live-tracking" className="rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primary-deep">
+          <Link href="/transport-manager/live-tracking" className="rounded-[10px] bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primary-hover">
             Live tracking
           </Link>
         </div>
@@ -291,7 +291,7 @@ export default async function TransportManagerVehicleDetailPage({ params }: { pa
           <section className="rounded-[16px] border border-border bg-surface p-[18px]">
             <div className="flex items-center justify-between">
               <h2 className="text-[17px] font-bold leading-[22px] text-text">Occupancy</h2>
-              <span className="rounded-[999px] px-2.5 py-[5px] text-[12px] font-bold" style={{ background: "#F1F5F9", color: "#334155" }}>
+              <span className="rounded-[999px] px-2.5 py-[5px] text-[12px] font-bold" style={{ background: "var(--color-field)", color: "var(--color-text-secondary)" }}>
                 {vehicle.capacity - riders} seats free
               </span>
             </div>
@@ -445,7 +445,7 @@ export default async function TransportManagerVehicleDetailPage({ params }: { pa
                         submitLabel="Request"
                         submittedLabel="Deletion requested"
                       >
-                        <button type="button" className="rounded-[8px] p-1.5" style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}>
+                        <button type="button" className="rounded-[8px] p-1.5" style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}>
                           <MaterialIcon name="delete" size={14} />
                         </button>
                       </RequestActionButton>

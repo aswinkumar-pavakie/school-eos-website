@@ -34,7 +34,7 @@ export function IndentRow({ indent }: { indent: MediaIndent }) {
             type="button"
             disabled={pending}
             onClick={handleCancel}
-            style={{ height: 32, padding: "0 12px", borderRadius: 8, border: "1px solid #d9dee7", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}
+            style={{ height: 32, padding: "0 12px", borderRadius: 8, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}
           >
             Cancel
           </button>

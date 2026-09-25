@@ -10,9 +10,10 @@
 .parent-scope {
   --par-font: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
   --par-primary: #1f6feb;
+  --par-primary-hover: #1a5cc8;
   --par-primary-strong: #1f4fa8;
   --par-ink: #10243f;
-  --par-navy: #10243f;
+  --par-navy: #0f2342;
   --par-body: #44536b;
   --par-body-muted: #5c6b82;
   --par-tertiary: #8593a8;
@@ -23,15 +24,15 @@
   --par-panel-2: #f8fafc;
   --par-tint: #eef4ff;
   --par-tint-strong: #dbe7ff;
-  --par-red: #c0362c;
-  --par-red-bg: #fdeeee;
-  --par-amber: #b5590c;
-  --par-amber-bg: #fff1e6;
+  --par-red: #b3261e;
+  --par-red-bg: #fdecec;
+  --par-amber: #8a5a00;
+  --par-amber-bg: #fdf3e0;
   --par-green: #1f7a4d;
-  --par-radius-card: 16px;
+  --par-radius-card: 14px;
   --par-radius-card-sm: 14px;
-  --par-radius-input: 12px;
-  --par-radius-btn: 9px;
+  --par-radius-input: 10px;
+  --par-radius-btn: 10px;
   color-scheme: light;
   font-family: var(--par-font);
   color: var(--par-ink);

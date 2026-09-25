@@ -38,6 +38,7 @@ const CLASS_TEACHER_PATHS = [
   "/faculty/students",
   "/faculty/class-teacher",
   "/faculty/attendance",
+  "/faculty/attendance-diary",
   "/faculty/class-exams",
   "/faculty/fees",
   "/faculty/student-leave",

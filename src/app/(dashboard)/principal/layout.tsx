@@ -1,18 +1,17 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import type { ShellNavItem } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
+import { HeaderBell } from "@/components/shared-ui/HeaderBell";
+import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
 import { ReframeThemeStyle, reframeThemeClassName } from "@/components/dashboard/ReframeTheme";
-import { ReframeHeaderChrome } from "@/components/dashboard/ReframeHeaderChrome";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
-import { listApprovals, listAcademicYears, getSchoolProfile } from "@/lib/finance-api";
+import { listApprovals, listAcademicYears } from "@/lib/finance-api";
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
-// logoutAction is genuinely shared across Admin/Finance/Library/Principal -- see
-// finance/layout.tsx's own comment for why it lives under admin/ rather than a
-// since-removed placeholder route.
-import { logoutAction } from "@/app/(dashboard)/admin/actions";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -35,6 +34,7 @@ const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   { href: "/principal/faculty", label: "Faculty", icon: "faculty", group: "PEOPLE" },
   { href: "/principal/academics", label: "Academics", icon: "academics", group: "ACADEMICS" },
   { href: "/principal/attendance", label: "Staff attendance", icon: "attendance", group: "ACADEMICS" },
+  { href: "/principal/attendance-diary", label: "Attendance diary", icon: "attendance", group: "ACADEMICS" },
   // Real data (subject_offering, previously Admin-only) -- see this route's
   // own page.tsx comment.
   { href: "/principal/academics/subject-mapping", label: "Subjects & mapping", icon: "subjectMapping", group: "ACADEMICS" },
@@ -101,18 +101,6 @@ const PRINCIPAL_NAV_ITEMS: ShellNavItem[] = [
   // -- no longer a sidebar entry, matching the reference design.
 ];
 
-// Initials for the sidebar's logo/avatar tiles -- same simple first-letter-of-
-// each-word approach the mockup's own "PPS" / "AK" tiles use, capped at 3.
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 3)
-    .toUpperCase();
-}
-
 interface MeResponse {
   data: {
     person: { id: string; firstName: string; lastName: string | null };
@@ -147,11 +135,10 @@ export default async function PrincipalLayout({ children }: { children: ReactNod
   // The bell's one real, honest "notification" -- Principal's own pending decisions
   // on the generic approvals engine (the same call Principal's account already
   // triggers today from inside Finance's layout) -- not a fabricated alerts feed.
-  const [pendingRequestsCount, dashboardSummary, academicYears, schoolProfile] = await Promise.all([
+  const [pendingRequestsCount, dashboardSummary, academicYears] = await Promise.all([
     listApprovals({ status: "PENDING" }).then((rows) => rows.length).catch(() => 0),
     getPrincipalDashboardSummary().catch(() => null),
     listAcademicYears().catch(() => []),
-    getSchoolProfile().catch(() => null),
   ]);
   const currentYear = academicYears.find((y) => y.isCurrent) ?? academicYears[0];
   // Real Term pill -- see academic-term-api.ts; resolves to [] (so the pill
@@ -173,55 +160,40 @@ export default async function PrincipalLayout({ children }: { children: ReactNod
     navBadges[item.href] !== undefined ? { ...item, badge: navBadges[item.href] } : item,
   );
 
-  const schoolName = schoolProfile?.name ?? "School EOS";
-
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
       <E2eeBootstrapMount personId={actor.personId} />
-      <Shell
+      <AppShell
+        rootHref="/principal"
+        navGroups={shellNavItemsToGroups(navItemsWithBadges)}
         personName={personName}
-        roleLabel="Principal"
-        onSignOut={logoutAction}
-        pendingRequestsCount={pendingRequestsCount}
-        navItems={navItemsWithBadges}
-        requestsHref="/principal/requests"
-        showGlobalSearch
+        personRoleLabel="Principal"
+        academicYear={currentYear?.name}
+        termLabel={currentTerm?.name}
+        profileHref="/principal/profile"
+        customSearch={
+          <div className="flex min-w-0 flex-1 items-center justify-start">
+            <GlobalSearch />
+          </div>
+        }
         headerExtra={
-          <ReframeHeaderChrome academicYearName={currentYear?.name} termName={currentTerm?.name} />
-        }
-        // Sidebar logo tile + real school name + role subtitle, per the SIS
-        // mockup's own sidebar header markup (Principal Console.dc.html lines
-        // 27-33) -- checked against the literal source, not inferred.
-        sidebarHeader={
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[13px] bg-[#0f2342] text-[13px] font-bold text-white">
-              {initials(schoolName)}
-            </div>
-            <div className="flex min-w-0 flex-col gap-px">
-              <div className="truncate text-[16px] font-semibold leading-tight tracking-[-0.01em] text-text">{schoolName}</div>
-              <div className="truncate text-[12px] leading-tight text-text-muted">Principal&apos;s office</div>
-            </div>
-          </div>
-        }
-        // Sidebar footer identity card, per the mockup's own sidebar footer
-        // markup (lines 67-73) -- purely additive visual chrome; the header's
-        // existing notification bell + avatar sign-out menu is untouched, so
-        // signing out still works exactly as before.
-        sidebarFooter={
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0f2342] text-[13px] font-semibold text-white">
-              {initials(personName || "Principal")}
-            </div>
-            <div className="flex min-w-0 flex-col gap-px">
-              <div className="truncate text-[14px] font-semibold leading-tight text-text">{personName}</div>
-              <div className="truncate text-[12px] leading-tight text-text-muted">Principal</div>
-            </div>
-          </div>
+          <>
+            <HeaderBell pendingRequestsCount={pendingRequestsCount} requestsHref="/principal/requests" />
+            <button
+              type="button"
+              disabled
+              title="Messaging is coming in a later phase"
+              aria-disabled
+              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white opacity-90 md:flex"
+            >
+              Messages
+            </button>
+          </>
         }
       >
         {children}
-      </Shell>
+      </AppShell>
     </div>
   );
 }

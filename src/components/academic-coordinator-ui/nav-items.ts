@@ -36,6 +36,7 @@ export const ACADEMIC_COORDINATOR_NAV: AcademicCoordinatorNavGroup[] = [
     title: "ACADEMICS",
     items: [
       { id: "attendance", label: "Attendance", href: "/academic-coordinator/attendance" },
+      { id: "attendance", label: "Attendance diary", href: "/academic-coordinator/attendance-diary" },
       { id: "performance", label: "Performance", href: "/academic-coordinator/performance" },
       { id: "syllabus", label: "Syllabus tracking", href: "/academic-coordinator/syllabus" },
       { id: "approvals", label: "Academic approvals", href: "/academic-coordinator/approvals" },

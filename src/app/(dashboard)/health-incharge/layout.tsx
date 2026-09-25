@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import type { ShellNavItem } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
+import { HeaderBell } from "@/components/shared-ui/HeaderBell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
-import { logoutAction } from "@/app/(dashboard)/admin/actions";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
@@ -42,16 +44,16 @@ export default async function HealthInchargeLayout({ children }: { children: Rea
   const personName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
 
   return (
-    <Shell
+    <AppShell
+      rootHref="/health-incharge"
+      navGroups={shellNavItemsToGroups(NAV_ITEMS)}
       personName={personName}
-      roleLabel="Health In-charge"
-      onSignOut={logoutAction}
-      pendingRequestsCount={0}
-      navItems={NAV_ITEMS}
-      requestsHref="/health-incharge/alerts"
-      showGlobalSearch={false}
+      personRoleLabel="Health In-charge"
+      searchPlaceholder="Search health pages…"
+      profileHref="/health-incharge/profile"
+      headerExtra={<HeaderBell pendingRequestsCount={0} requestsHref="/health-incharge/alerts" />}
     >
       {children}
-    </Shell>
-  );
+    </AppShell>
+      );
 }

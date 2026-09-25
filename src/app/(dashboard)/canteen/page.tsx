@@ -107,7 +107,7 @@ export default async function CanteenDashboardPage() {
         <Link href="/canteen/inventory" className="can-hover-lift block" style={{ textDecoration: "none" }}>
           <Card>
             <div className="flex items-center justify-between">
-              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "#475569" }}>Stock value</span>
+              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "var(--can-body-muted)" }}>Stock value</span>
               <span style={{ width: 30, height: 30, borderRadius: 8, background: "var(--can-tint)", display: "flex", alignItems: "center", justifyContent: "center" }}><WalletIcon /></span>
             </div>
             <p style={{ margin: "12px 0 0", font: "700 26px/1.2 var(--can-font-sans)", color: "var(--can-ink)" }}>{formatMoneyDetail(data.inventoryValuePaise)}</p>
@@ -117,7 +117,7 @@ export default async function CanteenDashboardPage() {
         <Link href="/canteen/inventory" className="can-hover-lift block" style={{ textDecoration: "none" }}>
           <Card>
             <div className="flex items-center justify-between">
-              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "#475569" }}>Low stock</span>
+              <span style={{ font: "600 13.5px/1 var(--can-font-sans)", color: "var(--can-body-muted)" }}>Low stock</span>
               <span style={{ width: 30, height: 30, borderRadius: 8, background: data.lowStockCount > 0 ? "var(--can-red-bg)" : "var(--can-tint)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 14px/1 var(--can-font-sans)", color: data.lowStockCount > 0 ? "var(--can-red-text)" : "var(--can-primary)" }}>
                 !
               </span>
@@ -150,18 +150,18 @@ export default async function CanteenDashboardPage() {
             gap: 12,
             padding: "14px 20px",
             borderRadius: "var(--can-radius-card)",
-            border: "1px solid #fde68a",
-            background: "#fffbeb",
+            border: "1px solid var(--can-amber)",
+            background: "var(--can-amber-bg)",
           }}
         >
-          <span style={{ width: 34, height: 34, flexShrink: 0, borderRadius: 8, background: "#fef3c7", display: "flex", alignItems: "center", justifyContent: "center", font: "700 15px/1 var(--can-font-sans)", color: "#b45309" }}>
+          <span style={{ width: 34, height: 34, flexShrink: 0, borderRadius: 8, background: "var(--can-amber-bg)", display: "flex", alignItems: "center", justifyContent: "center", font: "700 15px/1 var(--can-font-sans)", color: "var(--can-amber)" }}>
             !
           </span>
           <div>
-            <p style={{ margin: 0, font: "700 14px/1.3 var(--can-font-sans)", color: "#92400e" }}>
+            <p style={{ margin: 0, font: "700 14px/1.3 var(--can-font-sans)", color: "var(--can-amber)" }}>
               {data.declinedToday} charge attempt{data.declinedToday === 1 ? "" : "s"} declined today
             </p>
-            <p style={{ margin: 0, marginTop: 1, font: "400 12.5px/1.4 var(--can-font-sans)", color: "#a16207" }}>
+            <p style={{ margin: 0, marginTop: 1, font: "400 12.5px/1.4 var(--can-font-sans)", color: "var(--can-amber)" }}>
               Insufficient balance or a frozen wallet -- nothing was charged for these.
             </p>
           </div>
@@ -183,7 +183,7 @@ export default async function CanteenDashboardPage() {
               <p style={{ marginTop: 2, font: "500 12px/1.4 var(--can-font-sans)", color: "var(--can-tertiary)" }}>Today, 7am&ndash;7pm</p>
             </div>
             {data.peakHour !== null && (
-              <span style={{ font: "700 11.5px/1 var(--can-font-sans)", color: "#b45309", background: "#fef3c7", borderRadius: "var(--can-radius-pill)", padding: "5px 10px", whiteSpace: "nowrap" }}>
+              <span style={{ font: "700 11.5px/1 var(--can-font-sans)", color: "var(--can-amber)", background: "var(--can-amber-bg)", borderRadius: "var(--can-radius-pill)", padding: "5px 10px", whiteSpace: "nowrap" }}>
                 Busiest {hourLabel(data.peakHour)}
               </span>
             )}

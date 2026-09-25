@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #f6f8fb; }
+  * { box-sizing: border-box; }
+  a { color: #1f6feb; text-decoration: none; }
+  a:hover { color: #1a4fb4; }
+  input::placeholder { color: #9aa7ba; }
+  input:focus { outline: none; }
+</style>
+</helmet>
+<div style="min-height: 100vh; display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); font-family: Outfit, Helvetica, Arial, sans-serif; color: #10243f; background: #f6f8fb;">
+
+  <section style="background: #0f2342; color: #ffffff; padding: 48px 44px; display: flex; flex-direction: column; gap: 40px; min-height: 100vh;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="width: 52px; height: 52px; border-radius: 14px; background: #ffffff; color: #0f2342; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; letter-spacing: 0.02em;">PPS</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.01em;">Pavakie Public School</div>
+        <div style="font-size: 13px; color: #9db4d4;">Principal's office</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 18px; margin-top: auto;">
+      <div style="font-size: 34px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em; text-wrap: pretty;">The whole school, on one console.</div>
+      <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #a9bfdd; max-width: 32ch; text-wrap: pretty;">Sign in to review approvals, academics, staff attendance, transport and notices for the current academic year.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+      <div style="border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 11px; letter-spacing: 0.1em; color: #8fa9cc; font-weight: 500;">STUDENTS</div>
+        <div style="font-size: 24px; font-weight: 600;">96</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 11px; letter-spacing: 0.1em; color: #8fa9cc; font-weight: 500;">FACULTY</div>
+        <div style="font-size: 24px; font-weight: 600;">23</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 11px; letter-spacing: 0.1em; color: #8fa9cc; font-weight: 500;">APPROVALS</div>
+        <div style="font-size: 24px; font-weight: 600;">6</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 11px; letter-spacing: 0.1em; color: #8fa9cc; font-weight: 500;">YEAR</div>
+        <div style="font-size: 24px; font-weight: 600;">2026–27</div>
+      </div>
+    </div>
+
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7b95ba; letter-spacing: 0.02em;">PPS · Main Campus · Coimbatore</div>
+  </section>
+
+  <main style="display: flex; align-items: center; justify-content: center; padding: 48px 32px;">
+    <div style="width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 20px;">
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; background: #eef4ff; color: #1f4fa8; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;">PRINCIPAL · SCHOOL</div>
+        <h1 style="margin: 0; font-size: 36px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;">Principal sign in</h1>
+        <p style="margin: 0; font-size: 15px; color: #5c6b82; text-wrap: pretty;">Use the credentials issued by the school administrator.</p>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 1px 2px rgba(15, 35, 66, 0.04);">
+
+        <sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; gap: 10px; align-items: flex-start; background: #fef4f4; border: 1px solid #f6d6d6; border-radius: 10px; padding: 12px 14px;">
+            <div style="width: 18px; height: 18px; border-radius: 999px; background: #c0392b; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 1px;">!</div>
+            <div style="font-size: 13px; line-height: 1.5; color: #8f2f26;">Employee ID and password do not match. Two attempts left before the account is locked.</div>
+          </div>
+        </sc-if>
+
+        <label style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #6b7a91;">EMPLOYEE ID</span>
+          <input type="text" value="{{ empId }}" onChange="{{ onEmpId }}" placeholder="PPS-1001" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #10243f; background: #f8fafc; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; width: 100%;" style-focus="border-color: #1f6feb; background: #ffffff; box-shadow: 0 0 0 3px rgba(31,111,235,0.12);" />
+        </label>
+
+        <label style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #6b7a91;">
+            <span>PASSWORD</span>
+            <a href="#" onClick="{{ noop }}" style="font-size: 12px; letter-spacing: 0; font-weight: 500; text-transform: none;">Forgot password?</a>
+          </span>
+          <span style="position: relative; display: block;">
+            <input type="{{ pwdType }}" value="{{ pwd }}" onChange="{{ onPwd }}" placeholder="Enter your password" style="font-size: 15px; font-family: Outfit, sans-serif; color: #10243f; background: #f8fafc; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 76px 13px 14px; width: 100%;" style-focus="border-color: #1f6feb; background: #ffffff; box-shadow: 0 0 0 3px rgba(31,111,235,0.12);" />
+            <button type="button" onClick="{{ togglePwd }}" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: 0; color: #1f6feb; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; padding: 8px 10px; border-radius: 8px; min-height: 44px;" style-hover="background: #eef4ff;">{{ pwdLabel }}</button>
+          </span>
+        </label>
+
+        <label style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #6b7a91;">ACADEMIC YEAR</span>
+          <select value="{{ year }}" onChange="{{ onYear }}" style="appearance: none; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 500; color: #10243f; background: #f8fafc; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; width: 100%; cursor: pointer;">
+            <option value="2026-2027">2026-2027 · current</option>
+            <option value="2025-2026">2025-2026</option>
+            <option value="2027-2028">2027-2028 · planned</option>
+          </select>
+        </label>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+          <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #44536b; cursor: pointer;">
+            <input type="checkbox" checked="{{ remember }}" onChange="{{ onRemember }}" style="width: 17px; height: 17px; accent-color: #1f6feb; cursor: pointer;" />
+            <span>Keep me signed in on this device</span>
+          </label>
+        </div>
+
+        <button type="button" onClick="{{ submit }}" style="background: #1f6feb; color: #ffffff; border: 0; border-radius: 10px; padding: 15px 20px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.01em; cursor: pointer; min-height: 48px;" style-hover="background: #1a5cc8;" style-active="background: #174fae;">{{ buttonLabel }}</button>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="height: 1px; background: #e9edf4; flex: 1;"></span>
+          <span style="font-size: 12px; color: #93a1b5;">or</span>
+          <span style="height: 1px; background: #e9edf4; flex: 1;"></span>
+        </div>
+
+        <button type="button" onClick="{{ noop }}" style="background: #ffffff; color: #10243f; border: 1px solid #dfe5ef; border-radius: 10px; padding: 14px 20px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; min-height: 48px;" style-hover="background: #f6f8fb; border-color: #c9d3e2;">Sign in with school single sign-on</button>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-size: 13px; font-weight: 600; color: #10243f;">Other roles</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <a href="#" onClick="{{ noop }}" style="font-size: 13px; font-weight: 500; padding: 8px 14px; border: 1px solid #dfe5ef; border-radius: 999px; color: #44536b;" style-hover="border-color: #1f6feb; color: #1f6feb;">Administrator</a>
+          <a href="#" onClick="{{ noop }}" style="font-size: 13px; font-weight: 500; padding: 8px 14px; border: 1px solid #dfe5ef; border-radius: 999px; color: #44536b;" style-hover="border-color: #1f6feb; color: #1f6feb;">Teacher</a>
+          <a href="#" onClick="{{ noop }}" style="font-size: 13px; font-weight: 500; padding: 8px 14px; border: 1px solid #dfe5ef; border-radius: 999px; color: #44536b;" style-hover="border-color: #1f6feb; color: #1f6feb;">Parent</a>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #8593a8;">
+        <span>Access is logged in the audit trail.</span>
+        <a href="#" onClick="{{ noop }}" style="font-size: 12px;">Need help signing in?</a>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showError&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;States&quot;},&quot;buttonLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Sign in to console&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Copy&quot;}}">
+class Component extends DCLogic {
+  state = { empId: "", pwd: "", year: "2026-2027", remember: true, reveal: false, loading: false };
+
+  renderVals() {
+    const p = this.props;
+    return {
+      empId: this.state.empId,
+      pwd: this.state.pwd,
+      year: this.state.year,
+      remember: this.state.remember,
+      showError: p.showError ?? false,
+      pwdType: this.state.reveal ? "text" : "password",
+      pwdLabel: this.state.reveal ? "Hide" : "Show",
+      buttonLabel: this.state.loading ? "Signing in…" : (p.buttonLabel ?? "Sign in to console"),
+      onEmpId: (e) => this.setState({ empId: e.target.value }),
+      onPwd: (e) => this.setState({ pwd: e.target.value }),
+      onYear: (e) => this.setState({ year: e.target.value }),
+      onRemember: (e) => this.setState({ remember: e.target.checked }),
+      togglePwd: () => this.setState(s => ({ reveal: !s.reveal })),
+      submit: () => {
+        this.setState({ loading: true });
+        setTimeout(() => this.setState({ loading: false }), 1400);
+      },
+      noop: (e) => e.preventDefault()
+    };
+  }
+}
+</script>
+</body>
+</html>

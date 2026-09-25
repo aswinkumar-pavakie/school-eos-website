@@ -8,7 +8,7 @@ import { defaultCapabilities, defaultLifetime, generateKeyPackageWithKey, type C
 import { publishMlsKeyPackagesAction } from "../messaging-actions";
 import { fromBase64 } from "./codec";
 import { getMlsCiphersuiteImpl } from "./setup";
-import { addKeyPackagesToPool, getPoolSize, loadDeviceIdentity } from "./storage";
+import { PENDING_POOL_PREFIX, addKeyPackagesToPool, getPoolSize, loadDeviceIdentity, removeManyFromPool, replacePoolServerIds } from "./storage";
 import { encodeKeyPackageForWire } from "./wire";
 
 const REPLENISH_THRESHOLD = 10;
@@ -45,13 +45,27 @@ export async function publishKeyPackageBatch(count: number): Promise<void> {
     generated.push(await generateOwnKeyPackage());
   }
 
+  // Save the private halves locally BEFORE the public halves go to the server. If
+  // this page is closed or navigated away between "server accepted" and "saved
+  // locally", the server would hold keys this browser can never use, and anyone
+  // who picked one to start a chat would create a conversation nobody can open.
+  const pendingIds = generated.map(() => PENDING_POOL_PREFIX + crypto.randomUUID());
+  await addKeyPackagesToPool(generated.map((g, i) => ({ serverId: pendingIds[i]!, publicPackage: g.publicPackage, privatePackage: g.privatePackage })));
+
   const wireEncoded = generated.map((g) => encodeKeyPackageForWire(g.publicPackage));
-  const { data } = await publishMlsKeyPackagesAction(identity.deviceId, wireEncoded);
-  if (data.ids.length !== generated.length) {
-    throw new Error(`Published ${generated.length} KeyPackages but the server returned ${data.ids.length} ids -- refusing to guess a mapping.`);
+  let ids: string[];
+  try {
+    const { data } = await publishMlsKeyPackagesAction(identity.deviceId, wireEncoded);
+    ids = data.ids;
+  } catch (err) {
+    await removeManyFromPool(pendingIds);
+    throw err;
+  }
+  if (ids.length !== generated.length) {
+    throw new Error(`Published ${generated.length} KeyPackages but the server returned ${ids.length} ids -- refusing to guess a mapping.`);
   }
 
-  await addKeyPackagesToPool(generated.map((g, i) => ({ serverId: data.ids[i]!, publicPackage: g.publicPackage, privatePackage: g.privatePackage })));
+  await replacePoolServerIds(pendingIds.map((pid, i) => [pid, ids[i]!] as [string, string]));
 }
 
 export async function replenishKeyPackagesIfNeeded(): Promise<void> {

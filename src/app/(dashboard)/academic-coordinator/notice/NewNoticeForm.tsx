@@ -52,14 +52,14 @@ export function NewNoticeForm({ sections }: { sections: CoordinatorSection[] }) 
         <button
           type="button"
           onClick={() => setAudience("SECTION")}
-          style={{ all: "unset", cursor: "pointer", border: `1px solid ${audience === "SECTION" ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: audience === "SECTION" ? "var(--acc-accent)" : "#fff", color: audience === "SECTION" ? "#fff" : "#334155", borderRadius: 9, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
+          style={{ all: "unset", cursor: "pointer", border: `1px solid ${audience === "SECTION" ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: audience === "SECTION" ? "var(--acc-accent)" : "#fff", color: audience === "SECTION" ? "#fff" : "var(--acc-body)", borderRadius: 9, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
         >
           Your sections
         </button>
         <button
           type="button"
           onClick={() => setAudience("COORDINATORS")}
-          style={{ all: "unset", cursor: "pointer", border: `1px solid ${audience === "COORDINATORS" ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: audience === "COORDINATORS" ? "var(--acc-accent)" : "#fff", color: audience === "COORDINATORS" ? "#fff" : "#334155", borderRadius: 9, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
+          style={{ all: "unset", cursor: "pointer", border: `1px solid ${audience === "COORDINATORS" ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: audience === "COORDINATORS" ? "var(--acc-accent)" : "#fff", color: audience === "COORDINATORS" ? "#fff" : "var(--acc-body)", borderRadius: 9, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
         >
           All coordinators
         </button>

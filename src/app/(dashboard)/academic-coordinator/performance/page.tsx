@@ -81,7 +81,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14.5, fontWeight: 800, color: "var(--acc-navy)" }}>{s.studentName}</div>
                         <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12, color: "var(--acc-tertiary)", marginTop: 2 }}>Roll {s.rollNo ?? "—"}</div>
-                        <div style={{ height: 6, background: "#eef2f8", borderRadius: 99, marginTop: 9, overflow: "hidden" }}>
+                        <div style={{ height: 6, background: "var(--acc-border)", borderRadius: 99, marginTop: 9, overflow: "hidden" }}>
                           <div style={{ height: 6, background: "var(--acc-accent)", width: `${s.percent}%` }} />
                         </div>
                       </div>
@@ -101,7 +101,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
               {results.gradeDistribution.map((band) => (
                 <div key={band.grade} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0" }}>
                   <div style={{ width: 140, flex: "0 0 140px", fontSize: 13.5, fontWeight: 700, color: "var(--acc-navy)" }}>{band.label}</div>
-                  <div style={{ flex: 1, height: 8, background: "#eef2f8", borderRadius: 99, overflow: "hidden" }}>
+                  <div style={{ flex: 1, height: 8, background: "var(--acc-border)", borderRadius: 99, overflow: "hidden" }}>
                     <div style={{ height: 8, background: "var(--acc-accent)", width: `${band.percentOfClass}%` }} />
                   </div>
                   <div style={{ width: 40, textAlign: "right", fontFamily: "var(--acc-font-mono)", fontSize: 13 }}>{band.count}</div>

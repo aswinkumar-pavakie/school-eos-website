@@ -125,10 +125,10 @@ export default async function ExamsPage({ searchParams }: { searchParams: Promis
                           <div style={{ font: "600 14.5px/1.3 var(--fac-font-sans)", color: "var(--fac-ink)" }}>{s.subjectName}</div>
                           {s.room && <div style={{ font: "400 12px/1.3 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 2 }}>Room {s.room}</div>}
                         </div>
-                        <div className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "#475569" }}>
+                        <div className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-body-muted)" }}>
                           {s.examDate ? new Date(s.examDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "--"}
                         </div>
-                        <div className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "#475569" }}>
+                        <div className="fac-font-mono" style={{ font: "400 13.5px/1 var(--fac-font-mono)", color: "var(--fac-body-muted)" }}>
                           {s.startTime ? s.startTime.slice(0, 5) : "--"}
                           {s.durationMinutes ? ` · ${s.durationMinutes}m` : ""}
                         </div>

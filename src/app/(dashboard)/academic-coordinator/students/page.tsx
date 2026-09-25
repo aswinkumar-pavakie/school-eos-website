@@ -67,8 +67,8 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                   style={{ display: "grid", gridTemplateColumns: "minmax(170px,1.4fr) 150px 130px 110px", gap: 12, alignItems: "center", padding: "14px 0", borderBottom: "1px solid var(--acc-divider-soft)", cursor: "pointer" }}
                 >
                   <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--acc-navy)" }}>{[s.firstName, s.lastName].filter(Boolean).join(" ")}</div>
-                  <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12.5, color: "#475569" }}>{s.admissionNo}</div>
-                  <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 13, color: "#334155" }}>{s.gradeName ?? "—"}</div>
+                  <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12.5, color: "var(--acc-body-muted)" }}>{s.admissionNo}</div>
+                  <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 13, color: "var(--acc-body)" }}>{s.gradeName ?? "—"}</div>
                   <div style={{ fontSize: 12.5, color: "var(--acc-body-muted)" }}>{s.status}</div>
                 </div>
               </Link>

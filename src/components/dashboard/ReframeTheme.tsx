@@ -21,7 +21,9 @@ export function ReframeThemeStyle({ scope }: { scope: string }) {
     <style>{`
 .${scope} {
   --color-primary: #1f6feb;
+  --color-primary-hover: #1a5cc8;
   --color-primary-deep: #1f4fa8;
+  --color-navy: #0f2342;
   --color-bg: #fbfcfe;
   --color-surface: #ffffff;
   --color-field: #f8fafc;
@@ -45,8 +47,8 @@ export function ReframeThemeStyle({ scope }: { scope: string }) {
   --font-sans: var(--font-reframe-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-reframe-mono), ui-monospace, "SFMono-Regular", monospace;
   --radius-pill: 999px;
-  --radius-input: 12px;
-  --radius-card: 16px;
+  --radius-input: 10px;
+  --radius-card: 14px;
   --radius-section: 16px;
   --radius-sheet: 18px;
   font-family: var(--font-sans);

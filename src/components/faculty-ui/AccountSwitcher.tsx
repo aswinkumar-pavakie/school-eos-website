@@ -57,7 +57,7 @@ const inputStyle = {
   borderRadius: 9,
   padding: "11px 12px",
   font: "400 14px/1.2 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)",
-  color: "var(--fac-ink, #0f172a)",
+  color: "var(--fac-ink, #10243f)",
 } as const;
 
 /** The "Add account" popup: the class login's email + password. */
@@ -88,22 +88,22 @@ function AddAccountDialog({ onClose }: { onClose: () => void }) {
         aria-modal="true"
         style={{ width: "100%", maxWidth: 400, maxHeight: "90vh", overflowY: "auto", background: "var(--fac-white, #ffffff)", borderRadius: 16, padding: 24, boxShadow: "var(--fac-shadow-popover-strong, 0 24px 60px rgba(15,23,42,.30))" }}
       >
-        <h2 style={{ margin: 0, font: "700 18px/1.2 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #0f172a)" }}>Add account</h2>
+        <h2 style={{ margin: 0, font: "700 18px/1.2 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #10243f)" }}>Add account</h2>
         <p style={{ margin: "8px 0 16px", font: "400 13px/1.5 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-body-muted, #475569)" }}>
           Enter the email and password of your class teacher login. It is added only if the administrator assigned that
           class to you. You do this once on this browser; after that you can switch without a password.
         </p>
         <form action={action} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 6, font: "600 12.5px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #0f172a)" }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6, font: "600 12.5px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #10243f)" }}>
             Email
             <input ref={emailRef} name="identifier" type="text" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="off" required placeholder="class teacher login email" style={inputStyle} />
           </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 6, font: "600 12.5px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #0f172a)" }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6, font: "600 12.5px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-ink, #10243f)" }}>
             Password
             <input name="password" type="password" autoComplete="off" required placeholder="class teacher login password" style={inputStyle} />
           </label>
           {state.error && (
-            <div role="alert" style={{ font: "500 12.5px/1.4 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "#b42318" }}>
+            <div role="alert" style={{ font: "500 12.5px/1.4 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", color: "var(--fac-red, #b3261e)" }}>
               {state.error}
             </div>
           )}
@@ -111,7 +111,7 @@ function AddAccountDialog({ onClose }: { onClose: () => void }) {
             <button
               type="submit"
               disabled={pending}
-              style={{ flex: 1, border: 0, cursor: pending ? "default" : "pointer", background: "var(--fac-primary, #1d4ed8)", color: "#fff", font: "600 14px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", borderRadius: 10, padding: "13px 14px", opacity: pending ? 0.7 : 1 }}
+              style={{ flex: 1, border: 0, cursor: pending ? "default" : "pointer", background: "var(--fac-primary, #1f6feb)", color: "#fff", font: "600 14px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", borderRadius: 10, padding: "13px 14px", opacity: pending ? 0.7 : 1 }}
             >
               {pending ? "Adding…" : "Add account"}
             </button>
@@ -119,7 +119,7 @@ function AddAccountDialog({ onClose }: { onClose: () => void }) {
               type="button"
               onClick={onClose}
               disabled={pending}
-              style={{ border: "1px solid var(--fac-border, #cbd5e1)", cursor: "pointer", background: "var(--fac-white, #ffffff)", color: "var(--fac-ink, #0f172a)", font: "600 14px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", borderRadius: 10, padding: "13px 16px" }}
+              style={{ border: "1px solid var(--fac-border, #cbd5e1)", cursor: "pointer", background: "var(--fac-white, #ffffff)", color: "var(--fac-ink, #10243f)", font: "600 14px/1 var(--fac-font-sans, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)", borderRadius: 10, padding: "13px 16px" }}
             >
               Cancel
             </button>
@@ -306,7 +306,7 @@ export function AccountSwitcher({ data }: { data: SwitcherData }) {
           )}
 
           {message && (
-            <div role="alert" style={{ margin: "8px 6px 2px", font: "500 12.5px/1.4 var(--fac-font-sans)", color: "#b42318" }}>{message}</div>
+            <div role="alert" style={{ margin: "8px 6px 2px", font: "500 12.5px/1.4 var(--fac-font-sans)", color: "var(--fac-red, #b3261e)" }}>{message}</div>
           )}
 
           {isFaculty ? (

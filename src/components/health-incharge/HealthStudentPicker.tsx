@@ -4,8 +4,8 @@
 // visit. Submits the chosen id as the hidden `studentId` field.
 
 import { useEffect, useRef, useState } from "react";
-import type { StudentLookup } from "@/lib/health-incharge-api";
-import { classLabel, studentName } from "@/lib/health-incharge-api";
+import type { StudentLookup } from "@/lib/health-incharge-shared";
+import { classLabel, studentName } from "@/lib/health-incharge-shared";
 
 export function HealthStudentPicker({ name = "studentId" }: { name?: string }) {
   const [query, setQuery] = useState("");

@@ -104,7 +104,7 @@ export default async function TransportPage() {
                 <div className="flex items-center gap-3.5">
                   <span
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold"
-                    style={{ background: "#EFF4FF", border: "1px solid #C7D7F5", color: "#1D4ED8" }}
+                    style={{ background: "var(--color-tint)", border: "1px solid var(--color-tint-2)", color: "var(--color-primary)" }}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>

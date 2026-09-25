@@ -17,13 +17,12 @@ const btnBase: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   gap: 6,
-  height: 36,
-  padding: "0 16px",
+  padding: "11px 18px",
   border: "1px solid transparent",
-  borderRadius: "var(--hw-radius-sm)",
+  borderRadius: 10,
   fontFamily: "inherit",
-  fontSize: 13,
-  fontWeight: 700,
+  fontSize: 14,
+  fontWeight: 600,
   lineHeight: 1,
   cursor: "pointer",
   whiteSpace: "nowrap",
@@ -31,7 +30,7 @@ const btnBase: CSSProperties = {
 
 export function PrimaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className="hw-btn-primary" style={{ ...btnBase, background: "var(--hw-accent)", color: "#fff", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "var(--hw-accent)", color: "#fff", ...style }}>
       {children}
     </button>
   );
@@ -39,7 +38,7 @@ export function PrimaryButton({ children, style, ...rest }: ButtonHTMLAttributes
 
 export function SecondaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className="hw-btn-secondary" style={{ ...btnBase, background: "var(--hw-surface)", color: "var(--hw-text)", borderColor: "var(--hw-border-input)", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "var(--hw-surface)", color: "var(--hw-text)", borderColor: "var(--hw-border-input)", ...style }}>
       {children}
     </button>
   );
@@ -47,7 +46,7 @@ export function SecondaryButton({ children, style, ...rest }: ButtonHTMLAttribut
 
 export function GhostButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className="hw-btn-ghost" style={{ ...btnBase, background: "transparent", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "transparent", ...style }}>
       {children}
     </button>
   );
@@ -81,7 +80,7 @@ export function EmptyRow({ colSpan, label = "No records under this filter." }: {
   return (
     <tr>
       <td colSpan={colSpan} style={{ padding: 0 }}>
-        <div style={{ border: "1px dashed #dde2e8", borderRadius: "var(--hw-radius-md)", padding: 44, margin: 14, textAlign: "center", fontSize: 13, color: "var(--hw-text-muted)" }}>{label}</div>
+        <div style={{ border: "1px dashed var(--hw-divider)", borderRadius: "var(--hw-radius-md)", padding: 44, margin: 14, textAlign: "center", fontSize: 13, color: "var(--hw-text-muted)" }}>{label}</div>
       </td>
     </tr>
   );
@@ -99,7 +98,7 @@ const TONE_STYLES: Record<PillTone, { bg: string; fg: string }> = {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE_STYLES[tone];
   return (
-    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 7, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em", background: t.bg, color: t.fg }}>
+    <span style={{ display: "inline-block", padding: "6px 12px", borderRadius: 999, fontSize: 12.5, fontWeight: 600, background: t.bg, color: t.fg }}>
       {label}
     </span>
   );

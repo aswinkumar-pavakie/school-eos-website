@@ -22,7 +22,7 @@ import { Card, StatCard } from "@/components/library-ui/primitives";
 
 function StatIcon({ children }: { children: ReactNode }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#1D4ED8" strokeWidth={1.7}>
+    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#1f6feb" strokeWidth={1.7}>
       {children}
     </svg>
   );
@@ -151,13 +151,13 @@ export default async function LibraryDashboardPage() {
               )}
               {subjectBars.map(([label, v]) => (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ width: 130, font: "500 13px/1.2 var(--lib-font-sans)", color: "#475569", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ width: 130, font: "500 13px/1.2 var(--lib-font-sans)", color: "var(--lib-body-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {label}
                   </div>
                   <div style={{ flex: 1, height: 8, borderRadius: 999, background: "var(--lib-tint)", overflow: "hidden" }}>
                     <div style={{ height: 8, borderRadius: 999, background: "var(--lib-primary)", width: `${Math.round((v.total / maxSubjectTotal) * 100)}%` }} />
                   </div>
-                  <div style={{ font: "500 13px/1.2 var(--lib-font-mono)", color: "#475569" }}>{v.available} / {v.total}</div>
+                  <div style={{ font: "500 13px/1.2 var(--lib-font-mono)", color: "var(--lib-body-muted)" }}>{v.available} / {v.total}</div>
                 </div>
               ))}
             </div>

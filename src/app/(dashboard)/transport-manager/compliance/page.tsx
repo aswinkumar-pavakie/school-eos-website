@@ -46,12 +46,12 @@ const DOC_TYPE_LABEL: Record<(typeof DOC_TYPE_COLUMNS)[number], string> = {
 };
 
 // Dot color legend matches the mockup's own docState() literally: BAD
-// #1E3A8A = expired, WARN #2563EB = due within 45 days, OK #64748B = valid.
+// var(--color-navy) = expired, WARN var(--color-primary) = due within 45 days, OK var(--color-text-muted) = valid.
 function dotColor(daysLeft: number | null): string {
-  if (daysLeft === null) return "#CBD5E1";
-  if (daysLeft < 0) return "#1E3A8A";
-  if (daysLeft <= 45) return "#2563EB";
-  return "#64748B";
+  if (daysLeft === null) return "var(--color-border)";
+  if (daysLeft < 0) return "var(--color-navy)";
+  if (daysLeft <= 45) return "var(--color-primary)";
+  return "var(--color-text-muted)";
 }
 
 export default async function TransportManagerCompliancePage() {
@@ -126,13 +126,13 @@ export default async function TransportManagerCompliancePage() {
           <h2 className="text-[17px] font-bold leading-[22px] text-text">Vehicle compliance matrix</h2>
           <div className="flex items-center gap-4 text-[12px] font-semibold text-text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#1E3A8A" }} /> Expired
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--color-navy)" }} /> Expired
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#2563EB" }} /> Due within 45 days
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--color-primary)" }} /> Due within 45 days
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#64748B" }} /> Valid
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--color-text-muted)" }} /> Valid
             </span>
           </div>
         </div>
@@ -178,14 +178,14 @@ export default async function TransportManagerCompliancePage() {
                           href={`/transport-manager/buses/${v.id}`}
                           title="Edit this bus's document dates"
                           className="flex h-8 w-8 items-center justify-center rounded-[8px]"
-                          style={{ border: "1px solid #E2E8F0", color: "#334155" }}
+                          style={{ border: "1px solid var(--color-border)", color: "var(--color-text-secondary)" }}
                         >
                           <MaterialIcon name="edit" size={17} />
                         </Link>
                         <span
                           title="Deleting a document record is Admin-only — not available to Transport Manager"
                           className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-[8px] opacity-50"
-                          style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}
+                          style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}
                         >
                           <MaterialIcon name="delete" size={17} />
                         </span>

@@ -79,7 +79,7 @@ export default async function ParentMeetingsPage() {
                     ) : slot.booking.state === "APPROVED" ? (
                       <Link
                         href={`/meeting-call/${slot.booking.id}`}
-                        className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-input)] bg-[color:var(--color-success,#1E8A4C)] px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                        className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-input)] bg-[color:var(--color-success,var(--fac-green-text))] px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
                       >
                         Join call
                       </Link>

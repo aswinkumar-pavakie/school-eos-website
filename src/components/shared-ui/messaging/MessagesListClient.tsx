@@ -8,9 +8,11 @@
 // (@/lib/messaging-actions, @/lib/e2ee/*) -- this is presentation only.
 
 import { useEffect, useMemo, useState } from "react";
+import { friendlyMessagingError } from "@/lib/messaging-errors";
 import Link from "next/link";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
-import { resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { hasCachedName, resolveDesignation, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { subscribeDirectory } from "@/lib/e2ee/directoryWalk";
 import { listConversationsAction, listRequestsAction, type ConversationSummary } from "@/lib/messaging-actions";
 import { ConversationPane } from "./ConversationPane";
 
@@ -61,7 +63,7 @@ export function MessagesListClient({
       setPendingCount(reqRes.data.length);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't load your conversations.");
+      setError(friendlyMessagingError(err, "Couldn't load your conversations."));
     }
   }
 
@@ -69,6 +71,16 @@ export function MessagesListClient({
     const timer = setTimeout(load, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // The messaging server never returns names, so a person this browser has never
+  // seen in the directory shows as "School EOS user". When that happens, load the
+  // directory in the background (shared, rate-limit-aware) so the names fill in.
+  const [, setNameTick] = useState(0);
+  const hasUnnamed = conversations?.some((c) => !hasCachedName(c.personAId === personId ? c.personBId : c.personAId)) ?? false;
+  useEffect(() => {
+    if (!hasUnnamed) return;
+    return subscribeDirectory(personId, () => setNameTick((t) => t + 1));
+  }, [hasUnnamed, personId]);
 
   const filtered = useMemo(() => {
     if (!conversations) return null;
@@ -106,7 +118,7 @@ export function MessagesListClient({
         <Link
           href={requestsHref}
           className="flex items-center gap-3"
-          style={{ marginTop: 18, background: "#fff6e5", border: "1px solid #f2dca0", borderRadius: 12, padding: "14px 18px", textDecoration: "none" }}
+          style={{ marginTop: 18, background: "var(--eos-amber-bg)", border: "1px solid var(--eos-amber-border)", borderRadius: 12, padding: "14px 18px", textDecoration: "none" }}
         >
           <span style={{ flex: 1, font: "500 13.5px/1.4 var(--eos-font-sans)", color: "var(--eos-ink)" }}>
             {pendingCount} message request{pendingCount === 1 ? "" : "s"} waiting for your response

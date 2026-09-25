@@ -22,7 +22,8 @@
    * product should read as one consistent design, with Admin/Principal as
    * the canonical reference, not Faculty. */
   --can-primary: #1f6feb;
-  --can-navy: #10243f;
+  --can-primary-hover: #1a5cc8;
+  --can-navy: #0f2342;
   --can-ink: #10243f;
   --can-body: #44536b;
   --can-body-muted: #5c6b82;
@@ -35,37 +36,38 @@
   --can-chip: #eef2f7;
 
   --can-border: #e4e9f2;
-  --can-border-hover: #dbe7ff;
-  --can-border-focus: #bfdbfe;
-  --can-outline-hover: #93b4f5;
+  --can-border-hover: #1f6feb;
+  --can-border-focus: #1f6feb;
+  --can-outline-hover: #1f6feb;
 
-  --can-red: #dc2626;
-  --can-red-bg: #fee2e2;
-  --can-red-text: #b91c1c;
-  --can-green-text: #15803d;
-  --can-green-bg: #f0fdf4;
-  --can-amber: #fbbf24;
+  --can-red: #b3261e;
+  --can-red-bg: #fdecec;
+  --can-red-text: #b3261e;
+  --can-green-text: #1f7a4d;
+  --can-green-bg: #e8f6ee;
+  --can-amber: #8a5a00;
+  --can-amber-bg: #fdf3e0;
 
-  --can-radius-card: 12px;
+  --can-radius-card: 14px;
   --can-radius-input: 10px;
-  --can-radius-btn-sm: 9px;
-  --can-radius-pill: 20px;
+  --can-radius-btn-sm: 10px;
+  --can-radius-pill: 999px;
   --can-radius-full: 999px;
-  --can-radius-modal: 16px;
+  --can-radius-modal: 18px;
 
-  --can-scrim: rgba(15, 23, 42, 0.45);
-  --can-shadow-popover-strong: 0 18px 40px rgba(15, 23, 42, 0.14);
+  --can-scrim: rgba(12, 24, 44, 0.5);
+  --can-shadow-popover-strong: 0 24px 70px rgba(12, 24, 44, 0.28);
   /* Enterprise-grade resting elevation -- a very soft ambient shadow under
      every surface card, not just on hover (the Faculty portal's own
      hover-only elevation reads as "flat admin panel"; a subtle resting
      shadow plus the existing hover-lift reads as a premium product). */
   --can-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.05);
-  --can-shadow-card-hover: 0 8px 24px rgba(31, 111, 235, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
-  --can-gradient-accent: linear-gradient(135deg, #1f6feb 0%, #1f4fa8 100%);
-  --can-tint-2: #dbeafe;
+  --can-shadow-card-hover: 0 12px 26px rgba(31, 111, 235, 0.14);
+  --can-gradient-accent: linear-gradient(135deg, #1f6feb 0%, #0f2342 100%);
+  --can-tint-2: #dbe7ff;
 
   --can-font-sans: var(--font-outfit-can), ui-sans-serif, system-ui, sans-serif;
-  --can-font-mono: var(--font-ibm-plex-mono-can), ui-monospace, "SFMono-Regular", monospace;
+  --can-font-mono: var(--font-jetbrains-mono-can), ui-monospace, "SFMono-Regular", monospace;
 
   font-family: var(--can-font-sans);
   color: var(--can-ink);
