@@ -14,7 +14,7 @@ import { cookies } from "next/headers";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { EmptyPanel, StatTile } from "@/components/sports-ui/primitives";
 import { ACCESS_TOKEN_COOKIE, AuthExpiredError } from "@/lib/api";
-import { formatTime } from "@/lib/format";
+import { formatTime, percentOf } from "@/lib/format";
 import { ExportDaySheetButton } from "./ExportDaySheetButton";
 import {
   listCoaches,
@@ -111,8 +111,8 @@ export default async function SportsAdminDashboardPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16, marginTop: 26 }}>
           <StatTile label="PLAYERS ON ROLL" value={totalPlayers} sub={`Across ${sports.length} discipline${sports.length === 1 ? "" : "s"}`} />
-          <StatTile label="SQUADS ACTIVE" value={activeTeams} sub={`of ${teams.length} total squads`} />
-          <StatTile label="PT STAFF ON DUTY" value={`${activeCoaches} / ${coaches.length}`} sub="Coaches & PT staff" />
+          <StatTile label="SQUADS ACTIVE" value={activeTeams} sub={`of ${teams.length} total squads`} bar={percentOf(activeTeams, teams.length)} />
+          <StatTile label="PT STAFF ON DUTY" value={`${activeCoaches} / ${coaches.length}`} sub="Coaches & PT staff" bar={percentOf(activeCoaches, coaches.length)} />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: 16, marginTop: 24 }}>

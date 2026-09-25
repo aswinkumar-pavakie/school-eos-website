@@ -14,7 +14,7 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
-import { formatDateTime, statusLabel } from "@/lib/format";
+import { formatDateTime, percentOf, statusLabel } from "@/lib/format";
 
 interface InfirmaryVisitRow {
   id: string;
@@ -100,11 +100,13 @@ export default async function PrincipalHealthPage({
           eyebrow="Open health alerts"
           value={String(openAlerts.length)}
           detail={[`of ${alerts.length} total`, `${alerts.length - openAlerts.length} already acknowledged`]}
+          bar={percentOf(openAlerts.length, alerts.length)}
         />
         <KpiCard
           eyebrow="Sent home / referred"
           value={String(sentHomeOrReferred)}
           detail={`of ${visits.length} visits`}
+          bar={percentOf(sentHomeOrReferred, visits.length)}
         />
         <KpiCard eyebrow="Escalations logged" value={String(escalations.length)} detail="Guardian/emergency contact attempts" />
       </div>

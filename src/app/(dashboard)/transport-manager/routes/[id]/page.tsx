@@ -38,6 +38,7 @@ interface RouteStop {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   studentFirstName: string;
   studentLastName: string | null;
   admissionNo: string;
@@ -101,6 +102,10 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
 
   const sortedStops = [...stops].sort((a, b) => a.sequenceNo - b.sequenceNo);
   const activeStudents = students.filter((s) => s.status === "ACTIVE");
+  // Each real rider has TWO allocation rows here (PICKUP + DROP, a different
+  // stop per direction) -- correct to keep per-row for the per-stop grouping
+  // below, but the header count needs distinct students, not rows.
+  const riderCount = new Set(activeStudents.map((s) => s.studentId)).size;
   const studentsByStop = new Map<string, AssignedStudent[]>();
   for (const s of activeStudents) {
     const list = studentsByStop.get(s.routeStopId) ?? [];
@@ -121,7 +126,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
           <p className="mt-1.5 text-[15px] text-text-muted">
             {vehicle ? `${vehicle.registrationNo} · ` : ""}
             {route.name}
-            {route.code ? ` (${route.code})` : ""} · {activeStudents.length} students across {sortedStops.length} stops
+            {route.code ? ` (${route.code})` : ""} · {riderCount} students across {sortedStops.length} stops
           </p>
         </div>
         <StopForm

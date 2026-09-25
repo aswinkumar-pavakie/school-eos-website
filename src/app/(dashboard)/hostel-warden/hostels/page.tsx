@@ -16,7 +16,13 @@ export default async function HostelDetailsPage() {
       listRoomAllocations(),
       listWardenRoster().catch(() => []),
     ]);
-    const wardenNames = roster.map((w) => [w.firstName, w.lastName].filter(Boolean).join(" ")).join(", ") || "Not assigned";
+    const hostelNameById = new Map(roster.map((w) => [w.hostelId, w.hostelName]));
+    const wardensByHostel = new Map<string, Set<string>>();
+    for (const w of roster) {
+      const set = wardensByHostel.get(w.hostelId) ?? new Set<string>();
+      set.add([w.firstName, w.lastName].filter(Boolean).join(" "));
+      wardensByHostel.set(w.hostelId, set);
+    }
     const occupiedByRoom = new Map<string, number>();
     for (const a of allocations) occupiedByRoom.set(a.roomId, (occupiedByRoom.get(a.roomId) ?? 0) + 1);
 
@@ -74,11 +80,11 @@ export default async function HostelDetailsPage() {
               <tbody>
                 {blockStats.map((b) => (
                   <tr key={b.id} style={{ borderTop: "1px solid var(--hw-divider-soft)" }}>
-                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>{b.name}</td>
+                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>{hostelNameById.has(b.hostelId) ? `${hostelNameById.get(b.hostelId)} · ${b.name}` : b.name}</td>
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{b.rooms.length}</td>
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{b.occupied} / {b.capacity}</td>
                     <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{Math.max(0, b.capacity - b.occupied)}</td>
-                    <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{wardenNames}</td>
+                    <td style={{ padding: "10px 14px", color: "var(--hw-text-muted)" }}>{Array.from(wardensByHostel.get(b.hostelId) ?? []).join(", ") || "Not assigned"}</td>
                   </tr>
                 ))}
                 {blockStats.length === 0 && (

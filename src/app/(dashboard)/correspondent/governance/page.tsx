@@ -75,8 +75,10 @@ export default async function CorrespondentGovernancePage() {
   const firstAvg = avg(firstHalf);
   const secondAvg = avg(secondHalf);
 
-  const requestsTotal = sum(data.requestsApprovals.byState);
-  const requestsPending = countFor(data.requestsApprovals.byState, "PENDING");
+  // Non-null: reports.controller.ts only redacts requestsApprovals for
+  // actors that aren't ADMIN/PRINCIPAL/CORRESPONDENT -- this page is CORRESPONDENT-only.
+  const requestsTotal = sum(data.requestsApprovals!.byState);
+  const requestsPending = countFor(data.requestsApprovals!.byState, "PENDING");
 
   const inventoryTotal = sum(data.inventory.byStatus);
   const inventoryDamaged = countFor(data.inventory.byStatus, "DAMAGED");

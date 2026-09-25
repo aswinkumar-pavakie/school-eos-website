@@ -39,7 +39,12 @@ export default async function ParentLeavePage({
       toDate: r.toDate,
       reason: r.reason + (r.skipSchoolTransport ? " (bus will not stop for these days)" : ""),
       state: r.state,
-      decidedLine: r.decidedAt ? `Decided on ${new Date(r.decidedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : null,
+      // state-gated, not just decidedAt -- every PENDING row in this
+      // environment's own seed data has a stale decided_at (confirmed
+      // read-only: all 107 pending student_leave_request rows have one), so
+      // showing "Decided on" for a still-PENDING request was a real, visible
+      // contradiction regardless of root cause.
+      decidedLine: r.state !== "PENDING" && r.decidedAt ? `Decided on ${new Date(r.decidedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : null,
     }));
 
     return (

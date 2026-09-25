@@ -54,8 +54,8 @@ async function RecordsSection({ subjectOfferingId }: { subjectOfferingId: string
     <div className="flex flex-col gap-4">
       <KpiGrid>
         <KpiCard eyebrow="Students" value={String(records.studentCount)} />
-        <KpiCard eyebrow="Class average" value={records.classAvg !== null ? `${records.classAvg}%` : "—"} />
-        <KpiCard eyebrow="Highest" value={records.highest !== null ? `${records.highest}%` : "—"} />
+        <KpiCard eyebrow="Class average" value={records.classAvg !== null ? `${records.classAvg}%` : "—"} bar={records.classAvg ?? undefined} />
+        <KpiCard eyebrow="Highest" value={records.highest !== null ? `${records.highest}%` : "—"} bar={records.highest ?? undefined} />
       </KpiGrid>
 
       {records.students.length === 0 ? (

@@ -35,6 +35,7 @@ interface RouteStop {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   status: string;
 }
 
@@ -63,7 +64,9 @@ export default async function TransportPage() {
       ]);
       const stops: RouteStop[] = stopsRes.ok ? (await stopsRes.json()).data : [];
       const students: AssignedStudent[] = studentsRes.ok ? (await studentsRes.json()).data : [];
-      const activeStudents = students.filter((s) => s.status === "ACTIVE").length;
+      // Each real rider has TWO allocation rows here (PICKUP + DROP), so a
+      // plain .length doubles the count -- count distinct students instead.
+      const activeStudents = new Set(students.filter((s) => s.status === "ACTIVE").map((s) => s.studentId)).size;
       return { ...route, stopCount: stops.length, activeStudents };
     }),
   );

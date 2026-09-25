@@ -1,15 +1,11 @@
-// Library members -- pixel-rebuilt from the design's own screen. "Total
-// borrowed" and "Last borrowed" aren't summary fields the real
-// LibraryMemberListRow returns (only activeIssuesCount/overdueCount are) --
-// derived here instead from one real listIssues({limit:500}) call, grouped
-// by memberId client-side (a single request, not per-member N+1: the real
-// dataset is small -- confirmed 10 issues / 21 members live -- but this
-// scales far better than fetching per member regardless).
+// Library members -- pixel-rebuilt from the design's own screen. Every
+// column, including Total/Last borrowed, comes from the real
+// LibraryMemberListRow the members endpoint returns.
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AuthExpiredError } from "@/lib/api";
-import { listEligibleMembers, listIssues, listMemberGrades, listMembers } from "@/lib/library-api";
+import { listEligibleMembers, listMemberGrades, listMembers } from "@/lib/library-api";
 import { formatDate } from "@/lib/format";
 import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { EmptyRow, Pill, TableShell, Td, Th } from "@/components/library-ui/primitives";
@@ -23,26 +19,14 @@ export default async function LibraryMembersPage({
   const params = await searchParams;
 
   try {
-    const [{ data: members }, grades, eligiblePeople, { data: allIssues }] = await Promise.all([
+    // Total/last borrowed come from the members query itself (real per-member
+    // aggregates). They used to be tallied in the browser from just the newest
+    // 200 of ~18,000 issue rows, so most members wrongly showed 0 total.
+    const [{ data: members }, grades, eligiblePeople] = await Promise.all([
       listMembers({ search: params.search || undefined, gradeId: params.gradeId || undefined, status: "ACTIVE", limit: 200 }),
       listMemberGrades(),
       listEligibleMembers(),
-      // 200 is the real backend's own hard max (ListIssuesQueryDto's own
-      // @Max(200)) -- confirmed live: a limit above that 400s the whole
-      // page. Plenty for this school's real issue volume regardless.
-      listIssues({ limit: 200 }),
     ]);
-
-    const byMember = new Map<string, { total: number; lastTitle: string; lastAt: string }>();
-    for (const issue of allIssues) {
-      const entry = byMember.get(issue.memberId) ?? { total: 0, lastTitle: "", lastAt: "" };
-      entry.total += 1;
-      if (!entry.lastAt || issue.issuedAt > entry.lastAt) {
-        entry.lastAt = issue.issuedAt;
-        entry.lastTitle = issue.bookTitle;
-      }
-      byMember.set(issue.memberId, entry);
-    }
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
@@ -106,7 +90,6 @@ export default async function LibraryMembersPage({
           <tbody>
             {members.length === 0 && <EmptyRow colSpan={6} />}
             {members.map((m) => {
-              const agg = byMember.get(m.id);
               const overdue = m.overdueCount > 0;
               return (
                 <tr key={m.id} className="lib-row-hover">
@@ -118,8 +101,8 @@ export default async function LibraryMembersPage({
                   </Td>
                   <Td>{m.gradeName ? `${m.gradeName}${m.sectionName ? ` · ${m.sectionName}` : ""}` : m.memberType === "STUDENT" ? "Student" : "Staff"}</Td>
                   <Td mono>{m.activeIssuesCount}</Td>
-                  <Td mono>{agg?.total ?? 0}</Td>
-                  <Td>{agg ? `${agg.lastTitle} (${formatDate(agg.lastAt)})` : "—"}</Td>
+                  <Td mono>{m.totalIssuesCount}</Td>
+                  <Td>{m.lastIssuedAt && m.lastIssueTitle ? `${m.lastIssueTitle} (${formatDate(m.lastIssuedAt)})` : "—"}</Td>
                   <Td>
                     <Pill label={overdue ? "Overdue" : "Clear"} tone={overdue ? "amber" : "green"} />
                   </Td>

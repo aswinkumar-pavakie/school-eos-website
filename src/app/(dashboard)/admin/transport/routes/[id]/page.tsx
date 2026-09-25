@@ -200,7 +200,10 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ id
   const lastStop = sortedStops[sortedStops.length - 1];
 
   const activeStudents = students.filter((s) => s.status === "ACTIVE");
-  const riders = activeStudents.length;
+  // Each real rider has TWO allocation rows here (PICKUP + DROP, a different
+  // stop per direction) -- correct to keep per-row for the per-stop grouping
+  // below, but occupancy needs distinct students, not rows.
+  const riders = new Set(activeStudents.map((s) => s.studentId)).size;
   const boardCountByStopId = new Map<string, number>();
   for (const s of activeStudents) boardCountByStopId.set(s.routeStopId, (boardCountByStopId.get(s.routeStopId) ?? 0) + 1);
 

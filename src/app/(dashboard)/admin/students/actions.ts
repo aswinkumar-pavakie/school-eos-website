@@ -507,15 +507,17 @@ export async function publishEnrollmentAction(
   // 1. Student (+ person). The form intentionally has no separate "student's
   // own mobile/email" field (the reference design doesn't have one either --
   // only guardians carry contact fields), but person_has_contact requires the
-  // student's own person row to carry at least one. The father/guardian's own
-  // phone (already required above) is reused for this -- real, already-entered
-  // data, not a fabricated value.
+  // student's own person row to carry at least one. person.mobile is unique, so
+  // reusing the guardian's phone made the guardian's own parent account fail
+  // with "already exists". A unique per-admission placeholder email (same
+  // student…@sis.in convention as the seeded students) satisfies the check.
+  const studentAdmissionNo = str(formData, "admissionNo");
   const studentPayload: Record<string, unknown> = {
     firstName,
-    admissionNo: str(formData, "admissionNo"),
+    admissionNo: studentAdmissionNo,
     admissionDate: str(formData, "dateOfAdmission") || new Date().toISOString().slice(0, 10),
     dateOfBirth,
-    mobile: fatherPhone,
+    email: `student${studentAdmissionNo.toLowerCase().replace(/[^a-z0-9]/g, "")}@sis.in`,
   };
   if (lastName) studentPayload.lastName = lastName;
   const passthroughStrings: [string, string][] = [

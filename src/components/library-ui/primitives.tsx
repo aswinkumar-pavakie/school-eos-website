@@ -12,6 +12,7 @@ export function StatCard({
   icon,
   highlighted,
   href,
+  bar,
 }: {
   title: string;
   value: ReactNode;
@@ -19,6 +20,10 @@ export function StatCard({
   icon: ReactNode;
   highlighted?: boolean;
   href?: string;
+  /** Real 0-100 value driving a thin progress bar under the metric value --
+   * same pattern as components/dashboard/KpiCard.tsx's own `bar` prop. Omit
+   * for cards with no ratio to visualize. */
+  bar?: number;
 }) {
   const body = (
     <div
@@ -43,6 +48,11 @@ export function StatCard({
         </div>
       </div>
       <div style={{ font: "700 40px/1 var(--lib-font-sans)", color: highlighted ? "var(--lib-navy)" : "var(--lib-ink)", overflowWrap: "anywhere" }}>{value}</div>
+      {bar !== undefined && (
+        <div style={{ height: 6, borderRadius: 4, overflow: "hidden", background: "var(--lib-border)" }}>
+          <div style={{ height: "100%", borderRadius: 4, width: `${Math.max(0, Math.min(100, bar))}%`, background: highlighted ? "var(--lib-navy)" : "var(--lib-primary)" }} />
+        </div>
+      )}
       {sub && <div style={{ font: "400 14px/1.4 var(--lib-font-sans)", color: highlighted ? "var(--lib-primary)" : "var(--lib-body-muted)" }}>{sub}</div>}
     </div>
   );

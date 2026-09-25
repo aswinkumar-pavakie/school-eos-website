@@ -12,18 +12,20 @@ import {
   listEmergencyExitRequests,
   listGatePassRequests,
   listHostelStructure,
+  listMovementLogEntries,
   listRoomAllocations,
 } from "@/lib/hostel-warden-api";
 import { ReportBuilder, type ReportSection } from "./ReportBuilder";
 
 export default async function ReportsPage() {
   try {
-    const [allocations, blocks, complaints, gatePasses, emergencyExits] = await Promise.all([
+    const [allocations, blocks, complaints, gatePasses, emergencyExits, directEntries] = await Promise.all([
       listRoomAllocations(),
       listHostelStructure(),
       listComplaints(),
       listGatePassRequests(),
       listEmergencyExitRequests(),
+      listMovementLogEntries(),
     ]);
 
     const activeAllocations = allocations.filter((a) => a.status === "ACTIVE");
@@ -43,7 +45,7 @@ export default async function ReportsPage() {
     }, {});
     const complaintRows: (string | number)[][] = [["Status", "Count"], ...Object.entries(complaintCounts)];
 
-    const tagged = [...gatePasses, ...emergencyExits];
+    const tagged = [...gatePasses, ...emergencyExits, ...directEntries];
     const gateCounts = tagged.reduce<Record<string, number>>((acc, r) => {
       acc[r.state] = (acc[r.state] ?? 0) + 1;
       return acc;

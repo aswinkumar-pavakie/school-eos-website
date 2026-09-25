@@ -94,7 +94,13 @@ export default async function StudentLeavePage({ searchParams }: { searchParams:
                     <FacultyRejectModal approvalRequestId={r.approvalRequestId} />
                   </div>
                 )}
-                {r.decidedAt && (
+                {/* state-gated, not just decidedAt -- every PENDING row in this
+                   environment's own seed data has a stale decided_by/decided_at
+                   from however it was bulk-generated (confirmed read-only: all
+                   107 pending rows have both set), so showing "Decided on" here
+                   for a row whose own badge says PENDING was a real, visible
+                   contradiction regardless of root cause. */}
+                {r.state !== "PENDING" && r.decidedAt && (
                   <div style={{ font: "400 12.5px/1.4 var(--fac-font-sans)", color: "var(--fac-tertiary)", marginTop: 10 }}>
                     Decided on {new Date(r.decidedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                   </div>

@@ -700,7 +700,7 @@ function PublishedSuccess({
   return (
     <div className="mx-auto max-w-[640px] py-10">
       <div className="card-hover rounded-[16px] border border-border bg-surface p-[18px]">
-        <p className="text-[15px] font-extrabold leading-[20px] text-text">Admission published · parent login created</p>
+        <p className="text-[15px] font-extrabold leading-[20px] text-text">{success.credentials.length > 0 ? "Admission published · parent login created" : "Admission published"}</p>
         <p className="mt-1.5 text-sm text-text-muted">
           Admission no. <span className="font-mono font-semibold text-text">{success.admissionNo}</span> is now a
           real ACTIVE student record.

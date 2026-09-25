@@ -47,8 +47,10 @@ export async function GET() {
   for (const r of summary.library.byStatus) rows.push({ section: "Library", metric: "By status", label: r.status, value: r.count });
   rows.push({ section: "Library", metric: "Outstanding fines", label: "Total outstanding fines (paise)", value: summary.library.outstandingFinesPaise });
 
-  for (const r of summary.requestsApprovals.byState) rows.push({ section: "Requests & Approvals", metric: "By state", label: r.state, value: r.count });
-  for (const r of summary.requestsApprovals.byType) rows.push({ section: "Requests & Approvals", metric: "By type", label: r.requestType, value: r.count });
+  // Non-null: reports.controller.ts only redacts requestsApprovals for
+  // actors that aren't ADMIN/PRINCIPAL/CORRESPONDENT -- this route is ADMIN-only.
+  for (const r of summary.requestsApprovals!.byState) rows.push({ section: "Requests & Approvals", metric: "By state", label: r.state, value: r.count });
+  for (const r of summary.requestsApprovals!.byType) rows.push({ section: "Requests & Approvals", metric: "By type", label: r.requestType, value: r.count });
 
   const columns: CsvColumn<SummaryRow>[] = [
     { header: "Section", value: (r) => r.section },

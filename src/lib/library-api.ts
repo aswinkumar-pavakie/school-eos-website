@@ -239,6 +239,9 @@ export interface LibraryMember {
 export interface LibraryMemberListRow extends LibraryMember {
   activeIssuesCount: number;
   overdueCount: number;
+  totalIssuesCount: number;
+  lastIssuedAt: string | null;
+  lastIssueTitle: string | null;
   pendingFinesAmountPaise: string | number;
 }
 

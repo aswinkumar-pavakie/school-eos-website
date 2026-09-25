@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import { AuthExpiredError } from "@/lib/api";
 import { getLibraryOverview, listBooks, listTransactionHistory } from "@/lib/library-api";
 import { formatFullDate, nowMs, todayIsoDate } from "@/lib/library-time";
+import { percentOf } from "@/lib/format";
 import { Card, StatCard } from "@/components/library-ui/primitives";
 
 function StatIcon({ children }: { children: ReactNode }) {
@@ -68,6 +69,7 @@ export default async function LibraryDashboardPage() {
             title="Available books"
             value={overview.availableCopies.toLocaleString()}
             sub={`of ${overview.totalCopies.toLocaleString()} total copies`}
+            bar={percentOf(overview.availableCopies, overview.totalCopies)}
             href="/library/books"
             icon={
               <StatIcon>

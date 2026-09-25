@@ -67,7 +67,13 @@ export default async function VicePrincipalDashboardPage() {
       getPrincipalDashboardSummary(),
       apiFetch("/auth/me"),
       apiFetch(`/calendar-events?fromDate=${today}`),
-      apiFetch("/announcements?limit=2"),
+      // AnnouncementQueryDto has no `limit` field, and this backend's global
+      // ValidationPipe is forbidNonWhitelisted -- a `limit` query param got a
+      // real 400 here, which this fetch's own `.ok` check silently turned
+      // into an empty notices list ("No notices published yet") even when
+      // real published notices existed. The slice(0, 2) below already limits
+      // the display count, so the param was never actually needed.
+      apiFetch("/announcements"),
     ]);
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
@@ -112,12 +118,14 @@ export default async function VicePrincipalDashboardPage() {
               `Across ${summary.activeSectionsCount} active sections`,
               `${summary.studentResidence.hostellers} hostellers · ${summary.studentResidence.dayScholars} day scholars`,
             ]}
+            bar={percentOf(summary.studentResidence.hostellers, summary.activeStudents)}
             href="/vice-principal/students"
           />
           <KpiCard
             eyebrow="Faculty & staff on roll"
             value={String(summary.activeStaff)}
             detail={[`${summary.staffSplit.teaching} teaching · ${summary.staffSplit.support} support`, "Active staff"]}
+            bar={percentOf(summary.staffSplit.teaching, summary.activeStaff)}
             href="/vice-principal/faculty"
           />
           <KpiCard

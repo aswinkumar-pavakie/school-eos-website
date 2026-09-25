@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/ui/EmptyState";
 import { StatusPill, type PillTone } from "@/components/media-ui/primitives";
 import { ACCESS_TOKEN_COOKIE, AuthExpiredError } from "@/lib/api";
 import { getMediaDashboard, getMediaInventoryOverview, listShootAssignments, type ShootStatus } from "@/lib/media-api";
+import { percentOf } from "@/lib/format";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
@@ -91,6 +92,9 @@ export default async function MediaDashboardPage() {
               <div style={{ fontSize: 15, fontWeight: 600, color: "var(--med-body)" }}>Equipment issued</div>
               <div style={{ fontSize: 38, fontWeight: 800, letterSpacing: "-1.4px", marginTop: 14 }}>
                 {inventoryOverview.assigned} <span style={{ fontSize: 20, color: "var(--med-tertiary)", fontWeight: 700 }}>/ {inventoryOverview.total}</span>
+              </div>
+              <div style={{ height: 6, borderRadius: 4, overflow: "hidden", background: "var(--med-border)", marginTop: 10 }}>
+                <div style={{ height: "100%", borderRadius: 4, width: `${percentOf(inventoryOverview.assigned, inventoryOverview.total)}%`, background: "var(--med-primary)" }} />
               </div>
               <div style={{ fontSize: 14, fontWeight: 700, marginTop: 10, color: "var(--med-primary)" }}>View inventory</div>
             </div>

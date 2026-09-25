@@ -26,7 +26,7 @@ import {
   type HealthProfile,
   type StudentLookup,
   type VisitRow,
-} from "@/lib/health-incharge-api";
+} from "@/lib/health-incharge-shared";
 import { HealthStudentPicker } from "./HealthStudentPicker";
 
 const initial: HealthFormState = {};

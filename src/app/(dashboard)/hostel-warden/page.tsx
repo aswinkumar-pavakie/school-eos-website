@@ -16,6 +16,7 @@ import {
   listEmergencyExitRequests,
   listGatePassRequests,
   listHostelStructure,
+  listMovementLogEntries,
   listRoomAllocations,
 } from "@/lib/hostel-warden-api";
 import { nowMs, todayIsoDate } from "@/lib/hostel-warden-time";
@@ -43,10 +44,11 @@ export default async function HostelWardenDashboardPage() {
     const today = todayIsoDate(now);
     const nowIso = new Date(now).toISOString();
 
-    const [roster, gatePasses, emergencyExits, structure, allocations, complaints, personRes] = await Promise.all([
+    const [roster, gatePasses, emergencyExits, directEntries, structure, allocations, complaints, personRes] = await Promise.all([
       getNightAttendanceRoster(today).catch(() => []),
       listGatePassRequests(),
       listEmergencyExitRequests(),
+      listMovementLogEntries(),
       listHostelStructure(),
       listRoomAllocations(),
       listComplaints().catch(() => []),
@@ -76,8 +78,17 @@ export default async function HostelWardenDashboardPage() {
       ...emergencyExits.map((r) => ({ ...r, kind: "emergency-exit" as const })),
     ];
     const approved = tagged.filter((r) => r.state === "APPROVED");
-    const outNow = approved.filter((r) => r.outFrom <= nowIso && r.expectedReturn >= nowIso);
-    const overdue = approved.filter((r) => r.expectedReturn < nowIso);
+    // Warden-recorded exits that were approved and have no return logged are
+    // physically still away. Requested/rejected entries never left.
+    const openDirect = directEntries.filter((r) => r.state === "APPROVED" && !r.actualReturnAt && r.outFrom <= nowIso);
+    const outNow = [
+      ...approved.filter((r) => r.outFrom <= nowIso && r.expectedReturn >= nowIso),
+      ...openDirect.filter((r) => r.expectedReturn >= nowIso),
+    ];
+    const overdue = [
+      ...approved.filter((r) => r.expectedReturn < nowIso),
+      ...openDirect.filter((r) => r.expectedReturn < nowIso),
+    ];
     // outing_request.state's real values are REQUESTED/APPROVED/REJECTED/
     // CANCELLED/COMPLETED (confirmed live) -- "REQUESTED" is the real
     // not-yet-decided state, not the generic approval_request "PENDING".

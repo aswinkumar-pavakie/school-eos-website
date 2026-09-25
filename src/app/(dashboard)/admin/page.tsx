@@ -76,7 +76,13 @@ export default async function DashboardHomePage() {
     apiFetch("/admin/dashboard-summary"),
     apiFetch("/auth/me"),
     listApprovals({ status: "PENDING" }).catch(() => []),
-    apiFetch("/announcements?limit=4"),
+    // AnnouncementQueryDto has no `limit` field, and this backend's global
+    // ValidationPipe is forbidNonWhitelisted -- a `limit` query param got a
+    // real 400 here, which this fetch's own `.ok` check silently turned into
+    // an empty notices list ("No notices published yet") even when real
+    // published notices existed. The slice(0, 4) below already limits the
+    // display count, so the param was never actually needed.
+    apiFetch("/announcements"),
     // Same real leadership-summary endpoint Principal's own dashboard uses
     // (widened to ADMIN too) -- it already computes parentLoginsIssued and
     // staffMarkedToday, two real KPIs the reference design wants that
@@ -144,6 +150,7 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.studentResidence.hostellers} hostellers · ${principalSummary.studentResidence.dayScholars} day scholars`
               : "",
           ].filter(Boolean)}
+          bar={principalSummary ? percentOf(principalSummary.studentResidence.hostellers, summary.activeStudents) : undefined}
           icon={<StudentsIcon className="h-5 w-5" />}
           href="/admin/students"
         />
@@ -155,6 +162,7 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.staffSplit.teaching} teaching · ${principalSummary.staffSplit.support} support`
               : `${summary.subjectsCount} active subjects`,
           ]}
+          bar={principalSummary ? percentOf(principalSummary.staffSplit.teaching, summary.activeStaff) : undefined}
           icon={<FacultyIcon className="h-5 w-5" />}
           href="/admin/faculty"
         />

@@ -392,6 +392,7 @@ export interface HostelStructureRoom {
 
 export interface HostelStructureBlock {
   id: string;
+  hostelId: string;
   name: string;
   rooms: HostelStructureRoom[];
 }

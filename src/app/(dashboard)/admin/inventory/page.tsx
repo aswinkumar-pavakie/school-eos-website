@@ -11,6 +11,7 @@ import { InventoryIcon } from "@/components/dashboard/icons";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
+import { percentOf } from "@/lib/format";
 
 interface InventoryItemRow {
   id: string;
@@ -132,11 +133,11 @@ export default async function InventoryPage({
       {overview && (
         <div className="mt-6 grid grid-cols-1 gap-[14px] sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard eyebrow="Total items" value={String(overview.total)} detail="All tracked assets & stock" icon={<InventoryIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Available" value={String(overview.available)} detail="Ready to issue" icon={<InventoryIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Assigned" value={String(overview.assigned)} detail="Currently issued out" icon={<InventoryIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Damaged" value={String(overview.damaged)} detail="Needs repair" icon={<InventoryIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Lost" value={String(overview.lost)} detail="Unaccounted for" icon={<InventoryIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Retired" value={String(overview.retired)} detail="Disposed / decommissioned" icon={<InventoryIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Available" value={String(overview.available)} detail="Ready to issue" bar={percentOf(overview.available, overview.total)} icon={<InventoryIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Assigned" value={String(overview.assigned)} detail="Currently issued out" bar={percentOf(overview.assigned, overview.total)} icon={<InventoryIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Damaged" value={String(overview.damaged)} detail="Needs repair" bar={percentOf(overview.damaged, overview.total)} icon={<InventoryIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Lost" value={String(overview.lost)} detail="Unaccounted for" bar={percentOf(overview.lost, overview.total)} icon={<InventoryIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Retired" value={String(overview.retired)} detail="Disposed / decommissioned" bar={percentOf(overview.retired, overview.total)} icon={<InventoryIcon className="h-5 w-5" />} />
           <KpiCard eyebrow="Low stock" value={String(overview.lowStock)} detail="At or below threshold" icon={<InventoryIcon className="h-5 w-5" />} />
         </div>
       )}

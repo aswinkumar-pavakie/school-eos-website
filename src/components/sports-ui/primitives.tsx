@@ -216,7 +216,7 @@ function valueFontSize(value: string | number): number {
   return 38;
 }
 
-export function StatTile({ label, value, sub, sub2 }: { label: string; value: string | number; sub?: string; sub2?: string }) {
+export function StatTile({ label, value, sub, sub2, bar }: { label: string; value: string | number; sub?: string; sub2?: string; /** Real 0-100 value driving a thin progress bar under the metric value -- same pattern as components/dashboard/KpiCard.tsx's own `bar` prop. Omit for cards with no ratio to visualize. */ bar?: number }) {
   return (
     <Card hover style={{ padding: "20px 22px", minWidth: 0, overflow: "hidden" }}>
       <div style={{ fontSize: 11, letterSpacing: "0.1em", fontWeight: 700, color: "var(--sport-tertiary-2)" }}>{label}</div>
@@ -233,6 +233,11 @@ export function StatTile({ label, value, sub, sub2 }: { label: string; value: st
       >
         {value}
       </div>
+      {bar !== undefined && (
+        <div style={{ marginTop: 10, height: 6, borderRadius: 4, overflow: "hidden", background: "var(--sport-border)" }}>
+          <div style={{ height: "100%", borderRadius: 4, width: `${Math.max(0, Math.min(100, bar))}%`, background: "var(--sport-primary)" }} />
+        </div>
+      )}
       {sub ? <div style={{ fontSize: 13.5, color: "var(--sport-body-muted)", marginTop: 4 }}>{sub}</div> : null}
       {sub2 ? <div style={{ fontSize: 12.5, color: "var(--sport-tertiary-3)", marginTop: 2 }}>{sub2}</div> : null}
     </Card>

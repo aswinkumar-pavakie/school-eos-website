@@ -50,6 +50,7 @@ interface Driver {
 }
 interface Allocation {
   id: string;
+  studentId: string;
 }
 interface TripListRow {
   id: string;
@@ -300,10 +301,13 @@ export default async function TransportOverviewPage({
   const workshopCount = vehicles.filter((v) => v.operationalStatus === "MAINTENANCE" || v.operationalStatus === "GROUNDED").length;
   const onRouteCount = fleet.filter((b) => b.freshness === "LIVE" && b.trip && (b.trip.state === "STARTED" || b.trip.state === "IN_PROGRESS")).length;
   const atSchoolCount = Math.max(0, vehicles.length - workshopCount - onRouteCount);
-  const onRoadPct = vehicles.length > 0 ? Math.round(((vehicles.length - workshopCount) / vehicles.length) * 100) : 0;
+  // Buses actually out on a live trip -- previously "not in workshop", which
+  // said 100% on the road while the same card showed 0 outside on route.
+  const onRoadPct = vehicles.length > 0 ? Math.round((onRouteCount / vehicles.length) * 100) : 0;
 
   const totalSeats = vehicles.reduce((sum, v) => sum + v.capacity, 0);
-  const totalRiders = allocations.length;
+  // Each rider has two allocation rows (PICKUP + DROP) -- count distinct students.
+  const totalRiders = new Set(allocations.map((a) => a.studentId)).size;
   const freeSeats = totalSeats - totalRiders;
   const occPct = totalSeats > 0 ? Math.round((totalRiders / totalSeats) * 100) : 0;
 

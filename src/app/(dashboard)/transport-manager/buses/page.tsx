@@ -54,6 +54,7 @@ interface VehicleAssignment {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   routeStopId: string;
   status: string;
 }
@@ -147,7 +148,10 @@ export default async function TransportManagerBusesPage({
     routes.map(async (r) => {
       const res = await apiFetch(`/routes/${r.id}/assigned-students`);
       const students: AssignedStudent[] = res.ok ? (await res.json()).data : [];
-      return { routeId: r.id, riders: students.filter((s) => s.status === "ACTIVE").length };
+      // Each real rider has TWO allocation rows here (PICKUP + DROP), so a
+      // plain .length doubles the count -- count distinct students instead.
+      const riders = new Set(students.filter((s) => s.status === "ACTIVE").map((s) => s.studentId)).size;
+      return { routeId: r.id, riders };
     }),
   );
   const ridersByRouteId = new Map(assignedStudentsByRoute.map((r) => [r.routeId, r.riders]));

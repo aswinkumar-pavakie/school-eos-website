@@ -129,7 +129,7 @@ export interface AttendanceDay {
 export interface AttendanceSummary {
   presentCount: number;
   totalCount: number;
-  percentage: number;
+  percentage: number | null;
 }
 export async function getAttendance(studentId: string, month?: string): Promise<{ summary: AttendanceSummary; days: AttendanceDay[] }> {
   const qs = month ? `?month=${month}` : "";

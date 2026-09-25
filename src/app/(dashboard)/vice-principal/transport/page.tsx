@@ -30,6 +30,7 @@ interface Assignment {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   status: string;
 }
 
@@ -65,7 +66,9 @@ export default async function VicePrincipalTransportPage() {
       const stops: RouteStop[] = stopsRes.ok ? (await stopsRes.json()).data : [];
       const sortedStops = [...stops].sort((a, b) => a.sequenceNo - b.sequenceNo);
       const students: AssignedStudent[] = studentsRes.ok ? (await studentsRes.json()).data : [];
-      const studentCount = students.filter((s) => s.status === "ACTIVE").length;
+      // Each real rider has TWO allocation rows here (PICKUP + DROP), so a
+      // plain .length doubles the count -- count distinct students instead.
+      const studentCount = new Set(students.filter((s) => s.status === "ACTIVE").map((s) => s.studentId)).size;
       const assignment = assignmentByRouteId.get(route.id);
       const vehicle = assignment ? (vehicleById.get(assignment.vehicleId) ?? null) : null;
       return {

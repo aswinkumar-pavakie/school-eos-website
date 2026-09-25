@@ -51,7 +51,10 @@ export interface ReportsSummary {
     byStatus: { status: string; count: number }[];
     outstandingFinesPaise: string | number;
   };
-  requestsApprovals: {
+  // Optional -- reports.controller.ts redacts this field entirely for actors
+  // who aren't ADMIN/PRINCIPAL/CORRESPONDENT (e.g. VICE_PRINCIPAL, which has
+  // no Requests & Approvals authorization yet), rather than sending it empty.
+  requestsApprovals?: {
     byState: { state: string; count: number }[];
     byType: { requestType: string; count: number }[];
   };

@@ -81,6 +81,7 @@ interface Attendant {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   routeStopId: string;
   status: string;
 }
@@ -174,7 +175,10 @@ export default async function TransportManagerVehicleDetailPage({ params }: { pa
     ? ((await assignedStudentsRes.json()) as { data: AssignedStudent[] }).data
     : [];
   const activeStudents = assignedStudents.filter((s) => s.status === "ACTIVE");
-  const riders = activeStudents.length;
+  // Each real rider has TWO allocation rows here (PICKUP + DROP) -- correct
+  // to count per allocation row for per-stop boarding below (a different
+  // stop per direction), but occupancy needs distinct students, not rows.
+  const riders = new Set(activeStudents.map((s) => s.studentId)).size;
   // Real per-stop boarding count -- grouped from the same real assigned-
   // students list, not a fabricated "5 board" placeholder.
   const boardCountByStopId = new Map<string, number>();

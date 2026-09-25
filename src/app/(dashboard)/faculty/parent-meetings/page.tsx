@@ -5,7 +5,7 @@ import { PlainButton } from "@/components/ui/Button";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { KpiGrid, KpiCard } from "@/components/ui/KpiCard";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate, orDash } from "@/lib/format";
+import { formatDate, orDash, percentOf } from "@/lib/format";
 import { listMeetingSlots } from "@/lib/faculty-staff-api";
 import { SlotModal } from "./SlotModal";
 import { decideBookingAction, deleteSlotAction } from "./actions";
@@ -35,7 +35,7 @@ export default async function ParentMeetingsPage() {
 
         <KpiGrid>
           <KpiCard eyebrow="Slots" value={String(slots.length)} />
-          <KpiCard eyebrow="Booked" value={String(booked)} />
+          <KpiCard eyebrow="Booked" value={String(booked)} bar={percentOf(booked, slots.length)} />
           <KpiCard eyebrow="Pending" value={String(pending)} />
         </KpiGrid>
 

@@ -48,7 +48,11 @@ export function DateSwitcher({ sectionId, date }: { sectionId: string; date: str
             month={month}
             onMonthChange={setMonth}
             renderCell={(d) => {
-              const iso = d.toISOString().slice(0, 10);
+              // Local getters, not toISOString() -- this Date is built from
+              // local year/month/day by MonthGrid, and toISOString() (UTC)
+              // shifts it back a calendar day in any timezone ahead of UTC
+              // (e.g. IST), so a click would navigate to the wrong ?date=.
+              const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
               const isSelected = iso === date;
               return (
                 <button

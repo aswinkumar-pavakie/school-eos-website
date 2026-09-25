@@ -78,7 +78,7 @@ export default async function ParentHomePage({ searchParams }: { searchParams: P
     }
 
     const attentionItems: { title: string; subtitle: string; href: string }[] = [];
-    if (attendance && attendance.summary.percentage < 85) {
+    if (attendance && attendance.summary.percentage !== null && attendance.summary.percentage < 85) {
       attentionItems.push({ title: "Attendance below requirement", subtitle: `${attendance.summary.percentage}% · school requires 85%`, href: `/parent/attendance?studentId=${selected.studentId}` });
     }
     for (const h of dueToday) {
@@ -118,7 +118,7 @@ export default async function ParentHomePage({ searchParams }: { searchParams: P
           <Link href={`/parent/attendance?studentId=${selected.studentId}`} style={{ textDecoration: "none", color: "inherit" }}>
             <div className="parent-card-hover" style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, padding: 24, cursor: "pointer" }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: "var(--par-ink)", marginBottom: 22 }}>Attendance</div>
-              <div style={{ fontSize: 40, fontWeight: 800, color: "var(--par-ink)", lineHeight: 1, marginBottom: 14 }}>{attendance ? `${attendance.summary.percentage}%` : "—"}</div>
+              <div style={{ fontSize: 40, fontWeight: 800, color: "var(--par-ink)", lineHeight: 1, marginBottom: 14 }}>{attendance?.summary.percentage != null ? `${attendance.summary.percentage}%` : "—"}</div>
               <div style={{ fontSize: 14, marginBottom: 16 }}>
                 <span style={{ fontWeight: 700, color: "var(--par-primary)" }}>{attendance?.summary.presentCount ?? 0}</span>
                 <span style={{ color: "var(--par-body-muted)" }}> present this month</span>
@@ -126,7 +126,7 @@ export default async function ParentHomePage({ searchParams }: { searchParams: P
               <div style={{ height: 8, background: "var(--par-divider)", borderRadius: 4, overflow: "hidden", marginBottom: 10 }}>
                 <div style={{ width: `${attendance?.summary.percentage ?? 0}%`, height: "100%", background: "var(--par-primary)" }} />
               </div>
-              <div style={{ fontSize: 13, color: "var(--par-tertiary)" }}>{attendance ? `${attendance.summary.totalCount} days · ${attendance.summary.percentage}% present` : "No data yet"}</div>
+              <div style={{ fontSize: 13, color: "var(--par-tertiary)" }}>{attendance && attendance.summary.percentage != null ? `${attendance.summary.totalCount} days · ${attendance.summary.percentage}% present` : "No data yet"}</div>
             </div>
           </Link>
 
