@@ -111,6 +111,16 @@ export default async function PrincipalDashboardPage() {
     ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
     : 0;
 
+  // Today's live present/total across both residence types, for the "Active
+  // students" card's progress bar -- real counts from studentAttendanceToday
+  // + studentResidence, not a re-derived estimate.
+  const studentsPresentToday = summary.studentAttendanceToday.hostellersPresent + summary.studentAttendanceToday.dayScholarsPresent;
+  const studentAttendancePct = summary.activeStudents ? Math.round((studentsPresentToday / summary.activeStudents) * 100) : 0;
+
+  // Same shape for the "Faculty & staff" card.
+  const staffPresentToday = summary.staffAttendanceToday.teachingPresent + summary.staffAttendanceToday.supportPresent;
+  const staffAttendancePct = summary.activeStaff ? Math.round((staffPresentToday / summary.activeStaff) * 100) : 0;
+
   const needsAttentionItems = [
     ...summary.needsAttention,
     { label: "Requests awaiting your decision", sub: dueSoonCount > 0 ? `${dueSoonCount} due within 3 days` : "None due imminently", count: pendingApprovals.length },
@@ -146,20 +156,20 @@ export default async function PrincipalDashboardPage() {
             eyebrow="Active students"
             value={String(summary.activeStudents)}
             detail={[
-              `Across ${summary.activeSectionsCount} active sections`,
-              `${summary.studentResidence.hostellers} hostellers · ${summary.studentResidence.dayScholars} day scholars`,
+              `${summary.studentAttendanceToday.hostellersPresent}/${summary.studentResidence.hostellers} hostellers · ${summary.studentAttendanceToday.dayScholarsPresent}/${summary.studentResidence.dayScholars} day scholars`,
+              `${studentAttendancePct}% present today`,
             ]}
-            bar={percentOf(summary.studentResidence.hostellers, summary.activeStudents)}
+            bar={studentAttendancePct}
             href="/principal/students"
           />
           <KpiCard
             eyebrow="Faculty & staff on roll"
             value={String(summary.activeStaff)}
             detail={[
-              `${summary.staffSplit.teaching} teaching · ${summary.staffSplit.support} support`,
-              "Active staff",
+              `${summary.staffAttendanceToday.teachingPresent}/${summary.staffSplit.teaching} teaching · ${summary.staffAttendanceToday.supportPresent}/${summary.staffSplit.support} support`,
+              `${staffAttendancePct}% present today`,
             ]}
-            bar={percentOf(summary.staffSplit.teaching, summary.activeStaff)}
+            bar={staffAttendancePct}
             href="/principal/faculty"
           />
           <KpiCard

@@ -36,7 +36,7 @@ export function StatTile({
       }}
     >
       <span className="flex items-center justify-between">
-        <span style={{ font: "600 14px/1 var(--fac-font-sans)", color: "#475569" }}>{label}</span>
+        <span style={{ font: "600 11px/1 var(--fac-font-sans)", letterSpacing: "0.11em", textTransform: "uppercase", color: "#6b7a91" }}>{label}</span>
         <span
           style={{ width: 30, height: 30, borderRadius: 8, background: "var(--fac-tint)", display: "block" }}
         />
@@ -45,7 +45,7 @@ export function StatTile({
         {value}
       </span>
       {(strong || sub) && (
-        <span style={{ display: "block", font: "400 13px/1.4 var(--fac-font-sans)", color: "#475569", marginTop: 6 }}>
+        <span style={{ display: "block", font: "400 13px/1.4 var(--fac-font-sans)", color: "#44536b", marginTop: 6 }}>
           {strong && <strong style={{ color: "var(--fac-primary)" }}>{strong}</strong>} {sub}
         </span>
       )}

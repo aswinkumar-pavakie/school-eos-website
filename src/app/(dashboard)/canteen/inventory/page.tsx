@@ -63,8 +63,8 @@ export default async function CanteenInventoryPage() {
             gap: 14,
             padding: "16px 20px",
             borderRadius: "var(--can-radius-card)",
-            border: "1px solid #fde68a",
-            background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+            border: "1px solid var(--can-amber)",
+            background: "var(--can-amber-bg)",
             boxShadow: "var(--can-shadow-card)",
           }}
         >
@@ -72,10 +72,10 @@ export default async function CanteenInventoryPage() {
             <AlertTriangleIcon />
           </span>
           <div>
-            <p style={{ margin: 0, font: "700 14px/1.3 var(--can-font-sans)", color: "#92400e" }}>
+            <p style={{ margin: 0, font: "700 14px/1.3 var(--can-font-sans)", color: "var(--can-amber)" }}>
               {lowStock.length} product{lowStock.length === 1 ? "" : "s"} running low on stock
             </p>
-            <p style={{ margin: 0, marginTop: 2, font: "500 12.5px/1.4 var(--can-font-sans)", color: "#a16207" }}>
+            <p style={{ margin: 0, marginTop: 2, font: "500 12.5px/1.4 var(--can-font-sans)", color: "var(--can-amber)" }}>
               {lowStock.map((p) => `${p.name} (${p.quantity} left)`).join(" · ")}
             </p>
           </div>

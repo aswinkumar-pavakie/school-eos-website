@@ -32,6 +32,7 @@ export function GlobalSearch() {
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -62,6 +63,19 @@ export function GlobalSearch() {
     };
   }, [query, basePath]);
 
+  // Ctrl/Cmd+K focuses the box -- same shortcut every role's search shows a
+  // "Ctrl K" hint for in the shared shell.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -79,10 +93,11 @@ export function GlobalSearch() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md">
-      <label className="flex items-center gap-2.5 rounded-[11px] border border-border bg-field px-4 py-2.5 text-text-muted transition-colors focus-within:border-primary focus-within:bg-surface">
+    <div ref={containerRef} className="relative w-full max-w-[560px]">
+      <label className="flex items-center gap-2.5 rounded-[9px] border border-border bg-field px-3 py-[9px] text-text-muted transition-colors focus-within:border-primary focus-within:bg-surface">
         <SearchIcon className="h-4 w-4 shrink-0" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -104,6 +119,11 @@ export function GlobalSearch() {
           placeholder="Jump to a page — students, staff, parents…"
           className="w-full min-w-0 bg-transparent text-sm text-text placeholder:text-text-muted focus:outline-none"
         />
+        {!query && (
+          <span className="shrink-0 rounded-[5px] px-1.5 py-0.5 font-mono text-[11px]" style={{ background: "var(--color-hover-fill)", color: "var(--color-text-tertiary)" }}>
+            Ctrl K
+          </span>
+        )}
       </label>
 
       {open && (

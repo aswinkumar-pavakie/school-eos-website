@@ -4,37 +4,41 @@
    same isolation convention as media-theme.css/parent-theme.css. */
 
 .sports-scope {
-  --sport-primary: #2563EB;
-  --sport-primary-hover: #1D4ED8;
-  --sport-navy: #0E2A47;
-  --sport-ink: #10233B;
-  --sport-heading: #0E2A47;
-  --sport-body: #3C4A5B;
-  --sport-body-muted: #4E5D70;
-  --sport-muted: #5B6A7D;
-  --sport-muted-2: #6B7A8D;
-  --sport-tertiary: #7B8796;
-  --sport-tertiary-2: #8B96A5;
-  --sport-tertiary-3: #98A3B2;
-  --sport-border: #E6E9EE;
-  --sport-border-soft: #EEF0F4;
-  --sport-divider: #F0F2F6;
-  --sport-input-border: #DDE3EB;
-  --sport-menu-border: #E1E6ED;
-  --sport-tint: #EEF3FF;
-  --sport-panel: #F1F3F7;
-  --sport-green-bg: #E8F6EE;
-  --sport-green: #137A48;
-  --sport-amber-bg: #FDF3E3;
-  --sport-amber: #9A6212;
-  --sport-red-bg: #FDECEC;
-  --sport-red: #B3261E;
-  --sport-mono: "JetBrains Mono", monospace;
+  --sport-primary: #1f6feb;
+  --sport-primary-hover: #1a5cc8;
+  --sport-navy: #0f2342;
+  --sport-ink: #10243f;
+  --sport-heading: #10243f;
+  --sport-body: #44536b;
+  --sport-body-muted: #5c6b82;
+  --sport-muted: #5c6b82;
+  --sport-muted-2: #8593a8;
+  --sport-tertiary: #8593a8;
+  --sport-tertiary-2: #8593a8;
+  --sport-tertiary-3: #9aa7ba;
+  --sport-border: #e4e9f2;
+  --sport-border-soft: #eef1f6;
+  --sport-divider: #eef1f6;
+  --sport-input-border: #dfe5ef;
+  --sport-menu-border: #e4e9f2;
+  --sport-tint: #eef4ff;
+  --sport-panel: #f8fafc;
+  --sport-green-bg: #e8f6ee;
+  --sport-green: #1f7a4d;
+  --sport-amber-bg: #fdf3e0;
+  --sport-amber: #8a5a00;
+  --sport-red-bg: #fdecec;
+  --sport-red: #b3261e;
+  --sport-font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --sport-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
   --sport-radius-card: 14px;
   --sport-radius-btn: 10px;
-  --sport-radius-pill: 20px;
-  --sport-radius-modal: 16px;
-  --sport-scrollbar: #D5DAE2;
+  --sport-radius-pill: 999px;
+  --sport-radius-modal: 18px;
+  --sport-scrollbar: #dfe5ef;
+  font-family: var(--sport-font-sans);
+  color: var(--sport-ink);
+  background: #ffffff;
 }
 
 .sports-scope .sport-card-hover {

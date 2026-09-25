@@ -1,4 +1,5 @@
-// Client-safe constants, types and helpers for the Health In-charge console (no server-only imports).
+// Plain constants, types and label helpers for the Health In-charge console.
+// No server-only imports, so client components can use them too.
 
 export const VISIT_ACTIONS = ["REST", "MEDICATION", "SENT_HOME", "REFERRED", "SICKBAY_ADMIT", "NO_ACTION"] as const;
 export const SERIOUS_ACTIONS: string[] = ["SENT_HOME", "REFERRED", "SICKBAY_ADMIT"];

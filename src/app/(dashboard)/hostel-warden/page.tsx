@@ -187,7 +187,7 @@ export default async function HostelWardenDashboardPage() {
               <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "15px 0", borderBottom: "1px solid var(--hw-divider-soft)" }}>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontSize: 15, fontWeight: 700 }}>{[r.studentFirstName, r.studentLastName].filter(Boolean).join(" ")}</span>
-                  <span style={{ display: "block", fontSize: 13, color: "#8b95a1", marginTop: 3 }}>
+                  <span style={{ display: "block", fontSize: 13, color: "var(--hw-text-muted)", marginTop: 3 }}>
                     {roomByStudent.get(r.studentId) ?? "—"} · back by {new Date(r.expectedReturn).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })}
                   </span>
                 </span>
@@ -211,7 +211,7 @@ export default async function HostelWardenDashboardPage() {
                 <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: 99, background: "var(--hw-accent)", marginTop: 7 }} />
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontSize: 15, fontWeight: 700 }}>{f.title}</span>
-                  <span style={{ display: "block", fontSize: 13, color: "#8b95a1", marginTop: 3 }}>{f.note}</span>
+                  <span style={{ display: "block", fontSize: 13, color: "var(--hw-text-muted)", marginTop: 3 }}>{f.note}</span>
                 </span>
               </Link>
             ))}

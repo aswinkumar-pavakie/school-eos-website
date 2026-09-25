@@ -14,7 +14,7 @@ export function KpiCard({
   bar?: number;
 }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
+    <div className="card-hover rounded-[14px] border border-border bg-surface px-5 py-[18px]">
       <p className="text-[11px] font-bold tracking-[0.09em] text-text-muted uppercase">{eyebrow}</p>
       <p className="mt-2 font-mono text-2xl font-extrabold text-text">{value}</p>
       {bar !== undefined && (

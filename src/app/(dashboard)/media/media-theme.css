@@ -1,36 +1,35 @@
-/* Media Room theme -- tokens read directly off
-   brain/SIS Mediaroom/Media Room.dc.html (measured, not approximated):
-   Plus Jakarta Sans UI / JetBrains Mono numeric, navy #14306e, primary blue
-   #1d4ed8, 15px cards, 11-12px inputs, 20px pills. */
+/* Media Room theme -- now aligned to
+   brain/SIS Principal/Design Architecture.dc.html, the ONE canonical design
+   system for every role login on this site. */
 .media-scope {
-  --med-font: var(--font-plus-jakarta-sans), sans-serif;
+  --med-font: var(--font-outfit), sans-serif;
   --med-mono: var(--font-jetbrains-mono), monospace;
-  --med-primary: #1d4ed8;
-  --med-primary-hover: #12307a;
-  --med-navy: #14306e;
-  --med-navy-hover: #0e2455;
-  --med-ink: #0b1b3a;
-  --med-body: #5b6474;
-  --med-body-muted: #6b7684;
-  --med-tertiary: #8b95a5;
-  --med-tertiary-2: #9aa3b2;
-  --med-border: #e6e9ef;
-  --med-divider: #f0f2f6;
-  --med-divider-2: #f2f4f8;
-  --med-row-border: #edf0f5;
-  --med-panel: #eef2f8;
-  --med-tint: #e9efff;
-  --med-input-border: #e0e5ec;
-  --med-green-bg: #dcfce7;
-  --med-green: #15803d;
-  --med-amber-bg: #fef3c7;
-  --med-amber: #a15c07;
-  --med-red-bg: #fee2e2;
-  --med-red: #b91c1c;
-  --med-radius-card: 15px;
-  --med-radius-input: 12px;
-  --med-radius-btn: 11px;
-  --med-radius-pill: 20px;
+  --med-primary: #1f6feb;
+  --med-primary-hover: #1a5cc8;
+  --med-navy: #0f2342;
+  --med-navy-hover: #1a5cc8;
+  --med-ink: #10243f;
+  --med-body: #44536b;
+  --med-body-muted: #5c6b82;
+  --med-tertiary: #8593a8;
+  --med-tertiary-2: #9aa7ba;
+  --med-border: #e4e9f2;
+  --med-divider: #eef1f6;
+  --med-divider-2: #eef1f6;
+  --med-row-border: #eef1f6;
+  --med-panel: #f8fafc;
+  --med-tint: #eef4ff;
+  --med-input-border: #dfe5ef;
+  --med-green-bg: #e8f6ee;
+  --med-green: #1f7a4d;
+  --med-amber-bg: #fdf3e0;
+  --med-amber: #8a5a00;
+  --med-red-bg: #fdecec;
+  --med-red: #b3261e;
+  --med-radius-card: 14px;
+  --med-radius-input: 10px;
+  --med-radius-btn: 10px;
+  --med-radius-pill: 999px;
   color-scheme: light;
   font-family: var(--med-font);
   color: var(--med-ink);

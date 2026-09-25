@@ -122,7 +122,7 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
                 <div
                   style={{
                     font: "400 13.5px/1.5 var(--fac-font-sans)",
-                    color: "#475569",
+                    color: "var(--fac-body-muted)",
                     marginTop: 5,
                     maxWidth: "82ch",
                     display: "-webkit-box",

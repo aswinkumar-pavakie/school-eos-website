@@ -67,7 +67,7 @@ export default async function LibraryLostDamagedPage({
           <form action="/library/lost-damaged" style={{ flex: 1, minWidth: 240, maxWidth: 420, display: "flex", alignItems: "center", gap: 10, padding: "13px 16px", border: "1px solid var(--lib-border)", borderRadius: 11 }}>
             <input type="hidden" name="kind" value={params.kind ?? "lost"} />
             <input type="hidden" name="tab" value={params.tab ?? "unsettled"} />
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#8593a8" strokeWidth={1.7}>
               <circle cx="9" cy="9" r="5.6" />
               <path d="M13.2 13.2L17 17" />
             </svg>

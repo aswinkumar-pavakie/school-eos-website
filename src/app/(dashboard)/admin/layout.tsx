@@ -1,26 +1,16 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { Shell } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
+import { HeaderBell } from "@/components/shared-ui/HeaderBell";
+import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
+import { ADMIN_NAV_ITEMS } from "@/components/dashboard/admin-nav";
 import { ReframeThemeStyle, reframeThemeClassName } from "@/components/dashboard/ReframeTheme";
-import { ReframeHeaderChrome } from "@/components/dashboard/ReframeHeaderChrome";
 import { ACCESS_TOKEN_COOKIE, apiFetch } from "@/lib/api";
-import { listAcademicYears, listApprovals, getSchoolProfile } from "@/lib/finance-api";
+import { listAcademicYears, listApprovals } from "@/lib/finance-api";
 import { listAcademicTerms } from "@/lib/academic-term-api";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
-import { logoutAction } from "./actions";
-
-// Same first-letter-of-each-word initials helper Principal's layout uses for
-// its sidebar header/footer tiles.
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 3)
-    .toUpperCase();
-}
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/v1";
@@ -97,51 +87,41 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const currentYear = academicYears.find((y) => y.isCurrent) ?? academicYears[0];
   const terms = currentYear ? await listAcademicTerms(currentYear.id).catch(() => []) : [];
   const currentTerm = terms.find((t) => t.isCurrent) ?? terms[0];
-  const schoolProfile = await getSchoolProfile().catch(() => null);
-  const schoolName = schoolProfile?.name ?? "School EOS";
 
   return (
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
       <E2eeBootstrapMount personId={data.person.id} />
-      <Shell
+      <AppShell
+        rootHref="/admin"
+        navGroups={shellNavItemsToGroups(ADMIN_NAV_ITEMS)}
         personName={personName}
-        roleLabel={roleLabel}
-        onSignOut={logoutAction}
-        pendingRequestsCount={pendingRequestsCount}
+        personRoleLabel={roleLabel}
+        academicYear={currentYear?.name}
+        termLabel={currentTerm?.name}
+        profileHref="/admin/profile"
+        customSearch={
+          <div className="flex min-w-0 flex-1 items-center justify-start">
+            <GlobalSearch />
+          </div>
+        }
         headerExtra={
-          <ReframeHeaderChrome academicYearName={currentYear?.name} termName={currentTerm?.name} />
-        }
-        // Sidebar logo tile + real school name + role subtitle, and sidebar
-        // footer identity card -- same real chrome Principal's layout already
-        // has, per the user's "implement in admin and vice_principal also"
-        // instruction. Purely additive visual chrome; the header's existing
-        // notification bell + avatar sign-out menu is untouched.
-        sidebarHeader={
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[13px] bg-[#0f2342] text-[13px] font-bold text-white">
-              {initials(schoolName)}
-            </div>
-            <div className="flex min-w-0 flex-col gap-px">
-              <div className="truncate text-[16px] font-semibold leading-tight tracking-[-0.01em] text-text">{schoolName}</div>
-              <div className="truncate text-[12px] leading-tight text-text-muted">Administration</div>
-            </div>
-          </div>
-        }
-        sidebarFooter={
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0f2342] text-[13px] font-semibold text-white">
-              {initials(personName || "Admin")}
-            </div>
-            <div className="flex min-w-0 flex-col gap-px">
-              <div className="truncate text-[14px] font-semibold leading-tight text-text">{personName}</div>
-              <div className="truncate text-[12px] leading-tight text-text-muted">School administrator</div>
-            </div>
-          </div>
+          <>
+            <HeaderBell pendingRequestsCount={pendingRequestsCount} requestsHref="/admin/requests" />
+            <button
+              type="button"
+              disabled
+              title="Messaging is coming in a later phase"
+              aria-disabled
+              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white opacity-90 md:flex"
+            >
+              Messages
+            </button>
+          </>
         }
       >
         {children}
-      </Shell>
+      </AppShell>
     </div>
   );
 }

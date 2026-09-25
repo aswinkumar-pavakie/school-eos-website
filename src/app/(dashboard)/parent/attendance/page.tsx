@@ -127,7 +127,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
                       fontWeight: 700,
                       background: style?.bg ?? "transparent",
                       color: style?.fg ?? "var(--par-ink)",
-                      border: c.day && c.status === "PRESENT" ? "1px solid #D8DCE8" : undefined,
+                      border: c.day && c.status === "PRESENT" ? "1px solid var(--par-border)" : undefined,
                     }}
                   >
                     {c.day ?? ""}
@@ -138,7 +138,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
 
             <div style={{ borderTop: "1px solid var(--par-divider)", paddingTop: 16, marginTop: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 16, height: 16, borderRadius: 5, background: "#fff", border: "1px solid #D8DCE8", display: "inline-block" }} />
+                <span style={{ width: 16, height: 16, borderRadius: 5, background: "#fff", border: "1px solid var(--par-border)", display: "inline-block" }} />
                 <span style={{ fontSize: 13, color: "var(--par-body)" }}>Present</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

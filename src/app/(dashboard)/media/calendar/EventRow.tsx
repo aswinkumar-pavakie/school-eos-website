@@ -64,8 +64,8 @@ export function EventRow({ event, canModify }: { event: CalendarEvent; canModify
       </span>
       {canModify && (
         <div style={{ display: "flex", gap: 6, flex: "none" }}>
-          <button type="button" onClick={() => setEditing(true)} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid #d9dee7", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}>Edit</button>
-          <button type="button" disabled={pending} onClick={handleDelete} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid #d9dee7", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}>Delete</button>
+          <button type="button" onClick={() => setEditing(true)} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}>Edit</button>
+          <button type="button" disabled={pending} onClick={handleDelete} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}>Delete</button>
         </div>
       )}
     </div>

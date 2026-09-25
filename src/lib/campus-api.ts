@@ -4,6 +4,7 @@
 // apiFetch convention, same as faculty-api.ts.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 interface ApiEnvelope<T> {
   data: T;
@@ -11,12 +12,8 @@ interface ApiEnvelope<T> {
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await apiFetch(path, init);
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return (body as ApiEnvelope<T>).data;
+  const body = await parseApiResponse<ApiEnvelope<T>>(res);
+  return body.data;
 }
 
 function post<T>(path: string, body: unknown): Promise<T> {

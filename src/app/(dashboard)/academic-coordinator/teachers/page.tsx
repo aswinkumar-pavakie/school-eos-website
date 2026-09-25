@@ -58,14 +58,14 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
                   <div style={{ fontSize: 12.5, color: "var(--acc-body-muted)", marginTop: 3 }}>{t.offeringsList.length} offering{t.offeringsList.length === 1 ? "" : "s"}</div>
                 </div>
               </div>
-              <div style={{ height: 6, background: "#eef2f8", borderRadius: 99, marginTop: 15, overflow: "hidden" }}>
+              <div style={{ height: 6, background: "var(--acc-border)", borderRadius: 99, marginTop: 15, overflow: "hidden" }}>
                 <div style={{ height: 6, background: "var(--acc-accent)", width: `${Math.min(100, Math.round((t.weeklyPeriods / 40) * 100))}%` }} />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, fontSize: 12.5, color: "var(--acc-body-muted)" }}>
                 <span>{t.weeklyPeriods} periods/week</span>
               </div>
               {t.offeringsList.length > 0 && (
-                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--acc-divider-soft)", fontSize: 12.5, color: "#334155" }}>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--acc-divider-soft)", fontSize: 12.5, color: "var(--acc-body)" }}>
                   {t.offeringsList.slice(0, 4).map((o, i) => (
                     <div key={i}>
                       {o.gradeName} {o.sectionName} · {o.subjectName}

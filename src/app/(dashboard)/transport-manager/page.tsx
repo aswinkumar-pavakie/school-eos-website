@@ -335,10 +335,10 @@ export default async function TransportOverviewPage({
           </p>
         </div>
         <div className="flex gap-2.5">
-          <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-deep" />
+          <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-hover" />
           <ExportRegisterButton
             rows={vehicles}
-            className="rounded-[10px] border border-border bg-surface px-4 py-[11px] text-sm font-semibold text-[#334155] hover:border-primary/40"
+            className="rounded-[10px] border border-border bg-surface px-4 py-[11px] text-sm font-semibold text-[var(--color-text-secondary)] hover:border-primary/40"
           />
         </div>
       </div>
@@ -478,7 +478,7 @@ export default async function TransportOverviewPage({
         <section className="card-hover rounded-[16px] border border-border bg-surface p-[18px]">
           <div className="flex items-center justify-between">
             <h2 className="text-[17px] font-bold leading-[22px] text-text">Notices</h2>
-            <PostNoticeForm vehicles={vehicles} routes={routes} triggerClassName="rounded-[10px] bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-primary-deep" />
+            <PostNoticeForm vehicles={vehicles} routes={routes} triggerClassName="rounded-[10px] bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-primary-hover" />
           </div>
           {announcements.length === 0 ? (
             <p className="mt-3 text-sm text-text-muted">No notices for Transport right now.</p>

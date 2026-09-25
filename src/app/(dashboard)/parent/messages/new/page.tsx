@@ -5,10 +5,10 @@ import { DiscoveryClient } from "./DiscoveryClient";
 
 export default async function NewParentMessagePage() {
   try {
-    await getCurrentActor();
+    const actor = await getCurrentActor();
     return (
       <div className="parent-scope">
-        <DiscoveryClient />
+        <DiscoveryClient personId={actor.personId} />
       </div>
     );
   } catch (err) {

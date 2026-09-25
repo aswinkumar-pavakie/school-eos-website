@@ -5,7 +5,7 @@
 import { apiFetch } from "@/lib/api";
 
 export * from "./health-incharge-shared";
-import type { HealthDashboard, StudentLookup, StudentHealth, VisitRow, AlertRow, EscalationRow } from "./health-incharge-shared";
+import type { AlertRow, EscalationRow, HealthDashboard, StudentHealth, StudentLookup, VisitRow } from "./health-incharge-shared";
 
 async function get<T>(path: string): Promise<T> {
   const res = await apiFetch(`/health-incharge${path}`);

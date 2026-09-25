@@ -14,14 +14,15 @@
 // four sub-routes, since there's no per-role page tree to duplicate here.
 
 import { useEffect, useMemo, useState } from "react";
+import { friendlyMessagingError } from "@/lib/messaging-errors";
 import { useRouter } from "next/navigation";
 import { useE2eeBootstrap } from "@/lib/e2ee/bootstrap";
-import { rememberNamesFromDiscovery, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { hasCachedName, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { subscribeDirectory } from "@/lib/e2ee/directoryWalk";
 import { createMessageRequest, startDirectConversation } from "@/lib/e2ee/conversationCreation";
 import {
   acceptRequestAction,
   declineRequestAction,
-  discoverUsersAction,
   listConversationsAction,
   listRequestsAction,
   type ConversationSummary,
@@ -32,8 +33,6 @@ import { ConversationPane } from "@/components/shared-ui/messaging/ConversationP
 
 type View = "list" | "thread" | "new" | "requests";
 const POLL_INTERVAL_MS = 8000;
-const PAGE_LIMIT = 100;
-const MAX_PAGES = 200;
 
 function initialsOf(name: string): string {
   return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("") || "?";
@@ -81,7 +80,7 @@ export function MessagingApp({
       setPendingCount(reqRes.data.length);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't load your conversations.");
+      setError(friendlyMessagingError(err, "Couldn't load your conversations."));
     }
   }
 
@@ -89,6 +88,15 @@ export function MessagingApp({
     const timer = setTimeout(loadList, 0);
     return () => clearTimeout(timer);
   }, []);
+
+  // The messaging server never returns names: load the directory (shared,
+  // rate-limit-aware) in the background so unnamed people get their names.
+  const [, setNameTick] = useState(0);
+  const hasUnnamed = conversations?.some((c) => !hasCachedName(c.personAId === personId ? c.personBId : c.personAId)) ?? false;
+  useEffect(() => {
+    if (!hasUnnamed) return;
+    return subscribeDirectory(personId, () => setNameTick((t) => t + 1));
+  }, [hasUnnamed, personId]);
 
   const filtered = useMemo(() => {
     if (!conversations) return null;
@@ -244,49 +252,23 @@ export function MessagingApp({
 // New message / discovery pane
 // ============================================================
 
-// Walks the ENTIRE directory exactly once (unfiltered -- the backend's own
-// `search` param only filters within whatever page is already being walked,
-// so getting real cross-directory search results always meant walking every
-// page regardless). The bug this replaced: calling this per keystroke, which
-// re-walked all ~7-10+ pages on every character typed. The messaging
-// service's own directory-search rate limit is a deliberate, real anti-
-// scraping control (30 requests/minute/person, directory.controller.ts) --
-// with the directory now spanning every messaging-enabled role, a few
-// keystrokes inside one debounce window was enough to exhaust it, surfacing
-// as a real RATE_LIMITED 403. Fetching the full list once per mount and
-// filtering client-side (same substring-over-displayName match the backend
-// itself uses) gets identical results for a fraction of a percent of the
-// network cost, and typing no longer touches the network at all.
-async function discoverAll(): Promise<DiscoveryItem[]> {
-  const items: DiscoveryItem[] = [];
-  const seen = new Set<string>();
-  let cursor: string | undefined;
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const { data } = await discoverUsersAction({ cursor, limit: PAGE_LIMIT });
-    for (const item of data.items) {
-      if (seen.has(item.userId)) continue;
-      seen.add(item.userId);
-      items.push(item);
-    }
-    if (!data.nextCursor || data.nextCursor === cursor) break;
-    cursor = data.nextCursor;
-  }
-  rememberNamesFromDiscovery(items);
-  return items;
-}
-
 function NewMessagePane({ personId, onBack, onSent }: { personId: string; onBack: () => void; onSent: (conversationId: string) => void }) {
   const [search, setSearch] = useState("");
   const [allItems, setAllItems] = useState<DiscoveryItem[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(true);
   const [selected, setSelected] = useState<DiscoveryItem | null>(null);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    discoverAll().then(setAllItems).finally(() => setLoading(false));
-  }, []);
+    return subscribeDirectory(personId, (items, done) => {
+      setAllItems(items);
+      setLoading(false);
+      setLoadingMore(!done);
+    });
+  }, [personId]);
 
   const needle = search.trim().toLowerCase();
   const items = needle ? (allItems ?? []).filter((i) => i.displayName.toLowerCase().includes(needle)) : allItems ?? [];
@@ -306,7 +288,7 @@ function NewMessagePane({ personId, onBack, onSent }: { personId: string; onBack
           : await createMessageRequest({ targetPersonId: selected.userId, plaintext: trimmed });
       onSent(result.conversationId);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not send.");
+      setError(friendlyMessagingError(err, "Could not send."));
     } finally {
       setSending(false);
     }
@@ -411,13 +393,21 @@ function RequestsPane({ onBack, onOpen, onDecided }: { onBack: () => void; onOpe
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [, setNameTick] = useState(0);
+  const myPersonId = requests?.[0]?.recipientPersonId;
+  const hasUnnamed = requests?.some((r) => !hasCachedName(r.requesterPersonId)) ?? false;
+  useEffect(() => {
+    if (!hasUnnamed || !myPersonId) return;
+    return subscribeDirectory(myPersonId, () => setNameTick((t) => t + 1));
+  }, [hasUnnamed, myPersonId]);
+
   async function load() {
     try {
       const { data } = await listRequestsAction({ status: "PENDING", as: "recipient" });
       setRequests(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't load requests.");
+      setError(friendlyMessagingError(err, "Couldn't load requests."));
     }
   }
   useEffect(() => {
@@ -432,6 +422,8 @@ function RequestsPane({ onBack, onOpen, onDecided }: { onBack: () => void; onOpe
       else await declineRequestAction(id);
       await load();
       onDecided();
+    } catch (err) {
+      setError(friendlyMessagingError(err, "Couldn't update this request."));
     } finally {
       setDecidingId(null);
     }

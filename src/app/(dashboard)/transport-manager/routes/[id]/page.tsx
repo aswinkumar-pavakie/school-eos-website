@@ -133,7 +133,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
           mode="create"
           routeId={route.id}
           nextSequenceNo={sortedStops.length + 1}
-          triggerClassName="whitespace-nowrap rounded-[10px] bg-primary px-[18px] py-[11px] text-[14px] font-bold text-white hover:bg-primary-deep"
+          triggerClassName="whitespace-nowrap rounded-[10px] bg-primary px-[18px] py-[11px] text-[14px] font-bold text-white hover:bg-primary-hover"
           triggerLabel="+ Add stop"
         />
       </div>
@@ -143,9 +143,9 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
         {sortedStops.map((stop, i) => {
           const stopStudents = studentsByStop.get(stop.id) ?? [];
           return (
-            <div key={stop.id} className="card-hover border-b p-[18px_22px] last:border-b-0" style={{ borderColor: "#F1F5F9" }}>
+            <div key={stop.id} className="card-hover border-b p-[18px_22px] last:border-b-0" style={{ borderColor: "var(--color-field)" }}>
               <div className="flex flex-wrap items-center gap-3">
-                <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] font-mono text-[12.5px] font-semibold text-primary" style={{ background: "#EFF4FF" }}>
+                <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] font-mono text-[12.5px] font-semibold text-primary" style={{ background: "var(--color-tint)" }}>
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -159,7 +159,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
                   <span
                     title="Adding a NEW student needs a real student search endpoint -- not yet available to Transport Manager (checked: students.controller.ts is ADMIN/PRINCIPAL only)"
                     className="cursor-not-allowed whitespace-nowrap rounded-[9px] px-3 py-[7px] text-[12.5px] font-bold opacity-50"
-                    style={{ border: "1px solid #C7D7F5", color: "#1D4ED8" }}
+                    style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-primary)" }}
                   >
                     + Add student
                   </span>
@@ -170,7 +170,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
                     currentStopName={stop.stopName}
                     currentSequenceNo={stop.sequenceNo}
                     currentScheduledTime={stop.scheduledTime}
-                    triggerClassName="whitespace-nowrap rounded-[9px] border border-[#E2E8F0] px-3 py-[7px] text-[12.5px] font-bold text-[#334155] hover:bg-field"
+                    triggerClassName="whitespace-nowrap rounded-[9px] border border-[var(--color-border)] px-3 py-[7px] text-[12.5px] font-bold text-[var(--color-text-secondary)] hover:bg-field"
                     triggerLabel="Edit stop"
                   />
                   <RequestActionButton
@@ -183,7 +183,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
                     <button
                       type="button"
                       className="whitespace-nowrap rounded-[9px] px-[11px] py-[7px] text-[12.5px] font-bold"
-                      style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}
+                      style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}
                     >
                       Delete stop
                     </button>
@@ -194,8 +194,8 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
               {stopStudents.length > 0 && (
                 <div className="mt-3 grid gap-2.5" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))" }}>
                   {stopStudents.map((s) => (
-                    <div key={s.id} className="card-hover flex items-center gap-2.5 rounded-[10px] px-2.5 py-2" style={{ background: "#F6F8FB" }}>
-                      <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-[11.5px] font-extrabold" style={{ background: "#EFF4FF", color: "#1E3A8A" }}>
+                    <div key={s.id} className="card-hover flex items-center gap-2.5 rounded-[10px] px-2.5 py-2" style={{ background: "var(--color-field)" }}>
+                      <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-[11.5px] font-extrabold" style={{ background: "var(--color-tint)", color: "var(--color-navy)" }}>
                         {initialsOf(s.studentFirstName, s.studentLastName)}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -221,7 +221,7 @@ export default async function TransportManagerStopsAndStudentsPage({ params }: {
                         submitLabel="Request"
                         submittedLabel="Requested"
                       >
-                        <button type="button" title="Request removal" className="shrink-0" style={{ color: "#94A3B8" }}>
+                        <button type="button" title="Request removal" className="shrink-0" style={{ color: "var(--color-text-tertiary)" }}>
                           <MaterialIcon name="delete" size={14} />
                         </button>
                       </RequestActionButton>

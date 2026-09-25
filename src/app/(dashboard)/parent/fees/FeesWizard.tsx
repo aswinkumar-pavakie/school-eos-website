@@ -90,7 +90,7 @@ export function FeesWizard({
         order_id: order.razorpayOrderId,
         handler: () => pollForConfirmation(order.paymentId),
         modal: { ondismiss: () => pollForConfirmation(order.paymentId) },
-        theme: { color: "#3B5BDB" },
+        theme: { color: "#1f6feb" },
       });
       setStep("processing");
       razorpay.open();

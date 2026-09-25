@@ -37,14 +37,14 @@ export default async function SyllabusPage() {
                 <div style={{ fontSize: 14, fontWeight: 700, color: "var(--acc-navy)" }}>
                   {r.gradeName} {r.sectionName}
                 </div>
-                <div style={{ fontSize: 14, color: "#334155" }}>{r.subjectName}</div>
-                <div style={{ fontSize: 13.5, color: "#475569" }}>{r.teacherName ?? "—"}</div>
+                <div style={{ fontSize: 14, color: "var(--acc-body)" }}>{r.subjectName}</div>
+                <div style={{ fontSize: 13.5, color: "var(--acc-body-muted)" }}>{r.teacherName ?? "—"}</div>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ flex: 1, height: 6, background: "#eef2f8", borderRadius: 99, overflow: "hidden" }}>
+                    <div style={{ flex: 1, height: 6, background: "var(--acc-border)", borderRadius: 99, overflow: "hidden" }}>
                       <div style={{ height: 6, background: r.percent < 50 ? "var(--acc-red)" : "var(--acc-accent)", width: `${r.percent}%` }} />
                     </div>
-                    <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12.5, color: "#334155", minWidth: 32, textAlign: "right" }}>{r.percent}%</div>
+                    <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12.5, color: "var(--acc-body)", minWidth: 32, textAlign: "right" }}>{r.percent}%</div>
                   </div>
                   <div style={{ fontSize: 11.5, color: "var(--acc-tertiary)", marginTop: 3 }}>{r.doneUnits}/{r.totalUnits} units</div>
                 </div>

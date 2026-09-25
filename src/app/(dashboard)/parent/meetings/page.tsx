@@ -91,7 +91,7 @@ export default async function ParentMeetingsPage({ searchParams }: { searchParam
                           fontSize: 13,
                           fontWeight: 700,
                           color: "#fff",
-                          background: "#1E8A4C",
+                          background: "var(--par-green)",
                         }}
                       >
                         Join call

@@ -104,7 +104,7 @@ async function ReadinessTab({ examId }: { examId: string }) {
               {r.gradeName} {r.sectionName} · {r.subjectName}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <div style={{ flex: 1, height: 8, background: "#eef2f8", borderRadius: 99, overflow: "hidden" }}>
+              <div style={{ flex: 1, height: 8, background: "var(--acc-border)", borderRadius: 99, overflow: "hidden" }}>
                 <div style={{ height: 8, borderRadius: 99, background: pct === 100 ? "var(--acc-green)" : pct > 0 ? "var(--acc-amber)" : "var(--acc-red)", width: `${pct}%` }} />
               </div>
               <span style={{ fontFamily: "var(--acc-font-mono)", fontSize: 13, fontWeight: 700, color: "var(--acc-navy)" }}>

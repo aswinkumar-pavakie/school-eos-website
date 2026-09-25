@@ -4,18 +4,14 @@
 // as faculty-api.ts.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 interface ApiEnvelope<T> {
   data: T;
 }
 
 async function parseOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as T;
+  return parseApiResponse<T>(res);
 }
 async function get<T>(path: string): Promise<T> {
   return parseOrThrow<T>(await apiFetch(path));

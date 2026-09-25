@@ -4,18 +4,14 @@
 // figure comes from a real query, nothing here is placeholder.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 interface ApiEnvelope<T> {
   data: T;
 }
 
 async function parseOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as T;
+  return parseApiResponse<T>(res);
 }
 
 export interface ReportsSummary {

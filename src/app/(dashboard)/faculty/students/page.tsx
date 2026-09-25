@@ -146,15 +146,15 @@ export default async function StudentsPage({
               }}
             >
               <span style={{ font: "600 15.5px/1.3 var(--fac-font-sans)", color: "var(--fac-navy)" }}>{s.studentName}</span>
-              <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "#475569" }}>{s.rollNo ?? "--"}</span>
-              <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "#475569" }}>
+              <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "var(--fac-body-muted)" }}>{s.rollNo ?? "--"}</span>
+              <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "var(--fac-body-muted)" }}>
                 {section.gradeName}-{section.sectionName}
               </span>
               <span
                 style={{
                   textAlign: "right",
                   font: "600 13px/1 var(--fac-font-sans)",
-                  color: s.attendanceToday === "ABSENT" ? "#dc2626" : s.attendanceToday ? "var(--fac-primary)" : "var(--fac-tertiary)",
+                  color: s.attendanceToday === "ABSENT" ? "var(--fac-red)" : s.attendanceToday ? "var(--fac-primary)" : "var(--fac-tertiary)",
                 }}
               >
                 {s.attendanceToday ? (ATTENDANCE_LABEL[s.attendanceToday] ?? s.attendanceToday) : "--"}

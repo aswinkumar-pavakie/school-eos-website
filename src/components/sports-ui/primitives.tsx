@@ -10,7 +10,7 @@ export function Card({ children, style, hover = false, onClick }: { children: Re
         background: "#fff",
         border: "1px solid var(--sport-border)",
         borderRadius: "var(--sport-radius-card)",
-        padding: "20px 24px",
+        padding: "18px 20px",
         cursor: onClick ? "pointer" : undefined,
         ...style,
       }}
@@ -46,23 +46,23 @@ export function toneOf(status: string): PillTone {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE[tone];
   return (
-    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--sport-radius-pill)", padding: "6px 13px", fontSize: 12.5, fontWeight: 700, whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--sport-radius-pill)", padding: "6px 12px", fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
       {label}
     </span>
   );
 }
 
-const btnBase: CSSProperties = { border: 0, borderRadius: "var(--sport-radius-btn)", height: 44, padding: "0 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" };
+const btnBase: CSSProperties = { border: 0, borderRadius: 10, padding: "11px 18px", fontSize: 14, fontWeight: 600, lineHeight: 1.2, cursor: "pointer", fontFamily: "inherit" };
 export function PrimaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`sport-btn-hover-primary${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--sport-primary)", color: "#fff", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--sport-primary)", color: "#fff", ...style }}>
       {children}
     </button>
   );
 }
 export function SecondaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`sport-btn-hover-ghost${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--sport-ink)", border: "1px solid var(--sport-input-border)", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--sport-ink)", border: "1px solid var(--sport-input-border)", ...style }}>
       {children}
     </button>
   );

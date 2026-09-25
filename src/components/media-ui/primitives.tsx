@@ -9,7 +9,7 @@ export function Card({ children, style, hover = false, onClick }: { children: Re
         background: "#fff",
         border: "1px solid var(--med-border)",
         borderRadius: "var(--med-radius-card)",
-        padding: "22px 24px",
+        padding: "18px 20px",
         cursor: onClick ? "pointer" : undefined,
         ...style,
       }}
@@ -30,23 +30,23 @@ const TONE: Record<PillTone, { bg: string; fg: string }> = {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE[tone];
   return (
-    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--med-radius-pill)", padding: "6px 13px", fontSize: 12.5, fontWeight: 700, whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--med-radius-pill)", padding: "6px 12px", fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
       {label}
     </span>
   );
 }
 
-const btnBase: CSSProperties = { border: 0, borderRadius: "var(--med-radius-btn)", height: 48, padding: "0 22px", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" };
+const btnBase: CSSProperties = { border: 0, borderRadius: 10, padding: "11px 18px", fontSize: 14, fontWeight: 600, lineHeight: 1.2, cursor: "pointer", fontFamily: "inherit" };
 export function PrimaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`media-btn-hover-navy${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--med-navy)", color: "#fff", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--med-primary)", color: "#fff", ...style }}>
       {children}
     </button>
   );
 }
 export function SecondaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`media-btn-hover-ghost${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--med-ink)", border: "1px solid #d9dee7", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--med-ink)", border: "1px solid var(--med-border)", ...style }}>
       {children}
     </button>
   );

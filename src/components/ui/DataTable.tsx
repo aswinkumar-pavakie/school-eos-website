@@ -11,7 +11,7 @@ export interface Column<T> {
 
 export function DataTable<T>({ columns, rows, getKey }: { columns: Column<T>[]; rows: T[]; getKey: (row: T) => string }) {
   return (
-    <div className="overflow-x-auto rounded-[var(--radius-card)] border border-border">
+    <div className="overflow-x-auto rounded-[14px] border border-border">
       <table className="w-full min-w-[640px] border-collapse text-sm">
         <thead className="sticky top-0 bg-field">
           <tr>

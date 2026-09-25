@@ -92,7 +92,7 @@ export function RoomsView({ blocks, roomsByBlock }: { blocks: BlockSummary[]; ro
               const empty = room.filled === 0;
               const bg = empty ? "#ffffff" : full ? "var(--hw-accent)" : "var(--hw-accent-300)";
               const fg = empty ? "var(--hw-accent-900)" : full ? "#ffffff" : "var(--hw-accent-900)";
-              const bd = empty ? "#dde2e8" : full ? "var(--hw-accent)" : "var(--hw-accent-300)";
+              const bd = empty ? "var(--hw-divider)" : full ? "var(--hw-accent)" : "var(--hw-accent-300)";
               const sharing = room.capacity === 1 ? "Single sharing" : room.capacity === 2 ? "Double sharing" : room.capacity === 3 ? "Triple sharing" : room.capacity >= 4 ? "Four sharing" : "—";
               return (
                 <div key={room.id} className="hw-lift" style={{ border: `1px solid ${bd}`, background: bg, color: fg, borderRadius: 10, padding: "10px 12px" }}>

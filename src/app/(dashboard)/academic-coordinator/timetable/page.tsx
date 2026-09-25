@@ -39,7 +39,7 @@ export default async function CreateTimetablePage({ searchParams }: { searchPara
     const classChips = allSections.map(({ section, data }) => {
       const hasDraft = data.slots.some((sl) => sl.isDraft);
       const hasSlots = data.slots.length > 0;
-      const dot = hasSlots ? (hasDraft ? "var(--acc-amber)" : "var(--acc-green)") : "#cbd5e1";
+      const dot = hasSlots ? (hasDraft ? "var(--acc-amber)" : "var(--acc-green)") : "var(--acc-border)";
       return { sectionId: section.sectionId, label: `${section.gradeName}-${section.sectionName}`, dot };
     });
 
@@ -93,7 +93,7 @@ export default async function CreateTimetablePage({ searchParams }: { searchPara
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 16 }}>
           {kpis.map((k) => (
             <div key={k.label} style={{ background: "#fff", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px" }}>
-              <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>{k.label}</div>
+              <div style={{ fontSize: 14, color: "var(--acc-body-muted)", fontWeight: 600 }}>{k.label}</div>
               <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", letterSpacing: "-0.02em", margin: "9px 0 6px" }}>{k.value}</div>
             </div>
           ))}
@@ -107,7 +107,7 @@ export default async function CreateTimetablePage({ searchParams }: { searchPara
               <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--acc-navy)" }}>{s.subjectName}</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[...s.teachers.entries()].map(([key, load]) => (
-                  <span key={key} style={{ display: "inline-flex", alignItems: "center", gap: 7, whiteSpace: "nowrap", border: "1px solid var(--acc-border)", background: "#fff", borderRadius: 99, padding: "6px 13px", fontSize: 12.5, color: "#334155" }}>
+                  <span key={key} style={{ display: "inline-flex", alignItems: "center", gap: 7, whiteSpace: "nowrap", border: "1px solid var(--acc-border)", background: "#fff", borderRadius: 99, padding: "6px 13px", fontSize: 12.5, color: "var(--acc-body)" }}>
                     {key.split(":")[1]}
                     <span style={{ color: "var(--acc-tertiary)", fontFamily: "var(--acc-font-mono)", fontSize: 11.5 }}>{load}p/wk</span>
                   </span>
@@ -127,7 +127,7 @@ export default async function CreateTimetablePage({ searchParams }: { searchPara
                   style={{
                     border: `1px solid ${c.sectionId === sectionId ? "var(--acc-accent)" : "var(--acc-btn-border)"}`,
                     background: c.sectionId === sectionId ? "var(--acc-accent)" : "#fff",
-                    color: c.sectionId === sectionId ? "#fff" : "#334155",
+                    color: c.sectionId === sectionId ? "#fff" : "var(--acc-body)",
                     borderRadius: 99,
                     padding: "9px 16px",
                     fontSize: 13.5,

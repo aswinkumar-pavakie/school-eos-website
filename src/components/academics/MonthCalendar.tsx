@@ -213,7 +213,7 @@ export function MonthCalendar({
             <button
               type="button"
               onClick={() => setIsAdding(true)}
-              className="rounded-[10px] bg-primary px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-primary-deep"
+              className="rounded-[10px] bg-primary px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-primary-hover"
             >
               + Add event
             </button>
@@ -291,7 +291,7 @@ export function MonthCalendar({
                 type="button"
                 disabled={!canAdd || isPending}
                 onClick={submitNewEvent}
-                className="flex min-h-[48px] items-center rounded-[10px] bg-primary px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-deep disabled:cursor-not-allowed disabled:bg-[#9dc0f5]"
+                className="flex min-h-[48px] items-center rounded-[10px] bg-primary px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-[#9dc0f5]"
               >
                 {isPending ? "Adding…" : "Add to calendar"}
               </button>

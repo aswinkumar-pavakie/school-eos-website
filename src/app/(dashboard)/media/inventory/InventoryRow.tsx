@@ -173,7 +173,7 @@ export function InventoryRow({ item, crew }: { item: MediaInventoryItem; crew: M
                 height: 30,
                 borderRadius: 20,
                 border: "1px solid var(--med-border)",
-                background: STATUS_TONE[item.status] === "green" ? "#e8f7ee" : STATUS_TONE[item.status] === "blue" ? "#e8f0ff" : STATUS_TONE[item.status] === "amber" ? "#fdf3e2" : "#fbeaea",
+                background: STATUS_TONE[item.status] === "green" ? "var(--med-green-bg)" : STATUS_TONE[item.status] === "blue" ? "var(--med-tint)" : STATUS_TONE[item.status] === "amber" ? "var(--med-amber-bg)" : "var(--med-red-bg)",
                 color: "var(--med-ink)",
                 fontSize: 12.5,
                 fontWeight: 700,
@@ -191,7 +191,7 @@ export function InventoryRow({ item, crew }: { item: MediaInventoryItem; crew: M
             type="button"
             onClick={(e) => { e.stopPropagation(); setOpen(true); setEditing((v) => !v); }}
             className="media-btn-hover-ghost"
-            style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid #d9dee7", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
+            style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
           >
             {editing ? "Close" : "Edit"}
           </button>
@@ -248,24 +248,24 @@ export function InventoryRow({ item, crew }: { item: MediaInventoryItem; crew: M
               ) : (
                 <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
                   {item.status === "AVAILABLE" && (
-                    <button type="button" onClick={() => setIssuing(true)} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Issue</button>
+                    <button type="button" onClick={() => setIssuing(true)} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Issue</button>
                   )}
                   {item.status === "ASSIGNED" && (
-                    <button type="button" disabled={pending} onClick={handleReturn} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Mark returned</button>
+                    <button type="button" disabled={pending} onClick={handleReturn} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Mark returned</button>
                   )}
                   {(item.status === "AVAILABLE" || item.status === "ASSIGNED") && (
-                    <button type="button" disabled={pending} onClick={handleService} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Send to service</button>
+                    <button type="button" disabled={pending} onClick={handleService} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>Send to service</button>
                   )}
                   {(item.status === "DAMAGED" || item.status === "LOST") && (
-                    <button type="button" disabled={pending} onClick={handleMarkAvailable} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-green)" }}>
+                    <button type="button" disabled={pending} onClick={handleMarkAvailable} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-green)" }}>
                       {item.status === "DAMAGED" ? "Mark repaired" : "Mark found"}
                     </button>
                   )}
                   {item.status !== "LOST" && item.status !== "RETIRED" && (
-                    <button type="button" disabled={pending} onClick={handleMarkLost} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)" }}>Mark lost</button>
+                    <button type="button" disabled={pending} onClick={handleMarkLost} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)" }}>Mark lost</button>
                   )}
                   {item.status !== "RETIRED" && (
-                    <button type="button" disabled={pending} onClick={handleRetire} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid #d9dee7", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-tertiary)" }}>Retire</button>
+                    <button type="button" disabled={pending} onClick={handleRetire} style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13.5, fontWeight: 700, cursor: "pointer", color: "var(--med-tertiary)" }}>Retire</button>
                   )}
                 </div>
               )}

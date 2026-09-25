@@ -91,7 +91,7 @@ export function AssistantIcon({ style }: { style?: CSSProperties }) {
 }
 export function SearchIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8b95a5" strokeWidth="1.8">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8593a8" strokeWidth="1.8">
       <circle cx="7" cy="7" r="5" />
       <line x1="11" y1="11" x2="15" y2="15" strokeLinecap="round" />
     </svg>
@@ -99,7 +99,7 @@ export function SearchIcon() {
 }
 export function BellIcon() {
   return (
-    <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="#0b1b3a" strokeWidth="1.7">
+    <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="#10243f" strokeWidth="1.7">
       <path d="M4 7a5 5 0 0 1 10 0c0 3 1 4 1 4H3s1-1 1-4z" strokeLinejoin="round" />
       <path d="M7.4 14.5a1.8 1.8 0 0 0 3.2 0" strokeLinecap="round" />
     </svg>
@@ -115,6 +115,6 @@ export function MessagesIcon({ style }: { style?: CSSProperties }) {
   );
 }
 
-export const KIND_COLOR: Record<string, string> = { POSTER: "#1d4ed8", VIDEO: "#7c3aed", COVERAGE: "#15803d" };
+export const KIND_COLOR: Record<string, string> = { POSTER: "var(--med-primary)", VIDEO: "#7c3aed", COVERAGE: "var(--med-green)" };
 export const KIND_ICON: Record<string, string> = { POSTER: "\u{1F5BC}", VIDEO: "\u{1F3A5}", COVERAGE: "\u{1F4F7}" };
 export const PLATFORM_COLOR: Record<string, string> = { Instagram: "#d62976", LinkedIn: "#0a66c2", YouTube: "#dc2626" };

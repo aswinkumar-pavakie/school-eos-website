@@ -51,7 +51,7 @@ export function DashboardStat({
       <div style={{ fontSize: 13.5, color: "var(--hw-text-muted)" }}>
         <b style={{ color: "var(--hw-accent)" }}>{deltaStrong}</b> {deltaText}
       </div>
-      <div style={{ height: 6, borderRadius: 99, background: "#edf0f4", overflow: "hidden" }}>
+      <div style={{ height: 6, borderRadius: 99, background: "var(--hw-divider)", overflow: "hidden" }}>
         <div style={{ height: "100%", borderRadius: 99, background: "var(--hw-accent)", width: `${Math.max(0, Math.min(100, percent))}%` }} />
       </div>
       <div style={{ fontSize: 12.5, color: "var(--hw-text-faint)" }}>{note}</div>

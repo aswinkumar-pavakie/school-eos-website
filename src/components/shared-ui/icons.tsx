@@ -19,7 +19,7 @@ export function ChevronLeftIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <svg {...base} width="16" height="16" stroke="#94a3b8" strokeWidth={2} className={className} aria-hidden>
+    <svg {...base} width="16" height="16" stroke="#8593a8" strokeWidth={2} className={className} aria-hidden>
       <path d="M9 6l6 6-6 6" />
     </svg>
   );

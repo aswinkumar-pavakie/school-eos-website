@@ -101,7 +101,7 @@ export function PermissionsClient({
                 {new Date(detail.endsAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
               </div>
               <div style={{ font: "600 10.5px/1 var(--fac-font-sans)", letterSpacing: ".08em", color: "var(--fac-tertiary)", marginTop: 12 }}>PURPOSE</div>
-              <div style={{ font: "400 14.5px/1.5 var(--fac-font-sans)", color: "#475569", marginTop: 4 }}>{detail.purpose}</div>
+              <div style={{ font: "400 14.5px/1.5 var(--fac-font-sans)", color: "var(--fac-body-muted)", marginTop: 4 }}>{detail.purpose}</div>
               <div style={{ font: "600 10.5px/1 var(--fac-font-sans)", letterSpacing: ".08em", color: "var(--fac-tertiary)", marginTop: 12 }}>MONITORING TEACHER</div>
               <div style={{ font: "600 14.5px/1.4 var(--fac-font-sans)", marginTop: 4 }}>
                 {detail.monitoringTeacherName}{detail.monitoringTeacherDesignation ? ` · ${detail.monitoringTeacherDesignation}` : ""}

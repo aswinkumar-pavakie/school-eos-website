@@ -36,14 +36,14 @@ export function StatTile({
       }}
     >
       <span className="flex items-center justify-between">
-        <span style={{ font: "600 14px/1 var(--eos-font-sans)", color: "#475569" }}>{label}</span>
+        <span style={{ font: "600 14px/1 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>{label}</span>
         <span style={{ width: 30, height: 30, borderRadius: 8, background: "var(--eos-tint)", display: "block" }} />
       </span>
       <span style={{ display: "block", font: "700 40px/1.1 var(--eos-font-sans)", marginTop: 12, color: "var(--eos-ink)", overflowWrap: "anywhere" }}>
         {value}
       </span>
       {(strong || sub) && (
-        <span style={{ display: "block", font: "400 13px/1.4 var(--eos-font-sans)", color: "#475569", marginTop: 6 }}>
+        <span style={{ display: "block", font: "400 13px/1.4 var(--eos-font-sans)", color: "var(--eos-body-muted)", marginTop: 6 }}>
           {strong && <strong style={{ color: "var(--eos-primary)" }}>{strong}</strong>} {sub}
         </span>
       )}

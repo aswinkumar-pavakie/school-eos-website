@@ -11,14 +11,16 @@
 // sub-lines) have no real column anywhere in this schema -- transport-
 // kpis.ts substitutes a real figure there rather than fabricating one.
 
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AutoSubmitSearchInput, AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { MaterialIcon } from "@/components/transport/MaterialIcon";
 import { AddVehicleForm } from "@/components/transport/AddVehicleForm";
 import { RequestActionButton } from "@/components/transport/RequestActionButton";
 import { requestVehicleDeactivateAction } from "@/app/(dashboard)/transport-manager/actions";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, AuthExpiredError } from "@/lib/api";
 import { formatDate } from "@/lib/format";
+import { ErrorState } from "@/components/ui/EmptyState";
 
 interface Vehicle {
   id: string;
@@ -99,16 +101,42 @@ export default async function TransportManagerBusesPage({
 }) {
   const sp = await searchParams;
 
-  const [vehiclesRes, routesRes, driversRes, assignmentsRes, fleetRes, serviceDueRes] = await Promise.all([
-    apiFetch("/vehicles"),
-    apiFetch("/routes"),
-    apiFetch("/drivers"),
-    apiFetch("/vehicle-route-assignments?currentOnly=true"),
-    apiFetch("/transport-ops/bus-tracking/fleet"),
-    apiFetch("/vehicles/service-due"),
-  ]);
+  let vehiclesRes: Response,
+    routesRes: Response,
+    driversRes: Response,
+    assignmentsRes: Response,
+    fleetRes: Response,
+    serviceDueRes: Response;
+  try {
+    [vehiclesRes, routesRes, driversRes, assignmentsRes, fleetRes, serviceDueRes] = await Promise.all([
+      apiFetch("/vehicles"),
+      apiFetch("/routes"),
+      apiFetch("/drivers"),
+      apiFetch("/vehicle-route-assignments?currentOnly=true"),
+      apiFetch("/transport-ops/bus-tracking/fleet"),
+      apiFetch("/vehicles/service-due"),
+    ]);
+  } catch (err) {
+    // Same session-expiry handling every other dashboard already has
+    // (Parent/Principal/Finance) -- this page previously had none, so an
+    // expired session here fell through to Next's raw default error page
+    // instead of redirecting to login like everywhere else.
+    if (err instanceof AuthExpiredError) redirect("/login");
+    return <ErrorState message="Couldn't load Buses. Nothing was changed — try refreshing the page." />;
+  }
 
-  if (!vehiclesRes.ok) {
+  // Previously only vehiclesRes was checked here -- a real backend failure on
+  // any of the other 5 silently rendered as "no routes/drivers/assignments/
+  // fleet-tracking/service-due data" instead of a visible error. A failed
+  // request must never look like an empty successful state.
+  if (
+    !vehiclesRes.ok ||
+    !routesRes.ok ||
+    !driversRes.ok ||
+    !assignmentsRes.ok ||
+    !fleetRes.ok ||
+    !serviceDueRes.ok
+  ) {
     return (
       <div className="rounded-[16px] border border-border bg-surface p-8 text-center">
         <p className="text-[19px] font-semibold leading-[26px] tracking-[-0.015em] text-text">Couldn&apos;t load Buses</p>
@@ -226,7 +254,7 @@ export default async function TransportManagerBusesPage({
           <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.02em] text-text">Fleet</h1>
           <p className="mt-1.5 text-[15px] text-text-muted">Every vehicle in the school register.</p>
         </div>
-        <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-deep" />
+        <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-hover" />
       </div>
 
       <form action="/transport-manager/buses" className="mt-6 flex flex-wrap items-center gap-3">
@@ -275,13 +303,13 @@ export default async function TransportManagerBusesPage({
                   <div className="flex items-start gap-3">
                     <span
                       className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white font-mono text-[12.5px] font-extrabold text-primary"
-                      style={{ border: "1px solid #C7D7F5" }}
+                      style={{ border: "1px solid var(--color-tint-2)" }}
                     >
                       {i + 1}
                     </span>
                     <span
                       className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[12px] text-primary"
-                      style={{ background: "#EFF4FF" }}
+                      style={{ background: "var(--color-tint)" }}
                     >
                       <MaterialIcon name="directions_bus" size={22} />
                     </span>
@@ -299,10 +327,10 @@ export default async function TransportManagerBusesPage({
                       className="rounded-[999px] px-2.5 py-[5px] text-[12px] font-bold"
                       style={
                         freeSeatsOnBus <= 0
-                          ? { background: "#DBEAFE", color: "#1E3A8A" }
+                          ? { background: "var(--color-tint)", color: "var(--color-navy)" }
                           : freeSeatsOnBus <= 5
-                            ? { background: "#EFF4FF", color: "#2563EB" }
-                            : { background: "#F1F5F9", color: "#334155" }
+                            ? { background: "var(--color-tint)", color: "var(--color-primary)" }
+                            : { background: "var(--color-field)", color: "var(--color-text-secondary)" }
                       }
                     >
                       {freeSeatsOnBus <= 0 ? "Full" : `${freeSeatsOnBus} seats free`}
@@ -312,12 +340,12 @@ export default async function TransportManagerBusesPage({
                       style={{
                         color:
                           r.status === "On route"
-                            ? "#1D4ED8"
+                            ? "var(--color-primary)"
                             : r.status === "At campus"
-                              ? "#3B82F6"
+                              ? "var(--color-primary)"
                               : r.status === "In depot"
-                                ? "#94A3B8"
-                                : "#1E3A8A",
+                                ? "var(--color-text-tertiary)"
+                                : "var(--color-navy)",
                       }}
                     >
                       ● {r.status}
@@ -327,9 +355,9 @@ export default async function TransportManagerBusesPage({
 
                 {firstStop && lastStop && (
                   <p className="mt-3 flex flex-wrap items-center gap-2.5 text-[14px] font-semibold text-text">
-                    {firstStop.stopName} <span style={{ color: "#94A3B8" }}>→</span> School campus
+                    {firstStop.stopName} <span style={{ color: "var(--color-text-tertiary)" }}>→</span> School campus
                     {firstStop.scheduledTime && lastStop.scheduledTime && (
-                      <span className="ml-auto font-mono text-[12px]" style={{ color: "#64748B" }}>
+                      <span className="ml-auto font-mono text-[12px]" style={{ color: "var(--color-text-muted)" }}>
                         {firstStop.scheduledTime} - {lastStop.scheduledTime}
                       </span>
                     )}
@@ -338,32 +366,32 @@ export default async function TransportManagerBusesPage({
 
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Occupancy</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Occupancy</p>
                     <p className="mt-1 text-[16px] font-extrabold text-text">
                       {r.riders}/{r.vehicle.capacity}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Distance</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Distance</p>
                     <p className="mt-1 text-[16px] font-extrabold text-text">{r.route?.distanceKm ?? "—"} km</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Model</p>
-                    <p className="mt-1 truncate text-[13px] font-semibold" style={{ color: "#334155" }}>{r.vehicle.model ?? "—"}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Model</p>
+                    <p className="mt-1 truncate text-[13px] font-semibold" style={{ color: "var(--color-text-secondary)" }}>{r.vehicle.model ?? "—"}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "#94A3B8" }}>Driver</p>
-                    <p className="mt-1 truncate text-[13px] font-semibold" style={{ color: "#334155" }}>{r.driver?.fullName ?? "—"}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.05em]" style={{ color: "var(--color-text-tertiary)" }}>Driver</p>
+                    <p className="mt-1 truncate text-[13px] font-semibold" style={{ color: "var(--color-text-secondary)" }}>{r.driver?.fullName ?? "—"}</p>
                   </div>
                 </div>
 
                 {(() => {
                   const pct = r.vehicle.capacity > 0 ? Math.min(100, Math.round((r.riders / r.vehicle.capacity) * 100)) : 0;
-                  const barColor = pct >= 98 ? "#1E3A8A" : pct >= 85 ? "#1D4ED8" : "#60A5FA";
+                  const barColor = pct >= 98 ? "var(--color-navy)" : pct >= 85 ? "var(--color-primary)" : "var(--color-primary-hover)";
                   const docWorst = r.docsOverdue.length > 0 ? "BAD" : r.docsRenewing.length > 0 ? "WARN" : "OK";
                   return (
                     <>
-                      <div className="mt-3 overflow-hidden rounded-[999px]" style={{ height: 6, background: "#EEF2F7" }}>
+                      <div className="mt-3 overflow-hidden rounded-[999px]" style={{ height: 6, background: "var(--color-divider)" }}>
                         <div className="h-full rounded-[999px]" style={{ width: `${pct}%`, background: barColor }} />
                       </div>
 
@@ -372,17 +400,17 @@ export default async function TransportManagerBusesPage({
                           className="rounded-[6px] px-2 py-1 text-[11px] font-bold"
                           style={
                             docWorst === "BAD"
-                              ? { background: "#DBEAFE", color: "#1E3A8A" }
+                              ? { background: "var(--color-tint)", color: "var(--color-navy)" }
                               : docWorst === "WARN"
-                                ? { background: "#EFF4FF", color: "#2563EB" }
-                                : { background: "#F1F5F9", color: "#64748B" }
+                                ? { background: "var(--color-tint)", color: "var(--color-primary)" }
+                                : { background: "var(--color-field)", color: "var(--color-text-muted)" }
                           }
                         >
                           {docWorst === "BAD" ? "Document expired" : docWorst === "WARN" ? "Document renewal due" : "Documents in order"}
                         </span>
                         <span
                           className="rounded-[6px] px-2 py-1 text-[11px] font-bold"
-                          style={r.serviceDueSoon ? { background: "#EFF4FF", color: "#2563EB" } : { background: "#F1F5F9", color: "#475569" }}
+                          style={r.serviceDueSoon ? { background: "var(--color-tint)", color: "var(--color-primary)" } : { background: "var(--color-field)", color: "var(--color-text-muted)" }}
                         >
                           {r.serviceDueSoon
                             ? "Service due soon"
@@ -390,7 +418,7 @@ export default async function TransportManagerBusesPage({
                               ? `Serviced ${formatDate(r.latestService.performedOn)}`
                               : "No service on record"}
                         </span>
-                        <span className="rounded-[6px] px-2 py-1 text-[11px] font-bold" style={{ background: "#F1F5F9", color: "#475569" }}>
+                        <span className="rounded-[6px] px-2 py-1 text-[11px] font-bold" style={{ background: "var(--color-field)", color: "var(--color-text-muted)" }}>
                           {r.tracking?.freshness === "LIVE" ? "GPS online" : r.tracking?.freshness === "STALE" ? "GPS stale" : "GPS offline"}
                         </span>
                       </div>
@@ -402,7 +430,7 @@ export default async function TransportManagerBusesPage({
                   <Link
                     href={`/transport-manager/buses/${r.vehicle.id}`}
                     className="inline-flex items-center gap-1.5 rounded-[9px] px-3 py-[7px] text-[12.5px] font-bold hover:bg-field"
-                    style={{ border: "1px solid #E2E8F0", color: "#334155" }}
+                    style={{ border: "1px solid var(--color-border)", color: "var(--color-text-secondary)" }}
                   >
                     <MaterialIcon name="edit" size={16} /> Edit
                   </Link>
@@ -416,7 +444,7 @@ export default async function TransportManagerBusesPage({
                     <button
                       type="button"
                       className="inline-flex items-center gap-1.5 rounded-[9px] px-3 py-[7px] text-[12.5px] font-bold"
-                      style={{ border: "1px solid #C7D7F5", color: "#1E3A8A" }}
+                      style={{ border: "1px solid var(--color-tint-2)", color: "var(--color-navy)" }}
                     >
                       <MaterialIcon name="delete" size={16} /> Delete
                     </button>

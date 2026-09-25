@@ -88,7 +88,7 @@ export function MyAttendanceView({
               { label: "Absent", bg: "var(--eos-red-bg)" },
               { label: "On duty / holiday", bg: "var(--eos-panel)" },
             ].map((l) => (
-              <div key={l.label} className="flex items-center gap-2" style={{ font: "400 13.5px/1 var(--eos-font-sans)", color: "#475569" }}>
+              <div key={l.label} className="flex items-center gap-2" style={{ font: "400 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>
                 <span style={{ width: 16, height: 16, borderRadius: 5, border: "1px solid var(--eos-border)", background: l.bg }} />
                 {l.label}
               </div>

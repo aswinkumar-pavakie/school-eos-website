@@ -100,7 +100,7 @@ export default async function TeacherTimetablePage({
                   </div>
                   <span style={{ color: "var(--acc-tertiary)", fontSize: 16 }}>&rsaquo;</span>
                 </div>
-                <div style={{ height: 6, background: "#eef2f8", borderRadius: 99, marginTop: 15, overflow: "hidden" }}>
+                <div style={{ height: 6, background: "var(--acc-border)", borderRadius: 99, marginTop: 15, overflow: "hidden" }}>
                   <div style={{ height: 6, background: "var(--acc-accent)", width: `${t.loadPct}%` }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, fontSize: 12.5, color: "var(--acc-body-muted)" }}>
