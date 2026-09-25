@@ -113,5 +113,6 @@ export const config = {
     "/parent/:path*",
     "/media/:path*",
     "/sports/:path*",
+    "/health-incharge/:path*",
   ],
 };

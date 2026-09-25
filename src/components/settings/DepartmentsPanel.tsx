@@ -17,12 +17,23 @@ export interface Department {
   status: string;
 }
 
+export interface StaffOption {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+}
+
 const initialState: FormActionState = {};
 
-export function DepartmentsPanel({ departments }: { departments: Department[] }) {
+export function DepartmentsPanel({ departments, staff }: { departments: Department[]; staff: StaffOption[] }) {
   const [adding, setAdding] = useState(false);
   const [state, formAction, isPending] = useActionState(createDepartmentAction, initialState);
   const [editingId, setEditingId] = useState<string | null>(null);
+  // hod_staff_id is an opaque FK the Academic module doesn't resolve itself
+  // (it doesn't own the staff table) -- resolving it to a real name here is
+  // the same client-side lookup PrincipalAcademicsTabs already does for the
+  // identical field, so both screens show a person's name, never a raw UUID.
+  const staffNameById = new Map(staff.map((s) => [s.id, `${s.firstName} ${s.lastName ?? ""}`.trim()] as const));
 
   return (
     <div>
@@ -41,7 +52,7 @@ export function DepartmentsPanel({ departments }: { departments: Department[] })
           <div className="grid grid-cols-2 gap-3">
             <Field label="Name" name="name" required disabled={isPending} />
             <Field label="Code" name="code" disabled={isPending} />
-            <Field label="HOD staff ID (optional)" name="hodStaffId" disabled={isPending} placeholder="staff person UUID" />
+            <HodSelect staff={staff} disabled={isPending} />
           </div>
           <div className="flex gap-2">
             <button type="button" onClick={() => setAdding(false)} className="rounded-[11px] border border-border px-3.5 py-2 text-sm font-bold text-text hover:bg-surface">
@@ -57,14 +68,55 @@ export function DepartmentsPanel({ departments }: { departments: Department[] })
       <ul className="mt-4 flex flex-col divide-y divide-border">
         {departments.length === 0 && <li className="py-6 text-center text-sm text-text-muted">No departments yet.</li>}
         {departments.map((d) => (
-          <DepartmentRow key={d.id} department={d} editing={editingId === d.id} onToggle={() => setEditingId((v) => (v === d.id ? null : d.id))} />
+          <DepartmentRow
+            key={d.id}
+            department={d}
+            staff={staff}
+            hodName={d.hodStaffId ? staffNameById.get(d.hodStaffId) : undefined}
+            editing={editingId === d.id}
+            onToggle={() => setEditingId((v) => (v === d.id ? null : d.id))}
+          />
         ))}
       </ul>
     </div>
   );
 }
 
-function DepartmentRow({ department, editing, onToggle }: { department: Department; editing: boolean; onToggle: () => void }) {
+/** Same field shape as `Field`, but a name-based picker instead of a raw-UUID text box. */
+function HodSelect({ staff, disabled, defaultValue }: { staff: StaffOption[]; disabled?: boolean; defaultValue?: string }) {
+  return (
+    <label className="flex flex-col gap-1.5 text-sm">
+      <span className="font-semibold text-text">Head of Department</span>
+      <select
+        name="hodStaffId"
+        disabled={disabled}
+        defaultValue={defaultValue ?? ""}
+        className="rounded-[11px] border border-border bg-surface px-3.5 py-2.5 text-text outline-none focus:border-primary"
+      >
+        <option value="">No HOD assigned</option>
+        {staff.map((s) => (
+          <option key={s.id} value={s.id}>
+            {`${s.firstName} ${s.lastName ?? ""}`.trim()}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function DepartmentRow({
+  department,
+  staff,
+  hodName,
+  editing,
+  onToggle,
+}: {
+  department: Department;
+  staff: StaffOption[];
+  hodName: string | undefined;
+  editing: boolean;
+  onToggle: () => void;
+}) {
   const action = updateDepartmentAction.bind(null, department.id);
   const [state, formAction, isPending] = useActionState(action, initialState);
 
@@ -77,7 +129,7 @@ function DepartmentRow({ department, editing, onToggle }: { department: Departme
             {department.code && <span className="ml-2 font-mono text-xs font-normal text-text-muted">{department.code}</span>}
           </p>
           <p className="text-xs text-text-muted">
-            {department.hodStaffId ? `HOD: ${department.hodStaffId}` : "No HOD assigned"}
+            {department.hodStaffId ? `HOD: ${hodName ?? "Unknown staff member"}` : "No HOD assigned"}
           </p>
         </div>
         <div className="flex items-center gap-2.5">
@@ -93,7 +145,7 @@ function DepartmentRow({ department, editing, onToggle }: { department: Departme
           <div className="grid grid-cols-2 gap-2.5">
             <Field label="Name" name="name" disabled={isPending} defaultValue={department.name} />
             <Field label="Code" name="code" disabled={isPending} defaultValue={department.code ?? ""} />
-            <Field label="HOD staff ID" name="hodStaffId" disabled={isPending} defaultValue={department.hodStaffId ?? ""} />
+            <HodSelect staff={staff} disabled={isPending} defaultValue={department.hodStaffId ?? ""} />
             <label className="flex flex-col gap-1.5 text-sm">
               <span className="font-semibold text-text">Status</span>
               <select

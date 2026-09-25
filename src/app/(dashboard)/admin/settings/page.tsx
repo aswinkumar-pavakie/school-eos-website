@@ -2,7 +2,7 @@ import { SettingsTabs } from "@/components/settings/SettingsTabs";
 import { apiFetch } from "@/lib/api";
 
 export default async function SettingsPage() {
-  const [schoolRes, campusesRes, departmentsRes, rolesRes, policiesRes, terminalsRes, vehiclesRes] = await Promise.all([
+  const [schoolRes, campusesRes, departmentsRes, rolesRes, policiesRes, terminalsRes, vehiclesRes, staffRes] = await Promise.all([
     apiFetch("/school"),
     apiFetch("/campuses"),
     apiFetch("/departments"),
@@ -10,6 +10,12 @@ export default async function SettingsPage() {
     apiFetch("/document-retention-policies"),
     apiFetch("/terminals"),
     apiFetch("/vehicles"),
+    // For resolving a department's hodStaffId to a real name -- same source
+    // PrincipalAcademicsTabs already uses for the identical lookup.
+    // StaffQueryDto caps limit at 200 (@Max(200)) -- 500 gets a 400, which
+    // apiFetch's own .ok check then silently falls back to an empty list for,
+    // so every HOD lookup below would quietly show "Unknown" instead of a name.
+    apiFetch("/staff?limit=200"),
   ]);
 
   if (!schoolRes.ok) {
@@ -28,6 +34,7 @@ export default async function SettingsPage() {
   const { data: policies } = policiesRes.ok ? await policiesRes.json() : { data: [] };
   const { data: terminals } = terminalsRes.ok ? await terminalsRes.json() : { data: [] };
   const { data: vehicles } = vehiclesRes.ok ? await vehiclesRes.json() : { data: [] };
+  const { data: staff } = staffRes.ok ? await staffRes.json() : { data: [] };
 
   return (
     <div className="mx-auto max-w-[1024px]">
@@ -44,6 +51,7 @@ export default async function SettingsPage() {
           policies={policies}
           terminals={terminals}
           vehicles={vehicles}
+          staff={staff}
         />
       </div>
     </div>
