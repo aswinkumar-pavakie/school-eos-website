@@ -412,6 +412,9 @@ export async function unfreezeWalletAction(studentId: string): Promise<void> {
 export interface GuardianCredential {
   label: string;
   username: string;
+  /** Set when the admin gave both phone and email -- the guardian can sign in
+   * with either one, same password (see addLoginIdentifier's own comment). */
+  secondUsername: string | null;
   temporaryPassword: string;
   /** The guardian's own real personId -- lets the success screen link
    * straight to their profile (`/admin/parents/:personId`) instead of
@@ -653,7 +656,7 @@ export async function publishEnrollmentAction(
     existingPersonId?: string;
   }): Promise<string | null> {
     let resolvedPersonId: string;
-    let credential: { username: string; temporaryPassword: string } | null = null;
+    let credential: { username: string; secondUsername: string | null; temporaryPassword: string } | null = null;
 
     if (opts.existingPersonId) {
       resolvedPersonId = opts.existingPersonId;
@@ -695,16 +698,28 @@ export async function publishEnrollmentAction(
       };
       resolvedPersonId = person.person.id;
 
+      // When the admin gave BOTH contacts, the other one becomes a second, real
+      // login_identifier (not just a contact field) -- same person, same
+      // password, so the guardian can sign in with either their phone or their
+      // email. (Previously this only PATCHed the other value onto the person's
+      // contact fields, which meant it silently never worked as a login.)
+      let secondUsername: string | null = null;
       if (identifierType === "MOBILE" && opts.email) {
-        await apiFetch(`/persons/${resolvedPersonId}`, {
-          method: "PATCH",
+        const addRes = await apiFetch(`/persons/${resolvedPersonId}/identifiers`, {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: opts.email }),
+          body: JSON.stringify({ identifierType: "EMAIL", identifierValue: opts.email }),
         });
+        if (addRes.ok) {
+          secondUsername = opts.email;
+        } else {
+          warnings.push(`${opts.relationship === "FATHER" ? "Father" : "Mother"}'s email couldn't be added as a second login: ${await readError(addRes)}`);
+        }
       }
 
       credential = {
         username: identifierType === "MOBILE" ? opts.phone : opts.email,
+        secondUsername,
         temporaryPassword: person.temporaryPassword,
       };
     }

@@ -6,8 +6,9 @@ export interface ParentNavItem {
   label: string;
   href: string;
   /** true = this item's real pending count feeds a badge (Daily Tasks: real
-   * pending homework/assignment count; Fees: real overdue installments) */
-  countKey?: "homework" | "fees";
+   * pending homework/assignment count; Fees: real overdue installments;
+   * Permissions: real requests still waiting for this parent's decision) */
+  countKey?: "homework" | "fees" | "permissions";
 }
 export interface ParentNavGroup {
   title: string;
@@ -42,6 +43,7 @@ export const PARENT_NAV: ParentNavGroup[] = [
       { id: "performance", icon: "performance", label: "Performance", href: "/parent/results" },
       { id: "fees", icon: "fees", label: "Fees", href: "/parent/fees", countKey: "fees" },
       { id: "meetings", icon: "meetings", label: "Meetings", href: "/parent/meetings" },
+      { id: "permissions", icon: "permissions", label: "Permissions", href: "/parent/permissions", countKey: "permissions" },
       { id: "library", icon: "library", label: "Library", href: "/parent/library" },
       { id: "messages", icon: "messages", label: "Messages", href: "/parent/messages" },
       { id: "documents", icon: "documents", label: "Documents", href: "/parent/documents" },

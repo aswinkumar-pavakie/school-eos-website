@@ -58,9 +58,16 @@ export default async function ParentProfilePage({ searchParams }: { searchParams
     ]);
 
     const meRes = await apiFetch("/auth/me").catch(() => null);
-    const me = meRes && meRes.ok ? ((await meRes.json()) as { data: { person: { firstName: string; lastName: string | null; email?: string | null } } }) : null;
+    const me = meRes && meRes.ok
+      ? ((await meRes.json()) as {
+          data: {
+            person: { firstName: string; lastName: string | null; email?: string | null };
+            loginIdentifiers: { identifierType: string; value: string }[];
+          };
+        })
+      : null;
     const parentName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
-    const parentEmail = me?.data.person.email ?? null;
+    const loginIdentifiers = me?.data.loginIdentifiers ?? [];
 
     const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(" ");
 
@@ -93,7 +100,14 @@ export default async function ParentProfilePage({ searchParams }: { searchParams
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <Card title="Account">
               <InfoRow label="Name" value={parentName || "—"} />
-              <InfoRow label="Email" value={parentEmail ?? "—"} />
+              <InfoRow
+                label={loginIdentifiers.length > 1 ? "Logs in with (either works)" : "Logs in with"}
+                value={
+                  loginIdentifiers.length > 0
+                    ? loginIdentifiers.map((li) => `${li.value} (${li.identifierType.toLowerCase()})`).join("  or  ")
+                    : "—"
+                }
+              />
               <InfoRow label="Role" value="Parent" />
             </Card>
             <Card title={`Child · ${fullName}`}>

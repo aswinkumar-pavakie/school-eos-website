@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/shared-ui/AppShell";
@@ -108,15 +109,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         headerExtra={
           <>
             <HeaderBell pendingRequestsCount={pendingRequestsCount} requestsHref="/admin/requests" />
-            <button
-              type="button"
-              disabled
-              title="Messaging is coming in a later phase"
-              aria-disabled
-              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white opacity-90 md:flex"
+            <Link
+              href="/admin/messages"
+              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90 md:flex"
             >
               Messages
-            </button>
+            </Link>
           </>
         }
       >

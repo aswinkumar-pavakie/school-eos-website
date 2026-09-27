@@ -595,9 +595,15 @@ export function EnrollStudentForm({
                 <div className={values.motherName || motherExisting ? "flex flex-col gap-3 border-b border-border pb-4" : "flex flex-col gap-3"}>
                   <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Father / guardian</p>
                   <Field
-                    label="Username"
+                    label={fatherExisting ? "Username" : values.fatherPhone && values.fatherEmail ? "Username (phone or email — both will work)" : "Username"}
                     auto
-                    value={fatherExisting ? fatherExisting.mobile || fatherExisting.email || "—" : values.fatherPhone || values.fatherEmail || "Enter a phone or email above"}
+                    value={
+                      fatherExisting
+                        ? fatherExisting.mobile || fatherExisting.email || "—"
+                        : values.fatherPhone && values.fatherEmail
+                          ? `${values.fatherPhone}  or  ${values.fatherEmail}`
+                          : values.fatherPhone || values.fatherEmail || "Enter a phone or email above"
+                    }
                   />
                   <Field
                     label="Temporary password"
@@ -627,9 +633,15 @@ export function EnrollStudentForm({
                 <div className="flex flex-col gap-3">
                   <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Mother</p>
                   <Field
-                    label="Username"
+                    label={motherExisting ? "Username" : values.motherPhone && values.motherEmail ? "Username (phone or email — both will work)" : "Username"}
                     auto
-                    value={motherExisting ? motherExisting.mobile || motherExisting.email || "—" : values.motherPhone || values.motherEmail || "Enter a phone or email above"}
+                    value={
+                      motherExisting
+                        ? motherExisting.mobile || motherExisting.email || "—"
+                        : values.motherPhone && values.motherEmail
+                          ? `${values.motherPhone}  or  ${values.motherEmail}`
+                          : values.motherPhone || values.motherEmail || "Enter a phone or email above"
+                    }
                   />
                   <Field
                     label="Temporary password"
@@ -726,12 +738,20 @@ function PublishedSuccess({
             </p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Username</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">
+                  {c.secondUsername ? "Username (phone or email)" : "Username"}
+                </p>
                 <p className="font-mono text-sm font-semibold text-text">{c.username}</p>
+                {c.secondUsername && (
+                  <p className="font-mono text-sm font-semibold text-text">{c.secondUsername}</p>
+                )}
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-text-muted">Temp password</p>
                 <p className="font-mono text-sm font-semibold text-text">{c.temporaryPassword}</p>
+                {c.secondUsername && (
+                  <p className="text-xs text-text-muted">Same password for either username above.</p>
+                )}
               </div>
             </div>
           </div>

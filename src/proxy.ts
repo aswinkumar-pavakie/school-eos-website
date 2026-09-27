@@ -68,7 +68,13 @@ async function handle(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const refreshed = await refreshTokens(refreshToken, readDeviceId(request.cookies));
+  let refreshed: Awaited<ReturnType<typeof refreshTokens>>;
+  try {
+    refreshed = await refreshTokens(refreshToken, readDeviceId(request.cookies));
+  } catch {
+    // Backend unreachable/erroring: keep the cookies and let the page decide.
+    return NextResponse.next();
+  }
   if (!refreshed) {
     // Refresh token is gone/invalid -- let the page's own auth check redirect
     // to /login rather than duplicating that logic here.

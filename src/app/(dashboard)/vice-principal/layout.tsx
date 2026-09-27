@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ShellNavItem } from "@/components/dashboard/Shell";
 import { AppShell } from "@/components/shared-ui/AppShell";
@@ -164,15 +165,12 @@ export default async function VicePrincipalLayout({ children }: { children: Reac
         headerExtra={
           <>
             <HeaderBell pendingRequestsCount={0} requestsHref="/vice-principal" />
-            <button
-              type="button"
-              disabled
-              title="Messaging is coming in a later phase"
-              aria-disabled
-              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white opacity-90 md:flex"
+            <Link
+              href="/vice-principal/messages"
+              className="hidden shrink-0 items-center gap-2 rounded-[10px] bg-primary px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90 md:flex"
             >
               Messages
-            </button>
+            </Link>
           </>
         }
       >

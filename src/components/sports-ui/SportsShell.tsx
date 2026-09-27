@@ -9,6 +9,7 @@
 import type { ReactNode } from "react";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import { SPORTS_NAV } from "./nav-items";
+import { FlashProvider } from "./FlashContext";
 import { AppShell, type AppShellNavGroup } from "../shared-ui/AppShell";
 import "../../app/(dashboard)/sports-admin/sports-theme.css";
 
@@ -52,19 +53,21 @@ export function SportsShell({
   }));
 
   return (
-    <div className={`sports-scope ${outfit.variable} ${jetBrainsMono.variable}`}>
-      <AppShell
-        rootHref="/sports-admin"
-        navGroups={navGroups}
-        personName={personName}
-        personRoleLabel="Sports admin"
-        academicYear={academicYearLabel}
-        termLabel="Term I"
-        searchPlaceholder="Search players, squads, fixtures, kit..."
-        profileHref="/sports-admin/profile"
-      >
-        {children}
-      </AppShell>
-    </div>
+    <FlashProvider>
+      <div className={`sports-scope ${outfit.variable} ${jetBrainsMono.variable}`}>
+        <AppShell
+          rootHref="/sports-admin"
+          navGroups={navGroups}
+          personName={personName}
+          personRoleLabel="Sports admin"
+          academicYear={academicYearLabel}
+          termLabel="Term I"
+          searchPlaceholder="Search players, squads, fixtures, kit..."
+          profileHref="/sports-admin/profile"
+        >
+          {children}
+        </AppShell>
+      </div>
+    </FlashProvider>
   );
 }

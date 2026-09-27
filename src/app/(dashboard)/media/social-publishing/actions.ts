@@ -52,6 +52,28 @@ export async function createMediaPostAction(_prev: FormState, formData: FormData
   if (firstComment) formData.set("firstComment", firstComment);
   else formData.delete("firstComment");
 
+  // An untouched file <input> still submits one empty File entry (name "",
+  // size 0) -- never omitted -- which the backend's real upload filter then
+  // rejects as an unsupported format ("blob" isn't a supported photo/video
+  // format"). Strip it here so a caption-only/text post (e.g. a Notice card)
+  // can actually be saved, same "blank input still submits" fix already
+  // applied above for linkUrl/firstComment.
+  const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
+  formData.delete("files");
+  for (const f of files) formData.append("files", f);
+
+  // This action forwards the raw FormData straight through as the multipart
+  // body (createMediaPost needs the real File objects, unlike every other
+  // action here that just reads named fields into a JSON payload) -- so
+  // React's own server-action bookkeeping keys ($ACTION_REF_1, $ACTION_1:0,
+  // $ACTION_1:1, $ACTION_KEY, always present on a <form action={fn}> submit)
+  // ride along too. The backend DTO's forbidNonWhitelisted validation then
+  // rejects the whole request ("property $ACTION_REF_1 should not exist").
+  // Real File entries are never named "$ACTION_*", so this is safe to strip.
+  for (const key of Array.from(formData.keys())) {
+    if (key.startsWith("$ACTION_")) formData.delete(key);
+  }
+
   try {
     await createMediaPost(formData);
   } catch (err) {

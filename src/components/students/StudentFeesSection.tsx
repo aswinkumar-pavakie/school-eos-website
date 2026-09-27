@@ -92,7 +92,14 @@ export function StudentFeesSection({ summary }: { summary: StudentFeeSummary }) 
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] sm:grid-cols-5">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">Total fee</p>
-          <p className="mt-0.5 font-semibold text-text">{formatMoneySummary(summary.assignment.netPaise)}</p>
+          {/* The assignment's own stored netPaise can drift out of sync with what its
+              demands actually add up to (seed data has shown this: paid alone exceeding
+              netPaise). Deriving the total from paid+due -- the same numbers this section
+              already displays and that the backend computed directly from the demand
+              rows -- keeps this figure internally consistent by construction. */}
+          <p className="mt-0.5 font-semibold text-text">
+            {formatMoneySummary((BigInt(summary.totalPaidPaise) + BigInt(summary.totalDuePaise)).toString())}
+          </p>
         </div>
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-text-muted">Paid</p>

@@ -36,6 +36,7 @@ export function ParentShell({
   termLabel,
   homeworkPendingCount,
   feesOverdueCount,
+  permissionsPendingCount,
   children,
 }: {
   personName: string;
@@ -44,6 +45,7 @@ export function ParentShell({
   termLabel: string;
   homeworkPendingCount: number;
   feesOverdueCount: number;
+  permissionsPendingCount: number;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -69,7 +71,14 @@ export function ParentShell({
       label: item.label,
       icon: <NavIcon id={item.icon} style={{ color: "var(--par-tertiary-2)" }} />,
       activeIcon: <NavIcon id={item.icon} style={{ color: "var(--par-primary)" }} />,
-      badge: item.countKey === "homework" ? homeworkPendingCount : item.countKey === "fees" ? feesOverdueCount : undefined,
+      badge:
+        item.countKey === "homework"
+          ? homeworkPendingCount
+          : item.countKey === "fees"
+            ? feesOverdueCount
+            : item.countKey === "permissions"
+              ? permissionsPendingCount
+              : undefined,
     })),
   }));
 

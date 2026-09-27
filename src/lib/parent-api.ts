@@ -505,6 +505,7 @@ export type PermissionState = "PENDING" | "APPROVED" | "REJECTED";
 export interface PermissionParticipant {
   id: string;
   eventId: string;
+  eventName: string;
   studentId: string;
   studentName: string;
   admissionNo: string;
@@ -540,6 +541,25 @@ export async function rejectPermissionRequest(id: string): Promise<void> {
 }
 export async function signPermissionRequest(id: string, signaturePngBase64: string): Promise<void> {
   await post(`/parent/permission-requests/${id}/sign`, { signaturePngBase64 });
+}
+
+export interface PermissionLetter {
+  state: string;
+  decidedAt: string | null;
+  event: { name: string; location: string; purpose: string; startsAt: string; endsAt: string };
+  monitoringTeacher: { name: string; designation: string | null };
+  student: { name: string; admissionNo: string; rollNo: number | null; gradeName: string | null; sectionName: string | null };
+  classTeacherName: string | null;
+  parent: { name: string | null; addressLine1: string | null; addressLine2: string | null; city: string | null; state: string | null; pincode: string | null };
+  school: {
+    name: string; addressLine1: string | null; addressLine2: string | null; city: string | null; district: string | null;
+    state: string | null; pincode: string | null; board: string | null; recognitionNo: string | null; contactPhone: string | null; contactEmail: string | null;
+  } | null;
+  signatureUrl: string | null;
+}
+export async function getPermissionLetter(id: string): Promise<PermissionLetter> {
+  const res = await get<ApiEnvelope<PermissionLetter>>(`/parent/permission-requests/${id}/permission-letter`);
+  return res.data;
 }
 
 // ============================================================

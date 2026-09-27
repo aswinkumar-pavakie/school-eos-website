@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ParentShell } from "@/components/parent-ui/ParentShell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
-import { getFeeSummary, listChildren, listFeeTerms, listHomework } from "@/lib/parent-api";
+import { getFeeSummary, listChildren, listFeeTerms, listHomework, listPermissionRequests } from "@/lib/parent-api";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
@@ -60,6 +60,14 @@ export default async function ParentLayout({ children }: { children: ReactNode }
   );
   const feesOverdueCount = feesOverdueCounts.reduce((sum, n) => sum + n, 0);
 
+  // Real pending event-permission count across every linked child -- the
+  // endpoint itself is already scoped to every ACTIVE guardian_link this
+  // parent holds, so one call covers all kids (same shape as the mobile
+  // app's own list screen filtering by state).
+  const permissionsPendingCount = await listPermissionRequests()
+    .then((rows) => rows.filter((r) => r.state === "PENDING").length)
+    .catch(() => 0);
+
   // Real "Term" pill -- the same fee_demand.instalment_no-derived label the
   // Fees page itself already shows (see parent-fee.repository.ts's own
   // header note: no literal term/semester table exists), taken from the
@@ -80,6 +88,7 @@ export default async function ParentLayout({ children }: { children: ReactNode }
         termLabel={termLabel}
         homeworkPendingCount={homeworkPendingCount}
         feesOverdueCount={feesOverdueCount}
+        permissionsPendingCount={permissionsPendingCount}
       >
         {children}
       </ParentShell>
