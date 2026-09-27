@@ -17,7 +17,7 @@ export default async function StudySessionRosterPage({ params }: { params: Promi
             {new Date(session.sessionDate).toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
           </h2>
           <div style={{ fontSize: 13.5, color: "var(--hw-text-muted)", marginTop: 2 }}>
-            {session.startTime} – {session.endTime}
+            {session.startTime.slice(0, 5)} – {session.endTime.slice(0, 5)}
           </div>
         </div>
         <RosterMarker sessionId={sessionId} roster={roster} locked={session.isLocked} />

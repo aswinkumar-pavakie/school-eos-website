@@ -152,7 +152,7 @@ export function SearchIcon({ size = 17, stroke = "#94A3B8" }: { size?: number; s
 
 export function CampusIcon() {
   return (
-    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#1D4ED8" strokeWidth={1.6}>
+    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#1f6feb" strokeWidth={1.6}>
       <path d="M10 2.5l6.5 3-6.5 3-6.5-3z" />
       <path d="M3.5 9.5l6.5 3 6.5-3M3.5 13l6.5 3 6.5-3" />
     </svg>

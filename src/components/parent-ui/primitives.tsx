@@ -9,7 +9,7 @@ export function Card({ children, style, hover = true, onClick }: { children: Rea
         background: "#fff",
         border: "1px solid var(--par-border)",
         borderRadius: "var(--par-radius-card)",
-        padding: 24,
+        padding: "18px 20px",
         cursor: onClick ? "pointer" : undefined,
         ...style,
       }}
@@ -29,23 +29,23 @@ const TONE: Record<PillTone, { bg: string; fg: string }> = {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE[tone];
   return (
-    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: 20, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>
+    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: 999, padding: "6px 12px", fontSize: 12.5, fontWeight: 600 }}>
       {label}
     </span>
   );
 }
 
-const btnBase: CSSProperties = { border: 0, borderRadius: 9, padding: "11px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer" };
+const btnBase: CSSProperties = { border: 0, borderRadius: 10, padding: "11px 18px", fontSize: 14, fontWeight: 600, lineHeight: 1.2, cursor: "pointer", fontFamily: "inherit" };
 export function PrimaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} style={{ ...btnBase, background: "var(--par-primary)", color: "#fff", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "var(--par-primary)", color: "#fff", ...style }}>
       {children}
     </button>
   );
 }
 export function SecondaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} style={{ ...btnBase, background: "#fff", color: "var(--par-navy)", border: "1px solid var(--par-border)", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "#fff", color: "var(--par-navy)", border: "1px solid var(--par-border)", ...style }}>
       {children}
     </button>
   );

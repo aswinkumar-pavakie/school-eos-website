@@ -48,7 +48,7 @@ export function NewExamForm({ grades }: { grades: CoordinatorGrade[] }) {
       {state.error && <p role="alert" style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "var(--acc-red)" }}>{state.error}</p>}
 
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13.5, fontWeight: 700, color: "#334155" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13.5, fontWeight: 700, color: "var(--acc-body)" }}>
           Classes
           <span style={{ fontSize: 12.5, color: "var(--acc-accent)", fontWeight: 700 }}>{selectedGrades.size} selected</span>
         </div>
@@ -61,7 +61,7 @@ export function NewExamForm({ grades }: { grades: CoordinatorGrade[] }) {
                 type="button"
                 key={g.gradeId}
                 onClick={() => toggleGrade(g.gradeId)}
-                style={{ all: "unset", cursor: "pointer", border: `1px solid ${on ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: on ? "var(--acc-accent)" : "#fff", color: on ? "#fff" : "#334155", borderRadius: 10, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
+                style={{ all: "unset", cursor: "pointer", border: `1px solid ${on ? "var(--acc-accent)" : "var(--acc-btn-border)"}`, background: on ? "var(--acc-accent)" : "#fff", color: on ? "#fff" : "var(--acc-body)", borderRadius: 10, padding: "9px 16px", fontSize: 13.5, fontWeight: 700 }}
               >
                 {g.gradeName}
               </button>
@@ -70,13 +70,13 @@ export function NewExamForm({ grades }: { grades: CoordinatorGrade[] }) {
         </div>
       </div>
 
-      <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "#334155" }}>
+      <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "var(--acc-body)" }}>
         Exam name
         <input name="name" required placeholder="Unit Test 2" style={{ width: "100%", border: "1px solid var(--acc-border)", borderRadius: 10, padding: "13px 14px", fontSize: 14.5, color: "var(--acc-navy)", outline: "none" }} />
       </label>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 14 }}>
-        <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "#334155" }}>
+        <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "var(--acc-body)" }}>
           Type
           <select name="examType" style={{ width: "100%", border: "1px solid var(--acc-border)", borderRadius: 10, padding: "12px 13px", fontSize: 14.5, color: "var(--acc-navy)", background: "#fff" }}>
             {EXAM_TYPES.map(([v, l]) => (
@@ -86,7 +86,7 @@ export function NewExamForm({ grades }: { grades: CoordinatorGrade[] }) {
             ))}
           </select>
         </label>
-        <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "#334155" }}>
+        <label style={{ display: "flex", flexDirection: "column", gap: 7, fontSize: 13.5, fontWeight: 700, color: "var(--acc-body)" }}>
           Term (optional)
           <input name="term" placeholder="Term I" style={{ width: "100%", border: "1px solid var(--acc-border)", borderRadius: 10, padding: "12px 13px", fontSize: 14.5, color: "var(--acc-navy)", outline: "none" }} />
         </label>

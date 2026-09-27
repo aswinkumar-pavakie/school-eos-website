@@ -125,6 +125,18 @@ export async function listStudents(filter: { search?: string; gradeId?: string; 
   return parseOrThrow(res);
 }
 
+export async function listStudentsByIds(ids: string[]): Promise<StudentSummary[]> {
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+  const pages = await Promise.all(
+    chunks.map(async (chunk) => {
+      const res = await apiFetch(`/students?ids=${encodeURIComponent(chunk.join(","))}&limit=200`);
+      return (await parseOrThrow<{ data: StudentSummary[] }>(res)).data;
+    }),
+  );
+  return pages.flat();
+}
+
 export async function getStudent(id: string): Promise<StudentSummary | null> {
   const res = await apiFetch(`/students/${id}`);
   if (!res.ok) return null;

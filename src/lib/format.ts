@@ -62,6 +62,14 @@ export function formatPercentOf(numerator: number, denominator: number): string 
   return `${Math.round((numerator / denominator) * 100)}%`;
 }
 
+/** Same numerator/denominator pair as formatPercentOf, but a raw 0-100 number --
+ * for KpiCard's own `bar` prop (its thin progress-bar fill), not for display text.
+ * 0 rather than "—" on a zero denominator, since a bar has no text slot to show that in. */
+export function percentOf(numerator: number, denominator: number): number {
+  if (denominator === 0) return 0;
+  return Math.round((numerator / denominator) * 100);
+}
+
 // Formatting rules from brain/School EOS Design Architecture.pdf, page 21 — followed
 // literally: symbol+space+two-decimals for a single amount, Indian digit grouping with
 // no decimals for a summary total, never abbreviated.

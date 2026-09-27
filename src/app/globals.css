@@ -1,94 +1,119 @@
 @import "tailwindcss";
 
 /*
- * Design tokens from brain/School EOS Design Architecture.pdf ("Design Architecture ·
- * V0.1 · Foundations"). Values here are pulled verbatim from that spec, not invented —
- * see school-eos-backend's Finance README for the research trail. Token *names* below
- * were already established by this app's login/dashboard screens (--color-primary,
- * --color-bg, etc.); only their *values* are corrected here to match the real spec,
- * plus new tokens the spec defines that nothing in this app used yet.
- * One blue does all the work — Signal Blue is the only primary/active/tile colour,
- * Deep Blue only ever appears under or beside it (header gradient, active tab
- * label). Status colour never fills anything pressable.
+ * Design tokens from brain/SIS Principal/Design Architecture.dc.html — the ONE
+ * canonical design system for every role login on this site (Admin, Correspondent,
+ * Principal, Vice Principal, Finance, Transport Manager, Sports, Sports Admin,
+ * Faculty/Class Advisor, Academic Coordinator, Hostel Warden, Library, Media,
+ * Canteen, Parent). Values here are pulled verbatim from that spec, not invented.
+ * Token *names* below were already established by this app's earlier screens
+ * (--color-primary, --color-bg, etc.); only their *values* are corrected here to
+ * match the real spec, plus new tokens the spec defines that nothing in this app
+ * used yet. White canvas, bordered cards — page background is white, structure
+ * comes from 1px borders, never grey fills or heavy shadows. One blue (#1f6feb)
+ * for every primary action/active state/link, one navy (#0f2342) for brand/active
+ * tab/strong emphasis. Status colour never fills anything pressable.
  */
 @theme {
   /* Signal Blue — the one primary action color, every circular tile, active tab.
      Kept as --color-primary too so the existing login screen (built before this
      token pass) keeps working unchanged. */
-  --color-primary: #2b6fe0;
-  /* Deep Blue — header gradient far end / active tab label only, never a standalone fill. */
-  --color-primary-deep: #1b3f9e;
+  --color-primary: #1f6feb;
+  --color-primary-hover: #1a5cc8;
+  /* Blue-deep — text on blue tint, active nav label (spec "Blue deep"). */
+  --color-primary-deep: #1f4fa8;
+  /* Navy — header gradient far end / active tab label / logo tile / brand fills. */
+  --color-navy: #0f2342;
+  /* Kept as an alias: some pre-existing markup reads --color-primary-deep for the
+     navy/brand fill role rather than the blue-deep text role above. Both point at
+     real spec values; --color-navy is the one new call sites should prefer. */
 
   /* Neutrals */
-  --color-bg: #f4f6f9;      /* App ground — scrolling body */
+  --color-bg: #ffffff;      /* App ground — spec: page canvas is always white */
   --color-surface: #ffffff; /* Card, sheet, row */
-  --color-field: #f7f9fc;   /* Input, counter tile */
-  --color-border: #eaecf0;  /* Hairline — card border, divider */
-  --color-text: #101828;    /* Ink — titles, values */
-  --color-text-muted: #98a2b3; /* Muted — eyebrows, timestamps */
+  --color-field: #f6f8fb;   /* Input, counter tile — spec "Search fill" */
+  --color-border: #e4e9f2;  /* Hairline — card border, divider */
+  --color-input-border: #dfe5ef; /* Inputs, selects, textareas */
+  --color-divider: #eef1f6;      /* Row lines, inner dividers, bar track */
+  --color-hover-fill: #f4f7fc;   /* Ghost button / nav hover */
+  --color-tint: #eef4ff;         /* Active nav bg, blue pill bg, avatar bg */
+  --color-tint-2: #dbe7ff;       /* Active nav badge, pill border */
+  --color-row-hover: #f6faff;    /* Table/list row hover tint */
+  --color-table-head: #f8fafc;   /* thead background */
+  --color-text: #10243f;    /* Ink — titles, values */
+  --color-text-secondary: #44536b; /* Body — secondary text, table plain cells */
+  --color-text-muted: #5c6b82;  /* Muted — subtitle, descriptions, timestamps */
+  --color-text-label: #6b7a91;  /* Uppercase micro-labels, column heads */
+  --color-text-tertiary: #8593a8; /* Meta, notes, faint */
 
   /* Status — text/fill pairs, never used as a fill on anything pressable. Exactly 3
      status colors, reused verbatim everywhere (Attendance, Fees, Gate Pass,
      Transport alike) — never a 4th. */
-  --color-success-bg: #ecfdf3;
-  --color-success-text: #027a48;
-  --color-pending-bg: #fffaeb;
-  --color-pending-text: #b54708;
-  --color-critical-bg: #fef3f2;
-  --color-critical-text: #b42318;
+  --color-success-bg: #e8f6ee;
+  --color-success-text: #1f7a4d;
+  --color-pending-bg: #fdf3e0;
+  --color-pending-text: #8a5a00;
+  --color-critical-bg: #fdecec;
+  --color-critical-text: #b3261e;
   /* Kept for the existing login screen's error state — an alias, same values as critical. */
-  --color-error-bg: #fef3f2;
-  --color-error-text: #b42318;
+  --color-error-bg: #fdecec;
+  --color-error-text: #b3261e;
 
-  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
-  /* Data font — used only where figures are compared down a column (money, marks, counts). */
-  --font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  /* Data font — used only where figures are compared down a column (money, marks, counts, IDs). */
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
 
   /* Radius maps to component size, not taste — named tokens from the spec, used as
      arbitrary values (rounded-[var(--radius-card)]) since they don't fit Tailwind's
      default scale. */
-  --radius-pill: 7px;    /* status pill, small button */
-  --radius-input: 11px;  /* input, secondary button */
-  --radius-card: 14px;   /* record card, list row */
+  --radius-pill: 999px;  /* status pill, avatar, bar — fully rounded per spec */
+  --radius-input: 10px;  /* input, button, tab, secondary button */
+  --radius-card: 14px;   /* stat card, inner card, record card, list row */
   --radius-section: 16px; /* section container */
-  --radius-sheet: 22px;  /* bottom sheet / modal top corners */
-  --shadow-raised: 0 4px 12px rgba(43, 111, 224, 0.25);
+  --radius-sheet: 18px;  /* modal / bottom sheet */
+  --shadow-raised: 0 12px 26px rgba(31, 111, 235, 0.14); /* card hover lift */
+  --shadow-dropdown: 0 22px 48px rgba(12, 24, 44, 0.16);
+  --shadow-modal: 0 24px 70px rgba(12, 24, 44, 0.28);
 }
 
 :root {
   color-scheme: light;
 
   /* ---- Shared feature-screen design tokens (--eos-*) ---------------------
-   * Literal copies of faculty-theme.css's own --fac-* values -- Faculty's
-   * screens are the canonical/"core" pixel design (Design Architecture per
-   * the real .dc.html mockups). These live here, global, specifically so
-   * src/components/shared-ui/* (Academic Calendar, Timetable, My Attendance,
-   * Leave, OD, Library, Messages) render pixel-identically inside ANY role's
-   * dashboard, not only inside Faculty's own faculty-theme.css scope. Never
-   * edit these without checking faculty-theme.css's own --fac-* first --
-   * they must stay numerically identical, that's what "one global design"
-   * means here. */
+   * Literal copies of faculty-theme.css's own --fac-* values, which are in
+   * turn pulled verbatim from brain/SIS Principal/Design Architecture.dc.html
+   * — the one canonical design system for every role. These live here,
+   * global, specifically so src/components/shared-ui/* (Academic Calendar,
+   * Timetable, My Attendance, Leave, OD, Library, Messages) render
+   * pixel-identically inside ANY role's dashboard, not only inside Faculty's
+   * own faculty-theme.css scope. Never edit these without checking
+   * faculty-theme.css's own --fac-* first — they must stay numerically
+   * identical, that's what "one global design" means here. */
   --eos-font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --eos-primary: #1d4ed8;
-  --eos-navy: #12275c;
-  --eos-ink: #0f172a;
-  --eos-body: #334155;
-  --eos-body-muted: #64748b;
-  --eos-tertiary: #94a3b8;
+  --eos-primary: #1f6feb;
+  --eos-primary-hover: #1a5cc8;
+  --eos-navy: #0f2342;
+  --eos-ink: #10243f;
+  --eos-body: #44536b;
+  --eos-body-muted: #5c6b82;
+  --eos-tertiary: #8593a8;
   --eos-white: #ffffff;
-  --eos-tint: #eff6ff;
+  --eos-tint: #eef4ff;
+  --eos-tint-2: #dbe7ff;
   --eos-panel: #f8fafc;
-  --eos-divider: #f1f5f9;
-  --eos-border: #e2e8f0;
-  --eos-red: #dc2626;
-  --eos-red-bg: #fee2e2;
-  --eos-red-text: #b91c1c;
-  --eos-green-text: #15803d;
-  --eos-green-bg: #f0fdf4;
-  --eos-amber: #fbbf24;
-  --eos-radius-card: 12px;
+  --eos-divider: #eef1f6;
+  --eos-border: #e4e9f2;
+  --eos-red: #b3261e;
+  --eos-red-bg: #fdecec;
+  --eos-red-text: #b3261e;
+  --eos-green-text: #1f7a4d;
+  --eos-green-bg: #e8f6ee;
+  --eos-amber: #8a5a00;
+  --eos-amber-bg: #fdf3e0;
+  --eos-amber-border: #f2dca0;
+  --eos-radius-card: 14px;
   --eos-radius-input: 10px;
-  --eos-radius-pill: 20px;
+  --eos-radius-pill: 999px;
 }
 
 * {
@@ -242,3 +267,67 @@ input:-webkit-autofill:focus {
    maps directly to prefers-reduced-motion: reduce, and it's off by
    default on plenty of machines/battery-saver profiles, silently killing
    every animation on this page that respects it, including this one. */
+
+/* ==========================================================================
+   ONE UI SPEC for every role login (source of truth: Faculty / Design
+   Architecture). Role primitives keep their own component names and props;
+   the values below are what makes a card, a button, a table and a page
+   title look and behave identically no matter which role renders them.
+   UI only -- nothing here touches routes, data or permissions.
+   ========================================================================== */
+
+/* Card hover: the Faculty lift (3px up + 1.5px primary ring + primary border),
+   applied to every role's own card-hover class. */
+.fac-hover-lift, .can-hover-lift, .acc-card-hover, .hw-lift, .lib-card-hover,
+.parent-card-hover, .media-card-hover, .sport-card-hover {
+  transition: transform 0.14s ease, outline-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
+  outline: 1.5px solid transparent;
+  outline-offset: -2px;
+}
+.fac-hover-lift:hover, .can-hover-lift:hover, .acc-card-hover:hover, .hw-lift:hover, .lib-card-hover:hover,
+.parent-card-hover:hover, .media-card-hover:hover, .sport-card-hover:hover,
+.acc-card-hover:focus-visible {
+  transform: translateY(-3px) !important;
+  outline-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: none !important;
+}
+.fac-hover-lift:active, .can-hover-lift:active, .acc-card-hover:active, .hw-lift:active, .lib-card-hover:active,
+.parent-card-hover:active, .media-card-hover:active, .sport-card-hover:active {
+  transform: translateY(-1px) !important;
+}
+
+/* Buttons: every role's primary/secondary button shares one press/hover feel. */
+.ui-btn {
+  transition: filter 0.14s ease, transform 0.14s ease, background-color 0.14s ease, border-color 0.14s ease;
+}
+.ui-btn:hover:not(:disabled) { filter: brightness(0.93); }
+.ui-btn:active:not(:disabled) { transform: translateY(1px); }
+.ui-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.ui-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Page title: same size/weight/tracking/colour on every screen of every role. */
+main h1 {
+  font-family: var(--font-sans) !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--color-navy, #0f2342) !important;
+}
+@media (max-width: 640px) { main h1 { font-size: 28px !important; } }
+
+/* Tables: one head, one row, one hover for every role's table. */
+main table { border-collapse: collapse; }
+main table thead th {
+  background: #f8fafc !important;
+  color: #6b7a91 !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+main table tbody td { border-bottom: 1px solid #eef1f6; }
+main table tbody tr:last-child td { border-bottom: 0; }
+main table tbody tr:hover td { background: #f6faff; }

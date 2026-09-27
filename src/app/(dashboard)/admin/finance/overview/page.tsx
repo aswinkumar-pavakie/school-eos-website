@@ -11,7 +11,7 @@ import { KpiCard } from "@/components/dashboard/KpiCard";
 import { FinanceIcon } from "@/components/dashboard/icons";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
-import { formatDate, formatMoneySummary } from "@/lib/format";
+import { formatDate, formatMoneySummary, percentOf } from "@/lib/format";
 
 interface FeeDemandRow {
   id: string;
@@ -173,7 +173,7 @@ export default async function FinanceOverviewPage({
       {overview && (
         <div className="mt-6 grid grid-cols-1 gap-[14px] sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard eyebrow="Total fees" value={formatMoneySummary(overview.totalFeesPaise)} detail="All non-cancelled demands" icon={<FinanceIcon className="h-5 w-5" />} />
-          <KpiCard eyebrow="Collected" value={formatMoneySummary(overview.totalCollectedPaise)} detail="Paid so far" icon={<FinanceIcon className="h-5 w-5" />} />
+          <KpiCard eyebrow="Collected" value={formatMoneySummary(overview.totalCollectedPaise)} detail="Paid so far" bar={percentOf(Number(overview.totalCollectedPaise), Number(overview.totalFeesPaise))} icon={<FinanceIcon className="h-5 w-5" />} />
           <KpiCard eyebrow="Pending" value={formatMoneySummary(overview.totalPendingPaise)} detail="Not yet due-passed" icon={<FinanceIcon className="h-5 w-5" />} />
           <KpiCard eyebrow="Outstanding" value={formatMoneySummary(overview.totalOutstandingPaise)} detail="Pending + partial + overdue" icon={<FinanceIcon className="h-5 w-5" />} />
           <KpiCard eyebrow="Overdue" value={formatMoneySummary(overview.totalOverduePaise)} detail="Past due, unpaid" icon={<FinanceIcon className="h-5 w-5" />} />

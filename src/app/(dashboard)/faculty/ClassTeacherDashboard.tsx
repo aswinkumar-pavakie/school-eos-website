@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
+import { percentOf } from "@/lib/format";
 import {
   getAttendanceRoster,
   getClassTeacherDashboard,
@@ -99,7 +100,6 @@ export async function ClassTeacherDashboard() {
                 label="Students"
                 value={String(classDashboard?.stats.strength ?? rosterTotal)}
                 sub={sectionLabel ?? ""}
-                pct="100%"
                 note={classDashboard ? `${classDashboard.stats.onLeaveToday} on leave today` : undefined}
               />
             </Link>
@@ -126,7 +126,7 @@ export async function ClassTeacherDashboard() {
                 label="On leave today"
                 value={String(classDashboard?.stats.onLeaveToday ?? 0)}
                 sub={sectionLabel ?? ""}
-                pct="0%"
+                pct={`${percentOf(classDashboard?.stats.onLeaveToday ?? 0, classDashboard?.stats.strength ?? rosterTotal)}%`}
                 note="Open the class board"
               />
             </Link>

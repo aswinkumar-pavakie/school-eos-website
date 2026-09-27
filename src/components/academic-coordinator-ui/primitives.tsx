@@ -23,8 +23,8 @@ export function KpiCard({
   href?: string;
 }) {
   const body = (
-    <div className="acc-card-hover" style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px", cursor: href ? "pointer" : undefined, height: "100%", minWidth: 0, overflow: "hidden" }}>
-      <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>{label}</div>
+    <div className="acc-card-hover" style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "18px 20px", cursor: href ? "pointer" : undefined, height: "100%", minWidth: 0, overflow: "hidden" }}>
+      <div style={{ fontSize: 11, color: "#6b7a91", fontWeight: 600, letterSpacing: "0.11em", textTransform: "uppercase" }}>{label}</div>
       <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", letterSpacing: "-0.02em", margin: "9px 0 6px", overflowWrap: "anywhere" }}>{value}</div>
       {(hi || sub) && (
         <div style={{ fontSize: 13, color: "var(--acc-body-muted)" }}>
@@ -32,7 +32,7 @@ export function KpiCard({
         </div>
       )}
       {barPct !== undefined && (
-        <div style={{ height: 6, background: "#eef2f8", borderRadius: 99, marginTop: 13, overflow: "hidden" }}>
+        <div style={{ height: 6, background: "#eef1f6", borderRadius: 999, marginTop: 13, overflow: "hidden" }}>
           <div style={{ height: 6, background: "var(--acc-accent)", borderRadius: 99, width: `${Math.max(0, Math.min(100, barPct))}%` }} />
         </div>
       )}
@@ -49,7 +49,7 @@ export function KpiCard({
 
 export function Card({ children, style, hover = true }: { children: ReactNode; style?: CSSProperties; hover?: boolean }) {
   return (
-    <div className={hover ? "acc-card-hover" : undefined} style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "20px 22px", ...style }}>
+    <div className={hover ? "acc-card-hover" : undefined} style={{ background: "var(--acc-surface)", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "18px 20px", ...style }}>
       {children}
     </div>
   );
@@ -76,12 +76,12 @@ const TONE_STYLES: Record<PillTone, { bg: string; fg: string }> = {
   green: { bg: "var(--acc-green-bg)", fg: "var(--acc-green)" },
   red: { bg: "var(--acc-red-bg)", fg: "var(--acc-red)" },
   amber: { bg: "var(--acc-amber-bg)", fg: "var(--acc-amber)" },
-  gray: { bg: "#eef2f8", fg: "#475569" },
+  gray: { bg: "#eef1f6", fg: "#5c6b82" },
 };
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE_STYLES[tone];
   return (
-    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: 7, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>{label}</span>
+    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: 999, padding: "6px 12px", fontSize: 12.5, fontWeight: 600 }}>{label}</span>
   );
 }
 
@@ -97,8 +97,8 @@ export function Chip({ label, active, onClick }: { label: string; active: boolea
         cursor: "pointer",
         border: `1px solid ${active ? "var(--acc-accent)" : "var(--acc-btn-border)"}`,
         background: active ? "var(--acc-accent)" : "#fff",
-        color: active ? "#fff" : "#334155",
-        borderRadius: 9,
+        color: active ? "#fff" : "#3c4a61",
+        borderRadius: 10,
         padding: "9px 16px",
         fontSize: 13.5,
         fontWeight: 700,
@@ -109,18 +109,11 @@ export function Chip({ label, active, onClick }: { label: string; active: boolea
   );
 }
 
-const btnBase: CSSProperties = {
-  border: 0,
-  borderRadius: 10,
-  padding: "11px 17px",
-  fontSize: 14,
-  fontWeight: 700,
-  cursor: "pointer",
-};
+const btnBase: CSSProperties = { border: 0, borderRadius: 10, padding: "11px 18px", fontSize: 14, fontWeight: 600, lineHeight: 1.2, cursor: "pointer", fontFamily: "inherit" };
 
 export function PrimaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} style={{ ...btnBase, background: "var(--acc-accent)", color: "#fff", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "var(--acc-accent)", color: "#fff", ...style }}>
       {children}
     </button>
   );
@@ -128,7 +121,7 @@ export function PrimaryButton({ children, style, ...rest }: ButtonHTMLAttributes
 
 export function SecondaryButton({ children, style, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} style={{ ...btnBase, background: "#fff", color: "var(--acc-navy)", border: "1px solid var(--acc-btn-border)", ...style }}>
+    <button {...rest} className="ui-btn" style={{ ...btnBase, background: "#fff", color: "var(--acc-navy)", border: "1px solid var(--acc-btn-border)", ...style }}>
       {children}
     </button>
   );

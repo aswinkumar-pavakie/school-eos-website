@@ -13,50 +13,51 @@
 
 .library-scope {
   /* Text */
-  --lib-primary: #1d4ed8;
-  --lib-navy: #1e3a8a;
-  --lib-ink: #0f172a;
-  --lib-body: #334155;
-  --lib-body-muted: #64748b;
-  --lib-tertiary: #94a3b8;
+  --lib-primary: #1f6feb;
+  --lib-primary-hover: #1a5cc8;
+  --lib-navy: #0f2342;
+  --lib-ink: #10243f;
+  --lib-body: #44536b;
+  --lib-body-muted: #5c6b82;
+  --lib-tertiary: #8593a8;
 
   /* Surfaces */
   --lib-white: #ffffff;
-  --lib-tint: #eef2ff;
+  --lib-tint: #eef4ff;
   --lib-panel: #f8fafc;
-  --lib-divider: #f1f5f9;
+  --lib-divider: #eef1f6;
 
   /* Borders / outlines */
-  --lib-border: #e2e8f0;
-  --lib-field-border: #c7d2e4;
-  --lib-outline-hover: #1d4ed8;
+  --lib-border: #e4e9f2;
+  --lib-field-border: #dfe5ef;
+  --lib-outline-hover: #1f6feb;
 
   /* Status -- blue = positive/neutral (returned/clear/published/accepted),
      amber = pending/overdue, red = negative (lost/damaged/rejected). Matches
      the design's own pillBg/pillFg switch verbatim. */
-  --lib-red: #dc2626;
-  --lib-red-bg: #fef2f2;
-  --lib-red-border: #fecaca;
-  --lib-amber-text: #b45309;
-  --lib-amber-bg: #fff7ed;
-  --lib-green-text: #166534;
-  --lib-green-bg: #dcfce7;
+  --lib-red: #b3261e;
+  --lib-red-bg: #fdecec;
+  --lib-red-border: #f6c3bd;
+  --lib-amber-text: #8a5a00;
+  --lib-amber-bg: #fdf3e0;
+  --lib-green-text: #1f7a4d;
+  --lib-green-bg: #e8f6ee;
 
   /* Radii */
   --lib-radius-card: 14px;
   --lib-radius-table: 12px;
   --lib-radius-input: 10px;
-  --lib-radius-btn: 11px;
-  --lib-radius-btn-sm: 9px;
+  --lib-radius-btn: 10px;
+  --lib-radius-btn-sm: 10px;
   --lib-radius-pill: 999px;
-  --lib-radius-modal: 16px;
+  --lib-radius-modal: 18px;
 
   /* Shadows -- resting cards/tables are flat; elevation is hover-lift only. */
-  --lib-shadow-card-hover: 0 12px 26px rgba(29, 78, 216, 0.14);
-  --lib-shadow-row-hover: 0 8px 20px rgba(29, 78, 216, 0.14);
-  --lib-shadow-modal: 0 24px 60px rgba(15, 23, 42, 0.22);
-  --lib-shadow-toast: 0 12px 34px rgba(15, 23, 42, 0.3);
-  --lib-scrim: rgba(15, 23, 42, 0.35);
+  --lib-shadow-card-hover: 0 12px 26px rgba(31, 111, 235, 0.14);
+  --lib-shadow-row-hover: 0 8px 20px rgba(31, 111, 235, 0.14);
+  --lib-shadow-modal: 0 24px 70px rgba(12, 24, 44, 0.28);
+  --lib-shadow-toast: 0 22px 48px rgba(12, 24, 44, 0.16);
+  --lib-scrim: rgba(12, 24, 44, 0.5);
 
   /* Fonts -- Outfit + JetBrains Mono are loaded only by this route group (see
      LibraryShell.tsx). */

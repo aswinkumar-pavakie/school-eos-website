@@ -114,7 +114,7 @@ export function InlineDecisionCard({
             disabled={isPending}
             onClick={submitDecision}
             className={`min-h-[38px] rounded-[10px] px-4 text-[13px] font-semibold text-white transition-colors disabled:opacity-60 ${
-              mode === "reject" ? "bg-critical-text hover:opacity-90" : "bg-primary hover:bg-primary-deep"
+              mode === "reject" ? "bg-critical-text hover:opacity-90" : "bg-primary hover:bg-primary-hover"
             }`}
           >
             {isPending ? "Sending…" : label}
@@ -147,7 +147,7 @@ export function InlineDecisionCard({
           type="button"
           disabled={isPending}
           onClick={submitApprove}
-          className="min-h-[46px] whitespace-nowrap rounded-[10px] bg-primary px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-deep disabled:opacity-60"
+          className="min-h-[46px] whitespace-nowrap rounded-[10px] bg-primary px-6 text-[15px] font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {isPending ? "Approving…" : "Approve"}
         </button>

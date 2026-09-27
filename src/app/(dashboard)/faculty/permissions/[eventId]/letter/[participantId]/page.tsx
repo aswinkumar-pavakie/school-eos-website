@@ -73,8 +73,8 @@ export default async function PermissionLetterPage({
                 letterSpacing: ".06em",
                 borderRadius: 20,
                 padding: "7px 16px",
-                background: approved ? "#dbeafe" : "#fee2e2",
-                color: approved ? "#1d4ed8" : "#b91c1c",
+                background: approved ? "var(--fac-tint)" : "var(--fac-red-bg)",
+                color: approved ? "var(--fac-primary)" : "var(--fac-red)",
               }}
             >
               {approved ? "APPROVED & DIGITALLY SIGNED" : "DECLINED"}
@@ -82,7 +82,7 @@ export default async function PermissionLetterPage({
             </div>
           </div>
 
-          <p style={{ font: "400 14.5px/1.7 var(--fac-font-sans)", color: "#334155" }}>
+          <p style={{ font: "400 14.5px/1.7 var(--fac-font-sans)", color: "var(--fac-body)" }}>
             This is to certify that <strong>{letter.student.name}</strong> (Admission No. {letter.student.admissionNo}
             {letter.student.rollNo ? `, Roll No. ${letter.student.rollNo}` : ""}
             {letter.student.gradeName && letter.student.sectionName ? `, Class ${letter.student.gradeName}-${letter.student.sectionName}` : ""}) has parental
@@ -90,7 +90,7 @@ export default async function PermissionLetterPage({
             {new Date(letter.event.startsAt).toLocaleString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit" })} to{" "}
             {new Date(letter.event.endsAt).toLocaleString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit" })}.
           </p>
-          <p style={{ font: "400 14.5px/1.7 var(--fac-font-sans)", color: "#334155" }}>Purpose: {letter.event.purpose}</p>
+          <p style={{ font: "400 14.5px/1.7 var(--fac-font-sans)", color: "var(--fac-body)" }}>Purpose: {letter.event.purpose}</p>
 
           <div className="grid grid-cols-2 gap-4" style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--fac-divider)" }}>
             <div>

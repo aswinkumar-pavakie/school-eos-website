@@ -51,6 +51,7 @@ export function buildFacultyNavGroups(params: {
       label: "CLASS",
       items: [
         { href: "/faculty/attendance", label: "Student attendance", icon: "attendance" },
+        { href: "/faculty/attendance-diary", label: "Attendance diary", icon: "attendance" },
         { href: "/faculty/online-class", label: "Online class", icon: "sub-online" },
         { href: "/faculty/announcements", label: "Notices", icon: "notice" },
         { href: "/faculty/timetable", label: "Timetable", icon: "timetable" },
@@ -120,6 +121,7 @@ export function buildClassTeacherNavGroups(params: {
       items: [
         { href: "/faculty/students", label: "Student data", icon: "students" },
         { href: "/faculty/attendance", label: "Attendance", icon: "attendance" },
+        { href: "/faculty/attendance-diary", label: "Attendance diary", icon: "attendance" },
         { href: "/faculty/timetable", label: "Time table", icon: "timetable" },
         { href: "/faculty/calendar", label: "Calendar", icon: "calendar" },
         { href: "/faculty/class-exams", label: "Exams", icon: "exam" },

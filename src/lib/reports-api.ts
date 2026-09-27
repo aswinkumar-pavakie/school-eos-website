@@ -4,18 +4,14 @@
 // figure comes from a real query, nothing here is placeholder.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 interface ApiEnvelope<T> {
   data: T;
 }
 
 async function parseOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as T;
+  return parseApiResponse<T>(res);
 }
 
 export interface ReportsSummary {
@@ -51,7 +47,10 @@ export interface ReportsSummary {
     byStatus: { status: string; count: number }[];
     outstandingFinesPaise: string | number;
   };
-  requestsApprovals: {
+  // Optional -- reports.controller.ts redacts this field entirely for actors
+  // who aren't ADMIN/PRINCIPAL/CORRESPONDENT (e.g. VICE_PRINCIPAL, which has
+  // no Requests & Approvals authorization yet), rather than sending it empty.
+  requestsApprovals?: {
     byState: { state: string; count: number }[];
     byType: { requestType: string; count: number }[];
   };

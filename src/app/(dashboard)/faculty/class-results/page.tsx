@@ -146,7 +146,7 @@ async function ResultsSection({
             <div style={{ font: "700 34px/1.1 var(--fac-font-sans)", marginTop: 8 }}>{results.classAvg}%</div>
           </div>
           <div style={{ width: 1, height: 44, background: "var(--fac-border)" }} />
-          <div style={{ font: "400 14px/1.7 var(--fac-font-sans)", color: "#475569" }}>
+          <div style={{ font: "400 14px/1.7 var(--fac-font-sans)", color: "var(--fac-body-muted)" }}>
             Topper · <strong>{results.toppers[0]?.studentName ?? "--"}</strong>
             <br />
             {results.pass.count} of {results.pass.total} passed
@@ -252,7 +252,7 @@ async function ResultsSection({
           <div style={{ marginTop: 16 }}>
             {detail.subjects.map((s, i) => (
               <div key={i} className="fac-hover-lift flex items-center gap-3" style={{ padding: "12px 0", borderBottom: "1px solid var(--fac-divider)" }}>
-                <span style={{ width: 36, height: 36, borderRadius: 9, background: "var(--fac-divider)", color: "#475569", display: "flex", alignItems: "center", justifyContent: "center", font: "600 12px/1 var(--fac-font-sans)" }}>
+                <span style={{ width: 36, height: 36, borderRadius: 9, background: "var(--fac-divider)", color: "var(--fac-body-muted)", display: "flex", alignItems: "center", justifyContent: "center", font: "600 12px/1 var(--fac-font-sans)" }}>
                   {s.subjectName.slice(0, 2).toUpperCase()}
                 </span>
                 <span style={{ flex: 1, font: "600 14.5px/1.3 var(--fac-font-sans)" }}>{s.subjectName}</span>

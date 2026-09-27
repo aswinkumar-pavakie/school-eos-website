@@ -64,6 +64,10 @@ export function StopsAndStudentsCard({
 }) {
   const [adding, setAdding] = useState(false);
   const active = students.filter((s) => s.status === "ACTIVE");
+  // Each real rider has TWO allocation rows here (PICKUP + DROP, a different
+  // stop per direction) -- correct to keep per-row for the per-stop grouping
+  // below, but the header count needs distinct students, not rows.
+  const riderCount = new Set(active.map((s) => s.studentId)).size;
   const sortedStops = [...stops].sort((a, b) => a.sequenceNo - b.sequenceNo);
   const byStop = new Map<string, AssignedStudent[]>();
   for (const s of active) {
@@ -76,7 +80,7 @@ export function StopsAndStudentsCard({
         <div>
           <h2 className="text-[17px] font-bold leading-[22px] text-text">Stops &amp; students</h2>
           <p className="mt-1 text-[13px] text-text-muted">
-            {active.length} students across {sortedStops.length} stops
+            {riderCount} students across {sortedStops.length} stops
           </p>
         </div>
         {!adding && academicYearId && (

@@ -34,14 +34,21 @@ interface RouteOption {
 }
 interface RouteAssignedStudentRow {
   id: string;
+  studentId: string;
   status: string;
 }
 
-// Real data in this environment runs Nov 30 - Dec 19, 2025 -- defaulting the
-// range to it means the report shows real content on first load rather than
-// an honest-but-empty "today" range; the date inputs are fully editable.
-const DEFAULT_FROM = "2025-11-30";
-const DEFAULT_TO = "2025-12-19";
+// Default to the last 30 days (date inputs stay editable). This was a
+// hardcoded Nov 30 - Dec 19, 2025 window, which showed 0 trips even though 720
+// real trips run up to the current date.
+function isoDay(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function defaultRange(): { from: string; to: string } {
+  const to = new Date();
+  const from = new Date(to.getTime() - 29 * 86_400_000);
+  return { from: isoDay(from), to: isoDay(to) };
+}
 
 export default async function TransportManagerReportsPage({
   searchParams,
@@ -49,8 +56,9 @@ export default async function TransportManagerReportsPage({
   searchParams: Promise<{ dateFrom?: string; dateTo?: string }>;
 }) {
   const params = await searchParams;
-  const dateFrom = params.dateFrom || DEFAULT_FROM;
-  const dateTo = params.dateTo || DEFAULT_TO;
+  const range = defaultRange();
+  const dateFrom = params.dateFrom || range.from;
+  const dateTo = params.dateTo || range.to;
 
   const [tripsRes, eventsRes, alertsRes, routesRes] = await Promise.all([
     apiFetch(`/transport-ops/trips?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=500`),
@@ -88,7 +96,10 @@ export default async function TransportManagerReportsPage({
     routes.map(async (route) => {
       const res = await apiFetch(`/routes/${route.id}/assigned-students`);
       const rows: RouteAssignedStudentRow[] = res.ok ? (await res.json()).data : [];
-      return { route: route.name, active: rows.filter((r) => r.status === "ACTIVE").length };
+      // Each real rider has TWO allocation rows here (PICKUP + DROP), so a
+      // plain .length doubles the count -- count distinct students instead.
+      const active = new Set(rows.filter((r) => r.status === "ACTIVE").map((r) => r.studentId)).size;
+      return { route: route.name, active };
     }),
   );
 
@@ -98,6 +109,13 @@ export default async function TransportManagerReportsPage({
       <p className="mt-1 text-sm text-text-muted">Trip, attendance, alert, and student-transport summaries for a real date range.</p>
 
       <ReportsFilterBar dateFrom={dateFrom} dateTo={dateTo} />
+
+      {(trips.length >= 500 || events.length >= 1000) && (
+        <p className="mt-3 rounded-[10px] border border-border bg-field px-3 py-2 text-[13px] text-text-muted">
+          This range has more records than one report loads (first 500 trips / 1000 boarding events), so the totals below
+          cover only those. Narrow the dates for exact figures.
+        </p>
+      )}
 
       <section className="mt-6 rounded-[16px] border border-border bg-surface p-[18px]">
         <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Trip report</h2>

@@ -45,7 +45,7 @@ const KIND_LABEL: Record<MovementRow["kind"], string> = {
 // APPROVED (see backend's createDirect) -- there is no review step for
 // those, only Record return/Amend.
 function statusDisplay(row: MovementRow): { label: string; tone: PillTone } {
-  if (row.kind === "movement-log") {
+  if (row.kind === "movement-log" && row.state === "APPROVED") {
     if (row.actualReturnAt) return { label: "Returned", tone: "gray" };
     return { label: "Away", tone: "blue" };
   }
@@ -150,7 +150,7 @@ export function MovementLogView({ rows, students, blocks }: { rows: MovementRow[
             {filtered.map((r) => {
               const st = statusDisplay(r);
               const isPendingDecision = r.kind !== "movement-log" && r.state === "REQUESTED";
-              const isOpenDirectEntry = r.kind === "movement-log" && !r.actualReturnAt;
+              const isOpenDirectEntry = r.kind === "movement-log" && r.state === "APPROVED" && !r.actualReturnAt;
               return (
                 <tr key={r.id} className="hw-row-hover">
                   <Td>

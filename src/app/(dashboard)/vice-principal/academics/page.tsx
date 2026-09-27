@@ -17,7 +17,10 @@ export default async function PrincipalAcademicsPage() {
     apiFetch("/mediums"),
     // Real Head-of-Department name for the Departments tab, resolved the same
     // way Principal's equivalent page resolves it.
-    apiFetch("/staff?limit=500"),
+    // StaffQueryDto caps limit at 200 (@Max(200)); 500 got a 400 that this
+    // fetch's own .ok check silently turned into an empty staff list below --
+    // every HOD showed "—" instead of a name until this was caught and fixed.
+    apiFetch("/staff?limit=200"),
   ]);
 
   if (!yearsRes.ok) {

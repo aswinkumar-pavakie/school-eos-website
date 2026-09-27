@@ -31,7 +31,7 @@ export default async function RaiseIndentPage({ searchParams }: { searchParams: 
           <a href={`/media/raise-indent${showHistory ? "" : "?history=1"}`} style={{ textDecoration: "none" }}>
             <span
               className={showHistory ? undefined : "media-btn-hover-ghost"}
-              style={{ display: "inline-block", height: 52, lineHeight: "52px", padding: "0 22px", borderRadius: 12, border: showHistory ? "1px solid var(--med-navy)" : "1px solid #d9dee7", background: showHistory ? "var(--med-navy)" : "#fff", color: showHistory ? "#fff" : "var(--med-ink)", fontSize: 14.5, fontWeight: 700, whiteSpace: "nowrap" }}
+              style={{ display: "inline-block", height: 52, lineHeight: "52px", padding: "0 22px", borderRadius: 12, border: showHistory ? "1px solid var(--med-navy)" : "1px solid var(--med-border)", background: showHistory ? "var(--med-navy)" : "#fff", color: showHistory ? "#fff" : "var(--med-ink)", fontSize: 14.5, fontWeight: 700, whiteSpace: "nowrap" }}
             >
               {showHistory ? "Hide history" : `History (${indents.length})`}
             </span>

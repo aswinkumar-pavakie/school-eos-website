@@ -51,6 +51,7 @@ interface Attendant {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   status: string;
 }
 
@@ -97,7 +98,9 @@ export default async function TransportManagerRoutesPage() {
       routes.map(async (r): Promise<[string, number]> => {
         const res = await apiFetch(`/routes/${r.id}/assigned-students`);
         const students: AssignedStudent[] = res.ok ? (await res.json()).data : [];
-        return [r.id, students.filter((s) => s.status === "ACTIVE").length];
+        // Each real rider has TWO allocation rows here (PICKUP + DROP), so a
+        // plain .length doubles the count -- count distinct students instead.
+        return [r.id, new Set(students.filter((s) => s.status === "ACTIVE").map((s) => s.studentId)).size];
       }),
     ),
   );
@@ -113,11 +116,11 @@ export default async function TransportManagerRoutesPage() {
           <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.02em] text-text">Routes</h1>
           <p className="mt-1.5 text-[15px] text-text-muted">Boarding areas, stops, timings and fees.</p>
         </div>
-        <AddRouteForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-deep" />
+        <AddRouteForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-hover" />
       </div>
 
-      <div className="mt-5 rounded-[16px] border" style={{ borderColor: "#E8EDF3" }}>
-        <div className="grid items-center gap-3 px-5 py-[14px] text-[11px] font-bold uppercase leading-[14px] tracking-[0.05em] text-text-muted" style={{ gridTemplateColumns: ROW_GRID, borderBottom: "1px solid #EEF2F7" }}>
+      <div className="mt-5 rounded-[16px] border" style={{ borderColor: "var(--color-divider)" }}>
+        <div className="grid items-center gap-3 px-5 py-[14px] text-[11px] font-bold uppercase leading-[14px] tracking-[0.05em] text-text-muted" style={{ gridTemplateColumns: ROW_GRID, borderBottom: "1px solid var(--color-divider)" }}>
           <span>Route</span>
           <span>Boarding area → campus</span>
           <span>Stops</span>

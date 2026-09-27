@@ -203,6 +203,10 @@ export async function registerDeviceAction(input: { devicePublicKey: string }) {
   });
 }
 
+export async function listMyDevicesAction() {
+  return messagingRequest<{ data: MessagingDeviceDto[] }>("/devices");
+}
+
 // ---- MLS keys ----------------------------------------------------------
 
 export async function publishMlsKeyPackagesAction(deviceId: string, keyPackages: string[]) {

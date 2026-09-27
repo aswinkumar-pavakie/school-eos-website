@@ -10,7 +10,7 @@
 
 import { useEffect, useRef } from "react";
 import { ed25519 } from "@noble/curves/ed25519.js";
-import { registerDeviceAction } from "../messaging-actions";
+import { listMyDevicesAction, registerDeviceAction } from "../messaging-actions";
 import { MessagingApiError } from "../messaging-errors";
 import { toBase64 } from "./codec";
 import { replenishKeyPackagesIfNeeded } from "./keyPackage";
@@ -24,7 +24,15 @@ async function ensureDeviceIdentity(personId: string): Promise<void> {
   setActivePersonId(personId);
 
   const existing = await loadDeviceIdentity();
-  if (existing && existing.personId === personId) return;
+  if (existing && existing.personId === personId) {
+    // An account has ONE active device. If another browser (or a reset) replaced
+    // this browser's device, new messages are encrypted for that other device and
+    // this browser can never read them -- so confirm the saved device is still the
+    // active one, and set up a fresh one if not. A failed check changes nothing.
+    const mine = await listMyDevicesAction().catch(() => null);
+    if (!mine || mine.data.some((d) => d.id === existing.deviceId && d.status === "ACTIVE")) return;
+    await clearDeviceIdentity();
+  }
 
   const keypair = ed25519.keygen();
   const identityPublicKey = toBase64(keypair.publicKey);
@@ -55,6 +63,22 @@ async function ensureDeviceIdentity(personId: string): Promise<void> {
 // bootstrap happens to run alone. Coalescing concurrent calls into the same
 // promise means only one registration ever happens per person per page
 // session, so there is nothing left to race.
+// The messaging server caps device registrations (10/h) and key publishes
+// (20/h) per person. Hitting that cap is a temporary, expected condition for
+// this background step: it must not surface as an app error, and the retry
+// happens on the next mount once the hourly window has reset.
+function isRateLimited(err: unknown): boolean {
+  return (err instanceof MessagingApiError && err.code === "RATE_LIMITED") || (err instanceof Error && err.message.includes("RATE_LIMITED"));
+}
+
+function logBootstrapFailure(label: string, err: unknown): void {
+  if (isRateLimited(err)) {
+    console.warn("[e2ee bootstrap] " + label + " skipped: messaging rate limit reached, will retry later.");
+    return;
+  }
+  console.error("[e2ee bootstrap] " + label + ":", err);
+}
+
 const bootstrapInFlight = new Map<string, Promise<void>>();
 
 function runBootstrap(personId: string): Promise<void> {
@@ -90,7 +114,9 @@ function runBootstrap(personId: string): Promise<void> {
       const isStaleLocalIdentity =
         (err instanceof MessagingApiError && (err.code === "DEVICE_REVOKED" || err.code === "ACCESS_DENIED")) ||
         (err instanceof Error && (err.message.includes("DEVICE_REVOKED") || err.message.includes("ACCESS_DENIED")));
-      if (isStaleLocalIdentity) {
+      if (isRateLimited(err)) {
+        logBootstrapFailure("KeyPackage replenish", err);
+      } else if (isStaleLocalIdentity) {
         // The locally-cached device identity is stale -- the server will
         // never accept it again. Wipe it and register a fresh device on
         // this same mount, so a revoked/vanished device self-heals in one
@@ -98,15 +124,15 @@ function runBootstrap(personId: string): Promise<void> {
         await clearDeviceIdentity();
         await ensureDeviceIdentity(personId);
         await replenishKeyPackagesIfNeeded().catch((retryErr) => {
-          console.error("[e2ee bootstrap] KeyPackage replenish failed after re-registering device:", retryErr);
+          logBootstrapFailure("KeyPackage replenish after re-registering device", retryErr);
         });
       } else {
-        console.error("[e2ee bootstrap] KeyPackage replenish failed:", err);
+        logBootstrapFailure("KeyPackage replenish", err);
       }
     }
   })()
       .catch((err) => {
-        console.error("[e2ee bootstrap] device identity setup failed:", err);
+        logBootstrapFailure("device identity setup", err);
       })
       .finally(() => {
         bootstrapInFlight.delete(personId);
@@ -114,6 +140,32 @@ function runBootstrap(personId: string): Promise<void> {
 
   bootstrapInFlight.set(personId, promise);
   return promise;
+}
+
+// A conversation whose Welcome matches none of this browser's saved keys means
+// the server holds keys this browser can't use (e.g. an earlier setup was cut
+// short). Replace the device with a clean one so NEW chats work; the failed one
+// stays unreadable. Once per person per page session, so it can't loop.
+const repairedFor = new Set<string>();
+
+export async function repairDeviceAfterFailedJoin(personId: string): Promise<void> {
+  if (repairedFor.has(personId)) return;
+  repairedFor.add(personId);
+  // Let any normal setup already running for this person finish first, and hold
+  // the same in-flight slot while repairing so nothing else touches the device.
+  await bootstrapInFlight.get(personId)?.catch(() => {});
+  const work = (async () => {
+    setActivePersonId(personId);
+    await clearDeviceIdentity();
+    await ensureDeviceIdentity(personId);
+    await replenishKeyPackagesIfNeeded();
+  })()
+    .catch((err) => logBootstrapFailure("device repair", err))
+    .finally(() => {
+      bootstrapInFlight.delete(personId);
+    });
+  bootstrapInFlight.set(personId, work);
+  await work;
 }
 
 export function useE2eeBootstrap(personId: string | null): void {

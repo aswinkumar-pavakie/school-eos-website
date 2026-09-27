@@ -97,7 +97,7 @@ const base = {
 
 export function SearchIcon({ className }: IconProps) {
   return (
-    <svg {...base} width="15" height="15" stroke="#94a3b8" strokeWidth={2} className={className} aria-hidden>
+    <svg {...base} width="15" height="15" stroke="#8593a8" strokeWidth={2} className={className} aria-hidden>
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-3.2-3.2" />
     </svg>
@@ -114,7 +114,7 @@ export function CloseIcon({ className }: IconProps) {
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <svg {...base} width="16" height="16" stroke="#94a3b8" strokeWidth={2} className={className} aria-hidden>
+    <svg {...base} width="16" height="16" stroke="#8593a8" strokeWidth={2} className={className} aria-hidden>
       <path d="M9 6l6 6-6 6" />
     </svg>
   );

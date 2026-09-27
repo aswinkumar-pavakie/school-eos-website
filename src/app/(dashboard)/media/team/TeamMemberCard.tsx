@@ -59,7 +59,7 @@ export function TeamMemberCard({ member, maxJobs }: { member: MediaTeamMember; m
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); router.push(`/media/team/${member.id}`); }}
-          style={{ flex: 1, height: 34, borderRadius: 8, border: "1px solid #d9dee7", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
+          style={{ flex: 1, height: 34, borderRadius: 8, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
         >
           Edit
         </button>
@@ -67,7 +67,7 @@ export function TeamMemberCard({ member, maxJobs }: { member: MediaTeamMember; m
           type="button"
           disabled={pending}
           onClick={handleToggleStatus}
-          style={{ flex: 1, height: 34, borderRadius: 8, border: "1px solid #d9dee7", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: member.status === "ACTIVE" ? "var(--med-red)" : "var(--med-green)", fontFamily: "inherit" }}
+          style={{ flex: 1, height: 34, borderRadius: 8, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: member.status === "ACTIVE" ? "var(--med-red)" : "var(--med-green)", fontFamily: "inherit" }}
         >
           {member.status === "ACTIVE" ? "Delete" : "Restore"}
         </button>

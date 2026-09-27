@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import type { ShellNavItem } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
+import { HeaderBell } from "@/components/shared-ui/HeaderBell";
 import { ReframeThemeStyle, reframeThemeClassName } from "@/components/dashboard/ReframeTheme";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
 import { getPurchaseOrdersSummary, getPurchaseRequestsSummary, listApprovals } from "@/lib/finance-api";
-// logoutAction is genuinely shared with the Admin Console — see its own file for why
-// it lives there rather than in a since-removed placeholder /dashboard route.
-import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
@@ -110,17 +110,17 @@ export default async function FinanceLayout({ children }: { children: ReactNode 
     <div className={reframeThemeClassName(REFRAME_SCOPE)}>
       <ReframeThemeStyle scope={REFRAME_SCOPE} />
       <E2eeBootstrapMount personId={actor.personId} />
-      <Shell
+      <AppShell
+        rootHref="/finance"
+        navGroups={shellNavItemsToGroups(navItems)}
         personName={personName}
-        roleLabel={roleLabel}
-        onSignOut={logoutAction}
-        pendingRequestsCount={pendingRequestsCount}
-        navItems={navItems}
-        requestsHref="/finance/approvals"
-        showGlobalSearch={false}
+        personRoleLabel={roleLabel}
+        searchPlaceholder="Search finance pages…"
+        profileHref="/finance/profile"
+        headerExtra={<HeaderBell pendingRequestsCount={pendingRequestsCount} requestsHref="/finance/approvals" />}
       >
         {children}
-      </Shell>
+      </AppShell>
     </div>
   );
 }

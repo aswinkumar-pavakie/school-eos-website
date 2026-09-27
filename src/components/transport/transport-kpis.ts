@@ -32,6 +32,7 @@ interface Assignment {
 }
 interface AssignedStudent {
   id: string;
+  studentId: string;
   status: string;
 }
 interface DocRow {
@@ -62,7 +63,12 @@ export async function computeTransportKpis(basePath: string = "/transport-manage
       routes.map(async (r) => {
         const res = await apiFetch(`/routes/${r.id}/assigned-students`);
         const students: AssignedStudent[] = res.ok ? (await res.json()).data : [];
-        return { routeId: r.id, riders: students.filter((s) => s.status === "ACTIVE").length };
+        // Each real rider has TWO allocation rows here (PICKUP + DROP,
+        // confirmed via a read-only DB check), so a plain .length doubles
+        // every occupancy figure below (observed live: 184% fleet-wide
+        // occupancy) -- count distinct students, not allocation rows.
+        const riders = new Set(students.filter((s) => s.status === "ACTIVE").map((s) => s.studentId)).size;
+        return { routeId: r.id, riders };
       }),
     ),
     Promise.all(

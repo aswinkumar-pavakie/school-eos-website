@@ -138,7 +138,7 @@ export default async function FacultyReportsPage({ searchParams }: { searchParam
         <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4" style={{ marginTop: 24 }}>
           <StatTile label="Classes handled" value={String(teachingOfferings.length)} sub={`${subjectCount} subject${subjectCount === 1 ? "" : "s"}`} />
           <StatTile label="Exam records entered" value={String(totalEntered)} sub={`across ${gradedExams.length || examRows.length} exam record${examRows.length === 1 ? "" : "s"}`} />
-          <StatTile label="Overall pass percentage" value={overallPassPct !== null ? `${overallPassPct}%` : "—"} sub="from published/entered marks" />
+          <StatTile label="Overall pass percentage" value={overallPassPct !== null ? `${overallPassPct}%` : "—"} pct={overallPassPct !== null ? `${overallPassPct}%` : undefined} sub="from published/entered marks" />
           <StatTile label="Class advisor" value={advisedSection ? "Yes" : "No"} sub={sectionLabel ?? "Not assigned"} />
         </div>
 

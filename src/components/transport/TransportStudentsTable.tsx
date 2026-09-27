@@ -144,7 +144,7 @@ export function TransportStudentsTable({
           </select>
         </label>
         <p className="pb-2.5 text-[13px] font-semibold text-text-muted">
-          {filtered.length} of {students.length}
+          {new Set(filtered.map((s) => s.studentId)).size} students · {filtered.length} of {students.length} stop allocations
         </p>
       </div>
 

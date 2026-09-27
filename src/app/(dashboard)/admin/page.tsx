@@ -6,7 +6,6 @@
 
 import Link from "next/link";
 import {
-  AcademicsIcon,
   AttendanceIcon,
   FacultyIcon,
   HostelIcon,
@@ -21,7 +20,7 @@ import { CreateAnnouncementForm } from "@/components/announcements/CreateAnnounc
 import { apiFetch } from "@/lib/api";
 import { listApprovals } from "@/lib/finance-api";
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
-import { formatCount, formatDate, formatPercentOf, formatRelativeTime } from "@/lib/format";
+import { formatCount, formatPercentOf, formatRelativeTime, percentOf } from "@/lib/format";
 
 interface AnnouncementRow {
   id: string;
@@ -77,7 +76,13 @@ export default async function DashboardHomePage() {
     apiFetch("/admin/dashboard-summary"),
     apiFetch("/auth/me"),
     listApprovals({ status: "PENDING" }).catch(() => []),
-    apiFetch("/announcements?limit=4"),
+    // AnnouncementQueryDto has no `limit` field, and this backend's global
+    // ValidationPipe is forbidNonWhitelisted -- a `limit` query param got a
+    // real 400 here, which this fetch's own `.ok` check silently turned into
+    // an empty notices list ("No notices published yet") even when real
+    // published notices existed. The slice(0, 4) below already limits the
+    // display count, so the param was never actually needed.
+    apiFetch("/announcements"),
     // Same real leadership-summary endpoint Principal's own dashboard uses
     // (widened to ADMIN too) -- it already computes parentLoginsIssued and
     // staffMarkedToday, two real KPIs the reference design wants that
@@ -105,13 +110,6 @@ export default async function DashboardHomePage() {
   const notices: AnnouncementRow[] = announcementsRes.ok
     ? ((await announcementsRes.json()) as { data: AnnouncementRow[] }).data.slice(0, 4)
     : [];
-
-  const yearLabel = summary.currentAcademicYear
-    ? `${summary.currentAcademicYear.name}`
-    : "No current year set";
-  const yearDetail = summary.currentAcademicYear
-    ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
-    : "Set one in Academics";
 
   return (
     <div className="mx-auto max-w-[1280px]">
@@ -152,6 +150,7 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.studentResidence.hostellers} hostellers · ${principalSummary.studentResidence.dayScholars} day scholars`
               : "",
           ].filter(Boolean)}
+          bar={principalSummary ? percentOf(principalSummary.studentResidence.hostellers, summary.activeStudents) : undefined}
           icon={<StudentsIcon className="h-5 w-5" />}
           href="/admin/students"
         />
@@ -163,6 +162,7 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.staffSplit.teaching} teaching · ${principalSummary.staffSplit.support} support`
               : `${summary.subjectsCount} active subjects`,
           ]}
+          bar={principalSummary ? percentOf(principalSummary.staffSplit.teaching, summary.activeStaff) : undefined}
           icon={<FacultyIcon className="h-5 w-5" />}
           href="/admin/faculty"
         />
@@ -174,20 +174,15 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.parentLoginsIssued.totalFamilies - principalSummary.parentLoginsIssued.issued} yet to activate`
               : "Not available right now"
           }
+          bar={principalSummary ? percentOf(principalSummary.parentLoginsIssued.issued, principalSummary.parentLoginsIssued.totalFamilies) : undefined}
           icon={<ParentsIcon className="h-5 w-5" />}
           href="/admin/parents"
-        />
-        <KpiCard
-          eyebrow="Academic year"
-          value={yearLabel}
-          detail={yearDetail}
-          icon={<AcademicsIcon className="h-5 w-5" />}
-          href="/admin/academics"
         />
         <KpiCard
           eyebrow="Hostel occupancy"
           value={formatPercentOf(summary.hostelOccupancy.occupiedBeds, summary.hostelOccupancy.totalBeds)}
           detail={`${formatCount(summary.hostelOccupancy.occupiedBeds, summary.hostelOccupancy.totalBeds)} beds occupied`}
+          bar={percentOf(summary.hostelOccupancy.occupiedBeds, summary.hostelOccupancy.totalBeds)}
           icon={<HostelIcon className="h-5 w-5" />}
           href="/admin/hostel"
         />
@@ -217,6 +212,7 @@ export default async function DashboardHomePage() {
               ? `${principalSummary.staffMarkedToday.present} present · ${principalSummary.staffMarkedToday.absent} absent · ${principalSummary.staffMarkedToday.onLeave} on leave`
               : "Not available right now"
           }
+          bar={principalSummary ? percentOf(principalSummary.staffMarkedToday.present, principalSummary.staffMarkedToday.total) : undefined}
           icon={<AttendanceIcon className="h-5 w-5" />}
           href="/admin/attendance"
         />

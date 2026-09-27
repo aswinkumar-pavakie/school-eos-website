@@ -74,14 +74,14 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
               <div style={{ maxHeight: 620, overflowY: "auto" }}>
                 {[...results.students]
                   .filter((s) => s.percent !== null)
-                  .sort((a, b) => (b.percent ?? 0) - (a.percent ?? 0))
+                  .sort((a, b) => (b.totalObtained / (b.totalMax || 1)) - (a.totalObtained / (a.totalMax || 1)))
                   .map((s, i) => (
                     <div key={s.studentId} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 6px", borderBottom: "1px solid var(--acc-divider-soft)" }}>
                       <div style={{ width: 44, flex: "0 0 44px", textAlign: "center", background: "var(--acc-accent-tint)", color: "var(--acc-accent)", borderRadius: 10, padding: "8px 0", fontSize: 13, fontWeight: 800 }}>#{i + 1}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14.5, fontWeight: 800, color: "var(--acc-navy)" }}>{s.studentName}</div>
                         <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 12, color: "var(--acc-tertiary)", marginTop: 2 }}>Roll {s.rollNo ?? "—"}</div>
-                        <div style={{ height: 6, background: "#eef2f8", borderRadius: 99, marginTop: 9, overflow: "hidden" }}>
+                        <div style={{ height: 6, background: "var(--acc-border)", borderRadius: 99, marginTop: 9, overflow: "hidden" }}>
                           <div style={{ height: 6, background: "var(--acc-accent)", width: `${s.percent}%` }} />
                         </div>
                       </div>
@@ -101,7 +101,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
               {results.gradeDistribution.map((band) => (
                 <div key={band.grade} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0" }}>
                   <div style={{ width: 140, flex: "0 0 140px", fontSize: 13.5, fontWeight: 700, color: "var(--acc-navy)" }}>{band.label}</div>
-                  <div style={{ flex: 1, height: 8, background: "#eef2f8", borderRadius: 99, overflow: "hidden" }}>
+                  <div style={{ flex: 1, height: 8, background: "var(--acc-border)", borderRadius: 99, overflow: "hidden" }}>
                     <div style={{ height: 8, background: "var(--acc-accent)", width: `${band.percentOfClass}%` }} />
                   </div>
                   <div style={{ width: 40, textAlign: "right", fontFamily: "var(--acc-font-mono)", fontSize: 13 }}>{band.count}</div>

@@ -8,7 +8,10 @@ import Link from "next/link";
 import { PersonAvatar } from "@/components/dashboard/PersonAvatar";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { StudentsFilterBar } from "@/components/students/StudentsFilterBar";
+import { KpiCard } from "@/components/dashboard/KpiCard";
 import { apiFetch } from "@/lib/api";
+import { formatMoneySummary } from "@/lib/format";
+import { getPrincipalStudentsOverview } from "@/lib/principal-api";
 
 interface StudentRow {
   id: string;
@@ -76,11 +79,19 @@ export default async function PrincipalStudentsPage({
   query.set("page", String(page));
   query.set("limit", "50");
 
-  const [res, gradesRes, sectionsRes] = await Promise.all([
+  const [res, gradesRes, sectionsRes, overview, feeOverviewRes] = await Promise.all([
     apiFetch(`/students?${query.toString()}`),
     apiFetch("/grades"),
     apiFetch("/sections?status=ACTIVE"),
+    getPrincipalStudentsOverview(),
+    apiFetch("/fee-overview"),
   ]);
+
+  const feeOverview = feeOverviewRes.ok
+    ? ((await feeOverviewRes.json()) as {
+        data: { totalOutstandingPaise: string; studentsWithPendingCount: number; studentsWithOverdueCount: number };
+      }).data
+    : null;
 
   if (!res.ok) {
     return (
@@ -114,6 +125,14 @@ export default async function PrincipalStudentsPage({
     return `/principal/students?${next.toString()}`;
   }
 
+  const presentPct = overview.presentToday.total
+    ? Math.round((overview.presentToday.present / overview.presentToday.total) * 100)
+    : 0;
+  const passPct = overview.passPercentage
+    ? Math.round((overview.passPercentage.passed / overview.passPercentage.total) * 100)
+    : null;
+  const feesPendingCount = feeOverview ? feeOverview.studentsWithPendingCount + feeOverview.studentsWithOverdueCount : 0;
+
   return (
     <div className="mx-auto max-w-[1280px]">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -124,6 +143,37 @@ export default async function PrincipalStudentsPage({
         <span className="rounded-[var(--radius-pill)] border border-border bg-field px-3.5 py-1.5 text-[13px] font-bold text-text">
           {meta.total} student{meta.total === 1 ? "" : "s"}
         </span>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          eyebrow="Students present today"
+          value={String(overview.presentToday.present)}
+          detail={`${presentPct}% mean attendance · of ${overview.presentToday.total} on roll`}
+          bar={presentPct}
+        />
+        <KpiCard
+          eyebrow="Pass percentage"
+          value={passPct === null ? "—" : `${passPct}%`}
+          detail={
+            overview.passPercentage
+              ? `${overview.passPercentage.passed} / ${overview.passPercentage.total} results passed`
+              : "No published exam results yet"
+          }
+          bar={passPct ?? undefined}
+        />
+        <KpiCard
+          eyebrow="Hostel / Transport"
+          value={`${overview.hostelCount} / ${overview.transportCount}`}
+          detail="Students in hostel / on transport"
+          href="/principal/hostel"
+        />
+        <KpiCard
+          eyebrow="Fees pending"
+          value={String(feesPendingCount)}
+          detail={feeOverview ? `${formatMoneySummary(feeOverview.totalOutstandingPaise)} outstanding` : "Couldn't load"}
+          href="/principal/finance"
+        />
       </div>
 
       <StudentsFilterBar

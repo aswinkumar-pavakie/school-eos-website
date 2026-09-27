@@ -62,7 +62,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20, alignItems: "start" }}>
           <div style={{ background: "#fff", border: "1px solid var(--par-border)", borderRadius: 16, padding: 24 }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
-              <div style={{ fontSize: 44, fontWeight: 800, color: "var(--par-primary-strong)", lineHeight: 1 }}>{summary.percentage}%</div>
+              <div style={{ fontSize: 44, fontWeight: 800, color: "var(--par-primary-strong)", lineHeight: 1 }}>{summary.percentage !== null ? `${summary.percentage}%` : "—"}</div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontSize: 20, fontWeight: 800, color: "var(--par-ink)" }}>
                   {summary.presentCount}<span style={{ fontSize: 14, fontWeight: 600, color: "var(--par-tertiary-2)" }}> / {summary.totalCount}</span>
@@ -72,7 +72,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
             </div>
             <div style={{ fontSize: 14, color: "var(--par-body)", marginBottom: 12 }}>{cursor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</div>
             <div style={{ position: "relative", height: 10, background: "var(--par-divider)", borderRadius: 5, overflow: "hidden", marginBottom: 10 }}>
-              <div style={{ width: `${summary.percentage}%`, height: "100%", background: "var(--par-primary-strong)", borderRadius: 5 }} />
+              <div style={{ width: `${summary.percentage ?? 0}%`, height: "100%", background: "var(--par-primary-strong)", borderRadius: 5 }} />
               <div style={{ position: "absolute", top: 0, left: "85%", width: 3, height: "100%", background: "#fff" }} />
             </div>
             <div style={{ fontSize: 13, color: "var(--par-tertiary-2)" }}>Marker shows the 85% requirement</div>
@@ -127,7 +127,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
                       fontWeight: 700,
                       background: style?.bg ?? "transparent",
                       color: style?.fg ?? "var(--par-ink)",
-                      border: c.day && c.status === "PRESENT" ? "1px solid #D8DCE8" : undefined,
+                      border: c.day && c.status === "PRESENT" ? "1px solid var(--par-border)" : undefined,
                     }}
                   >
                     {c.day ?? ""}
@@ -138,7 +138,7 @@ export default async function ParentAttendancePage({ searchParams }: { searchPar
 
             <div style={{ borderTop: "1px solid var(--par-divider)", paddingTop: 16, marginTop: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 16, height: 16, borderRadius: 5, background: "#fff", border: "1px solid #D8DCE8", display: "inline-block" }} />
+                <span style={{ width: 16, height: 16, borderRadius: 5, background: "#fff", border: "1px solid var(--par-border)", display: "inline-block" }} />
                 <span style={{ fontSize: 13, color: "var(--par-body)" }}>Present</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

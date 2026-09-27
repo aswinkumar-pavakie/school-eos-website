@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  * { box-sizing: border-box; }
+  a { color: #1f6feb; text-decoration: none; }
+  a:hover { color: #1a4fb4; }
+  input::placeholder { color: #9aa7ba; }
+  input:focus, select:focus { outline: none; border-color: #1f6feb; }
+  table { border-collapse: collapse; width: 100%; }
+</style>
+</helmet>
+<div style="display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100vh; font-family: Outfit, Helvetica, Arial, sans-serif; color: #10243f; background: #ffffff;">
+
+  <aside style="background: #ffffff; border-right: 1px solid #e4e9f2; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: auto;">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 20px 18px; border-bottom: 1px solid #eef1f6;">
+      <div style="width: 46px; height: 46px; border-radius: 13px; background: #0f2342; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">PPS</div>
+      <div style="display: flex; flex-direction: column; gap: 1px;">
+        <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em;">Pavakie Public School</div>
+        <div style="font-size: 12px; color: #8593a8;">Principal's office</div>
+      </div>
+    </div>
+
+    <nav style="display: flex; flex-direction: column; gap: 18px; padding: 18px 14px; flex: 1;">
+      <sc-for list="{{ navGroups }}" as="group" hint-placeholder-count="6">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.13em; color: #9aa7ba; padding: 4px 10px 6px;">{{ group.label }}</div>
+          <sc-for list="{{ group.items }}" as="item" hint-placeholder-count="3">
+            <sc-if value="{{ item.active }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ item.go }}" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: #eef4ff; border: 0; border-radius: 10px; padding: 11px 12px; cursor: pointer; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #1f4fa8; min-height: 44px;">
+                <span style="width: 20px; height: 20px; flex: none; display: flex; align-items: center; justify-content: center;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1f6feb" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ item.icon }}"></path></svg>
+                </span>
+                <span style="flex: 1;">{{ item.label }}</span>
+                <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #1f4fa8; background: #dbe7ff; border-radius: 999px; padding: 3px 8px;">{{ item.badge }}</span>
+                </sc-if>
+              </button>
+            </sc-if>
+            <sc-if value="{{ item.idle }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ item.go }}" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 10px; padding: 11px 12px; cursor: pointer; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 500; color: #3c4a61; min-height: 44px;" style-hover="background: #f4f7fc;">
+                <span style="width: 20px; height: 20px; flex: none; display: flex; align-items: center; justify-content: center;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#7d8ca3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ item.icon }}"></path></svg>
+                </span>
+                <span style="flex: 1;">{{ item.label }}</span>
+                <sc-if value="{{ item.badge }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5c6b82; background: #f0f3f8; border-radius: 999px; padding: 3px 8px;">{{ item.badge }}</span>
+                </sc-if>
+              </button>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-top: 1px solid #eef1f6;">
+      <div style="width: 40px; height: 40px; border-radius: 999px; background: #0f2342; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">AK</div>
+      <div style="display: flex; flex-direction: column; gap: 1px;">
+        <div style="font-size: 14px; font-weight: 600;">Mr. A. Kalaiselvan</div>
+        <div style="font-size: 12px; color: #8593a8;">Principal</div>
+      </div>
+    </div>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; min-width: 0;">
+    <header style="position: sticky; top: 0; z-index: 5; background: #ffffff; border-bottom: 1px solid #e4e9f2; padding: 14px 28px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 240px; display: flex; align-items: center; gap: 10px; background: #f6f8fb; border: 1px solid #e4e9f2; border-radius: 12px; padding: 11px 14px;">
+        <span style="width: 8px; height: 8px; border-radius: 999px; border: 1.5px solid #9aa7ba; flex: none;"></span>
+        <input type="text" placeholder="Search students, faculty, routes, approvals..." style="flex: 1; border: 0; background: transparent; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8593a8; background: #eef1f6; border-radius: 6px; padding: 4px 7px;">Ctrl K</span>
+      </div>
+      <div style="background: #f4f7fc; border: 1px solid #e4e9f2; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 600; color: #1f4fa8;">Principal · School</div>
+      <select style="appearance: none; background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 11px 14px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 500; color: #10243f; cursor: pointer;">
+        <option>2026-2027</option>
+        <option>2025-2026</option>
+        <option>2027-2028</option>
+      </select>
+      <select style="appearance: none; background: #0f2342; border: 1px solid #0f2342; border-radius: 10px; padding: 11px 14px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer;">
+        <option>Term I</option>
+        <option>Term II</option>
+      </select>
+      <button type="button" onClick="{{ goInbox }}" style="display: flex; align-items: center; gap: 9px; background: #1f6feb; border: 0; border-radius: 10px; padding: 11px 18px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 44px;" style-hover="background: #1a5cc8;">
+        Messages
+        <span style="background: #ffffff; color: #1f6feb; border-radius: 999px; font-size: 12px; font-weight: 700; padding: 2px 8px;">{{ unreadCount }}</span>
+      </button>
+    </header>
+
+    <main style="padding: 34px 28px 60px; display: flex; flex-direction: column; gap: 22px; min-width: 0;">
+
+      <sc-if value="{{ page.compact }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <button type="button" onClick="{{ page.onBack }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 12px; padding: 14px 22px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">← {{ page.back }}</button>
+          <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">{{ page.title }}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ page.subtitle }}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <sc-for list="{{ page.actions }}" as="action" hint-placeholder-count="1">
+              <sc-if value="{{ action.primary }}" hint-placeholder-val="{{ true }}">
+                <button type="button" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 48px;" style-hover="background: #1a5cc8;">{{ action.label }}</button>
+              </sc-if>
+              <sc-if value="{{ action.ghost }}" hint-placeholder-val="{{ false }}">
+                <button type="button" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">{{ action.label }}</button>
+              </sc-if>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ page.full }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 8px;">
+          <h1 style="margin: 0; font-size: 38px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.08;">{{ page.title }}</h1>
+          <p style="margin: 0; font-size: 15px; color: #5c6b82; text-wrap: pretty;">{{ page.subtitle }}</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <sc-if value="{{ page.note }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #8593a8;">{{ page.note }}</span>
+          </sc-if>
+          <sc-if value="{{ page.pill }}" hint-placeholder-val="{{ false }}">
+            <span style="background: #eef4ff; border: 1px solid #dbe7ff; color: #1f4fa8; border-radius: 999px; padding: 10px 18px; font-size: 14px; font-weight: 600;">{{ page.pill }}</span>
+          </sc-if>
+          <sc-for list="{{ page.actions }}" as="action" hint-placeholder-count="0">
+            <sc-if value="{{ action.primary }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ action.go }}" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 46px;" style-hover="background: #1a5cc8;">{{ action.label }}</button>
+            </sc-if>
+            <sc-if value="{{ action.ghost }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ action.go }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 46px;" style-hover="background: #f4f7fc;">{{ action.label }}</button>
+            </sc-if>
+          </sc-for>
+        </div>
+      </div>
+
+      </sc-if>
+
+      <sc-if value="{{ page.hasTabs }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <sc-for list="{{ page.tabs }}" as="tab" hint-placeholder-count="5">
+            <sc-if value="{{ tab.active }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ tab.go }}" style="background: #0f2342; border: 1px solid #0f2342; border-radius: 10px; padding: 12px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 44px;">{{ tab.label }}</button>
+            </sc-if>
+            <sc-if value="{{ tab.idle }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ tab.go }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 12px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 500; color: #3c4a61; cursor: pointer; min-height: 44px;" style-hover="background: #f4f7fc;">{{ tab.label }}</button>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ page.hasStats }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+          <sc-for list="{{ page.stats }}" as="stat" hint-placeholder-count="4">
+            <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 12px 26px rgba(31, 111, 235, 0.14);">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ stat.label }}</div>
+                <sc-if value="{{ stat.pct }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 3px 9px;">{{ stat.pct }}</span>
+                </sc-if>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1;">{{ stat.value }}</span>
+                <sc-if value="{{ stat.unit }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size: 14px; color: #8593a8;">{{ stat.unit }}</span>
+                </sc-if>
+              </div>
+              <sc-if value="{{ stat.bar }}" hint-placeholder-val="{{ false }}">
+                <div style="height: 6px; border-radius: 999px; background: #eef1f6; overflow: hidden;">
+                  <div style="height: 6px; border-radius: 999px; background: #1f6feb; width: {{ stat.bar }}%;"></div>
+                </div>
+              </sc-if>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <div style="font-size: 14px; color: #44536b;">{{ stat.sub }}</div>
+                <div style="font-size: 13px; color: #8593a8;">{{ stat.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ page.hasFilters }}" hint-placeholder-val="{{ false }}">
+        <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; align-items: end;">
+          <sc-for list="{{ page.filters }}" as="filter" hint-placeholder-count="3">
+            <label style="display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ filter.label }}</span>
+              <sc-if value="{{ filter.isSelect }}" hint-placeholder-val="{{ true }}">
+                <select value="{{ filter.value }}" onChange="{{ filter.onChange }}" style="appearance: none; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; cursor: pointer; width: 100%;">
+                  <sc-for list="{{ filter.options }}" as="opt" hint-placeholder-count="3">
+                    <option>{{ opt }}</option>
+                  </sc-for>
+                </select>
+              </sc-if>
+              <sc-if value="{{ filter.isText }}" hint-placeholder-val="{{ false }}">
+                <input type="text" placeholder="{{ filter.placeholder }}" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;">
+              </sc-if>
+            </label>
+          </sc-for>
+          <sc-if value="{{ page.filterAction }}" hint-placeholder-val="{{ false }}">
+            <button type="button" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 14px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">{{ page.filterAction }}</button>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ page.isMessages }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 0; background: #ffffff; border: 1px solid #e4e9f2; border-radius: 16px; overflow: hidden; min-height: 620px;">
+          <div style="display: flex; flex-direction: column; gap: 16px; padding: 22px; border-right: 1px solid #eef1f6; min-width: 0;">
+            <div style="position: relative;">
+              <button type="button" onClick="{{ page.msg.toggle }}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 16px 18px; font-family: Outfit, sans-serif; font-size: 17px; color: #10243f; cursor: pointer; text-align: left;" style-hover="border-color: #1f6feb;">
+                <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ page.msg.scopeLabel }}</span>
+                <span style="font-size: 11px; color: #8593a8; flex: none;">▾</span>
+              </button>
+              <sc-if value="{{ page.msg.open }}" hint-placeholder-val="{{ false }}">
+                <div style="position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: #ffffff; border: 1px solid #e4e9f2; border-radius: 14px; box-shadow: 0 22px 48px rgba(12, 24, 44, 0.16); max-height: 390px; overflow-y: auto; padding: 10px 0; z-index: 40;">
+                  <sc-for list="{{ page.msg.options }}" as="o" hint-placeholder-count="8">
+                    <sc-if value="{{ o.isGroup }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #8593a8; padding: 14px 20px 8px;">{{ o.label }}</div>
+                    </sc-if>
+                    <sc-if value="{{ o.isItem }}" hint-placeholder-val="{{ true }}">
+                      <div onClick="{{ o.pick }}" style="padding: 13px 20px; font-size: 16px; color: {{ o.color }}; font-weight: {{ o.weight }}; cursor: pointer;" style-hover="background: #f4f8ff;">{{ o.label }}</div>
+                    </sc-if>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px 17px;">
+              <span style="width: 9px; height: 9px; border-radius: 999px; border: 1.5px solid #9aa7ba; flex: none;"></span>
+              <input type="text" placeholder="Search student, parent or staff name" value="{{ msgQueryVal }}" onChange="{{ onMsgQuery }}" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f;">
+            </div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #8593a8;">{{ page.msg.countLabel }}</div>
+            <div style="display: flex; flex-direction: column; gap: 2px; max-height: 470px; overflow-y: auto; margin: 0 -8px;">
+              <sc-for list="{{ page.msg.threads }}" as="t" hint-placeholder-count="6">
+                <div onClick="{{ t.open }}" style="display: flex; gap: 14px; padding: 16px 14px; border-radius: 12px; background: {{ t.bg }}; cursor: pointer;" style-hover="background: #f4f8ff;">
+                  <span style="width: 38px; height: 38px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ t.initial }}</span>
+                  <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+                    <span style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+                      <span style="font-size: 16px; font-weight: 600; color: #10243f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.name }}</span>
+                      <span style="font-size: 13px; color: #8593a8; flex: none;">{{ t.when }}</span>
+                    </span>
+                    <span style="font-size: 14px; color: #7d8ca3;">{{ t.role }}</span>
+                    <span style="font-size: 14px; color: #44536b; text-wrap: pretty;">{{ t.preview }}</span>
+                  </span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ page.msg.empty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 26px 14px; font-size: 15px; color: #8593a8;">No conversations match this filter.</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 16px; padding: 22px 26px; border-bottom: 1px solid #eef1f6;">
+              <span style="width: 48px; height: 48px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ page.msg.activeInitial }}</span>
+              <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                <span style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">{{ page.msg.activeName }}</span>
+                <span style="font-size: 15px; color: #7d8ca3;">{{ page.msg.activeRole }}</span>
+              </span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 26px; background: #fbfcfe;">
+              <div style="text-align: center; font-size: 11px; font-weight: 600; letter-spacing: 0.13em; color: #8593a8;">{{ page.msg.dayLabel }}</div>
+              <sc-for list="{{ page.msg.bubbles }}" as="b" hint-placeholder-count="2">
+                <div style="align-self: {{ b.align }}; max-width: 74%; background: {{ b.bg }}; border: 1px solid {{ b.border }}; border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;">
+                  <span style="font-size: 17px; color: {{ b.fg }}; text-wrap: pretty;">{{ b.text }}</span>
+                  <span style="font-size: 13px; color: {{ b.metaFg }};">{{ b.time }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-for list="{{ page.rows }}" as="row" hint-placeholder-count="2">
+        <div style="display: grid; grid-template-columns: {{ row.grid }}; gap: 18px; align-items: start;">
+          <sc-for list="{{ row.cols }}" as="sec" hint-placeholder-count="1">
+            <div style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;" style-hover="transform: translateY(-4px); border-color: #1f6feb; box-shadow: 0 14px 30px rgba(31, 111, 235, 0.13);">
+
+              <sc-if value="{{ sec.hasHead }}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                  <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">{{ sec.title }}</div>
+                    <div style="font-size: 13px; color: #8593a8;">{{ sec.meta }}</div>
+                  </div>
+                  <sc-if value="{{ sec.action }}" hint-placeholder-val="{{ false }}">
+                    
+                  </sc-if>
+                  <sc-if value="{{ sec.badge }}" hint-placeholder-val="{{ false }}">
+                    <span style="background: #eef4ff; color: #1f4fa8; border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600;">{{ sec.badge }}</span>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isHero }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start;">
+                  <div style="display: flex; flex-direction: column; gap: 10px; flex: none;">
+                    <sc-if value="{{ sec.roundPhoto }}" hint-placeholder-val="{{ false }}">
+                      <div style="width: 188px; height: 188px; border-radius: 999px; background: repeating-linear-gradient(135deg, #eef2f9 0 10px, #e2e9f5 10px 20px); display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; color: #7a8aa0; padding: 12px; white-space: pre-line;">{{ sec.photoLabel }}</div>
+                    </sc-if>
+                    <sc-if value="{{ sec.rectPhoto }}" hint-placeholder-val="{{ true }}">
+                      <div style="width: 168px; height: 190px; border-radius: 14px; background: repeating-linear-gradient(135deg, #eef2f9 0 10px, #e2e9f5 10px 20px); display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; color: #7a8aa0; padding: 12px; white-space: pre-line;">{{ sec.photoLabel }}</div>
+                      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8593a8;">{{ sec.photoNote }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 14px;">
+                    <div style="font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">{{ sec.name }}</div>
+                    <div style="font-size: 16px; color: #5c6b82;">{{ sec.line }}</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                      <sc-for list="{{ sec.chips }}" as="chip" hint-placeholder-count="3">
+                        <sc-if value="{{ sec.pillChips }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size: 14px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 9px 18px;">{{ chip }}</span>
+                        </sc-if>
+                        <sc-if value="{{ sec.monoChips }}" hint-placeholder-val="{{ true }}">
+                          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #44536b; border: 1px solid #e4e9f2; border-radius: 999px; padding: 8px 14px;">{{ chip }}</span>
+                        </sc-if>
+                      </sc-for>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+                      <sc-for list="{{ sec.tiles }}" as="tile" hint-placeholder-count="4">
+                        <div style="background: #f6f8fb; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px;">
+                          <div style="font-size: 13px; color: #5c6b82;">{{ tile.label }}</div>
+                          <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">{{ tile.value }}</div>
+                          <div style="font-size: 12px; color: #8593a8;">{{ tile.note }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isParents }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;">
+                  <sc-for list="{{ sec.parents }}" as="g" hint-placeholder-count="2">
+                    <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; gap: 20px; align-items: flex-start;">
+                      <div style="width: 106px; height: 132px; border-radius: 10px; flex: none; background: repeating-linear-gradient(135deg, #eef2f9 0 10px, #e2e9f5 10px 20px); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7a8aa0;">{{ g.photo }}</div>
+                      <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+                        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ g.role }}</div>
+                        <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.015em;">{{ g.name }}</div>
+                        <div style="font-size: 15px; color: #44536b;">{{ g.occupation }}</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #44536b; margin-top: 6px;">{{ g.phone }}</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ g.extra }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isTable }}" hint-placeholder-val="{{ false }}">
+                <div style="overflow-x: auto;">
+                  <table>
+                    <thead>
+                      <tr style="background: #f8fafc;">
+                        <sc-for list="{{ sec.columns }}" as="col" hint-placeholder-count="5">
+                          <th style="text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91; padding: 13px 14px; white-space: nowrap;">{{ col }}</th>
+                        </sc-for>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <sc-for list="{{ sec.rows }}" as="trow" hint-placeholder-count="6">
+                        <tr style="border-top: 1px solid #eef1f6; cursor: {{ trow.cursor }}; transition: box-shadow 130ms ease, background 130ms ease;" onClick="{{ trow.go }}" style-hover="background: #f6faff; box-shadow: 0 0 0 1.5px #1f6feb; position: relative; z-index: 2;">
+                          <sc-for list="{{ trow.cells }}" as="cell" hint-placeholder-count="5">
+                            <td style="padding: 15px 14px; vertical-align: middle;">
+                              <div style="display: flex; align-items: center; gap: 10px;">
+                                <sc-if value="{{ cell.avatar }}" hint-placeholder-val="{{ false }}">
+                                  <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ cell.avatar }}</span>
+                                </sc-if>
+                                <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                                  <sc-if value="{{ cell.strong }}" hint-placeholder-val="{{ true }}">
+                                    <span style="font-size: 14px; font-weight: 600; color: #10243f;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.plain }}" hint-placeholder-val="{{ false }}">
+                                    <span style="font-size: 14px; color: #44536b;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.mono }}" hint-placeholder-val="{{ false }}">
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.link }}" hint-placeholder-val="{{ false }}">
+                                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #1f6feb;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.green }}" hint-placeholder-val="{{ false }}">
+                                    <span style="align-self: flex-start; font-size: 12px; font-weight: 600; color: #1f7a4d; background: #e8f6ee; border-radius: 999px; padding: 5px 11px;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.amber }}" hint-placeholder-val="{{ false }}">
+                                    <span style="align-self: flex-start; font-size: 12px; font-weight: 600; color: #8a5a00; background: #fdf3e0; border-radius: 999px; padding: 5px 11px;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.blue }}" hint-placeholder-val="{{ false }}">
+                                    <span style="align-self: flex-start; font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 5px 11px;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.navy }}" hint-placeholder-val="{{ false }}">
+                                    <span style="align-self: flex-start; font-size: 12px; font-weight: 600; color: #ffffff; background: #0f2342; border-radius: 999px; padding: 5px 11px;">{{ cell.text }}</span>
+                                  </sc-if>
+                                  <sc-if value="{{ cell.sub }}" hint-placeholder-val="{{ false }}">
+                                    <span style="font-size: 12px; color: #8593a8;">{{ cell.sub }}</span>
+                                  </sc-if>
+                                </span>
+                              </div>
+                            </td>
+                          </sc-for>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isKv }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.pairs }}" as="pair" hint-placeholder-count="6">
+                    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding: 13px 0; border-bottom: 1px solid #eef1f6;">
+                      <span style="font-size: 14px; color: #5c6b82;">{{ pair.k }}</span>
+                      <span style="font-size: 14px; font-weight: 600; color: #10243f; text-align: right;">{{ pair.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isList }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.items }}" as="item" hint-placeholder-count="4">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 0; border-top: 1px solid #eef1f6; flex-wrap: wrap;">
+                      <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1;">
+                        <div style="display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;">
+                          <span style="font-size: 15px; font-weight: 600; color: #10243f;">{{ item.title }}</span>
+                          <sc-if value="{{ item.mono }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #7a8aa0;">{{ item.mono }}</span>
+                          </sc-if>
+                        </div>
+                        <div style="font-size: 13px; color: #8593a8;">{{ item.sub }}</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <sc-if value="{{ item.green }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size: 12px; font-weight: 600; color: #1f7a4d; background: #e8f6ee; border-radius: 999px; padding: 6px 12px;">{{ item.status }}</span>
+                        </sc-if>
+                        <sc-if value="{{ item.amber }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size: 12px; font-weight: 600; color: #8a5a00; background: #fdf3e0; border-radius: 999px; padding: 6px 12px;">{{ item.status }}</span>
+                        </sc-if>
+                        <sc-if value="{{ item.right }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size: 13px; color: #8593a8; white-space: nowrap;">{{ item.right }}</span>
+                        </sc-if>
+                        <sc-if value="{{ item.count }}" hint-placeholder-val="{{ false }}">
+                          <span style="min-width: 30px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #1f4fa8; background: #eef4ff; border-radius: 8px; padding: 6px 9px;">{{ item.count }}</span>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isCards }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                  <sc-for list="{{ sec.people }}" as="p" hint-placeholder-count="6">
+                    <div onClick="{{ p.go }}" style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; cursor: pointer;" style-hover="border-color: #b9cbe8; background: #fbfcfe;">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="width: 42px; height: 42px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ p.initials }}</span>
+                        <span style="display: flex; flex-direction: column; gap: 2px;">
+                          <span style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{ p.name }}</span>
+                          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">{{ p.meta }}</span>
+                        </span>
+                      </div>
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 12px; font-weight: 500; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 6px 12px;">{{ p.subject }}</span>
+                        <span style="font-size: 12px; font-weight: 500; color: #44536b; background: #f4f7fc; border-radius: 999px; padding: 6px 12px;">{{ p.band }}</span>
+                      </div>
+                      <div style="border-top: 1px solid #eef1f6; padding-top: 12px; display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: #9aa7ba;">CLASSES</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #10243f;">{{ p.classes }}</span>
+                      </div>
+                      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+                        <span style="font-size: 13px; color: #8593a8;">{{ p.exp }}</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #10243f;">{{ p.periods }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isBars }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <sc-for list="{{ sec.bars }}" as="bar" hint-placeholder-count="3">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                      <span style="font-size: 14px; color: #44536b; width: 108px; flex: none;">{{ bar.label }}</span>
+                      <span style="flex: 1; height: 9px; border-radius: 999px; background: #eef1f6; overflow: hidden; display: block;">
+                        <span style="display: block; height: 9px; border-radius: 999px; background: #1f6feb; width: {{ bar.pct }}%;"></span>
+                      </span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #10243f; white-space: nowrap;">{{ bar.value }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isApprovals }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <sc-for list="{{ sec.requests }}" as="req" hint-placeholder-count="4">
+                    <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; gap: 20px; justify-content: space-between; flex-wrap: wrap;">
+                      <div style="display: flex; flex-direction: column; gap: 8px; min-width: 260px; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">{{ req.tag }}</span>
+                          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #7a8aa0;">{{ req.id }}</span>
+                          <span style="font-size: 13px; color: #8593a8;">{{ req.when }}</span>
+                          <sc-if value="{{ req.high }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #8a5a00; background: #fdf3e0; border-radius: 6px; padding: 5px 10px;">HIGH PRIORITY</span>
+                          </sc-if>
+                        </div>
+                        <div style="font-size: 19px; font-weight: 600; letter-spacing: -0.015em; text-wrap: pretty;">{{ req.title }}</div>
+                        <div style="font-size: 14px; color: #5c6b82; text-wrap: pretty;">{{ req.desc }}</div>
+                        <div style="font-size: 13px; color: #8593a8;">{{ req.by }}</div>
+                      </div>
+                      <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <sc-if value="{{ req.pending }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" onClick="{{ req.reject }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 13px 22px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 46px; white-space: nowrap;" style-hover="background: #f4f7fc;">Reject</button>
+                          <button type="button" onClick="{{ req.approve }}" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 13px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 46px; white-space: nowrap;" style-hover="background: #1a5cc8;">Approve</button>
+                        </sc-if>
+                        <sc-if value="{{ req.approved }}" hint-placeholder-val="{{ false }}">
+                          <span style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <span style="background: #e8f6ee; color: #1f7a4d; border-radius: 999px; padding: 10px 18px; font-size: 13px; font-weight: 600; white-space: nowrap;">Approved</span>
+                            <button type="button" onClick="{{ req.undo }}" style="background: transparent; border: 0; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1f6feb; cursor: pointer; padding: 2px 4px;">Undo</button>
+                          </span>
+                        </sc-if>
+                        <sc-if value="{{ req.rejected }}" hint-placeholder-val="{{ false }}">
+                          <span style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                            <span style="background: #fdecec; color: #b3261e; border-radius: 999px; padding: 10px 18px; font-size: 13px; font-weight: 600; white-space: nowrap;">Rejected</span>
+                            <button type="button" onClick="{{ req.undo }}" style="background: transparent; border: 0; font-family: Outfit, sans-serif; font-size: 13px; font-weight: 600; color: #1f6feb; cursor: pointer; padding: 2px 4px;">Undo</button>
+                          </span>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isNotices }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <sc-for list="{{ sec.notices }}" as="n" hint-placeholder-count="4">
+                    <div style="border: 1px solid #e4e9f2; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 10px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">{{ n.tag }}</span>
+                          <span style="font-size: 13px; color: #8593a8;">{{ n.date }}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                          <span style="font-size: 13px; color: #8593a8;">{{ n.owner }}</span>
+                          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #1f4fa8; background: #eef4ff; border-radius: 6px; padding: 5px 10px;">{{ n.status }}</span>
+                        </div>
+                      </div>
+                      <div style="font-size: 20px; font-weight: 600; letter-spacing: -0.015em; text-wrap: pretty;">{{ n.title }}</div>
+                      <div style="font-size: 15px; line-height: 1.55; color: #5c6b82; text-wrap: pretty;">{{ n.body }}</div>
+                      <div style="font-size: 13px; color: #8593a8;">{{ n.audience }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isForm }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+                    <sc-for list="{{ sec.fields }}" as="f" hint-placeholder-count="6">
+                      <label style="display: flex; flex-direction: column; gap: 8px;">
+                        <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ f.label }}</span>
+                        <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                          <select style="appearance: none; background: #f8fafc; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; cursor: pointer; width: 100%;">
+                            <sc-for list="{{ f.options }}" as="opt" hint-placeholder-count="3">
+                              <option>{{ opt }}</option>
+                            </sc-for>
+                          </select>
+                        </sc-if>
+                        <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}">
+                          <input type="text" placeholder="{{ f.placeholder }}" style="background: #f8fafc; border: 1px solid #dfe5ef; border-radius: 10px; padding: 13px 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;">
+                        </sc-if>
+                      </label>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button type="button" onClick="{{ noop }}" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 48px;" style-hover="background: #1a5cc8;">{{ sec.submit }}</button>
+                    <button type="button" onClick="{{ noop }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">Save as draft</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isTimetable }}" hint-placeholder-val="{{ false }}">
+                <div style="overflow-x: auto;">
+                  <div style="display: grid; grid-template-columns: 62px repeat(7, minmax(132px, 1fr)); gap: 10px; min-width: 980px;">
+                    <div></div>
+                    <sc-for list="{{ sec.periods }}" as="p" hint-placeholder-count="7">
+                      <div style="display: flex; flex-direction: column; gap: 3px; padding: 0 4px;">
+                        <span style="font-size: 14px; font-weight: 600;">{{ p.name }}</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8593a8;">{{ p.time }}</span>
+                      </div>
+                    </sc-for>
+                    <sc-for list="{{ sec.cells }}" as="c" hint-placeholder-count="42">
+                      <sc-if value="{{ c.isDay }}" hint-placeholder-val="{{ false }}">
+                        <div style="display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #44536b;">{{ c.day }}</div>
+                      </sc-if>
+                      <sc-if value="{{ c.isSlot }}" hint-placeholder-val="{{ true }}">
+                        <div style="border: 1px solid #e4e9f2; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 3px;">
+                          <span style="font-size: 13px; font-weight: 600; color: #10243f;">{{ c.subject }}</span>
+                          <span style="font-size: 12px; color: #8593a8;">{{ c.teacher }}</span>
+                        </div>
+                      </sc-if>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isRoutes }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.routes }}" as="r" hint-placeholder-count="8">
+                    <div onClick="{{ r.go }}" style="display: flex; align-items: center; gap: 18px; padding: 18px 6px; border-top: 1px solid #eef1f6; cursor: pointer; border-radius: 12px; transition: box-shadow 130ms ease, background 130ms ease;" style-hover="background: #f6faff; box-shadow: 0 0 0 1.5px #1f6feb;">
+                      <span style="width: 44px; height: 44px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex: none;">{{ r.num }}</span>
+                      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 19px; font-weight: 600; letter-spacing: -0.015em;">{{ r.name }}</span>
+                        <span style="font-size: 14px; color: #5c6b82;">{{ r.meta }}</span>
+                      </span>
+                      <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none;">
+                        <span style="font-size: 19px; font-weight: 700;">{{ r.students }}</span>
+                        <span style="font-size: 13px; color: #8593a8;">students</span>
+                      </span>
+                      <span style="font-size: 14px; font-weight: 600; color: #1f6feb; white-space: nowrap; flex: none;">View →</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isBusHead }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 22px;">
+                  <button type="button" onClick="{{ sec.back }}" style="align-self: flex-start; background: #ffffff; border: 1px solid #e4e9f2; border-radius: 12px; padding: 13px 20px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #1f4fa8; cursor: pointer; min-height: 46px;" style-hover="background: #f4f7fc;">← All routes</button>
+                  <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+                    <span style="width: 58px; height: 58px; border-radius: 14px; background: #eef4ff; display: flex; align-items: center; justify-content: center; flex: none;">
+                      <span style="width: 26px; height: 20px; border: 2px solid #1f6feb; border-radius: 5px; display: block;"></span>
+                    </span>
+                    <span style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 6px;">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 700; letter-spacing: 0.01em; line-height: 1;">{{ sec.reg }}</span>
+                      <span style="font-size: 15px; color: #5c6b82;">{{ sec.meta }}</span>
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 9px; background: #ffffff; border: 1px solid #e4e9f2; border-radius: 999px; padding: 11px 20px; font-size: 14px; font-weight: 600; color: #10243f; flex: none;">
+                      <span style="width: 9px; height: 9px; border-radius: 999px; background: #1f6feb; display: block;"></span>{{ sec.status }}
+                    </span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isMetric }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                    <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ sec.label }}</div>
+                    <sc-if value="{{ sec.pct }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 3px 9px;">{{ sec.pct }}</span>
+                    </sc-if>
+                  </div>
+                  <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;">{{ sec.value }}</span>
+                    <sc-if value="{{ sec.unit }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 14px; color: #8593a8;">{{ sec.unit }}</span>
+                    </sc-if>
+                  </div>
+                  <div style="font-size: 13px; color: #8593a8;">{{ sec.note }}</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isSpecs }}" hint-placeholder-val="{{ false }}">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 22px 24px;">
+                  <sc-for list="{{ sec.specs }}" as="s" hint-placeholder-count="9">
+                    <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+                      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ s.label }}</span>
+                      <span style="font-size: 16px; font-weight: 600; color: #10243f;">{{ s.value }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isStops }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <div style="display: flex; align-items: center; gap: 26px; flex-wrap: wrap; padding-bottom: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">FROM</span>
+                      <span style="font-size: 23px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.from }}</span>
+                      <span style="font-size: 13px; color: #8593a8;">starting point</span>
+                    </div>
+                    <span style="font-size: 20px; color: #9aa7ba;">→</span>
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TO</span>
+                      <span style="font-size: 23px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.to }}</span>
+                      <span style="font-size: 13px; color: #8593a8;">ending point</span>
+                    </div>
+                  </div>
+                  <sc-for list="{{ sec.stops }}" as="s" hint-placeholder-count="12">
+                    <div style="display: flex; align-items: center; gap: 16px; padding: 15px 4px; border-top: 1px solid #eef1f6;">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8593a8; width: 26px; flex: none;">{{ s.num }}</span>
+                      <span style="flex: 1; min-width: 0; font-size: 16px; font-weight: 600; color: #10243f;">{{ s.name }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; color: #1f6feb; flex: none;">{{ s.time }}</span>
+                      <span style="font-size: 13px; color: #8593a8; width: 74px; text-align: right; flex: none;">{{ s.board }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isStopStudents }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.groups }}" as="g" hint-placeholder-count="4">
+                    <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px 0; border-top: 1px solid #eef1f6;">
+                      <div style="display: flex; align-items: center; gap: 14px;">
+                        <span style="width: 38px; height: 38px; border-radius: 10px; background: #eef4ff; color: #1f4fa8; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: none;">{{ g.num }}</span>
+                        <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                          <span style="font-size: 17px; font-weight: 600; letter-spacing: -0.01em;">{{ g.name }}</span>
+                          <span style="font-size: 13px; color: #8593a8;">{{ g.sub }}</span>
+                        </span>
+                      </div>
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 12px;">
+                        <sc-for list="{{ g.students }}" as="st" hint-placeholder-count="3">
+                          <div style="display: flex; align-items: center; gap: 11px; background: #f8fafc; border-radius: 10px; padding: 11px 13px; min-width: 0;">
+                            <span style="width: 34px; height: 34px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ st.initials }}</span>
+                            <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                              <span style="font-size: 14px; font-weight: 600; color: #10243f;">{{ st.name }}</span>
+                              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8593a8;">{{ st.meta }}</span>
+                            </span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isOccupancy }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div style="display: flex; align-items: baseline; gap: 10px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;">{{ sec.ratio }}</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #1f4fa8;">{{ sec.pct }}</span>
+                  </div>
+                  <div style="height: 8px; border-radius: 999px; background: #eef1f6; overflow: hidden;">
+                    <div style="height: 8px; border-radius: 999px; background: #0f2342; width: {{ sec.bar }}%;"></div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; border-top: 1px solid #eef1f6; padding-top: 16px;">
+                    <sc-for list="{{ sec.splits }}" as="sp" hint-placeholder-count="2">
+                      <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ sp.label }}</span>
+                        <span style="font-size: 24px; font-weight: 700; letter-spacing: -0.02em;">{{ sp.value }}</span>
+                        <span style="font-size: 12px; color: #8593a8;">{{ sp.note }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isCrew }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 18px;">
+                  <div style="display: flex; align-items: center; gap: 14px;">
+                    <span style="width: 44px; height: 44px; border-radius: 999px; background: #eef4ff; color: #1f4fa8; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ sec.driverInitials }}</span>
+                    <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                      <span style="font-size: 18px; font-weight: 600; letter-spacing: -0.01em;">{{ sec.driver }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #5c6b82;">{{ sec.driverPhone }}</span>
+                    </span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 18px;">
+                    <sc-for list="{{ sec.driverFacts }}" as="f" hint-placeholder-count="4">
+                      <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+                        <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">{{ f.label }}</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; color: #10243f;">{{ f.value }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 14px; border-top: 1px solid #eef1f6; padding-top: 16px;">
+                    <span style="width: 40px; height: 40px; border-radius: 999px; background: #f4f7fc; color: #5c6b82; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none;">{{ sec.attendantInitials }}</span>
+                    <span style="display: flex; flex-direction: column; gap: 2px;">
+                      <span style="font-size: 16px; font-weight: 600;">{{ sec.attendant }}</span>
+                      <span style="font-size: 13px; color: #8593a8;">Bus attendant</span>
+                    </span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isDocs }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.docs }}" as="d" hint-placeholder-count="5">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px 0; border-top: 1px solid #eef1f6;">
+                      <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+                        <span style="font-size: 16px; font-weight: 600; color: #10243f;">{{ d.name }}</span>
+                        <span style="font-size: 13px; color: #8593a8;">{{ d.issuer }}</span>
+                      </span>
+                      <span style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex: none;">
+                        <span style="font-size: 15px; font-weight: 600; color: #10243f; white-space: nowrap;">{{ d.date }}</span>
+                        <sc-if value="{{ d.due }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size: 13px; font-weight: 600; color: #1f6feb; white-space: nowrap;">{{ d.status }}</span>
+                        </sc-if>
+                        <sc-if value="{{ d.ok }}" hint-placeholder-val="{{ true }}">
+                          <span style="font-size: 13px; color: #8593a8; white-space: nowrap;">{{ d.status }}</span>
+                        </sc-if>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isBlock }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+                    <span style="font-size: 23px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.name }}</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #1f6feb;">{{ sec.pct }}</span>
+                  </div>
+                  <div style="height: 8px; border-radius: 999px; background: #eef1f6; overflow: hidden;">
+                    <div style="height: 8px; border-radius: 999px; background: #1f6feb; width: {{ sec.bar }}%;"></div>
+                  </div>
+                  <div style="font-size: 14px; color: #5c6b82; border-bottom: 1px solid #eef1f6; padding-bottom: 14px;">{{ sec.line }}</div>
+                  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">BEDS VACANT</span>
+                      <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.vacant }}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">ROOMS</span>
+                      <span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.rooms }}</span>
+                    </div>
+                  </div>
+                  <div style="font-size: 14px; color: #8593a8;">{{ sec.warden }}</div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isNewEvent }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <div style="font-size: 21px; font-weight: 600; letter-spacing: -0.015em;">New event · {{ sec.monthLabel }}</div>
+                      <div style="font-size: 13px; color: #8593a8;">Added by the principal's office · shown alongside the published calendar</div>
+                    </div>
+                    <button type="button" onClick="{{ sec.close }}" style="width: 44px; height: 44px; border-radius: 10px; background: #ffffff; border: 1px solid #e4e9f2; font-family: Outfit, sans-serif; font-size: 16px; color: #5c6b82; cursor: pointer; flex: none;" style-hover="background: #f4f7fc;">✕</button>
+                  </div>
+                  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+                    <label style="display: flex; flex-direction: column; gap: 8px; width: 120px; flex: none;">
+                      <span style="font-size: 13px; font-weight: 600; color: #1f4fa8;">Day</span>
+                      <input type="text" placeholder="14" value="{{ calDayVal }}" onChange="{{ onCalDay }}" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 260px;">
+                      <span style="font-size: 13px; font-weight: 600; color: #1f4fa8;">Event</span>
+                      <input type="text" placeholder="e.g. Alumni interaction · Class 12" value="{{ calTextVal }}" onChange="{{ onCalText }}" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; width: 100%;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 8px; width: 220px; flex: none;">
+                      <span style="font-size: 13px; font-weight: 600; color: #1f4fa8;">Category</span>
+                      <select value="{{ calCatVal }}" onChange="{{ onCalCat }}" style="appearance: none; background: #ffffff; border: 1px solid #dfe5ef; border-radius: 10px; padding: 14px; font-family: Outfit, sans-serif; font-size: 15px; color: #10243f; cursor: pointer; width: 100%;">
+                        <sc-for list="{{ sec.cats }}" as="opt" hint-placeholder-count="4">
+                          <option>{{ opt }}</option>
+                        </sc-for>
+                      </select>
+                    </label>
+                  </div>
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <sc-if value="{{ sec.canAdd }}" hint-placeholder-val="{{ false }}">
+                      <button type="button" onClick="{{ sec.add }}" style="background: #1f6feb; border: 0; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 48px;" style-hover="background: #1a5cc8;">Add to calendar</button>
+                    </sc-if>
+                    <sc-if value="{{ sec.cantAdd }}" hint-placeholder-val="{{ true }}">
+                      <span style="background: #9dc0f5; border-radius: 10px; padding: 14px 24px; font-size: 15px; font-weight: 600; color: #ffffff; min-height: 48px; display: flex; align-items: center;">Add to calendar</span>
+                    </sc-if>
+                    <button type="button" onClick="{{ sec.close }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 10px; padding: 14px 24px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">Cancel</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isCalendar }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column; gap: 18px;">
+                  <div style="display: flex; align-items: center; gap: 14px;">
+                    <button type="button" onClick="{{ sec.prev }}" style="width: 48px; height: 48px; border-radius: 12px; background: #f4f7fc; border: 1px solid #e4e9f2; font-family: Outfit, sans-serif; font-size: 18px; color: #1f4fa8; cursor: pointer; flex: none;" style-hover="background: #eef4ff;">‹</button>
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; align-items: center;">
+                      <div style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">{{ sec.monthLabel }}</div>
+                      <div style="font-size: 13px; color: #8593a8;">{{ sec.countLabel }}</div>
+                    </div>
+                    <button type="button" onClick="{{ sec.next }}" style="width: 48px; height: 48px; border-radius: 12px; background: #f4f7fc; border: 1px solid #e4e9f2; font-family: Outfit, sans-serif; font-size: 18px; color: #1f4fa8; cursor: pointer; flex: none;" style-hover="background: #eef4ff;">›</button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;">
+                    <sc-for list="{{ sec.dows }}" as="d" hint-placeholder-count="7">
+                      <div style="text-align: center; font-size: 12px; font-weight: 600; color: #8593a8; padding-bottom: 2px;">{{ d }}</div>
+                    </sc-for>
+                    <sc-for list="{{ sec.cells }}" as="c" hint-placeholder-count="35">
+                      <sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}">
+                        <div></div>
+                      </sc-if>
+                      <sc-if value="{{ c.day }}" hint-placeholder-val="{{ true }}">
+                        <button type="button" onClick="{{ c.go }}" style="height: 56px; border-radius: 10px; background: {{ c.bg }}; border: 1px solid {{ c.border }}; color: {{ c.fg }}; font-family: Outfit, sans-serif; font-size: 16px; font-weight: {{ c.weight }}; cursor: pointer; display: flex; align-items: center; justify-content: center;">{{ c.label }}</button>
+                      </sc-if>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap; border-top: 1px solid #eef1f6; padding-top: 14px;">
+                    <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5c6b82;"><span style="width: 14px; height: 14px; border-radius: 5px; background: #eef4ff; border: 1px solid #dbe7ff;"></span>has events</span>
+                    <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5c6b82;"><span style="width: 14px; height: 14px; border-radius: 5px; background: #dbe7ff; border: 1px solid #1f6feb;"></span>selected day</span>
+                    <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5c6b82;"><span style="width: 14px; height: 14px; border-radius: 5px; background: #f6f8fb; border: 1px solid #f0f3f8;"></span>holiday · Sunday</span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ sec.isEvents }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-direction: column;">
+                  <sc-for list="{{ sec.events }}" as="e" hint-placeholder-count="5">
+                    <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid #eef1f6;">
+                      <div style="width: 58px; height: 58px; border-radius: 12px; background: #f4f7fc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none;">
+                        <span style="font-size: 19px; font-weight: 700; line-height: 1;">{{ e.day }}</span>
+                        <span style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: #8593a8;">{{ e.dow }}</span>
+                      </div>
+                      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+                        <div style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em; text-wrap: pretty;">{{ e.title }}</div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                          <span style="font-size: 13px; color: #8593a8;">{{ e.date }}</span>
+                          <sc-if value="{{ e.published }}" hint-placeholder-val="{{ true }}">
+                            <span style="font-size: 12px; color: #9aa7ba;">published · read only</span>
+                          </sc-if>
+                          <sc-if value="{{ e.mine }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size: 12px; font-weight: 600; color: #1f7a4d; background: #e8f6ee; border-radius: 999px; padding: 4px 11px;">added by you</span>
+                          </sc-if>
+                        </div>
+                      </div>
+                      <span style="font-size: 12px; font-weight: 600; color: #1f4fa8; background: #eef4ff; border-radius: 999px; padding: 8px 14px; white-space: nowrap;">{{ e.cat }}</span>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ sec.empty }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding: 28px 0; font-size: 15px; color: #8593a8;">No events recorded for this month.</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </main>
+  </div>
+
+  <sc-if value="{{ noticeModal.open }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; background: rgba(12, 24, 44, 0.5); display: flex; align-items: center; justify-content: center; padding: 28px; z-index: 60;">
+      <div style="background: #ffffff; border-radius: 18px; padding: 30px; width: 100%; max-width: 640px; max-height: 82vh; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 24px 70px rgba(12, 24, 44, 0.28);">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">New notice</div>
+            <div style="font-size: 14px; font-weight: 500; color: #1f6feb;">Visible to the audiences you select</div>
+          </div>
+          <button type="button" onClick="{{ noticeModal.close }}" style="width: 40px; height: 40px; border-radius: 10px; background: #f4f7fc; border: 1px solid #e9edf4; font-family: Outfit, sans-serif; font-size: 15px; color: #5c6b82; cursor: pointer; flex: none;" style-hover="background: #eef1f6;">✕</button>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 18px;">
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TITLE</span>
+            <input type="text" placeholder="e.g. Annual day rehearsal schedule" value="{{ noticeTitleVal }}" onChange="{{ onNoticeTitle }}" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f; width: 100%;">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">DETAILS</span>
+            <textarea placeholder="Optional message" rows="4" value="{{ noticeBodyVal }}" onChange="{{ onNoticeBody }}" style="background: #ffffff; border: 1px solid #dfe5ef; border-radius: 12px; padding: 15px; font-family: Outfit, sans-serif; font-size: 16px; color: #10243f; width: 100%; resize: vertical;"></textarea>
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.11em; color: #6b7a91;">TARGET AUDIENCE</span>
+              <span style="font-size: 13px; font-weight: 600; color: #1f6feb;">{{ noticeModal.selectedLabel }}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; max-height: 236px; overflow-y: auto; padding-right: 4px;">
+              <sc-for list="{{ noticeModal.audiences }}" as="a" hint-placeholder-count="6">
+                <div onClick="{{ a.pick }}" style="display: flex; align-items: center; gap: 14px; border: 1.5px solid {{ a.border }}; background: {{ a.bg }}; border-radius: 12px; padding: 15px 17px; cursor: pointer;">
+                  <span style="width: 20px; height: 20px; border-radius: 999px; border: 2px solid {{ a.dotBorder }}; display: flex; align-items: center; justify-content: center; flex: none;">
+                    <sc-if value="{{ a.on }}" hint-placeholder-val="{{ false }}">
+                      <span style="width: 10px; height: 10px; border-radius: 999px; background: #1f6feb; display: block;"></span>
+                    </sc-if>
+                  </span>
+                  <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                    <span style="font-size: 16px; font-weight: 600; color: #10243f;">{{ a.name }}</span>
+                    <span style="font-size: 13px; color: #8593a8;">{{ a.sub }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
+          <button type="button" onClick="{{ noticeModal.close }}" style="background: #ffffff; border: 1px solid #e4e9f2; border-radius: 12px; padding: 14px 26px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #10243f; cursor: pointer; min-height: 48px;" style-hover="background: #f4f7fc;">Cancel</button>
+          <sc-if value="{{ noticeModal.canPost }}" hint-placeholder-val="{{ false }}">
+            <button type="button" onClick="{{ noticeModal.post }}" style="background: #1f6feb; border: 0; border-radius: 12px; padding: 14px 28px; font-family: Outfit, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; cursor: pointer; min-height: 48px;" style-hover="background: #1a5cc8;">Post notice</button>
+          </sc-if>
+          <sc-if value="{{ noticeModal.cantPost }}" hint-placeholder-val="{{ true }}">
+            <span style="background: #9dc0f5; border-radius: 12px; padding: 14px 28px; font-size: 15px; font-weight: 600; color: #ffffff; min-height: 48px; display: flex; align-items: center;">Post notice</span>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1600,&quot;height&quot;:1000}}">
+const NAV = [
+  ["OVERVIEW", [["dashboard", "Dashboard", false, "M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"]]],
+  ["PEOPLE", [["students", "Students", "96", "M12 11.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"], ["teachers", "Teachers", "15", "M3 5h18v11H3zM9 20h6M12 16v4"]]],
+  ["ACADEMICS", [["academics", "Academics", false, "M4 5h7v14H4zM13 5h7v14h-7z"], ["attendance", "Staff attendance", "3", "M4 4h16v16H4zM8 12l3 3 5-6"], ["mapping", "Subjects & mapping", false, "M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"], ["classtt", "Class timetable", false, "M4 6h16v14H4zM4 10.5h16M8 3v4M16 3v4"], ["examtt", "Exam timetable", false, "M9 4h6v3H9zM6 7h12v13H6z"], ["calendar", "Academic calendar", false, "M4 6h16v14H4zM4 11h16M8 3v4M16 3v4"]]],
+  ["OPERATIONS", [["sports", "Sports inventory", false, "M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM4 7.5l8 4.5 8-4.5M12 12v9"], ["maintenance", "Repair & maintenance", false, "M14.5 4a4.5 4.5 0 00-4.2 6.1L4 16.4V20h3.6l6.3-6.3A4.5 4.5 0 0014.5 4z"], ["hostel", "Hostel", false, "M4 10.5L12 4l8 6.5V20H4zM9.5 20v-6h5v6"], ["transport", "Transport", false, "M4 6h16v9H4zM4 11h16M7 15v4M17 15v4"], ["library", "Library", false, "M4 4h6v16H4zM12 4h3v16h-3zM17 4h3v16h-3z"]]],
+  ["ADMINISTRATION", [["approvals", "Requests & approvals", "6", "M12 21a9 9 0 100-18 9 9 0 000 18zM8 12l3 3 5-6"], ["notices", "Notices", false, "M4 10v4l10 4V6L4 10zM14 8a4 4 0 010 8"], ["inbox", "Inbox", "10", "M3 6h18v12H3zM3 7l9 6 9-6"]]]
+];
+
+const CLASS_LIST = (function () {
+  const out = [];
+  for (let g = 1; g <= 12; g++) ["A", "B", "C"].forEach(s => out.push("Class " + g + "-" + s));
+  return out;
+})();
+
+const MSG_SCOPES = [
+  ["EVERYONE", ["All classes"]],
+  ["CLASSES", CLASS_LIST],
+  ["TEACHERS", ["M. Priyadharshini · teacher", "A. Saravanan · teacher", "S. Kalaivani · teacher", "R. Vignesh · teacher", "T. Kowsalya · teacher"]],
+  ["ACADEMIC CO-ORDINATORS", ["Mrs. G. Amudha · co-ordinator", "Mrs. R. Subha · co-ordinator", "Mr. S. Ravichandran · co-ordinator", "Mrs. K. Bhuvaneshwari · co-ordinator"]]
+];
+
+const CONVOS = [
+  ["Mrs. Lakshmi P", "Mother of Aarav S", "Good morning ma'am. Aarav has fever today, he will not attend school.", "09:12",
+    [["Good morning ma'am. Aarav has fever today, he will not attend school.", "09:12", false]], "TODAY", "Class 1-A"],
+  ["Mr. Suresh Kumar", "Father of Divya M", "Sure, please come by 3:30 PM to Room 12. Thank you ma'am.", "Yesterday",
+    [["May I meet the class teacher about Divya's maths marks?", "16:02", false], ["Sure, please come by 3:30 PM to Room 12. Thank you ma'am.", "16:20", true]], "YESTERDAY", "Class 4-B"],
+  ["Mrs. Anitha M", "Mother of Karthik V", "Karthik missed the unit test. Is a re-test possible this week?", "Yesterday",
+    [["Karthik missed the unit test. Is a re-test possible this week?", "11:40", false]], "YESTERDAY", "Class 6-A"],
+  ["Mr. Ramesh B", "Father of Sneha B", "Thank you ma'am, we are following up at home.", "3 Sept",
+    [["Sneha's reading practice sheet has been shared with you.", "09:30", true], ["Thank you ma'am, we are following up at home.", "10:05", false]], "3 SEPTEMBER", "Class 2-C"],
+  ["Mrs. Vidhya K", "Mother of Charan K", "Shared in the class group. Units 4 and 5.", "2 Sept",
+    [["Could you share the revision portion for the unit test?", "08:15", false], ["Shared in the class group. Units 4 and 5.", "08:40", true]], "2 SEPTEMBER", "Class 8-B"],
+  ["Mrs. R. Subha", "Senior Teacher · Tamil · Class teacher 8-B", "The face scanner did not register my punch-in on 02 September. Requesting a correction.", "07:48",
+    [["The face scanner did not register my punch-in on 02 September. Requesting a correction.", "07:48", false]], "TODAY", "Mrs. R. Subha · co-ordinator"],
+  ["Mr. S. Ravichandran", "Academic co-ordinator · Senior section", "Fee concession list for Class IX is ready for your decision.", "08:20",
+    [["Fee concession list for Class IX is ready for your decision.", "08:20", false]], "TODAY", "Mr. S. Ravichandran · co-ordinator"],
+  ["Mrs. K. Bhuvaneshwari", "Examination in-charge", "42 hall tickets are withheld for fee arrears — need a decision before 22 September.", "Yesterday",
+    [["42 hall tickets are withheld for fee arrears — need a decision before 22 September.", "15:10", false]], "YESTERDAY", "Mrs. K. Bhuvaneshwari · co-ordinator"],
+  ["M. Priyadharshini", "Teacher · Mathematics · Class teacher 1-A", "Class 1-A needs two extra maths workbooks for the new admissions.", "10 Sept",
+    [["Class 1-A needs two extra maths workbooks for the new admissions.", "12:22", false]], "10 SEPTEMBER", "M. Priyadharshini · teacher"],
+  ["R. Vignesh", "Teacher · Science · Class teacher 7-C", "Lab session for 7-C moved to Friday second period.", "09 Sept",
+    [["Lab session for 7-C moved to Friday second period.", "14:35", false]], "9 SEPTEMBER", "R. Vignesh · teacher"]
+];
+
+const STUDENTS = [
+  ["Aarav S", "PPS/2021/410", "Class 1-A", 4, "Suresh Kumar S", "Hosteller", "89%"],
+  ["Divya Prakash", "PPS/2021/411", "Class 2-A", 5, "Prakash R", "Day scholar", "90%"],
+  ["Rahul Iyer", "PPS/2021/412", "Class 3-A", 6, "Iyer Venkat", "Day scholar", "91%"],
+  ["Meera Suresh", "PPS/2021/413", "Class 4-A", 7, "Suresh Babu", "Day scholar", "92%"],
+  ["Sandeep V", "PPS/2021/414", "Class 5-A", 8, "Velmurugan A", "Day scholar", "93%"],
+  ["Kavya Balan", "PPS/2021/415", "Class 6-A", 9, "Balan K", "Hosteller", "94%"],
+  ["Nandhini R", "PPS/2021/416", "Class 7-A", 10, "Rajendran M", "Day scholar", "95%"],
+  ["Madhavan C", "PPS/2021/417", "Class 8-A", 11, "Chandran P", "Day scholar", "96%"],
+  ["Gomathi L", "PPS/2021/418", "Class 9-A", 12, "Loganathan S", "Day scholar", "97%"],
+  ["Dinesh M", "PPS/2021/419", "Class 10-A", 13, "Murugan D", "Hosteller", "92%"],
+  ["Keerthi Pandian", "PPS/2021/420", "Class 11-A", 14, "Pandian R", "Day scholar", "94%"],
+  ["Jayaram D", "PPS/2021/421", "Class 12-A", 15, "Dhanapal J", "Day scholar", "90%"]
+];
+
+const TEACHERS = [
+  ["R. Subha", "PPS-1040", "Senior Teacher", "Tamil", "Grades 6-8", "6-A, 6-C, 7-B", 4, 26],
+  ["T. Arunkumar", "PPS-1041", "Senior Teacher", "Mathematics", "Grades 9-10", "9-A, 9-B, 10-A, 10-B", 13, 28],
+  ["D. Ganesan", "PPS-1042", "Teacher", "Science", "Grades 6-8", "6-A, 6-B, 7-B, 8-A", 9, 24],
+  ["M. Vasanthi", "PPS-1043", "Teacher", "Mathematics", "Grades 1-5", "4-A, 5-A, 5-B, 6-B", 7, 22],
+  ["K. Bhuvaneshwari", "PPS-1044", "Head of Department", "English", "Grades 11-12", "8-A, 8-B, 9-A, 10-A", 16, 27],
+  ["P. Elangovan", "PPS-1045", "Teacher", "Social Science", "Grades 6-8", "7-A, 7-B, 8-A, 9-B", 10, 19],
+  ["B. Latha", "PPS-1046", "Senior Teacher", "English", "Grades 6-8", "6-A, 6-B, 7-A", 11, 25],
+  ["G. Saravanan", "PPS-1047", "Teacher", "Computer Science", "Grades 9-10", "9-A, 10-B, 11-A", 6, 21],
+  ["A. Deepa", "PPS-1048", "Senior Teacher", "Science", "Grades 9-10", "9-C, 10-A, 10-C", 12, 26],
+  ["S. Poongodi", "PPS-1049", "Teacher", "English", "Grades 1-5", "1-A, 2-A, 3-B", 5, 20],
+  ["J. Vennila", "PPS-1050", "Teacher", "Hindi", "Grades 3-10", "5-B, 6-A, 7-C", 8, 18],
+  ["P. Sathish", "PPS-1051", "Senior Teacher", "Physical Education", "Grades 1-12", "Whole school", 14, 16],
+  ["S. Kalaivani", "PPS-1052", "Teacher", "Tamil", "Grades 1-5", "2-B, 3-A, 4-C", 6, 23],
+  ["R. Vignesh", "PPS-1053", "Teacher", "Computer Science", "Grades 3-12", "8-C, 11-A, 12-A", 9, 22],
+  ["T. Kowsalya", "PPS-1054", "Head of Department", "Mathematics", "Grades 11-12", "11-A, 11-B, 12-B", 18, 25]
+];
+
+const initials = (n) => n.replace(/[^A-Za-z ]/g, " ").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+const cell = (text, kind, extra) => Object.assign({ text: text, sub: extra || false, strong: kind === "strong", plain: kind === "plain" || !kind, mono: kind === "mono", link: kind === "link", green: kind === "green", amber: kind === "amber", blue: kind === "blue", navy: kind === "navy", avatar: false }, {});
+const table = (title, meta, columns, rows, opts) => Object.assign({ isTable: true, hasHead: !!title, title: title, meta: meta, columns: columns, rows: rows }, opts || {});
+const kv = (title, pairs) => ({ isKv: true, hasHead: true, title: title, meta: "", pairs: pairs.map(p => ({ k: p[0], v: p[1] })) });
+const list = (title, meta, items, opts) => Object.assign({ isList: true, hasHead: true, title: title, meta: meta, items: items }, opts || {});
+const stat = (label, value, unit, sub, note, pct, bar) => ({ label: label, value: value, unit: unit || false, sub: sub, note: note, pct: pct || false, bar: bar || false });
+const sel = (label, options, onChange, value) => ({ label: label, isSelect: true, isText: false, options: options, onChange: onChange || undefined, value: value || undefined });
+const txt = (label, placeholder) => ({ label: label, isText: true, isSelect: false, placeholder: placeholder });
+
+const ROUTES = [
+  ["01", "Gandhipuram", 12, "18.4", "TN 45 BC 4101", 48, 54, "07:10", "08:05", "Mr. R. Palanisamy", "+91 94430 70101", "TN37 20110004521", 14, "Mr. K. Sundaram", "180k", "4.5", "Ashok Leyland Lynx", 2019, "H19E77130", "MB1KB1201PLM40210", "12 Jul 2026", "Depot bay 01"],
+  ["02", "Anna Nagar", 10, "14.2", "TN 45 BC 4102", 42, 52, "07:05", "08:00", "Mr. S. Manikandan", "+91 94430 70102", "TN37 20120006104", 11, "Mrs. V. Latha", "164k", "4.7", "Tata Starbus", 2019, "H19E77208", "MB1KB1202PLM40214", "04 Jul 2026", "Depot bay 02"],
+  ["03", "Saibaba Colony", 9, "11.6", "TN 45 BC 4103", 38, 52, "07:15", "08:02", "Mr. A. Duraisamy", "+91 94430 70103", "TN37 20130007712", 16, "Mr. R. Anbu", "151k", "4.9", "Tata Starbus", 2020, "H20E11904", "MB1KB1203PLM40219", "28 Jun 2026", "Depot bay 03"],
+  ["04", "Singanallur", 14, "22.8", "TN 45 BC 4104", 52, 56, "06:55", "08:04", "Mr. M. Ganeshan", "+91 94430 70104", "TN37 20110004189", 18, "Mrs. S. Kanaga", "196k", "4.2", "Ashok Leyland Lynx", 2018, "H18E64011", "MB1KB1204PLM40222", "18 Jul 2026", "Depot bay 04"],
+  ["05", "Peelamedu", 8, "9.4", "TN 45 BC 4105", 34, 48, "07:20", "08:00", "Mr. K. Rajkumar", "+91 94430 70105", "TN37 20150009910", 9, "Mr. P. Selvam", "128k", "5.1", "Eicher Skyline", 2021, "H21E20117", "MB1KB1205PLM40227", "09 Jul 2026", "Depot bay 05"],
+  ["06", "Kurichi", 12, "16.2", "TN 45 BC 4106", 44, 52, "07:00", "08:03", "Mr. T. Velmurugan", "+91 94430 70106", "TN37 20140008821", 13, "Mr. G. Ashokan", "172k", "4.6", "Tata Starbus", 2019, "H19E77415", "MB1KB1206PLM40231", "22 Jun 2026", "Depot bay 06"],
+  ["07", "Thudiyalur", 11, "15.8", "TN 45 BC 4107", 33, 46, "07:12", "08:01", "Mr. J. Ravi", "+91 94430 70107", "TN37 20160010430", 8, "Mrs. A. Thenmozhi", "119k", "5.0", "Eicher Skyline", 2021, "H21E20344", "MB1KB1207PLM40236", "16 Jul 2026", "Depot bay 07"],
+  ["08", "Sulur", 13, "21.4", "TN 45 BC 4108", 53, 56, "06:50", "08:05", "Mr. B. Chinnasamy", "+91 94430 70108", "TN37 20100003318", 21, "Mr. D. Murugesan", "204k", "4.1", "Ashok Leyland Lynx", 2018, "H18E64220", "MB1KB1208PLM40241", "30 Jun 2026", "Depot bay 08"]
+];
+
+const STOPS_01 = ["Gandhipuram bus stand", "Cross cut road", "Rathinam circle", "Sarojini street", "Lakshmi mills", "Tatabad signal", "Sivananda colony", "Puliakulam junction", "Ramanathapuram arch", "Sungam bypass", "Water tank road", "School campus"];
+const STOP_POOL = ["bus stop", "main road", "temple street", "market junction", "park avenue", "post office road", "water tank road", "railway gate", "housing unit gate", "bypass signal", "college road", "hospital junction", "police station stop"];
+
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const DOW_SHORT = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const EVENT_CATS = ["Institution", "Instruction", "Assessment", "Holiday", "Co-curricular"];
+const CAL_EVENTS = [
+  [2026, 5, 1, "Academic year opens · Classes 1-12", "Institution"],
+  [2026, 5, 12, "Class teacher orientation", "Instruction"],
+  [2026, 6, 6, "Unit Test 1 begins · Classes 6-12", "Assessment"],
+  [2026, 6, 24, "Parent orientation · primary", "Institution"],
+  [2026, 7, 3, "Unit Test 2 begins · Classes 6-12", "Assessment"],
+  [2026, 7, 8, "Working Saturday — Monday timetable", "Instruction"],
+  [2026, 7, 12, "Class 10 project assignment closes", "Assessment"],
+  [2026, 7, 15, "Independence Day · flag hoisting 08:00", "Holiday"],
+  [2026, 7, 24, "Annual medical camp · whole school", "Institution"],
+  [2026, 7, 29, "Inter-house quiz finals", "Co-curricular"],
+  [2026, 8, 2, "Unit Test 3 timetable published", "Assessment"],
+  [2026, 8, 19, "Fire drill · all blocks", "Institution"],
+  [2026, 8, 22, "Unit Test 3 begins · Classes 6-12", "Assessment"],
+  [2026, 8, 26, "Inter-house sports meet", "Co-curricular"],
+  [2026, 8, 30, "Parent-teacher meeting · all sections", "Institution"],
+  [2026, 9, 2, "Gandhi Jayanti", "Holiday"],
+  [2026, 9, 20, "Deepavali holidays begin · reopens 27 Oct", "Holiday"],
+  [2026, 11, 12, "Half yearly examinations begin", "Assessment"],
+  [2026, 11, 24, "Christmas celebrations", "Co-curricular"],
+  [2027, 0, 14, "Pongal holidays begin", "Holiday"],
+  [2027, 1, 9, "Class 12 model examinations", "Assessment"],
+  [2027, 2, 2, "Board examinations begin · Class 10 & 12", "Assessment"],
+  [2027, 3, 30, "Academic year closes · results published", "Institution"]
+];
+
+class Component extends DCLogic {
+  state = { page: "dashboard", tab: 0, student: null, teacher: null, route: null, hostelSide: 0, decisions: {}, msgRead: false, msgScope: "All classes", msgOpen: false, msgQuery: "", msgActive: 0, noticeOpen: false, noticeTitle: "", noticeBody: "", noticeAud: 0, posted: [], calY: 2026, calM: 7, calDay: null, calForm: false, calText: "", calDayInput: "", calCat: "Institution", added: [] };
+
+  routeStops(i) {
+    const r = ROUTES[i];
+    const n = r[2];
+    const names = i === 0 ? STOPS_01.slice(0, n) : STOP_POOL.slice(0, n - 1).map(s => r[1] + " " + s).concat(["School campus"]);
+    const startMin = parseInt(r[7].split(":")[0], 10) * 60 + parseInt(r[7].split(":")[1], 10);
+    const step = Math.max(3, Math.round((parseInt(r[8].split(":")[0], 10) * 60 + parseInt(r[8].split(":")[1], 10) - startMin) / n));
+    const base = Math.floor(r[5] / n), rem = r[5] - base * n;
+    return names.map((nm, k) => {
+      const t = startMin + step * k;
+      const board = base + (k < rem ? 1 : 0);
+      return {
+        num: (k + 1 < 10 ? "0" : "") + (k + 1),
+        name: nm.charAt(0).toUpperCase() + nm.slice(1),
+        time: (Math.floor(t / 60) < 10 ? "0" : "") + Math.floor(t / 60) + ":" + (t % 60 < 10 ? "0" : "") + (t % 60),
+        board: board + " board", count: board
+      };
+    });
+  }
+
+  transportIndex() {
+    return {
+      title: "Transport", subtitle: "Routes, stops and the students boarding at each stop.",
+      actions: [], hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [],
+      stats: [stat("BUSES", "8", "in the register", "8 on route today · 0 off road", "Fleet age 4 to 8 years"),
+        stat("ROUTES", "8", "live this term", "covering 89 stops", "Route 04 added 18 Aug"),
+        stat("STUDENTS FERRIED", "344", "of 416 seats", "72 seats free across the fleet", "Waiting list of 6", "83%", 83),
+        stat("AVG OCCUPANCY", "83%", "fleet wide", "Route 04 fullest at 93%", "Route 07 lightest at 72%", "83%", 83),
+        stat("DOCS TO RENEW", "3", "of 40 documents", "within 45 days · 1 overdue", "PUC for 4101 due in 16 days", "8%", 8)],
+      rows: [{ grid: "minmax(0, 1fr)", cols: [{
+        isRoutes: true, hasHead: true, title: "Routes", meta: "Open a route to see its bus, crew, stops and the students boarding",
+        routes: ROUTES.map((r, i) => ({
+          num: r[0], name: "Route " + r[0], students: String(r[5]),
+          meta: r[1] + " · " + r[2] + " stops · " + r[3] + " km · " + r[4],
+          go: () => { this.setState({ route: i }); window.scrollTo(0, 0); }
+        }))
+      }] }]
+    };
+  }
+
+  routeDetail(i) {
+    const r = ROUTES[i];
+    const stops = this.routeStops(i);
+    const occ = Math.round((r[5] / r[6]) * 100);
+    const busHead = {
+      isBusHead: true, hasHead: false, reg: r[4], status: "On route",
+      meta: "Route " + r[0] + " · " + r[2] + " stops · " + r[3] + " km · departs " + r[7] + " · arrives " + r[8],
+      back: () => { this.setState({ route: null }); window.scrollTo(0, 0); }
+    };
+    const metric = (label, value, unit, note, pct) => ({ isMetric: true, hasHead: false, label: label, value: value, unit: unit || false, note: note, pct: pct || false });
+    const groups = stops.filter(s => s.count > 0).map((s, k) => ({
+      num: s.num, name: s.name, sub: "pickup " + s.time + " · " + s.count + " students board here",
+      students: Array.from({ length: s.count }).map((_, j) => {
+        const st = STUDENTS[(k * 3 + j + i) % STUDENTS.length];
+        return { initials: initials(st[0]), name: st[0], meta: st[2].replace("Class ", "") + " · roll " + st[3] };
+      })
+    }));
+    return {
+      title: "Transport", subtitle: "Routes, stops and the students boarding at each stop.",
+      actions: [], hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [],
+      stats: this.transportIndex().stats,
+      rows: [
+        { grid: "minmax(0, 1fr)", cols: [busHead] },
+        { grid: "repeat(auto-fit, minmax(200px, 1fr))", cols: [
+          metric("OCCUPANCY", r[5] + "/" + r[6], false, (r[6] - r[5]) + " seats free on this bus", occ + "%"),
+          metric("ROUTE LENGTH", r[3], "km", r[2] + " stops one way"),
+          metric("ODOMETER", r[14], "km", "next service at " + (parseInt(r[14], 10) + 4) + "k km", "92%"),
+          metric("MILEAGE", r[15], false, "30 day average"),
+          metric("TERM FEE", "₹9,500", false, "collected term wise")
+        ] },
+        { grid: "minmax(0, 2fr) minmax(0, 1fr)", cols: [
+          { isSpecs: true, hasHead: true, title: "Vehicle specification", meta: "Registered 14 Jun " + r[17], specs: [
+            { label: "MAKE & MODEL", value: r[16] }, { label: "BODY TYPE", value: "School bus, 2×2 seating" }, { label: "YEAR OF MANUFACTURE", value: String(r[17]) },
+            { label: "FUEL & EMISSION", value: "Diesel BS-VI" }, { label: "SEATING CAPACITY", value: (r[6] - 2) + " + 1 + 1" }, { label: "CHASSIS NO", value: r[19] },
+            { label: "ENGINE NO", value: r[18] }, { label: "ENGINE", value: "3.8 L · 125 hp" }, { label: "WHEELBASE", value: "5,190 mm" },
+            { label: "TYRE SIZE / COUNT", value: "8.25 R20 · 6 + 1" }, { label: "FUEL TANK", value: "160 L" }, { label: "OWNERSHIP", value: "School owned" },
+            { label: "RTO", value: "Coimbatore South (TN 45)" }, { label: "GPS DEVICE", value: "TRK-12" + r[0] + " · online" }, { label: "PARKING BAY", value: r[21] },
+            { label: "LAST SERVICE", value: r[20] }
+          ] },
+          { isOccupancy: true, hasHead: true, title: "Occupancy", meta: (r[6] - r[5]) + " seats free", ratio: r[5] + "/" + r[6], pct: occ + "%", bar: occ,
+            splits: [{ label: "STUDENTS", value: String(r[5]), note: "boarding across " + r[2] + " stops" }, { label: "STAFF", value: "2", note: "driver and attendant" }] }
+        ] },
+        { grid: "minmax(0, 2fr) minmax(0, 1fr)", cols: [
+          { isStops: true, hasHead: true, title: "Route & stop timings", meta: r[2] + " stops · " + r[3] + " km", from: stops[0].name, to: "School campus", stops: stops },
+          { isCrew: true, hasHead: true, title: "Crew", meta: "", driver: r[9], driverInitials: initials(r[9].replace("Mr. ", "").replace("Mrs. ", "")), driverPhone: r[10],
+            driverFacts: [{ label: "LICENCE NO", value: r[11] }, { label: "VALID TILL", value: "19 May 2028" }, { label: "EXPERIENCE", value: r[12] + " yrs" }, { label: "BLOOD GROUP", value: "B+" }],
+            attendant: r[13], attendantInitials: initials(r[13].replace("Mr. ", "").replace("Mrs. ", "")) }
+        ] },
+        { grid: "minmax(0, 2fr) minmax(0, 1fr)", cols: [
+          { isStopStudents: true, hasHead: true, title: "Stops & students", meta: r[5] + " students across " + r[2] + " stops", groups: groups },
+          { isDocs: true, hasHead: true, title: "Documents & compliance", meta: "", docs: [
+            { name: "Insurance (comprehensive)", issuer: "United India · POL/12" + r[0] + "/26", date: "14 Nov 2026", status: "valid", due: false, ok: true },
+            { name: "Fitness certificate", issuer: "RTO Coimbatore (South)", date: "02 Sept 2026", status: "due in 21d", due: true, ok: false },
+            { name: "Educational institution permit", issuer: "Permit EI/12" + r[0], date: "31 Mar 2027", status: "valid", due: false, ok: true },
+            { name: "Pollution under control", issuer: "PUC/12" + r[0] + "/26", date: "28 Aug 2026", status: "due in 16d", due: true, ok: false },
+            { name: "Road tax", issuer: "Quarterly · TN", date: "31 Jan 2027", status: "valid", due: false, ok: true }
+          ] }
+        ] },
+        { grid: "repeat(auto-fit, minmax(320px, 1fr))", cols: [
+          kv("Safety & fitment", [["First-aid box", "checked 28 Jul 2026"], ["Fire extinguisher", "refill due 04 Oct 2026"], ["Emergency exit door", "operational"], ["Speed governor (60 km/h)", "sealed & verified"], ["CCTV (2 cameras)", "recording"], ["Reverse alarm & horn", "working"], ["Tyre condition", "good"]]),
+          kv("Route card", [["Area covered", r[1]], ["Pickup window", r[7] + " – " + r[8]], ["Driver phone", r[10]], ["Licence", r[11]], ["Seating capacity", String(r[6])], ["Term fee", "₹9,500"]])
+        ] }
+      ]
+    };
+  }
+
+  shiftMonth(step) {
+    let m = this.state.calM + step, y = this.state.calY;
+    if (m > 11) { m = 0; y += 1; } else if (m < 0) { m = 11; y -= 1; }
+    this.setState({ calY: y, calM: m, calDay: null });
+  }
+
+  addEvent() {
+    const dim = new Date(this.state.calY, this.state.calM + 1, 0).getDate();
+    let d = parseInt(this.state.calDayInput, 10);
+    if (!d || d < 1) d = 1;
+    if (d > dim) d = dim;
+    const ev = [this.state.calY, this.state.calM, d, this.state.calText.trim(), this.state.calCat, true];
+    this.setState({ added: this.state.added.concat([ev]), calForm: false, calText: "", calDayInput: "", calDay: d });
+  }
+
+  calendarPage() {
+    const y = this.state.calY, m = this.state.calM;
+    const monthLabel = MONTH_NAMES[m] + " " + y;
+    const all = CAL_EVENTS.concat(this.state.added);
+    const inMonth = all.filter(e => e[0] === y && e[1] === m).sort((a, b) => a[2] - b[2]);
+    const hasEvt = {};
+    inMonth.forEach(e => { hasEvt[e[2]] = true; });
+    const first = new Date(y, m, 1).getDay();
+    const dim = new Date(y, m + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < first; i++) cells.push({ blank: true, day: false });
+    for (let d = 1; d <= dim; d++) {
+      const sun = new Date(y, m, d).getDay() === 0;
+      const evt = !!hasEvt[d];
+      const selected = this.state.calDay === d;
+      cells.push({
+        blank: false, day: true, label: String(d),
+        bg: selected ? "#dbe7ff" : (evt ? "#eef4ff" : (sun ? "#f6f8fb" : "#ffffff")),
+        fg: sun && !evt ? "#b6c0cf" : (evt || selected ? "#1f4fa8" : "#10243f"),
+        border: selected ? "#1f6feb" : (evt ? "#dbe7ff" : (sun ? "#f0f3f8" : "#e4e9f2")),
+        weight: evt || selected ? 600 : 500,
+        go: () => this.setState({ calDay: selected ? null : d, calDayInput: selected ? "" : String(d) })
+      });
+    }
+
+    const shown = this.state.calDay ? inMonth.filter(e => e[2] === this.state.calDay) : inMonth;
+    const eventsSec = {
+      isEvents: true, hasHead: true,
+      title: this.state.calDay ? MONTH_NAMES[m] + " " + this.state.calDay : "Events in " + MONTH_NAMES[m],
+      meta: this.state.calDay ? "One day shown · click that day again in the grid to see the whole month" : inMonth.length + " events this month",
+      badge: false,
+      empty: shown.length === 0,
+      events: shown.map(e => ({
+        day: String(e[2]), dow: DOW_SHORT[new Date(e[0], e[1], e[2]).getDay()],
+        title: e[3], cat: e[4],
+        date: MONTH_NAMES[e[1]] + " " + e[2] + ", " + e[0],
+        published: !e[5], mine: !!e[5]
+      }))
+    };
+
+    const gridSec = {
+      isCalendar: true, hasHead: false, monthLabel: monthLabel,
+      countLabel: inMonth.length + " calendar events",
+      dows: ["S", "M", "T", "W", "T", "F", "S"], cells: cells,
+      prev: () => this.shiftMonth(-1), next: () => this.shiftMonth(1)
+    };
+
+    const rows = [];
+    if (this.state.calForm) {
+      rows.push({ cols: [{
+        isNewEvent: true, hasHead: false, monthLabel: monthLabel,
+        day: this.state.calDayInput, text: this.state.calText, cat: this.state.calCat, cats: EVENT_CATS,
+        canAdd: this.state.calText.trim().length > 0, cantAdd: this.state.calText.trim().length === 0,
+        onDay: (e) => this.setState({ calDayInput: e.target.value.replace(/[^0-9]/g, "").slice(0, 2) }),
+        onText: (e) => this.setState({ calText: e.target.value }),
+        onCat: (e) => this.setState({ calCat: e.target.value }),
+        add: () => this.addEvent(),
+        close: () => this.setState({ calForm: false, calText: "" })
+      }] });
+    }
+    rows.push({ cols: [gridSec, eventsSec] });
+
+    return {
+      title: "Academic Calendar",
+      subtitle: "Academic year 2026–27 · published events are read-only · you can add new events",
+      actions: this.state.calForm ? [] : [{ label: "+  Add event", primary: true, ghost: false, go: () => this.setState({ calForm: true, calDayInput: this.state.calDay ? String(this.state.calDay) : "" }) }],
+      hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [],
+      rows: rows
+    };
+  }
+
+  go(page) { this.setState({ page: page, tab: 0, student: null, teacher: null, route: null }); window.scrollTo(0, 0); }
+
+  nav() {
+    return NAV.map(g => ({
+      label: g[0],
+      items: g[1].map(it => {
+        const active = this.state.page === it[0];
+        return { label: it[1], badge: it[2] || false, icon: it[3], active: active, idle: !active, go: () => this.go(it[0]) };
+      })
+    }));
+  }
+
+  tabs(labels) {
+    return labels.map((l, i) => ({ label: l, active: this.state.tab === i, idle: this.state.tab !== i, go: () => this.setState({ tab: i }) }));
+  }
+
+  timetable() {
+    const periods = [["P1", "8:40-9:25"], ["P2", "9:30-10:15"], ["P3", "10:35-11:20"], ["P4", "11:25-12:10"], ["P5", "1:00-1:45"], ["P6", "1:50-2:35"], ["P7", "2:40-3:25"]];
+    const subs = ["Science", "Computer Science", "Tamil", "Mathematics", "Social Science", "Physical Education", "English"];
+    const staff = ["T. Arunkumar", "K. Bhuvaneshwari", "G. Saravanan", "J. Vennila", "B. Latha", "M. Vasanthi", "R. Subha", "P. Elangovan", "A. Deepa", "S. Poongodi", "M. Anandhi", "D. Ganesan"];
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const cells = [];
+    days.forEach((d, di) => {
+      cells.push({ isDay: true, isSlot: false, day: d });
+      for (let p = 0; p < 7; p++) {
+        cells.push({ isDay: false, isSlot: true, subject: subs[(di * 3 + p) % 7], teacher: staff[(di * 5 + p * 2) % staff.length] });
+      }
+    });
+    return { isTimetable: true, hasHead: true, title: "Class 8-B timetable", meta: "CLASSES 6-8 · published by Mrs. R. Subha, academic co-ordinator", badge: "Published · 02 Sept 2026", periods: periods.map(p => ({ name: p[0], time: p[1] })), cells: cells };
+  }
+
+  studentPage(idx) {
+    const s = STUDENTS[idx];
+    const hero = {
+      isHero: true, hasHead: false, photoLabel: "student photo\n35 × 45 mm", photoNote: "ID issued 06 Jun 2021", rectPhoto: true, roundPhoto: false, monoChips: true, pillChips: false,
+      name: s[0], line: s[2] + " · Roll " + s[3] + " · Emerald · Green · 6 yrs",
+      chips: ["Adm " + s[1], "Roll " + s[3], "O+", s[5], s[5] === "Hosteller" ? "Not applicable · hosteller" : "Route 01 · Gandhipuram"],
+      tiles: [
+        { label: "Attendance", value: s[6], note: "Term I to date" },
+        { label: "Unit Test 2 average", value: "72%", note: "Class average 92%" },
+        { label: "Fee status", value: "₹18,400 due", note: "Regular · Term wise" },
+        { label: "Residence", value: s[5], note: s[5] === "Hosteller" ? "Boys hostel · Block C" : "Bus route 01" }
+      ]
+    };
+    const parents = {
+      isParents: true, hasHead: true, title: "Parents & photographs", meta: "Guardian details recorded at admission",
+      parents: [
+        { role: "FATHER", photo: "father photo", name: s[4], occupation: "Bank manager", phone: "+91 98400 21100", extra: "suresh.k@email.com" },
+        { role: "MOTHER", photo: "mother photo", name: "Priya Suresh", occupation: "Homemaker", phone: "+91 98402 33200", extra: "Emergency · Meena R · Aunt" }
+      ]
+    };
+    return {
+      title: s[0], subtitle: s[1] + "  ·  " + s[2] + "  ·  Roll " + s[3], back: "Back to students", onBack: () => this.go("students"),
+      compact: true, full: false,
+      actions: [], hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [],
+      rows: [
+        { cols: [hero] },
+        { cols: [parents] },
+        { cols: [
+          kv("Student", [["Date of birth", "02 Jan 2020"], ["Gender", "Male"], ["Blood group", "O+"], ["Aadhaar (last 4)", "XXXX XXXX 4100"], ["Mother tongue", "Tamil"], ["Second language", "Sanskrit"], ["House", "Emerald · Green"], ["Date of admission", "06 Jun 2021"], ["Admission quota", "Management"]]),
+          kv("Father / guardian", [["Name", s[4]], ["Relationship", "Father"], ["Occupation", "Bank manager"], ["Phone", "+91 98400 21100"], ["Email", "suresh.k@email.com"]]),
+          kv("Mother", [["Name", "Priya Suresh"], ["Occupation", "Homemaker"], ["Phone", "+91 98402 33200"]])
+        ] },
+        { cols: [
+          kv("Emergency & address", [["Emergency contact", "Meena R · Aunt"], ["Emergency phone", "+91 90003 55400"], ["Address", "4/1 Third Avenue"], ["City", "Anna Nagar, Coimbatore 641104"]]),
+          kv("School", [["Class teacher", "R. Subha"], ["Section", s[2] + " · Block A · Room 10"], ["Residence", s[5]], ["Bus route", s[5] === "Hosteller" ? "Not applicable · hosteller" : "Route 01"], ["Fee category", "Regular · Term wise"], ["Academic year", "2026-27"]])
+        ] }
+      ]
+    };
+  }
+
+  teacherPage(idx) {
+    const t = TEACHERS[idx];
+    const hero = {
+      isHero: true, hasHead: false, photoLabel: "staff\nphoto", photoNote: false, roundPhoto: true, rectPhoto: false, pillChips: true, monoChips: false,
+      name: t[0], line: t[1] + " · " + t[2] + " · " + t[3],
+      chips: ["Class teacher " + t[5].split(",")[0].trim(), t[3], t[4]],
+      tiles: [
+        { label: "Periods per week", value: t[7], note: "Across 3 sections" },
+        { label: "Syllabus coverage", value: "68%", note: "Term I target 85%" },
+        { label: "Experience", value: t[6] + " yrs", note: "Joined 03 Jun 2022" },
+        { label: "Staff attendance", value: "92%", note: "2 leaves availed" }
+      ]
+    };
+    return {
+      title: t[0], subtitle: t[1] + "  ·  " + t[3], back: "Back to teachers", onBack: () => this.go("teachers"), compact: true,
+      actions: [{ label: "Print profile", ghost: true, primary: false }],
+      hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [],
+      rows: [
+        { cols: [hero] },
+        { cols: [
+          kv("Profile", [["Full name", t[0]], ["Employee ID", t[1]], ["Designation", t[2]], ["Department", t[3]], ["Gender", "Female"], ["Experience", t[6] + " years"], ["Joining date", "03 Jun 2022"]]),
+          kv("Contact", [["Official email", "subha.1@pavakie.edu.in"], ["Phone number", "+91 98410 21000"], ["School / campus", "Pavakie Public School, Main Campus"], ["Staff room", "Block A · Room 10"]]),
+          kv("Academic details", [["Highest qualification", "M.Sc " + t[3] + ", M.Ed"], ["Specialization", "Curriculum design"], ["University", "University of Madras"], ["Year of graduation", "2020"]])
+        ] },
+        { cols: [
+          kv("Teaching details", [["Subjects handled", t[3]], ["Classes handled", t[5]], ["Class teacher of", t[5].split(",")[0].trim()], ["Periods per week", t[7]], ["Academic year", "2026-27"]]),
+          kv("Professional information", [["Areas of expertise", "Curriculum design"], ["Certifications", "CBSE Master Trainer"], ["Workshops / training", "NCERT Pedagogy 2025"], ["Achievements & awards", "Best Teacher Award 2023"]])
+        ] }
+      ]
+    };
+  }
+
+  academicsPage() {
+    const t = this.state.tab;
+    const labels = ["Academic years", "Grades", "Sections", "Subjects", "Departments", "Class advisors", "Co-ordinators & roles"];
+    let sec;
+    if (t === 0) {
+      sec = table("Academic years", "3 academic years", ["YEAR", "DURATION", "STATUS"], [
+        { cells: [cell("2027-2028", "strong"), cell("09 Jun 2027 – 30 Apr 2028", "mono"), cell("PLANNED", "amber")], cursor: "default", go: () => {} },
+        { cells: [cell("2026-2027 · current", "strong"), cell("01 Jun 2026 – 30 Apr 2027", "mono"), cell("ACTIVE", "green")], cursor: "default", go: () => {} },
+        { cells: [cell("2025-2026", "strong"), cell("02 Jun 2025 – 30 Apr 2026", "mono"), cell("CLOSED", "plain")], cursor: "default", go: () => {} }
+      ]);
+    } else if (t === 1) {
+      const grades = [["LKG", -2, "Pre primary"], ["UKG", -1, "Pre primary"], ["Standard 1", 1, "Primary"], ["Standard 2", 2, "Primary"], ["Standard 3", 3, "Primary"], ["Standard 4", 4, "Primary"], ["Standard 5", 5, "Primary"], ["Standard 6", 6, "Middle"], ["Standard 7", 7, "Middle"], ["Standard 8", 8, "Middle"], ["Standard 9", 9, "Secondary"], ["Standard 10", 10, "Secondary"], ["Standard 11", 11, "Higher secondary"], ["Standard 12", 12, "Higher secondary"]];
+      sec = table("Grades", "14 grades", ["NAME", "LEVEL NO.", "STAGE", "STATUS"],
+        grades.map(g => ({ cells: [cell(g[0], "strong"), cell(String(g[1]), "mono"), cell(g[2], "plain"), cell("Active", "green")], cursor: "default", go: () => {} })));
+    } else if (t === 2) {
+      const rows = [];
+      ["LKG", "UKG", "Standard 1", "Standard 2", "Standard 3", "Standard 4", "Standard 5", "Standard 6", "Standard 7", "Standard 8", "Standard 9", "Standard 10", "Standard 11", "Standard 12"].forEach(std => {
+        ["A", "B", "C", "D"].forEach(s => rows.push({ cells: [cell(std, "strong"), cell(s, "plain"), cell("20", "mono"), cell("Active", "green")], cursor: "default", go: () => {} }));
+      });
+      sec = table("Sections", "56 of 56 sections", ["STANDARD", "SECTION", "CAPACITY", "STATUS"], rows);
+    } else if (t === 3) {
+      const subs = [["Tamil", "PPS-TA", "language", "Classes 1-12", 6], ["English", "PPS-EN", "language", "Classes 1-12", 7], ["Hindi", "PPS-HI", "second language", "Classes 3-10", 4], ["Mathematics", "PPS-MA", "core", "Classes 1-12", 7], ["Science", "PPS-SC", "core", "Classes 1-8", 6], ["Physics", "PPS-PH", "core", "Classes 11-12", 6], ["Chemistry", "PPS-CH", "core", "Classes 11-12", 6], ["Biology", "PPS-BI", "elective", "Classes 11-12", 6], ["Social Science", "PPS-SS", "core", "Classes 1-10", 5], ["Computer Science", "PPS-CS", "core", "Classes 3-12", 4], ["Physical Education", "PPS-PE", "co-curricular", "Classes 1-12", 2], ["Art & Craft", "PPS-AR", "co-curricular", "Classes 1-8", 2]];
+      sec = table("Subjects", "12 subjects", ["NAME", "CODE", "TYPE", "GRADE BAND", "PERIODS", "STATUS"],
+        subs.map(s => ({ cells: [cell(s[0], "strong"), cell(s[1], "mono"), cell(s[2], "plain"), cell(s[3], "plain"), cell(String(s[4]), "mono"), cell("Active", "green")], cursor: "default", go: () => {} })));
+    } else if (t === 4) {
+      const deps = [["Department of Tamil", "DEPT-TAM", "R. Subha", 2], ["Department of Mathematics", "DEPT-MAT", "T. Arunkumar", 3], ["Department of Science", "DEPT-SCI", "D. Ganesan", 3], ["Department of English", "DEPT-ENG", "K. Bhuvaneshwari", 3], ["Department of Social Science", "DEPT-SOC", "P. Elangovan", 1], ["Department of Computer Science", "DEPT-COM", "G. Saravanan", 1], ["Department of Hindi", "DEPT-HIN", "J. Vennila", 1], ["Department of Physical Education", "DEPT-PHY", "P. Sathish", 1]];
+      sec = table("Departments", "8 departments", ["NAME", "CODE", "HEAD OF DEPARTMENT", "STAFF", "STATUS"],
+        deps.map(d => ({ cells: [cell(d[0], "strong"), cell(d[1], "mono"), cell(d[2], "plain"), cell(d[3] + " teachers", "plain"), cell("Active", "green")], cursor: "default", go: () => {} })));
+    } else if (t === 5) {
+      const rows = [];
+      const staff = TEACHERS.map(t2 => t2[0]).concat(["S. Poongodi", "J. Vennila", "P. Sathish", "S. Kalaivani", "R. Vignesh", "T. Kowsalya"]);
+      ["LKG", "UKG", "Standard 1", "Standard 2", "Standard 3", "Standard 4", "Standard 5", "Standard 6", "Standard 7", "Standard 8", "Standard 9", "Standard 10", "Standard 11", "Standard 12"].forEach((std, si) => {
+        ["A", "B", "C", "D"].forEach((s, i) => rows.push({ cells: [cell(std, "strong"), cell(s, "plain"), cell(staff[(si * 4 + i) % staff.length], "plain"), cell("since 02 Jun 2026", "plain")], cursor: "default", go: () => {} }));
+      });
+      sec = table("Class advisors", "One advisor per section for the current academic year. Assigning a new one automatically ends the previous assignment. · 56 of 56 sections", ["STANDARD", "SECTION", "FACULTY NAME", "ASSIGNED"], rows);
+    } else {
+      const roles = [["Mrs. G. Amudha", "Academic co-ordinator", "Classes 1-5"], ["Mrs. R. Subha", "Academic co-ordinator", "Classes 6-8"], ["Mr. S. Ravichandran", "Academic co-ordinator", "Classes 9-10"], ["Mrs. K. Bhuvaneshwari", "Academic co-ordinator", "Classes 11-12"], ["Mr. P. Sathish", "Sports faculty", "Whole school"], ["Mrs. B. Amudha", "Librarian", "Whole school"], ["Mrs. K. Bhuvaneshwari", "Examination in-charge", "Classes 9-12"]];
+      sec = table("Co-ordinators & roles", "One person can cover several standards, or a whole stage. · 7 role assignments", ["STAFF", "ROLE", "COVERAGE"],
+        roles.map(r => ({ cells: [cell(r[0], "strong"), cell(r[1], "plain"), cell(r[2], "plain")], cursor: "default", go: () => {} })));
+    }
+    return {
+      title: "Academics", subtitle: "The academic structure every other module builds on — years, grades, sections, subjects, departments, advisors and roles.",
+      hasTabs: true, tabs: this.tabs(labels), hasStats: false, stats: [], hasFilters: false, filters: [], actions: [], rows: [{ cols: [sec] }]
+    };
+  }
+
+  pages() {
+    const p = this.state.page;
+    if (this.state.student !== null) return this.studentPage(this.state.student);
+    if (this.state.teacher !== null) return this.teacherPage(this.state.teacher);
+
+    if (p === "academics") return this.academicsPage();
+
+    if (p === "dashboard") {
+      return {
+        title: "Good morning, Mr. Kalaiselvan",
+        subtitle: "School overview · principal console · Saturday, 12 September 2026",
+        note: "Updated just now", pill: "6 requests need your decision · 3 high priority", actions: [],
+        hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [],
+        stats: [
+          stat("ACTIVE STUDENTS", "96", false, "Across 36 active sections", "20 hostellers · 76 day scholars"),
+          stat("FACULTY & STAFF ON ROLL", "23", false, "15 teaching · 8 support", "8 active subject departments"),
+          stat("PARENT LOGINS ISSUED", "92", false, "4 families yet to activate", "96% of guardians on the parent app"),
+          stat("ACADEMIC YEAR", "2026–27", false, "01 Jun 2026 – 30 Apr 2027", "Term I · 68 of 168 working days done"),
+          stat("HOSTEL OCCUPANCY", "42%", false, "20 / 48 beds occupied", "Boys Block C · Girls Block D"),
+          stat("TRANSPORT FLEET", "8", false, "Vehicles registered", "344 of 416 seats taken · 3 documents due"),
+          stat("SUBJECTS OFFERED", "12", false, "Core, language and elective", "4 grade bands · 4 co-ordinators mapped"),
+          stat("STAFF MARKED TODAY", "0 / 23", false, "0 present · 0 absent · 0 on leave", "3 correction reports open")
+        ],
+        rows: [
+          { cols: [
+            list("Recent administrative activity", "", [
+              { title: "Transport alert acknowledged", mono: "TN 45 BC 4104", sub: "transport alert · Transport office", status: "Success", green: true, amber: false, right: "1 h ago", count: false },
+              { title: "Work order MNT-318 assigned", mono: "Sri Balaji Electricals", sub: "maintenance · Mrs. B. Latha", status: "Success", green: true, amber: false, right: "2 h ago", count: false },
+              { title: "Unit Test 3 timetable published", mono: "Classes 6-12", sub: "examination · Mrs. R. Subha", status: "Success", green: true, amber: false, right: "3 h ago", count: false },
+              { title: "Fee concession request raised", mono: "APR-2041", sub: "approval · Mrs. R. Subha", status: "Pending", green: false, amber: true, right: "Yesterday", count: false }
+            ], { action: "View audit trail" }),
+            list("Needs attention", "6 flags", [
+              { title: "Students with no guardian on file", mono: false, sub: "Admission files incomplete", green: false, amber: false, right: false, count: "4" },
+              { title: "Students with no ID card issued", mono: false, sub: "Photograph pending upload", green: false, amber: false, right: false, count: "3" },
+              { title: "Teachers not mapped to a class", mono: false, sub: "Newly admitted this month", green: false, amber: false, right: false, count: "3" },
+              { title: "Bus documents due within 45 days", mono: false, sub: "Fitness certificate and PUC", green: false, amber: false, right: false, count: "3" },
+              { title: "Attendance corrections awaiting decision", mono: false, sub: "Reported from the teacher app", green: false, amber: false, right: false, count: "3" },
+              { title: "Requests awaiting your decision", mono: false, sub: "3 of them high priority", green: false, amber: false, right: false, count: "6" }
+            ])
+          ] },
+          { cols: [
+            { isNotices: true, hasHead: true, title: "Notices", meta: "Latest circulars across the school", action: "View all", notices: [
+              { tag: "EXAM", date: "Today · 08:10", owner: "Principal's office", status: "PUBLISHED", title: "Unit Test 3 timetable published for Classes 6-12", body: "Unit Test 3 runs from 22 September to 29 September. Question papers with the blueprint must reach the co-ordinator four working days before the paper date.", audience: "Audience · All teachers · Classes 6-12" },
+              { tag: "SCHOOL", date: "Yesterday", owner: "You", status: "PUBLISHED", title: "Inter-house sports meet moved to 26 September", body: "The meet moves to Saturday 26 September because of the ground resurfacing work. House practice slots stay unchanged.", audience: "Audience · Everyone in the school" }
+            ] }
+          ] }
+        ]
+      };
+    }
+
+    if (p === "students") {
+      return {
+        title: "Students", subtitle: "Every student on the roll. Open a record for the full personal file.",
+        pill: "96 of 96 students", hasStats: false, stats: [], hasTabs: false, tabs: [], actions: [],
+        hasFilters: true, filters: [txt("SEARCH", "Name, admission number, class or parent"), sel("STANDARD", ["All standards", "Class 1", "Class 2", "Class 8"]), sel("SECTION", ["All sections", "A", "B", "C", "D"])],
+        rows: [{ cols: [table("", "", ["STUDENT", "ADMISSION NO", "CLASS", "ROLL", "GUARDIAN", "RESIDENCE", "ATTENDANCE"],
+          STUDENTS.map((s, i) => ({
+            cursor: "pointer", go: () => { this.setState({ student: i }); window.scrollTo(0, 0); },
+            cells: [Object.assign(cell(s[0], "strong"), { avatar: initials(s[0]) }), cell(s[1], "mono"), cell(s[2], "strong"), cell(String(s[3]), "mono"), cell(s[4], "plain"), cell(s[5], "plain"), cell(s[6], "strong")]
+          })), { hasHead: false })] }]
+      };
+    }
+
+    if (p === "teachers") {
+      return {
+        title: "Teachers", subtitle: "Every teacher in the school. Open a record for the full staff file.",
+        pill: "15 of 15 teachers", hasStats: false, stats: [], hasTabs: false, tabs: [], actions: [],
+        hasFilters: true, filters: [txt("SEARCH", "Name, employee ID, subject or designation"), sel("SUBJECT", ["All subjects", "Tamil", "English", "Mathematics", "Science"]), sel("GRADE BAND", ["All grades", "Grades 1-5", "Grades 6-8", "Grades 9-10", "Grades 11-12"]), sel("STANDARD", ["All standards", "Class 6", "Class 8", "Class 10"])],
+        rows: [{ cols: [{ isCards: true, hasHead: false, people: TEACHERS.map((t, i) => ({
+          initials: initials(t[0]), name: t[0], meta: t[1] + " · " + t[2], subject: t[3], band: t[4], classes: t[5], exp: t[6] + " years experience", periods: t[7] + " periods",
+          go: () => { this.setState({ teacher: i }); window.scrollTo(0, 0); }
+        })) }] }]
+      };
+    }
+
+    if (p === "enroll" || p === "admit") {
+      const isStudent = p === "enroll";
+      return {
+        title: isStudent ? "Enroll students" : "Admit faculty",
+        subtitle: isStudent ? "Create an admission record — personal file, guardians and section placement." : "Create a staff record — profile, department and teaching load.",
+        hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [], actions: [],
+        rows: [
+          { cols: [{ isForm: true, hasHead: true, title: isStudent ? "Student details" : "Faculty details", meta: "Fields marked in the admission policy are mandatory", submit: isStudent ? "Create admission record" : "Create staff record",
+            fields: isStudent
+              ? [txt("FULL NAME", "e.g. Aarav S"), txt("ADMISSION NO", "PPS/2026/0xx"), sel("STANDARD", ["Class 1", "Class 2", "Class 6", "Class 8"]), sel("SECTION", ["A", "B", "C", "D"]), txt("DATE OF BIRTH", "DD / MM / YYYY"), sel("GENDER", ["Male", "Female"]), sel("BLOOD GROUP", ["O+", "A+", "B+", "AB+"]), sel("QUOTA", ["Management", "Government", "Staff ward"]), sel("RESIDENCE", ["Day scholar", "Hosteller"]), sel("BUS ROUTE", ["Not applicable", "Route 01", "Route 04"]), txt("MOTHER TONGUE", "Tamil"), sel("SECOND LANGUAGE", ["Hindi", "Sanskrit", "French"])]
+              : [txt("FULL NAME", "e.g. R. Subha"), txt("EMPLOYEE ID", "PPS-10xx"), sel("DESIGNATION", ["Teacher", "Senior Teacher", "Head of Department"]), sel("DEPARTMENT", ["Tamil", "English", "Mathematics", "Science"]), sel("GRADE BAND", ["Grades 1-5", "Grades 6-8", "Grades 9-10", "Grades 11-12"]), txt("QUALIFICATION", "M.Sc, M.Ed"), txt("EXPERIENCE", "in years"), txt("JOINING DATE", "DD / MM / YYYY"), txt("OFFICIAL EMAIL", "name@pavakie.edu.in"), txt("PHONE", "+91"), sel("STAFF ROOM", ["Block A · Room 10", "Block B · Room 4"]), sel("CLASS TEACHER OF", ["Not assigned", "6-A", "8-B"])]
+          }] },
+          { cols: [isStudent
+            ? kv("Guardians to be captured next", [["Father / guardian", "Name, occupation, phone, email"], ["Mother", "Name, occupation, phone"], ["Emergency contact", "Name, relation and phone"], ["Photographs", "Student 35 × 45 mm, both parents"]])
+            : kv("To be captured next", [["Teaching load", "Subjects, classes and periods per week"], ["Documents", "Degree, TET and experience letters"], ["Bank details", "For salary processing"], ["Photograph", "Staff photo 35 × 45 mm"]])
+          ] }
+        ]
+      };
+    }
+
+    if (p === "attendance") {
+      return {
+        title: "Staff attendance", subtitle: "Daily marking for teaching and support staff · Saturday, 12 September 2026",
+        actions: [], hasTabs: false, tabs: [], hasStats: true,
+        stats: [stat("MARKED TODAY", "0 / 23", false, "Marking opens at 08:00", "Roll call by the office assistant", "0%", 0),
+          stat("ON LEAVE", "2", false, "1 medical · 1 casual", "Substitutes mapped for 8-A, 8-C"),
+          stat("CORRECTIONS OPEN", "3", false, "Raised from the teacher app", "Awaiting your decision", "18%", 18),
+          stat("MONTH AVERAGE", "94%", false, "September to date", "Target 96%", "94%", 94)],
+        hasFilters: true, filters: [sel("STAFF TYPE", ["All staff", "Teaching", "Support"]), sel("DEPARTMENT", ["All departments", "Tamil", "English", "Science"]), sel("STATUS", ["All", "Present", "Absent", "On leave"])],
+        rows: [{ cols: [table("Attendance register", "23 staff on roll", ["STAFF", "EMPLOYEE ID", "DEPARTMENT", "IN", "OUT", "STATUS"],
+          TEACHERS.map((t, i) => ({
+            cursor: "default", go: () => {},
+            cells: [Object.assign(cell(t[0], "strong"), { avatar: initials(t[0]) }), cell(t[1], "mono"), cell(t[3], "plain"), cell(i % 5 === 0 ? "—" : "08:12", "mono"), cell(i % 5 === 0 ? "—" : "16:05", "mono"), cell(i % 5 === 0 ? "On leave" : "Present", i % 5 === 0 ? "amber" : "green")]
+          })))] }]
+      };
+    }
+
+    if (p === "mapping") {
+      const rows = TEACHERS.map(t => ({ cursor: "default", go: () => {}, cells: [cell(t[3], "strong"), cell("PPS-" + t[3].slice(0, 2).toUpperCase(), "mono"), cell(t[0], "plain"), cell(t[5], "mono"), cell(String(t[7]), "mono"), cell("Mapped", "green")] }));
+      return {
+        title: "Subjects & mapping", subtitle: "Which teacher carries which subject, in which sections, and the load it adds.",
+        actions: [], hasStats: true, hasTabs: false, tabs: [],
+        stats: [stat("SUBJECTS MAPPED", "12", false, "Across 4 grade bands", "2 co-curricular included"),
+          stat("TEACHERS MAPPED", "12 / 15", false, "3 teachers not yet mapped", "Newly admitted this month", "80%", 80),
+          stat("AVERAGE LOAD", "24", "periods a week", "Ceiling is 28 periods", "2 teachers at the ceiling"),
+          stat("UNMAPPED SECTIONS", "4", false, "Classes 11-12 electives", "Blocked on Biology staffing")],
+        hasFilters: true, filters: [sel("SUBJECT", ["All subjects", "Tamil", "Mathematics", "Science"]), sel("GRADE BAND", ["All grades", "Grades 1-5", "Grades 6-8"]), sel("TEACHER", ["All teachers", "R. Subha", "T. Arunkumar"])],
+        rows: [{ cols: [table("Subject mapping", "12 mappings", ["SUBJECT", "CODE", "TEACHER", "SECTIONS", "PERIODS", "STATUS"], rows)] }]
+      };
+    }
+
+    if (p === "classtt") {
+      return {
+        title: "Class timetable", subtitle: "Published by the academic co-ordinators · read only for the principal",
+        hasStats: false, stats: [], hasTabs: false, tabs: [], actions: [],
+        hasFilters: true, filterAction: false,
+        filters: [sel("STANDARD", ["Class 8", "Class 6", "Class 7", "Class 9"]), sel("SECTION", ["Section B", "Section A", "Section C"]), sel("TERM", ["Term I", "Term II"]), sel("ACADEMIC CO-ORDINATOR", ["Mrs. R. Subha", "Mrs. G. Amudha"])],
+        rows: [{ cols: [this.timetable()] }]
+      };
+    }
+
+    if (p === "examtt") {
+      const papers = [["22 Sept 2026", "Tue", "Forenoon", "Tamil", "09:30 - 11:30", "T. Arunkumar"], ["23 Sept 2026", "Wed", "Afternoon", "English", "13:30 - 15:30", "P. Elangovan"], ["24 Sept 2026", "Thu", "Forenoon", "Mathematics", "09:30 - 11:30", "S. Poongodi"], ["25 Sept 2026", "Fri", "Afternoon", "Science", "13:30 - 15:30", "T. Arunkumar"], ["26 Sept 2026", "Sat", "Forenoon", "Social Science", "09:30 - 11:30", "P. Elangovan"], ["27 Sept 2026", "Mon", "Afternoon", "Computer Science", "13:30 - 15:30", "S. Poongodi"]];
+      return {
+        title: "Exam timetable", subtitle: "Every examination posted by the academic co-ordinators for 2026–27",
+        hasStats: true, hasTabs: false, tabs: [], actions: [],
+        stats: [stat("EXAMINATIONS POSTED", "14", "of 18 planned", "11 published · 3 in draft", "", "78%", 78),
+          stat("PAPERS THIS MONTH", "86", "of 412 this year", "52 senior · 34 middle & primary", "", "21%", 21),
+          stat("HALL TICKETS ISSUED", "1,242", "of 1,284 students", "42 withheld for fee arrears", "", "97%", 97),
+          stat("MARKS ENTRY OPEN", "6", "of 38 sections", "32 sections already submitted", "", "16%", 16)],
+        hasFilters: true, filterAction: "Download PDF",
+        filters: [sel("STANDARD", ["Class 8", "Class 4", "Class 6", "Class 10"]), sel("SECTION", ["Section B", "Section A", "Section C"]), sel("EXAMINATION", ["Unit Test 3", "Unit Test 2", "Half yearly"])],
+        rows: [{ cols: [table("Unit Test 3 · Class 8-B", "CLASSES 6-8 · published by Mrs. R. Subha, academic co-ordinator", ["DATE", "DAY", "SESSION", "SUBJECT", "TIME", "MAX MARKS", "INVIGILATOR"],
+          papers.map(r => ({ cursor: "default", go: () => {}, cells: [cell(r[0], "mono"), cell(r[1], "plain"), cell(r[2], "plain"), cell(r[3], "strong"), cell(r[4], "mono"), cell("80", "mono"), cell(r[5], "plain")] })), { badge: "Published · 6 papers" })] }]
+      };
+    }
+
+    if (p === "calendar") return this.calendarPage();
+
+    if (p === "sports") {
+      const items = [["Cricket bat — Kashmir willow", "Cricket", 24, 9, 15, "Good", "SPT-A1"], ["Leather cricket ball", "Cricket", 60, 22, 38, "Good", "SPT-A1"], ["Football — size 5", "Football", 18, 7, 11, "Good", "SPT-A2"], ["Volleyball with net set", "Volleyball", 12, 4, 8, "Needs repair", "SPT-A2"], ["Basketball — size 7", "Basketball", 14, 6, 8, "Good", "SPT-B1"], ["Badminton racket", "Badminton", 40, 18, 22, "Good", "SPT-B1"], ["Shuttlecock tube", "Badminton", 48, 15, 33, "Good", "SPT-B1"], ["Table tennis board", "Table tennis", 4, 2, 2, "Needs repair", "Indoor hall"], ["Table tennis bat", "Table tennis", 16, 6, 10, "Good", "Indoor hall"], ["Athletics shot put", "Athletics", 8, 3, 5, "Good", "SPT-C1"], ["Skipping rope", "Athletics", 30, 4, 26, "Good", "SPT-C1"], ["Chess board set", "Indoor", 6, 2, 4, "Good", "Indoor hall"]];
+      return {
+        title: "Sports inventory", subtitle: "Every item in the sports store — stock on hand, what is issued out and its condition.",
+        actions: [],
+        hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [],
+        stats: [stat("ITEM LINES", "12", "across 7 categories", "10 serviceable · 2 flagged", "182 in store · 98 issued out"),
+          stat("TOTAL UNITS", "280", "on the register", "182 in store", "98 issued out"),
+          stat("ISSUED OUT", "98", "of 280 units", "35% of the store is with classes", "Returned at term close", "35%", 35),
+          stat("NEEDS REPAIR", "2", "of 12 item lines", "1 condemned · replacement not raised", "Flagged by Mr. P. Sathish", "17%", 17),
+          stat("STORE VALUE", "₹4.2 L", "at purchase cost", "₹1.5 L of it currently issued out", "Verified 31 Aug 2026")],
+        rows: [{ cols: [table("Equipment register", "12 item lines", ["ITEM", "CATEGORY", "TOTAL", "ISSUED", "AVAILABLE", "CONDITION", "STORE"],
+          items.map(i => ({ cursor: "default", go: () => {}, cells: [cell(i[0], "strong"), cell(i[1], "plain"), cell(String(i[2]), "mono"), cell(String(i[3]), "mono"), cell(String(i[4]), "strong"), cell(i[5], i[5] === "Good" ? "green" : "blue"), cell(i[6], "mono")] })))] }]
+      };
+    }
+
+    if (p === "maintenance") {
+      const all = [["MNT-318", "Ceiling fan rewinding — 3 units", "Block A · Rooms 12, 14, 15", "Mrs. B. Latha", "11 Sept", "Sri Balaji Electricals", "₹4,200", "In progress"], ["MNT-317", "Toilet plumbing rework", "Block B · ground floor", "Maintenance supervisor", "10 Sept", "Anand Plumbing", "₹12,400", "Awaiting approval"], ["MNT-316", "Science lab exhaust fan replacement", "Science block · Lab 2", "Mr. P. Elangovan", "09 Sept", "TVS Service", "₹8,900", "In progress"], ["MNT-315", "Basketball court resurfacing", "Play field", "Mr. P. Sathish", "06 Sept", "Coimbatore Sportsworks", "₹64,000", "Awaiting approval"], ["MNT-314", "RO water purifier filter change", "Dining hall", "Office assistant", "04 Sept", "Aquaguard service", "₹3,600", "Closed"], ["MNT-313", "Broken window panes — 6 nos", "Block C · Room 21", "Mrs. A. Deepa", "02 Sept", "Sri Glass House", "₹5,400", "Closed"], ["MNT-312", "Bus 4101 brake servicing", "Transport yard", "Transport office", "29 Aug", "Ashok Leyland", "₹18,700", "Closed"]];
+      const tabLabels = ["All", "Awaiting approval", "In progress", "Closed"];
+      const filtered = this.state.tab === 0 ? all : all.filter(r => r[7] === tabLabels[this.state.tab]);
+      return {
+        title: "Repair & maintenance", subtitle: "Work raised across blocks, labs, transport and grounds — with cost and closure.",
+        actions: [], hasStats: true,
+        stats: [stat("OPEN WORK ORDERS", "4", "of 22 raised this term", "2 in progress · 2 awaiting approval", "Oldest open 12 days", "18%", 18),
+          stat("AWAITING APPROVAL", "2", "of 4 open orders", "₹76,400 held pending decision", "Both above the ₹10,000 limit", "50%", 50),
+          stat("CLOSED THIS TERM", "18", "of 22 raised", "82% closed within the target date", "Average closure 4 days", "82%", 82),
+          stat("SPEND THIS TERM", "₹1.36 L", "of ₹2.50 L budget", "54% of the maintenance head used", "₹1.14 L remaining", "54%", 54)],
+        hasTabs: true, tabs: this.tabs(tabLabels), hasFilters: false, filters: [],
+        rows: [{ cols: [table("Work orders", filtered.length + " of 22 raised this term", ["TICKET", "WORK", "LOCATION", "RAISED BY", "DATE", "VENDOR", "COST", "STATUS"],
+          filtered.map(r => ({ cursor: "default", go: () => {}, cells: [cell(r[0], "link"), cell(r[1], "strong"), cell(r[2], "plain"), cell(r[3], "plain"), cell(r[4], "mono"), cell(r[5], "plain"), cell(r[6], "mono"), cell(r[7], r[7] === "Closed" ? "green" : (r[7] === "In progress" ? "blue" : "navy"))] })))] }]
+      };
+    }
+
+    if (p === "transport") return this.state.route === null ? this.transportIndex() : this.routeDetail(this.state.route);
+
+    if (p === "library") {
+      const overdue = [["PPS-MA-0077", "Senior Secondary Mathematics", "Sandeep V", "XII-A", "25 Aug 2026", 17, "₹34.00"], ["PPS-SC-0071", "Concepts of Physics — Part 1", "Rahul Iyer", "X-C", "28 Aug 2026", 14, "₹28.00"], ["PPS-SS-0096", "Indian Constitution at Work", "Keerthi Pandian", "XI-B", "31 Aug 2026", 11, "₹22.00"], ["PPS-TA-0022", "Tamil Ilakkiya Kathaigal", "Gomathi L", "V-A", "02 Sept 2026", 9, "₹18.00"], ["PPS-CS-0083", "Computer Science with Python", "Dinesh M", "XII-C", "05 Sept 2026", 6, "₹12.00"]];
+      return {
+        title: "Library", subtitle: "School overview of the library module · 12 September 2026",
+        hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [], actions: [],
+        stats: [stat("AVAILABLE BOOKS", "1,284", "of 1,460 copies", "88% of the collection on the shelf", "176 checked out", "88%", 88),
+          stat("ACTIVE BORROWINGS", "176", "of 1,460 copies", "12% of the collection checked out", "31 of them overdue", "12%", 12),
+          stat("OVERDUE BOOKS", "31", "of 176 borrowings", "18% overdue · follow up with class teachers", "₹412 in fines outstanding", "18%", 18),
+          stat("TODAY'S ACTIVITY", "24", "issues and returns", "18 issued · 6 returned", "Counter open till 16:00"),
+          stat("TOTAL EBOOKS", "38", "of 1,498 titles", "3% of the catalogue is digital", "Access through the parent app", "3%", 3),
+          stat("LOST & DAMAGED", "7", "of 1,460 copies", "2 lost · 5 damaged · 0.5% of stock", "₹1,240 recovered this term", "5%", 5)],
+        rows: [
+          { cols: [
+            { isBars: true, hasHead: true, title: "Copies available by grade band", meta: "Available copies out of each band's total", bars: [{ label: "Primary 1-5", pct: 78, value: "412 / 528" }, { label: "Middle 6-8", pct: 86, value: "486 / 566" }, { label: "Senior 9-12", pct: 96, value: "386 / 366" }] },
+            list("Recent activity", "Latest issues, returns and reported losses", [
+              { title: "Aarav Menon borrowed \"Science Everywhere — Class 7\"", mono: false, sub: "VIII-B · 04 Sept 2026 · due 18 Sept", green: false, amber: false, right: "issued", count: false },
+              { title: "Kavya Balan borrowed \"High School English Grammar\"", mono: false, sub: "IX-B · 06 Sept 2026 · due 20 Sept", green: false, amber: false, right: "issued", count: false },
+              { title: "Nandhini R returned \"Our Pasts — Social Science Reader\"", mono: false, sub: "V-B · returned 24 Aug 2026 · no fine", green: false, amber: false, right: "returned", count: false },
+              { title: "Madhavan C reported \"My First Book of Numbers\" damaged", mono: false, sub: "II-A · 28 Aug 2026 · ₹120.00 charged", green: false, amber: false, right: "damaged", count: false }
+            ])
+          ] },
+          { cols: [table("Overdue & fines", "Copies past due, the fine each has run up and how it was settled.", ["ACCESSION", "TITLE", "STUDENT", "CLASS", "DUE DATE", "DAYS", "FINE"],
+            overdue.map(o => ({ cursor: "default", go: () => {}, cells: [cell(o[0], "link"), cell(o[1], "strong"), cell(o[2], "plain"), cell(o[3], "plain"), cell(o[4], "mono"), cell(String(o[5]), "mono"), cell(o[6], "strong")] })))] }
+        ]
+      };
+    }
+
+    if (p === "approvals") {
+      const raw = [
+        ["FEE CONCESSION", "APR-2041", "Today · 08:20", true, "Fee concession for 4 students — Class IX", "Requested under the staff-ward and sibling concession policy for Term II.", "Raised by Mrs. R. Subha · Academic co-ordinator"],
+        ["TRANSPORT", "APR-2040", "Today · 07:50", false, "New stop on Route 04 — Ondipudur junction", "6 students from Ondipudur are on the waiting list; adds 4 minutes to the run.", "Raised by Transport office"],
+        ["PURCHASE", "APR-2039", "Yesterday", true, "Sports store purchase — ₹48,600", "12 cricket bats, 4 volleyball nets and 30 shuttle tubes for the inter-house meet.", "Raised by Mr. P. Sathish · Physical education"],
+        ["LEAVE", "APR-2038", "Yesterday", false, "Long leave — 14 days · Mrs. M. Vasanthi", "Medical leave from 20 Sept. Substitute teacher already mapped for 8-A and 8-C.", "Raised by Staff room"],
+        ["MAINTENANCE", "APR-2037", "10 Sept 2026", true, "Block B toilet plumbing rework — ₹12,400", "Quote from Anand Plumbing; above the ₹10,000 delegation limit.", "Raised by Maintenance supervisor"],
+        ["EXAMINATION", "APR-2036", "09 Sept 2026", false, "Hall tickets for 42 students withheld for fee arrears", "Requesting a decision on conditional release before Unit Test 3 begins.", "Raised by Mrs. K. Bhuvaneshwari · Examination in-charge"]
+      ];
+      const dec = this.state.decisions || {};
+      const pendingCount = raw.filter(r => !dec[r[1]]).length;
+      const set = (id, v) => this.setState({ decisions: Object.assign({}, this.state.decisions, { [id]: v }) });
+      return {
+        title: "Requests & approvals", subtitle: "Requests routed to administration — approve or reject with a note.",
+        hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [], actions: [],
+        pill: pendingCount + " awaiting decision",
+        rows: [{ grid: "minmax(0, 1fr)", cols: [{ isApprovals: true, hasHead: false, requests: raw.map(r => ({
+          tag: r[0], id: r[1], when: r[2], high: r[3], title: r[4], desc: r[5], by: r[6],
+          pending: !dec[r[1]], approved: dec[r[1]] === "a", rejected: dec[r[1]] === "r",
+          approve: () => set(r[1], "a"), reject: () => set(r[1], "r"),
+          undo: () => set(r[1], null)
+        })) }] }]
+      };
+    }
+
+    if (p === "hostel") return this.hostelPage();
+
+    if (p === "notices") {
+      const base = [
+        { tag: "EXAM", date: "10 Sept 2026", owner: "Academic office", status: "RECEIVED", title: "Unit Test 3 timetable · Classes 6-12", body: "Unit Test 3 runs from 22 September to 29 September. Question papers with the blueprint must reach the co-ordinator four working days before the paper date.", audience: "Audience · All teachers · Classes 6-12" },
+        { tag: "SCHOOL", date: "09 Sept 2026", owner: "You", status: "PUBLISHED", title: "Inter-house sports meet moved to 26 September", body: "The meet moves to Saturday 26 September because of the ground resurfacing work. House practice slots stay unchanged.", audience: "Audience · Everyone in the school" },
+        { tag: "TRANSPORT", date: "08 Sept 2026", owner: "You", status: "PUBLISHED", title: "Term II transport fee window opens 18 September", body: "Fees for all eight routes can be paid in the parent app from 18 September to 30 September. Route changes must be requested before the window closes.", audience: "Audience · Transport users · 344 students" },
+        { tag: "GENERAL", date: "05 Sept 2026", owner: "You", status: "PUBLISHED", title: "Parent-teacher meeting on 30 September", body: "Class teachers will meet guardians between 09:00 and 12:30. Progress cards for Unit Test 3 will be handed over in the same session.", audience: "Audience · All guardians" },
+        { tag: "STAFF", date: "02 Sept 2026", owner: "You", status: "PUBLISHED", title: "Attendance marking closes at 09:15 from this week", body: "The register locks at 09:15. Corrections after the lock must be raised from the teacher app with a reason.", audience: "Audience · All staff · 23 people" },
+        { tag: "SAFETY", date: "28 Aug 2026", owner: "Transport office", status: "RECEIVED", title: "Fire drill for all blocks on 19 September", body: "The drill runs during the third period. Class teachers will lead their sections to the assembly ground.", audience: "Audience · Everyone in the school" }
+      ];
+      const all = this.state.posted.concat(base);
+      return {
+        title: "Notice", subtitle: "Circulars you receive and notices you publish across the school",
+        actions: [{ label: "+  Post a notice", primary: true, ghost: false, go: () => this.setState({ noticeOpen: true }) }],
+        hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [], note: "ALL NOTICES · " + all.length,
+        rows: [{ grid: "minmax(0, 1fr)", cols: [{ isNotices: true, hasHead: false, notices: all }] }]
+      };
+    }
+
+    return this.messagesPage();
+  }
+
+  messagesPage() {
+    const threads = CONVOS.filter(c => {
+      const sc = this.state.msgScope;
+      const q = (this.state.msgQuery || "").trim().toLowerCase();
+      const okScope = sc === "All classes" || c[6].indexOf(sc) !== -1;
+      const okQ = !q || (c[0] + " " + c[1]).toLowerCase().indexOf(q) !== -1;
+      return okScope && okQ;
+    });
+    const active = threads[this.state.msgActive] || threads[0] || CONVOS[0];
+    const opts = [];
+    opts.push({ isGroup: true, isItem: false, label: "EVERYONE" });
+    MSG_SCOPES.forEach(g => {
+      if (g[0] !== "EVERYONE") opts.push({ isGroup: true, isItem: false, label: g[0] });
+      g[1].forEach(v => opts.push({
+        isGroup: false, isItem: true, label: v,
+        color: v === this.state.msgScope ? "#1f4fa8" : "#10243f",
+        weight: v === this.state.msgScope ? 600 : 500,
+        pick: () => this.setState({ msgScope: v, msgOpen: false, msgActive: 0 })
+      }));
+    });
+    return {
+      title: "Message", subtitle: "Parents, teachers and academic co-ordinators across the school",
+      actions: [{ label: this.state.msgRead ? "All read" : "Mark all read", primary: false, ghost: true, go: () => this.setState({ msgRead: true }) }],
+      hasStats: false, stats: [], hasTabs: false, tabs: [], hasFilters: false, filters: [], rows: [],
+      isMessages: true,
+      msg: {
+        open: this.state.msgOpen, scopeLabel: this.state.msgScope,
+        toggle: () => this.setState({ msgOpen: !this.state.msgOpen }),
+        options: opts,
+        query: this.state.msgQuery,
+        onQuery: (e) => this.setState({ msgQuery: e.target.value, msgActive: 0 }),
+        countLabel: "ALL CONVERSATIONS · " + threads.length,
+        empty: threads.length === 0,
+        threads: threads.map((c, i) => ({
+          initial: c[0].replace("Mr. ", "").replace("Mrs. ", "").charAt(0),
+          name: c[0], role: c[1], preview: c[2], when: c[3],
+          bg: c === active ? "#eef4ff" : "transparent",
+          open: () => this.setState({ msgActive: i })
+        })),
+        activeName: active[0], activeRole: active[1],
+        activeInitial: active[0].replace("Mr. ", "").replace("Mrs. ", "").charAt(0),
+        dayLabel: active[5],
+        bubbles: active[4].map(b => ({
+          text: b[0], time: b[1], align: b[2] ? "flex-end" : "flex-start",
+          bg: b[2] ? "#1f6feb" : "#ffffff", border: b[2] ? "#1f6feb" : "#e9edf4",
+          fg: b[2] ? "#ffffff" : "#10243f", metaFg: b[2] ? "rgba(255,255,255,0.78)" : "#8593a8"
+        }))
+      }
+    };
+  }
+
+  hostelPage() {
+    const blocks = [["A Block", 120, 360, 331, "R. Krishnan", "Boys"], ["B Block", 96, 288, 274, "L. Fernandes", "Boys"], ["C Block", 40, 80, 63, "S. Bhatt", "Boys"], ["D Block", 24, 48, 19, "M. Qureshi", "Boys"], ["E Block", 88, 264, 241, "V. Meenakshi", "Girls"], ["F Block", 72, 216, 198, "A. Deepika", "Girls"], ["G Block", 36, 72, 54, "N. Farida", "Girls"]];
+    const fees = [["Rahul Iyer", "A-118 · A Block", "Double", "Room + mess, Term 1", "₹18,000", "05 Aug 2026", "Overdue"],
+      ["Ishan Verma", "D-011 · D Block", "Double", "Short stay, Aug", "₹9,500", "03 Aug 2026", "Overdue"],
+      ["Aarav Menon", "A-212 · A Block", "Triple", "Room + mess, Term 1", "₹46,000", "12 Jul 2026", "Paid"],
+      ["Dev Patel", "B-305 · B Block", "Triple", "Room + mess, Term 1", "₹46,000", "18 Aug 2026", "Pending"],
+      ["Ananya Rao", "E-204 · E Block", "Triple", "Room + mess, Term 1", "₹46,000", "09 Aug 2026", "Pending"],
+      ["Sneha B", "F-112 · F Block", "Double", "Room + mess, Term 1", "₹18,000", "02 Aug 2026", "Overdue"]];
+    return {
+      title: "Hostel", subtitle: "School overview of the hostel module · 665 students on roll · roll call at 22:00",
+      hasStats: true, hasTabs: false, tabs: [], hasFilters: false, filters: [], actions: [],
+      stats: [stat("PRESENT IN HOSTEL", "612", "of 665 on roll", "92% accounted for at roll call", "43 on leave · 10 out on a pass", "92%", 92),
+        stat("BEDS OCCUPIED", "1,180", "of 1,328 beds", "89% of the beds taken", "148 beds vacant", "89%", 89),
+        stat("ROLL-CALL ATTENDANCE", "94.2%", "last night", "Term average 92.8%", "4 unaccounted · escalated", "94%", 94),
+        stat("OUT OF THE HOSTEL NOW", "10", "on a pass", "5 past the return time", "Every exit logged after a parent call"),
+        stat("FEE DEFAULTERS", "23", "of 665 students", "₹32.4 L outstanding", "12 overdue past 05 Aug", "3%", 3),
+        stat("OPEN COMPLAINTS", "18", "raised this term", "4 past their service window", "Water and electrical work pending", "22%", 22)],
+      rows: [
+        { cols: [
+          { isBars: true, hasHead: true, title: "Bed occupancy by block", meta: "Beds occupied out of each block's capacity", bars: blocks.map(b => ({ label: b[0] + " · " + b[5], pct: Math.round((b[3] / b[2]) * 100), value: b[3] + " / " + b[2] })) },
+          list("Gate log · today", "Latest check-ins, exits and passes", [
+            { title: "Rahul Iyer · A-118 exit logged", mono: false, sub: "21:15 · father called at 20:45", green: false, amber: false, right: "out", count: false },
+            { title: "Aarav Menon · A-212 checked in", mono: false, sub: "20:05 · returned from sports", green: false, amber: false, right: "in", count: false },
+            { title: "Ishan Verma · D-011 checked out", mono: false, sub: "13:20 · town library pass", green: false, amber: false, right: "out", count: false },
+            { title: "Ananya Rao · E-204 home leave", mono: false, sub: "09:30 · back by 04 Aug 2026", green: false, amber: false, right: "leave", count: false }
+          ])
+        ] },
+        { cols: [table("Blocks & wardens", "Rooms, capacity and occupancy for each block on the register.", ["BLOCK", "HOSTEL", "ROOMS", "CAPACITY", "OCCUPIED", "VACANT", "OCCUPANCY", "WARDEN"],
+          blocks.map(b => ({ cursor: "default", go: () => {}, cells: [cell(b[0], "strong"), cell(b[5], "plain"), cell(String(b[1]), "plain"), cell(String(b[2]), "plain"), cell(String(b[3]), "plain"), cell(String(b[2] - b[3]), "blue"), cell(Math.round((b[3] / b[2]) * 100) + "%", "strong"), cell(b[4], "plain")] })))] },
+        { cols: [table("Hostel fees", "Room and mess dues for 2026–27 and how each invoice stands.", ["STUDENT", "ROOM", "SHARING", "FEE HEAD", "AMOUNT", "DUE DATE", "STATUS"],
+          fees.map(f => ({ cursor: "default", go: () => {}, cells: [cell(f[0], "strong"), cell(f[1], "mono"), cell(f[2], "plain"), cell(f[3], "plain"), cell(f[4], "mono"), cell(f[5], "plain"), cell(f[6].toUpperCase(), "blue")] })))] },
+        { cols: [
+          list("Students out of the hostel", "10 out now · 5 past the return time", [
+            { title: "Aarav Menon", mono: false, sub: "Home leave · A-212 · back by 05 Aug 2026, 18:00", green: false, amber: false, right: "overdue", count: false },
+            { title: "Harshit Rao", mono: false, sub: "Home leave · D-004 · back by 01 Aug 2026, 20:00", green: false, amber: false, right: "overdue", count: false },
+            { title: "Rahul Iyer", mono: false, sub: "Emergency outing · A-118 · back by 05 Aug 2026, 18:00", green: false, amber: false, right: "on pass", count: false },
+            { title: "Karthik R", mono: false, sub: "Sports camp travel · C-108 · back by 31 Jul 2026, 22:00", green: false, amber: false, right: "travel", count: false },
+            { title: "Ananya Rao", mono: false, sub: "Home leave · E-204 · back by 04 Aug 2026, 18:00", green: false, amber: false, right: "on leave", count: false }
+          ]),
+          kv("Needs attention", [["Overdue returns", "5 students · parents called"], ["Unaccounted at roll call", "4 students · escalated to security"], ["Fee defaulters", "23 students · ₹32.4 L"], ["Complaints open", "18 · 4 past service window"], ["Beds vacant", "148 · ready to allot"], ["Mess feedback", "4.2 / 5 this month"]])
+        ] }
+      ]
+    };
+  }
+
+  noticeModalVals() {
+    const auds = [
+      ["All students & parents", "Classes 1-12", "GENERAL", "Audience · All students and parents"],
+      ["All teaching staff", "86 faculty", "STAFF", "Audience · All teaching staff · 86 faculty"],
+      ["Primary 1-5", "Parents and students", "SCHOOL", "Audience · Primary 1-5"],
+      ["Middle 6-8", "Parents and students", "SCHOOL", "Audience · Middle 6-8"],
+      ["Senior 9-12", "Parents and students", "SCHOOL", "Audience · Senior 9-12"],
+      ["Transport users", "344 students on 8 routes", "TRANSPORT", "Audience · Transport users · 344 students"],
+      ["Library members", "Class teachers and students", "LIBRARY", "Audience · Library members"]
+    ];
+    const sel = this.state.noticeAud;
+    const ok = this.state.noticeTitle.trim().length > 0;
+    return {
+      open: this.state.noticeOpen,
+      title: this.state.noticeTitle, body: this.state.noticeBody,
+      selectedLabel: "1 selected", canPost: ok, cantPost: !ok,
+      onTitle: (e) => this.setState({ noticeTitle: e.target.value }),
+      onBody: (e) => this.setState({ noticeBody: e.target.value }),
+      close: () => this.setState({ noticeOpen: false, noticeTitle: "", noticeBody: "" }),
+      post: () => {
+        const a = auds[sel];
+        this.setState({
+          noticeOpen: false, noticeTitle: "", noticeBody: "",
+          posted: [{ tag: a[2], date: "13 Sept 2026", owner: "You", status: "PUBLISHED", title: this.state.noticeTitle.trim(), body: this.state.noticeBody.trim() || "No further details were added to this notice.", audience: a[3] }].concat(this.state.posted)
+        });
+      },
+      audiences: auds.map((a, i) => ({
+        name: a[0], sub: a[1], on: i === sel,
+        bg: i === sel ? "#f3f8ff" : "#ffffff",
+        border: i === sel ? "#1f6feb" : "#e4e9f2",
+        dotBorder: i === sel ? "#1f6feb" : "#c4cedd",
+        pick: () => this.setState({ noticeAud: i })
+      }))
+    };
+  }
+
+  renderVals() {
+    const pg = this.pages();
+    pg.compact = !!pg.compact;
+    pg.full = !pg.compact;
+    (pg.rows || []).forEach(r => { if (!r.grid) r.grid = "repeat(auto-fit, minmax(340px, 1fr))"; });
+    return {
+      navGroups: this.nav(), page: pg, noticeModal: this.noticeModalVals(),
+      unreadCount: this.state.msgRead ? "0" : "10",
+      msgQueryVal: this.state.msgQuery,
+      onMsgQuery: (e) => this.setState({ msgQuery: e.target.value, msgActive: 0 }),
+      noticeTitleVal: this.state.noticeTitle,
+      onNoticeTitle: (e) => this.setState({ noticeTitle: e.target.value }),
+      noticeBodyVal: this.state.noticeBody,
+      onNoticeBody: (e) => this.setState({ noticeBody: e.target.value }),
+      calDayVal: this.state.calDayInput,
+      onCalDay: (e) => this.setState({ calDayInput: e.target.value.replace(/[^0-9]/g, "").slice(0, 2) }),
+      calTextVal: this.state.calText,
+      onCalText: (e) => this.setState({ calText: e.target.value }),
+      calCatVal: this.state.calCat,
+      onCalCat: (e) => this.setState({ calCat: e.target.value }),
+      goInbox: () => this.go("inbox"), noop: (e) => { if (e && e.preventDefault) e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

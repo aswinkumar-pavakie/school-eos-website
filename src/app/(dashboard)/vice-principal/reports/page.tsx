@@ -1,10 +1,11 @@
-// Principal -> Reports & Analytics: same institution-wide, read-only
+// Vice Principal -> Reports & Analytics: same institution-wide, read-only
 // cross-cutting aggregation Admin's own Reports page shows, reusing
 // getReportsSummary() and every chart component verbatim -- this page has no
 // write UI anywhere (no forms, no per-item drill-down into another role's
 // route), so nothing needed stripping down, only the top-of-page Download
 // control is omitted (no Principal page in this build exposes Download,
-// matching established precedent).
+// matching established precedent). Requests & Approvals is omitted below --
+// reports.controller.ts redacts that field for VICE_PRINCIPAL entirely.
 
 import {
   AcademicsIcon,
@@ -115,7 +116,7 @@ function SubLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function PrincipalReportsPage() {
+export default async function VicePrincipalReportsPage() {
   // Data fetching kept in its own try/catch, separate from the JSX below --
   // React doesn't actually catch render errors via a JS try/catch around
   // constructed JSX (only a real error boundary does).
@@ -194,15 +195,20 @@ export default async function PrincipalReportsPage() {
     statusTone,
   );
 
-  const requestsDonutData = buildStatusDonut(
-    data.requestsApprovals.byState.map((r) => ({
-      count: r.count,
-      state: r.state,
-    })),
-    (item) => (item as unknown as { state: string }).state,
-    statusTone,
-  );
-  const requestTypeBarData = data.requestsApprovals.byType.map((t) => ({
+  // reports.controller.ts redacts requestsApprovals entirely for VICE_PRINCIPAL
+  // (no Requests & Approvals authorization exists for this role yet) -- the
+  // section below is omitted rather than shown crashed or falsely "empty".
+  const requestsDonutData = data.requestsApprovals
+    ? buildStatusDonut(
+        data.requestsApprovals.byState.map((r) => ({
+          count: r.count,
+          state: r.state,
+        })),
+        (item) => (item as unknown as { state: string }).state,
+        statusTone,
+      )
+    : null;
+  const requestTypeBarData = data.requestsApprovals?.byType.map((t) => ({
     label: humanizeState(t.requestType),
     value: t.count,
   }));
@@ -375,27 +381,29 @@ export default async function PrincipalReportsPage() {
           </div>
         </SectionCard>
 
-        <SectionCard
-          title="Requests & Approvals"
-          icon={<RequestsIcon className="h-4 w-4" />}
-        >
-          <div>
-            <SubLabel>Status breakdown</SubLabel>
-            {requestsDonutData.length === 0 ? (
-              <EmptySection label="No requests raised yet." />
-            ) : (
-              <ReportDonutChart data={requestsDonutData} />
-            )}
-          </div>
-          <div className="mt-5">
-            <SubLabel>Volume by request type</SubLabel>
-            {requestTypeBarData.length === 0 ? (
-              <EmptySection label="No requests raised yet." />
-            ) : (
-              <ReportBarChart data={requestTypeBarData} />
-            )}
-          </div>
-        </SectionCard>
+        {requestsDonutData && requestTypeBarData && (
+          <SectionCard
+            title="Requests & Approvals"
+            icon={<RequestsIcon className="h-4 w-4" />}
+          >
+            <div>
+              <SubLabel>Status breakdown</SubLabel>
+              {requestsDonutData.length === 0 ? (
+                <EmptySection label="No requests raised yet." />
+              ) : (
+                <ReportDonutChart data={requestsDonutData} />
+              )}
+            </div>
+            <div className="mt-5">
+              <SubLabel>Volume by request type</SubLabel>
+              {requestTypeBarData.length === 0 ? (
+                <EmptySection label="No requests raised yet." />
+              ) : (
+                <ReportBarChart data={requestTypeBarData} />
+              )}
+            </div>
+          </SectionCard>
+        )}
       </div>
     </div>
   );

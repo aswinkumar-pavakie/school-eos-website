@@ -24,7 +24,7 @@ import { StatTile, TableCard, toneOf, type TableCell } from "@/components/sports
 import { ExportCsvButton } from "@/components/sports-ui/ExportCsvButton";
 import { orDash } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
-import { listInjuries, listSports, listSportsProfiles, listStudents } from "@/lib/sports-admin-api";
+import { listInjuries, listSports, listSportsProfiles, listStudentsByIds } from "@/lib/sports-admin-api";
 import { AddPlayerPanel } from "./AddPlayerPanel";
 
 const TABS = ["All", "Active", "Injured", "Rest"] as const;
@@ -37,11 +37,7 @@ export default async function SportsAdminStudentsPage({
 }) {
   const { q, tab, sport, cls } = await searchParams;
   try {
-    const [sports, studentsResult, injuries] = await Promise.all([
-      listSports(),
-      listStudents(q ? { search: q } : {}),
-      listInjuries().catch(() => []),
-    ]);
+    const [sports, injuries] = await Promise.all([listSports(), listInjuries().catch(() => [])]);
     const profilesPerSport = await Promise.all(sports.map((s) => listSportsProfiles(s.id).catch(() => [])));
     const disciplinesByStudent = new Map<string, string[]>();
     const sportIdsByStudent = new Map<string, Set<string>>();
@@ -57,7 +53,22 @@ export default async function SportsAdminStudentsPage({
     });
     const injuredStudentIds = new Set(injuries.filter((i) => i.status !== "CLOSED").map((i) => i.studentId));
 
-    const classOptions = Array.from(new Set(studentsResult.data.map((s) => s.gradeName).filter(Boolean))) as string[];
+    // Register = every student enrolled in at least one sport. The students API
+    // pages at 50 by default, so listing the whole school silently cut the
+    // register to the first 50 alphabetical students (most not players at all).
+    const players = await listStudentsByIds(Array.from(disciplinesByStudent.keys()));
+    const needle = (q ?? "").trim().toLowerCase();
+    const studentsResult = {
+      data: players
+        .filter((s) => {
+          if (!needle) return true;
+          const hay = [s.firstName, s.lastName, s.admissionNo, s.gradeName, s.sectionName, ...(disciplinesByStudent.get(s.id) ?? [])].join(" ").toLowerCase();
+          return hay.includes(needle);
+        })
+        .sort((a, b) => `${a.firstName} ${a.lastName ?? ""}`.localeCompare(`${b.firstName} ${b.lastName ?? ""}`)),
+    };
+
+    const classOptions = Array.from(new Set(players.map((s) => s.gradeName).filter(Boolean))) as string[];
     classOptions.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
     const activeTab: Tab = TABS.includes(tab as Tab) ? (tab as Tab) : "All";

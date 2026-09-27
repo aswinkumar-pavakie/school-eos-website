@@ -44,7 +44,7 @@ export function NavIcon({
 
 export function ChevronRightIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8593a8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
       <path d="M9 6l6 6-6 6" />
     </svg>
   );
@@ -52,7 +52,7 @@ export function ChevronRightIcon({ className }: IconProps) {
 
 export function SearchIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#94a3b8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#8593a8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-3.2-3.2" />
     </svg>
@@ -141,7 +141,7 @@ export function BoxIcon({ className }: IconProps) {
 }
 export function AlertTriangleIcon({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b45309" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8a5a00" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
       <path d="M10.3 3.9 2 18a1.5 1.5 0 0 0 1.3 2.2h17.4A1.5 1.5 0 0 0 22 18L13.7 3.9a1.5 1.5 0 0 0-2.6 0Z" />
       <path d="M12 9v4M12 17h.01" />
     </svg>

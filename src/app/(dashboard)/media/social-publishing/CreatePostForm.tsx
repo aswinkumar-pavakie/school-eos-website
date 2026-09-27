@@ -120,7 +120,7 @@ export function CreatePostForm() {
         <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--med-primary)", marginTop: 22 }}>Creative</div>
         <div
           onClick={() => fileInputRef.current?.click()}
-          style={{ marginTop: 10, border: "1px dashed #c9d2e0", borderRadius: 12, height: 150, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer", background: "repeating-linear-gradient(135deg,#fafbfd,#fafbfd 8px,#f2f5f9 8px,#f2f5f9 16px)" }}
+          style={{ marginTop: 10, border: "1px dashed var(--med-tertiary-2)", borderRadius: 12, height: 150, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer", background: "repeating-linear-gradient(135deg,var(--med-panel),var(--med-panel) 8px,var(--med-panel) 8px,var(--med-panel) 16px)" }}
         >
           <input
             ref={fileInputRef}
@@ -131,7 +131,7 @@ export function CreatePostForm() {
             style={{ display: "none" }}
             onChange={(e) => setFileNames(Array.from(e.target.files ?? []).map((f) => f.name))}
           />
-          <div style={{ fontFamily: "var(--med-mono)", fontSize: 12.5, color: "#7a8496" }}>{fileNames.length > 0 ? fileNames.join(", ") : "drop photos / videos here"}</div>
+          <div style={{ fontFamily: "var(--med-mono)", fontSize: 12.5, color: "var(--med-tertiary)" }}>{fileNames.length > 0 ? fileNames.join(", ") : "drop photos / videos here"}</div>
           <div style={{ fontSize: 12.5, color: "var(--med-tertiary-2)" }}>Several files allowed — viewers swipe through them. First one is the cover.</div>
         </div>
 
@@ -147,7 +147,7 @@ export function CreatePostForm() {
             value="true"
             onClick={() => setSaveAsDraft(true)}
             className="media-btn-hover-ghost"
-            style={{ height: 48, padding: "0 20px", borderRadius: 11, border: "1px solid #d9dee7", background: "#fff", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+            style={{ height: 48, padding: "0 20px", borderRadius: 11, border: "1px solid var(--med-border)", background: "#fff", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
           >
             Save draft
           </button>

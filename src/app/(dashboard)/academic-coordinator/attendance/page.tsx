@@ -45,15 +45,15 @@ export default async function AttendancePage({ searchParams }: { searchParams: P
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
           <div style={{ background: "#fff", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px" }}>
-            <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>Students on roll</div>
+            <div style={{ fontSize: 14, color: "var(--acc-body-muted)", fontWeight: 600 }}>Students on roll</div>
             <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", margin: "9px 0 6px" }}>{totalStudents}</div>
           </div>
           <div style={{ background: "#fff", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px" }}>
-            <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>Marked present</div>
+            <div style={{ fontSize: 14, color: "var(--acc-body-muted)", fontWeight: 600 }}>Marked present</div>
             <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", margin: "9px 0 6px" }}>{totalPresent}</div>
           </div>
           <div style={{ background: "#fff", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px" }}>
-            <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>Attendance marked</div>
+            <div style={{ fontSize: 14, color: "var(--acc-body-muted)", fontWeight: 600 }}>Attendance marked</div>
             <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", margin: "9px 0 6px" }}>{totalMarked}/{totalStudents}</div>
           </div>
         </div>

@@ -48,7 +48,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
         </Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--sport-accent-100, #eef2fe)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, color: "var(--sport-primary)" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--sport-tint)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20, color: "var(--sport-primary)" }}>
             {student.firstName[0]}
             {student.lastName?.[0] ?? ""}
           </div>

@@ -83,7 +83,7 @@ export function LibraryModal({
               border: "1px solid var(--lib-border)",
               borderRadius: 9,
               background: "var(--lib-white)",
-              color: "#475569",
+              color: "var(--lib-body-muted)",
               cursor: "pointer",
               display: "grid",
               placeItems: "center",

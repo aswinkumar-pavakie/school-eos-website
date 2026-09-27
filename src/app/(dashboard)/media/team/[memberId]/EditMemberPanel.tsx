@@ -13,7 +13,7 @@ export function EditMemberPanel({ member }: { member: MediaTeamMemberDetail }) {
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="media-btn-hover-ghost" style={{ height: 40, padding: "0 16px", borderRadius: 9, border: "1px solid #d9dee7", background: "#fff", fontSize: 13, fontWeight: 700, color: "var(--med-primary)", cursor: "pointer", fontFamily: "inherit" }}>
+      <button type="button" onClick={() => setOpen(true)} className="media-btn-hover-ghost" style={{ height: 40, padding: "0 16px", borderRadius: 9, border: "1px solid var(--med-border)", background: "#fff", fontSize: 13, fontWeight: 700, color: "var(--med-primary)", cursor: "pointer", fontFamily: "inherit" }}>
         Edit details
       </button>
     );

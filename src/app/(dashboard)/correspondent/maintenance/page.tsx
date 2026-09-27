@@ -132,8 +132,18 @@ export default async function PrincipalMaintenancePage({
             pctBadge={overview.total > 0 ? `${Math.round((overview.requested / overview.total) * 100)}%` : undefined}
             bar={overview.total > 0 ? Math.round((overview.requested / overview.total) * 100) : undefined}
           />
-          <KpiCard eyebrow="Assigned" value={String(overview.assigned)} detail="Awaiting work to start" />
-          <KpiCard eyebrow="In progress" value={String(overview.inProgress)} detail="Being worked on" />
+          <KpiCard
+            eyebrow="Assigned"
+            value={String(overview.assigned)}
+            detail="Awaiting work to start"
+            bar={overview.total > 0 ? Math.round((overview.assigned / overview.total) * 100) : undefined}
+          />
+          <KpiCard
+            eyebrow="In progress"
+            value={String(overview.inProgress)}
+            detail="Being worked on"
+            bar={overview.total > 0 ? Math.round((overview.inProgress / overview.total) * 100) : undefined}
+          />
           <KpiCard
             eyebrow="Completed"
             value={String(overview.completed)}

@@ -11,12 +11,20 @@ export default async function FinanceDashboardPage() {
   try {
     const [structures, obligations, payments, pendingApprovals] = await Promise.all([
       listFeeStructures({ state: "ACTIVE", pageSize: 1 }),
-      listObligations({ state: "PENDING", pageSize: 1 }),
+      // pageSize was 1 -- fine for obligations.meta.total, but the outstanding-total
+      // sum below was silently only ever reducing over that single fetched row, not
+      // every pending obligation. Bumped so the sum (and now the balance bar) is real.
+      listObligations({ state: "PENDING", pageSize: 5000 }),
       listPayments({ state: "CONFIRMED", pageSize: 1 }),
       listApprovals({ status: "PENDING" }),
     ]);
 
-    const outstandingTotal = obligations.data.reduce((sum, o) => sum + BigInt(o.amountPaise) - BigInt(o.paidPaise), BigInt(0));
+    const totalDuePaise = obligations.data.reduce((sum, o) => sum + BigInt(o.amountPaise), BigInt(0));
+    const totalPaidPaise = obligations.data.reduce((sum, o) => sum + BigInt(o.paidPaise), BigInt(0));
+    const outstandingTotal = totalDuePaise - totalPaidPaise;
+    // % of the pending obligations' own total already paid off -- temporary,
+    // per explicit instruction ("we will remove it once not needed").
+    const obligationsPaidBar = totalDuePaise > BigInt(0) ? Number((totalPaidPaise * BigInt(100)) / totalDuePaise) : 0;
 
     return (
       <div className="flex flex-col gap-8">
@@ -27,7 +35,12 @@ export default async function FinanceDashboardPage() {
 
         <KpiGrid>
           <KpiCard eyebrow="Active fee structures" value={String(structures.meta?.total ?? 0)} />
-          <KpiCard eyebrow="Pending obligations" value={String(obligations.meta?.total ?? 0)} delta={outstandingTotal > BigInt(0) ? formatMoneySummary(outstandingTotal.toString()) + " outstanding" : undefined} />
+          <KpiCard
+            eyebrow="Pending obligations"
+            value={String(obligations.meta?.total ?? 0)}
+            delta={outstandingTotal > BigInt(0) ? formatMoneySummary(outstandingTotal.toString()) + " outstanding" : undefined}
+            bar={totalDuePaise > BigInt(0) ? obligationsPaidBar : undefined}
+          />
           <KpiCard eyebrow="Confirmed payments" value={String(payments.meta?.total ?? 0)} />
           <KpiCard eyebrow="Pending approvals" value={String(pendingApprovals.length)} />
         </KpiGrid>

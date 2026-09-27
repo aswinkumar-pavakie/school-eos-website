@@ -25,7 +25,7 @@ export function EnrollSportPanel({ studentId, availableSports }: { studentId: st
       action={(fd) => {
         formAction(fd);
       }}
-      style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--sport-panel, #f7f8fa)", border: "1px solid var(--sport-border)", borderRadius: 12, padding: 16 }}
+      style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--sport-panel)", border: "1px solid var(--sport-border)", borderRadius: 12, padding: 16 }}
     >
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>

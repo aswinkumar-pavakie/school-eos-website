@@ -201,15 +201,18 @@ export default async function ReportsPage() {
     statusTone,
   );
 
+  // Non-null: reports.controller.ts only redacts requestsApprovals for
+  // actors that aren't ADMIN/PRINCIPAL/CORRESPONDENT -- this page is ADMIN-only.
+  const requestsApprovals = data.requestsApprovals!;
   const requestsDonutData = buildStatusDonut(
-    data.requestsApprovals.byState.map((r) => ({
+    requestsApprovals.byState.map((r) => ({
       count: r.count,
       state: r.state,
     })),
     (item) => (item as unknown as { state: string }).state,
     statusTone,
   );
-  const requestTypeBarData = data.requestsApprovals.byType.map((t) => ({
+  const requestTypeBarData = requestsApprovals.byType.map((t) => ({
     label: humanizeState(t.requestType),
     value: t.count,
   }));

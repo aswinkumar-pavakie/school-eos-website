@@ -92,6 +92,7 @@ export default async function PrincipalAcademicCalendarPage({
         academicYearId={selectedYearId || undefined}
         createAction={createPrincipalCalendarEventAction}
         currentPersonId={actor?.personId}
+        addedByLabel="the correspondent's office"
       />
     </div>
   );

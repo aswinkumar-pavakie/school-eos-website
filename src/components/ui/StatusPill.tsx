@@ -12,7 +12,7 @@ export function StatusPill({ state }: { state: string }) {
   const tone = statusTone(state);
   return (
     <span
-      className={`inline-flex items-center rounded-[var(--radius-pill)] px-2.5 py-1 text-xs font-bold tracking-wide uppercase ${TONE_CLASSES[tone]}`}
+      className={`inline-flex items-center rounded-[var(--radius-pill)] px-3 py-1.5 text-[12.5px] font-semibold ${TONE_CLASSES[tone]}`}
     >
       {statusLabel(state)}
     </span>

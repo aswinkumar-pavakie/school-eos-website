@@ -13,7 +13,7 @@ import { getCoordinatorReports } from "@/lib/faculty-coordinator-api";
 function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div style={{ background: "#fff", border: "1px solid var(--acc-border)", borderRadius: "var(--acc-radius-card)", padding: "19px 20px" }}>
-      <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 14, color: "var(--acc-body-muted)", fontWeight: 600 }}>{label}</div>
       <div style={{ fontSize: 34, fontWeight: 800, color: "var(--acc-navy)", letterSpacing: "-0.02em", margin: "9px 0 6px" }}>{value}</div>
       <div style={{ fontSize: 13, color: "var(--acc-body-muted)" }}>{sub}</div>
     </div>
@@ -68,10 +68,10 @@ export default async function ReportsPage() {
           {r.subjectPerformance.map((s) => (
             <div key={s.subjectName} style={{ display: "grid", gridTemplateColumns: "200px 1fr 80px", gap: 14, alignItems: "center", padding: "12px 0", borderBottom: "1px solid var(--acc-divider-soft)" }}>
               <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--acc-navy)" }}>{s.subjectName}</div>
-              <div style={{ height: 8, background: "#eef2f8", borderRadius: 99, overflow: "hidden" }}>
+              <div style={{ height: 8, background: "var(--acc-border)", borderRadius: 99, overflow: "hidden" }}>
                 <div style={{ height: 8, background: "var(--acc-accent)", width: `${s.average}%` }} />
               </div>
-              <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 13, color: "#334155", textAlign: "right" }}>{s.average}%</div>
+              <div style={{ fontFamily: "var(--acc-font-mono)", fontSize: 13, color: "var(--acc-body)", textAlign: "right" }}>{s.average}%</div>
             </div>
           ))}
           {r.subjectPerformance.length === 0 && <EmptyPanel label="No subject-wise marks yet for your scope." />}

@@ -6,9 +6,9 @@ import type { ButtonHTMLAttributes } from "react";
 // Spec: "loading state keeps the button's width and changes its label (no spinner-only
 // state)." One primary action per form/sheet; secondary actions never share its visual weight.
 const VARIANT_CLASSES = {
-  primary: "bg-primary text-white hover:opacity-90 disabled:opacity-50",
-  secondary: "border border-border bg-surface text-text hover:bg-field disabled:opacity-50",
-  danger: "bg-critical-text text-white hover:opacity-90 disabled:opacity-50",
+  primary: "bg-primary text-white disabled:opacity-50",
+  secondary: "border border-border bg-surface text-navy disabled:opacity-50",
+  danger: "bg-critical-text text-white disabled:opacity-50",
 } as const;
 
 export function Button({
@@ -26,7 +26,7 @@ export function Button({
     <button
       {...rest}
       disabled={pending || rest.disabled}
-      className={`rounded-[var(--radius-input)] px-4 py-2.5 text-sm font-bold transition-opacity disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`ui-btn rounded-[10px] px-[18px] py-[11px] text-sm font-semibold leading-[1.2] disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${className}`}
     >
       {pending ? (pendingLabel ?? children) : children}
     </button>
@@ -43,7 +43,7 @@ export function PlainButton({
   return (
     <button
       {...rest}
-      className={`rounded-[var(--radius-input)] px-4 py-2.5 text-sm font-bold transition-opacity disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`ui-btn rounded-[10px] px-[18px] py-[11px] text-sm font-semibold leading-[1.2] disabled:cursor-not-allowed disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className}`}
     >
       {children}
     </button>

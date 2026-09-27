@@ -1,13 +1,12 @@
-// Principal -> Announcements: full parity with Admin here, not view-only --
-// the approved API doc names "Admin/leadership/authorized role" for creating
-// an announcement specifically, so Principal sends announcements the same
-// way Admin does (reusing CreateAnnouncementForm verbatim). Archive stays
-// Admin-only: the doc's "leadership" callout is specific to the create line,
-// not named for any other action. Real data from the same authoritative
-// announcement + announcement_audience tables Admin's own page reads --
-// nothing duplicated.
+// Vice Principal -> Announcements: read-only here, unlike Principal --
+// AnnouncementsController's POST /announcements has no Vice Principal
+// override and inherits the class-level ADMIN+PRINCIPAL+CORRESPONDENT
+// default (see the controller's own comment: "Vice Principal is not meant
+// to gain that create authority just by being able to read the list").
+// The GET method-level override does include VICE_PRINCIPAL, which is what
+// this page relies on. No create form here -- rendering one would silently
+// 403 on submit.
 
-import { CreateAnnouncementForm } from "@/components/announcements/CreateAnnouncementForm";
 import { AutoSubmitSelect } from "@/components/dashboard/AutoSubmitFilter";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { apiFetch } from "@/lib/api";
@@ -58,7 +57,7 @@ function audienceLabel(audiences: Audience[]): string {
     .join(", ");
 }
 
-export default async function PrincipalAnnouncementsPage({
+export default async function VicePrincipalAnnouncementsPage({
   searchParams,
 }: {
   searchParams: Promise<{ roleCode?: string }>;
@@ -82,12 +81,9 @@ export default async function PrincipalAnnouncementsPage({
 
   return (
     <div className="mx-auto max-w-[1100px]">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Notices</h1>
-          <p className="mt-1 text-sm text-text-muted">Send a message to everyone, or to specific roles.</p>
-        </div>
-        <CreateAnnouncementForm revalidatePathOverride="/vice-principal/announcements" />
+      <div>
+        <h1 className="text-[38px] font-bold leading-[1.08] tracking-[-0.028em] text-text">Notices</h1>
+        <p className="mt-1 text-sm text-text-muted">Circulars from the institution — view-only.</p>
       </div>
 
       <form action="/vice-principal/announcements" className="mt-6 flex items-end gap-3">

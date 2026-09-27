@@ -61,7 +61,7 @@ export function CloseXIcon({ size = 15, stroke = "currentColor" }: { size?: numb
 
 export function EmptyDocIcon() {
   return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8593a8" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 3h9l5 5v13H6z" />
       <path d="M15 3v5h5" />
       <path d="M9 13h7" />

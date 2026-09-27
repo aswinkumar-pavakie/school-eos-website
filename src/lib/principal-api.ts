@@ -5,18 +5,14 @@
 // not duplicated here.
 
 import { apiFetch } from "./api";
+import { parseApiResponse } from "./api-response";
 
 export interface ApiEnvelope<T> {
   data: T;
 }
 
 async function parseOrThrow<T>(res: Response): Promise<T> {
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
-    throw new Error(message ?? `Request failed (${res.status})`);
-  }
-  return body as T;
+  return parseApiResponse<T>(res);
 }
 
 export interface PrincipalDashboardSummary {
@@ -31,6 +27,8 @@ export interface PrincipalDashboardSummary {
   needsAttention: { label: string; sub: string; count: number }[];
   staffSplit: { teaching: number; support: number };
   studentResidence: { hostellers: number; dayScholars: number };
+  studentAttendanceToday: { hostellersPresent: number; dayScholarsPresent: number };
+  staffAttendanceToday: { teachingPresent: number; supportPresent: number };
   activeSectionsCount: number;
   // Correspondent Phase 5 addition -- real operational KPIs, each read from
   // that module's own existing overview service on the backend (see
@@ -50,6 +48,19 @@ export interface PrincipalDashboardSummary {
 export async function getPrincipalDashboardSummary(): Promise<PrincipalDashboardSummary> {
   const res = await apiFetch("/principal/dashboard-summary");
   return (await parseOrThrow<ApiEnvelope<PrincipalDashboardSummary>>(res)).data;
+}
+
+export interface PrincipalStudentsOverview {
+  presentToday: { present: number; total: number };
+  // null when no PUBLISHED exam has any results yet -- never a fabricated 0%.
+  passPercentage: { passed: number; total: number } | null;
+  hostelCount: number;
+  transportCount: number;
+}
+
+export async function getPrincipalStudentsOverview(): Promise<PrincipalStudentsOverview> {
+  const res = await apiFetch("/principal/students-overview");
+  return (await parseOrThrow<ApiEnvelope<PrincipalStudentsOverview>>(res)).data;
 }
 
 // Subjects & mapping (design-reframe addition) -- real subject_offering table,

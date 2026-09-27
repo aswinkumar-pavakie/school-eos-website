@@ -106,7 +106,7 @@ export function IssueBooksClient({ defaultDueDate, finePerDayPaise }: { defaultD
           {!borrower ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={searchBoxStyle}>
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#8593a8" strokeWidth={1.7}>
                   <circle cx="9" cy="9" r="5.6" />
                   <path d="M13.2 13.2L17 17" />
                 </svg>
@@ -129,9 +129,9 @@ export function IssueBooksClient({ defaultDueDate, finePerDayPaise }: { defaultD
               <div style={{ width: "100%", display: "flex", alignItems: "flex-start", gap: 12, padding: "14px 16px", borderRadius: 11, background: "var(--lib-tint)" }}>
                 <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
                   <div style={{ font: "500 16px/1.3 var(--lib-font-sans)", color: "var(--lib-ink)" }}>{borrower.name}</div>
-                  <div style={{ font: "400 13px/1.4 var(--lib-font-sans)", color: "#475569" }}>{borrower.memberType === "STUDENT" ? "Student" : "Staff"}</div>
+                  <div style={{ font: "400 13px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>{borrower.memberType === "STUDENT" ? "Student" : "Staff"}</div>
                 </div>
-                <button type="button" onClick={() => { setBorrower(null); setBorrowerQuery(""); }} style={{ border: 0, background: "transparent", cursor: "pointer", color: "#475569", font: "400 18px/1 var(--lib-font-sans)" }}>
+                <button type="button" onClick={() => { setBorrower(null); setBorrowerQuery(""); }} style={{ border: 0, background: "transparent", cursor: "pointer", color: "var(--lib-body-muted)", font: "400 18px/1 var(--lib-font-sans)" }}>
                   ×
                 </button>
               </div>
@@ -144,7 +144,7 @@ export function IssueBooksClient({ defaultDueDate, finePerDayPaise }: { defaultD
           {!pickedCopy ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={searchBoxStyle}>
-                <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#94A3B8" strokeWidth={1.7}>
+                <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#8593a8" strokeWidth={1.7}>
                   <circle cx="9" cy="9" r="5.6" />
                   <path d="M13.2 13.2L17 17" />
                 </svg>
@@ -169,12 +169,12 @@ export function IssueBooksClient({ defaultDueDate, finePerDayPaise }: { defaultD
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "14px 16px", borderRadius: 11, background: "var(--lib-tint)" }}>
               <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
                 <div style={{ font: "500 16px/1.3 var(--lib-font-sans)", color: "var(--lib-ink)" }}>{pickedCopy.bookTitle}</div>
-                <div className="lib-font-mono" style={{ font: "400 13px/1.4 var(--lib-font-sans)", color: "#475569" }}>
+                <div className="lib-font-mono" style={{ font: "400 13px/1.4 var(--lib-font-sans)", color: "var(--lib-body-muted)" }}>
                   {pickedCopy.copyCode}
                   {pickedCopy.reservedForPickup ? " · held for a reservation" : ""}
                 </div>
               </div>
-              <button type="button" onClick={() => { setPickedCopy(null); setBookQuery(""); }} style={{ border: 0, background: "transparent", cursor: "pointer", color: "#475569", font: "400 18px/1 var(--lib-font-sans)" }}>
+              <button type="button" onClick={() => { setPickedCopy(null); setBookQuery(""); }} style={{ border: 0, background: "transparent", cursor: "pointer", color: "var(--lib-body-muted)", font: "400 18px/1 var(--lib-font-sans)" }}>
                 ×
               </button>
             </div>
@@ -203,8 +203,8 @@ export function IssueBooksClient({ defaultDueDate, finePerDayPaise }: { defaultD
               borderRadius: 10,
               cursor: ready ? "pointer" : "default",
               font: "600 15px/1.2 var(--lib-font-sans)",
-              background: ready ? "var(--lib-navy)" : "#DBE3F5",
-              color: ready ? "#fff" : "#8296C4",
+              background: ready ? "var(--lib-navy)" : "var(--lib-tint)",
+              color: ready ? "#fff" : "var(--lib-tertiary)",
             }}
           >
             ✓ {issuing ? "Issuing…" : "Issue book"}

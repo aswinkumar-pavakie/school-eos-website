@@ -22,15 +22,33 @@ export default async function RoomsOccupancyPage() {
     for (const a of allocations) occupiedByRoom.set(a.roomId, (occupiedByRoom.get(a.roomId) ?? 0) + 1);
 
     // A block belongs to exactly one hostel; the warden roster is scoped by
-    // hostel, not block, so every block under the same hostel shares the
-    // same warden name(s) here -- real, just not block-granular (the real
-    // schema has no per-block warden assignment, only per-hostel).
-    const wardenNames = roster.map((w) => [w.firstName, w.lastName].filter(Boolean).join(" ")).join(", ") || null;
+    // hostel, not block, so every block under the same hostel shares that
+    // hostel's warden name(s) (real, just not block-granular: the schema has
+    // no per-block warden). Each block gets only ITS hostel's wardens,
+    // de-duplicated, and is labelled with the hostel -- previously every
+    // block listed every warden of every hostel, repeated, and the two
+    // hostels' "Block 1"/"Block 2" were indistinguishable.
+    const hostelNameById = new Map(roster.map((w) => [w.hostelId, w.hostelName]));
+    const wardensByHostel = new Map<string, Set<string>>();
+    for (const w of roster) {
+      const set = wardensByHostel.get(w.hostelId) ?? new Set<string>();
+      set.add([w.firstName, w.lastName].filter(Boolean).join(" "));
+      wardensByHostel.set(w.hostelId, set);
+    }
 
     const blockSummaries: BlockSummary[] = blocks.map((b) => {
       const capacity = b.rooms.reduce((sum, r) => sum + (r.bedCapacity || 0), 0);
       const occupied = b.rooms.reduce((sum, r) => sum + (occupiedByRoom.get(r.id) ?? 0), 0);
-      return { id: b.id, name: b.name, capacity, occupied, roomCount: b.rooms.length, wardenName: wardenNames };
+      const hostelName = hostelNameById.get(b.hostelId);
+      const wardens = wardensByHostel.get(b.hostelId);
+      return {
+        id: b.id,
+        name: hostelName ? `${hostelName} · ${b.name}` : b.name,
+        capacity,
+        occupied,
+        roomCount: b.rooms.length,
+        wardenName: wardens && wardens.size > 0 ? Array.from(wardens).join(", ") : null,
+      };
     });
 
     const roomsByBlock: Record<string, RoomTile[]> = {};

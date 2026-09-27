@@ -45,13 +45,50 @@ export function isExpiredOrExpiringSoon(token: string): boolean {
   return exp - Math.floor(Date.now() / 1000) <= EXPIRY_SKEW_SECONDS;
 }
 
+// The backend rotates the refresh token on every use and the old one stops
+// matching immediately, so two requests refreshing with the same expired
+// session at once (two tabs, a prefetch, a background poll) made the loser
+// fail and signed the user out. Concurrent callers with the same refresh token
+// now share one backend call, and its result is reused for a few seconds for
+// requests that were already in flight with the old cookie.
+const REFRESH_SHARE_MS = 15_000;
+const inFlightRefreshes = new Map<string, { promise: Promise<TokenPair | null>; at: number }>();
+
 export async function refreshTokens(refreshToken: string, deviceId: string | null = null): Promise<TokenPair | null> {
-  const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(deviceId ? { "X-Device-Id": deviceId } : {}) },
-    body: JSON.stringify({ refreshToken }),
-    cache: "no-store",
-  });
+  const now = Date.now();
+  for (const [key, entry] of inFlightRefreshes) {
+    if (now - entry.at > REFRESH_SHARE_MS) inFlightRefreshes.delete(key);
+  }
+  const existing = inFlightRefreshes.get(refreshToken);
+  if (existing) return existing.promise;
+  const promise = refreshTokensOnce(refreshToken, deviceId);
+  inFlightRefreshes.set(refreshToken, { promise, at: now });
+  promise.then(
+    (pair) => {
+      if (!pair) inFlightRefreshes.delete(refreshToken);
+    },
+    () => inFlightRefreshes.delete(refreshToken),
+  );
+  return promise;
+}
+
+// Returns null ONLY when the backend says the refresh token is invalid (4xx).
+// A network failure or 5xx (backend down / restarting) throws instead, so the
+// caller keeps the session cookies -- previously any failure returned null and
+// signed every user out whenever the backend was briefly unreachable.
+async function refreshTokensOnce(refreshToken: string, deviceId: string | null): Promise<TokenPair | null> {
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(deviceId ? { "X-Device-Id": deviceId } : {}) },
+      body: JSON.stringify({ refreshToken }),
+      cache: "no-store",
+    });
+  } catch {
+    throw new Error("The server is temporarily unreachable. Please try again in a moment.");
+  }
+  if (res.status >= 500) throw new Error("The server is temporarily unavailable. Please try again in a moment.");
   if (!res.ok) return null;
   const body = await res.json().catch(() => null);
   const data = body?.data;

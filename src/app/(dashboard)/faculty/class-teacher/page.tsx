@@ -3,7 +3,7 @@ import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { PlainButton } from "@/components/ui/Button";
 import { KpiGrid, KpiCard } from "@/components/ui/KpiCard";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate, orDash } from "@/lib/format";
+import { formatDate, orDash, percentOf } from "@/lib/format";
 import { listAdvisorSections, getClassTeacherDashboard, listStudentDuties } from "@/lib/faculty-api";
 import { DutyModal } from "./DutyModal";
 import { endDutyAction, removeDutyAction } from "./actions";
@@ -57,7 +57,7 @@ async function SectionDashboard({ sectionId }: { sectionId: string }) {
     <div className="flex flex-col gap-6">
       <KpiGrid>
         <KpiCard eyebrow="Strength" value={String(dashboard.stats.strength)} />
-        <KpiCard eyebrow="Present today" value={String(dashboard.stats.presentToday)} />
+        <KpiCard eyebrow="Present today" value={String(dashboard.stats.presentToday)} bar={percentOf(dashboard.stats.presentToday, dashboard.stats.strength)} />
         <KpiCard eyebrow="On leave today" value={String(dashboard.stats.onLeaveToday)} />
       </KpiGrid>
 

@@ -40,13 +40,13 @@ export default async function ExamSetupPage({ searchParams }: { searchParams: Pr
         <div style={{ display: "flex", background: "#fff", border: "1px solid var(--acc-border)", borderRadius: 12, padding: 5, width: "fit-content", gap: 4 }}>
           <Link
             href="/academic-coordinator/exams"
-            style={{ padding: "10px 34px", borderRadius: 9, fontSize: 14.5, background: isNew ? "var(--acc-accent)" : "transparent", color: isNew ? "#fff" : "#334155", fontWeight: isNew ? 700 : 500 }}
+            style={{ padding: "10px 34px", borderRadius: 9, fontSize: 14.5, background: isNew ? "var(--acc-accent)" : "transparent", color: isNew ? "#fff" : "var(--acc-body)", fontWeight: isNew ? 700 : 500 }}
           >
             New exam
           </Link>
           <Link
             href="/academic-coordinator/exams?tab=history"
-            style={{ padding: "10px 34px", borderRadius: 9, fontSize: 14.5, background: !isNew ? "var(--acc-accent)" : "transparent", color: !isNew ? "#fff" : "#334155", fontWeight: !isNew ? 700 : 500 }}
+            style={{ padding: "10px 34px", borderRadius: 9, fontSize: 14.5, background: !isNew ? "var(--acc-accent)" : "transparent", color: !isNew ? "#fff" : "var(--acc-body)", fontWeight: !isNew ? 700 : 500 }}
           >
             History
           </Link>

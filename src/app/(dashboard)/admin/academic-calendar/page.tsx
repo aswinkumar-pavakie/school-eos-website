@@ -77,6 +77,7 @@ export default async function AcademicCalendarPage({
         academicYearId={selectedYearId || undefined}
         createAction={createAdminCalendarEventAction}
         currentPersonId={actor?.personId}
+        addedByLabel="the admin office"
       />
     </div>
   );

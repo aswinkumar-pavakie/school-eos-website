@@ -163,7 +163,7 @@ export function LibraryView({
                   books.map((b) => (
                     <div key={b.id} className="grid items-center" style={{ gridTemplateColumns: "2.2fr 1.3fr 1fr", padding: "15px 20px", borderBottom: "1px solid var(--eos-divider)" }}>
                       <div style={{ font: "600 14.5px/1.3 var(--eos-font-sans)", color: "var(--eos-ink)" }}>{b.title}</div>
-                      <div style={{ font: "400 14px/1.3 var(--eos-font-sans)", color: "#475569" }}>{b.author ?? "--"}</div>
+                      <div style={{ font: "400 14px/1.3 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>{b.author ?? "--"}</div>
                       <div>
                         <span style={{ font: "600 11px/1 var(--eos-font-sans)", letterSpacing: ".06em", borderRadius: 20, padding: "7px 12px", background: b.copiesSummary.available > 0 ? "var(--eos-tint)" : "var(--eos-red-bg)", color: b.copiesSummary.available > 0 ? "var(--eos-primary)" : "var(--eos-red-text)" }}>
                           {b.copiesSummary.available > 0 ? "AVAILABLE" : "NOT AVAILABLE"}

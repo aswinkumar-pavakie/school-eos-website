@@ -1,15 +1,12 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import type { ShellNavItem } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
 import { TransportReframeThemeStyle, transportReframeThemeClassName } from "@/components/dashboard/TransportReframeTheme";
 import { TransportSearch } from "@/components/transport/TransportSearch";
-import { TransportHeaderChrome } from "@/components/transport/TransportHeaderChrome";
 import { ACCESS_TOKEN_COOKIE, apiFetch, getCurrentActor } from "@/lib/api";
-// logoutAction is genuinely shared across Admin/Finance/Library/Principal (see
-// finance/layout.tsx's own comment for why it lives under admin/) -- Transport
-// Manager reuses the exact same one, not a new sign-out implementation.
-import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
@@ -33,11 +30,6 @@ interface AcademicTerm {
   name: string;
   isCurrent: boolean;
 }
-interface School {
-  name: string;
-  code: string;
-}
-
 export default async function TransportManagerLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
@@ -56,7 +48,7 @@ export default async function TransportManagerLayout({ children }: { children: R
   // shell render before every data fetch on the page 401s out from under them.
   if (!actor.roles.includes("TRANSPORT_MANAGER")) redirect("/login");
 
-  const [meRes, vehiclesRes, routesRes, driversRes, attendantsRes, complianceRes, serviceDueRes, academicYearsRes, academicTermsRes, schoolRes] =
+  const [meRes, vehiclesRes, routesRes, driversRes, attendantsRes, complianceRes, serviceDueRes, academicYearsRes, academicTermsRes] =
     await Promise.all([
       fetch(`${API_BASE_URL}/auth/me`, { headers: { Authorization: `Bearer ${accessToken}` }, cache: "no-store" }),
       apiFetch("/vehicles"),
@@ -67,11 +59,9 @@ export default async function TransportManagerLayout({ children }: { children: R
       apiFetch("/vehicles/service-due"),
       apiFetch("/academic-years"),
       apiFetch("/academic-terms"),
-      apiFetch("/school"),
     ]);
   const me = meRes.ok ? ((await meRes.json()) as MeResponse) : null;
   const personName = me ? [me.data.person.firstName, me.data.person.lastName].filter(Boolean).join(" ") : "";
-  const school: School | null = schoolRes.ok ? ((await schoolRes.json()) as { data: School }).data : null;
 
   // Real nav badges -- every count below is a real row count from a real
   // endpoint (see each endpoint's own comment), never a placeholder. Service
@@ -125,16 +115,16 @@ export default async function TransportManagerLayout({ children }: { children: R
   // which resolves materialIcon to a <MaterialIcon> itself (weight 300/
   // GRAD -25/size 20, copied from the mockup's own nav span literally).
   const TRANSPORT_MANAGER_NAV_ITEMS: ShellNavItem[] = [
-    { href: "/transport-manager", label: "Dashboard", icon: "dashboard", group: "OVERVIEW", materialIcon: "dashboard" },
+    { href: "/transport-manager", label: "Dashboard", icon: "dashboard", group: "OVERVIEW" },
 
-    { href: "/transport-manager/buses", label: "Buses", icon: "transport", group: "FLEET", badge: vehicleCount, materialIcon: "directions_bus" },
-    { href: "/transport-manager/routes", label: "Routes", icon: "transport", group: "FLEET", badge: routeCount, materialIcon: "alt_route" },
+    { href: "/transport-manager/buses", label: "Buses", icon: "transport", group: "FLEET", badge: vehicleCount },
+    { href: "/transport-manager/routes", label: "Routes", icon: "transport", group: "FLEET", badge: routeCount },
 
-    { href: "/transport-manager/drivers", label: "Drivers & crew", icon: "faculty", group: "PEOPLE", badge: driverCount + attendantCount, materialIcon: "groups" },
+    { href: "/transport-manager/drivers", label: "Drivers & crew", icon: "faculty", group: "PEOPLE", badge: driverCount + attendantCount },
     { href: "/transport-manager/students", label: "Students", icon: "students", group: "PEOPLE" },
 
-    { href: "/transport-manager/maintenance", label: "Maintenance", icon: "maintenance", group: "OPERATIONS", badge: dueForServiceCount, materialIcon: "build" },
-    { href: "/transport-manager/compliance", label: "Compliance", icon: "audit", group: "OPERATIONS", badge: compliance.expiring, materialIcon: "description" },
+    { href: "/transport-manager/maintenance", label: "Maintenance", icon: "maintenance", group: "OPERATIONS", badge: dueForServiceCount },
+    { href: "/transport-manager/compliance", label: "Compliance", icon: "audit", group: "OPERATIONS", badge: compliance.expiring },
 
     { href: "/transport-manager/live-tracking", label: "Live Tracking", icon: "transport", group: "MONITORING" },
     { href: "/transport-manager/boarding-monitor", label: "Boarding Monitor", icon: "attendance", group: "MONITORING" },
@@ -143,7 +133,7 @@ export default async function TransportManagerLayout({ children }: { children: R
 
     { href: "/transport-manager/reports", label: "Reports", icon: "reports", group: "REPORTS" },
 
-    { href: "/transport-manager/messages", label: "Messages", icon: "messages", group: "REPORTS", materialIcon: "chat" },
+    { href: "/transport-manager/messages", label: "Messages", icon: "messages", group: "REPORTS" },
 
     // Moved to the navbar "Ask AI" widget (AskAiWidget in Shell's own header)
     // -- no longer a sidebar entry, matching the reference design.
@@ -167,36 +157,18 @@ export default async function TransportManagerLayout({ children }: { children: R
       />
       <TransportReframeThemeStyle scope={REFRAME_SCOPE} />
       <E2eeBootstrapMount personId={actor.personId} />
-      <Shell
+      <AppShell
+        rootHref="/transport-manager"
+        navGroups={shellNavItemsToGroups(TRANSPORT_MANAGER_NAV_ITEMS)}
         personName={personName}
-        roleLabel="Transport Manager"
-        onSignOut={logoutAction}
-        pendingRequestsCount={0}
-        navItems={TRANSPORT_MANAGER_NAV_ITEMS}
-        requestsHref="/transport-manager"
+        personRoleLabel="Transport Manager"
+        academicYear={currentYear?.name}
+        termLabel={currentTerm?.name}
+        profileHref="/transport-manager/profile"
         customSearch={<TransportSearch />}
-        headerExtra={<TransportHeaderChrome academicYearName={currentYear?.name} termName={currentTerm?.name} />}
-        hideRolePill
-        // Real school name/code (school.repository.ts's own singleton row) --
-        // never a fabricated "PPS"/school name. Falls back to Shell's default
-        // "School EOS" label (no sidebarHeader at all) if the school row
-        // can't be read, rather than rendering an empty/broken tile.
-        sidebarHeader={
-          school && (
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#0F172A] text-[12.5px] font-extrabold text-white">
-                {school.code}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-[14.5px] font-extrabold tracking-[-0.01em] text-text">{school.name}</p>
-                <p className="text-[11.5px] font-semibold text-[#94A3B8]">Transport office</p>
-              </div>
-            </div>
-          )
-        }
       >
         {children}
-      </Shell>
+      </AppShell>
     </div>
   );
 }

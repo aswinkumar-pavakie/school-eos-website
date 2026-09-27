@@ -18,7 +18,10 @@ export default async function PrincipalAcademicsPage() {
     // Real Head-of-Department name for the Departments tab (design-reframe
     // addition) -- department only stores hodStaffId, resolved here the same
     // way every other list page resolves a person from its own separate list.
-    apiFetch("/staff?limit=500"),
+    // StaffQueryDto caps limit at 200 (@Max(200)); 500 got a 400 that this
+    // fetch's own .ok check silently turned into an empty staff list below --
+    // every HOD showed "—" instead of a name until this was caught and fixed.
+    apiFetch("/staff?limit=200"),
   ]);
 
   if (!yearsRes.ok) {

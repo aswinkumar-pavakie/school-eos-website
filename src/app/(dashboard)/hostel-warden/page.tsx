@@ -16,6 +16,7 @@ import {
   listEmergencyExitRequests,
   listGatePassRequests,
   listHostelStructure,
+  listMovementLogEntries,
   listRoomAllocations,
 } from "@/lib/hostel-warden-api";
 import { nowMs, todayIsoDate } from "@/lib/hostel-warden-time";
@@ -43,10 +44,11 @@ export default async function HostelWardenDashboardPage() {
     const today = todayIsoDate(now);
     const nowIso = new Date(now).toISOString();
 
-    const [roster, gatePasses, emergencyExits, structure, allocations, complaints, personRes] = await Promise.all([
+    const [roster, gatePasses, emergencyExits, directEntries, structure, allocations, complaints, personRes] = await Promise.all([
       getNightAttendanceRoster(today).catch(() => []),
       listGatePassRequests(),
       listEmergencyExitRequests(),
+      listMovementLogEntries(),
       listHostelStructure(),
       listRoomAllocations(),
       listComplaints().catch(() => []),
@@ -76,8 +78,17 @@ export default async function HostelWardenDashboardPage() {
       ...emergencyExits.map((r) => ({ ...r, kind: "emergency-exit" as const })),
     ];
     const approved = tagged.filter((r) => r.state === "APPROVED");
-    const outNow = approved.filter((r) => r.outFrom <= nowIso && r.expectedReturn >= nowIso);
-    const overdue = approved.filter((r) => r.expectedReturn < nowIso);
+    // Warden-recorded exits that were approved and have no return logged are
+    // physically still away. Requested/rejected entries never left.
+    const openDirect = directEntries.filter((r) => r.state === "APPROVED" && !r.actualReturnAt && r.outFrom <= nowIso);
+    const outNow = [
+      ...approved.filter((r) => r.outFrom <= nowIso && r.expectedReturn >= nowIso),
+      ...openDirect.filter((r) => r.expectedReturn >= nowIso),
+    ];
+    const overdue = [
+      ...approved.filter((r) => r.expectedReturn < nowIso),
+      ...openDirect.filter((r) => r.expectedReturn < nowIso),
+    ];
     // outing_request.state's real values are REQUESTED/APPROVED/REJECTED/
     // CANCELLED/COMPLETED (confirmed live) -- "REQUESTED" is the real
     // not-yet-decided state, not the generic approval_request "PENDING".
@@ -176,7 +187,7 @@ export default async function HostelWardenDashboardPage() {
               <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "15px 0", borderBottom: "1px solid var(--hw-divider-soft)" }}>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontSize: 15, fontWeight: 700 }}>{[r.studentFirstName, r.studentLastName].filter(Boolean).join(" ")}</span>
-                  <span style={{ display: "block", fontSize: 13, color: "#8b95a1", marginTop: 3 }}>
+                  <span style={{ display: "block", fontSize: 13, color: "var(--hw-text-muted)", marginTop: 3 }}>
                     {roomByStudent.get(r.studentId) ?? "—"} · back by {new Date(r.expectedReturn).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })}
                   </span>
                 </span>
@@ -200,7 +211,7 @@ export default async function HostelWardenDashboardPage() {
                 <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: 99, background: "var(--hw-accent)", marginTop: 7 }} />
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontSize: 15, fontWeight: 700 }}>{f.title}</span>
-                  <span style={{ display: "block", fontSize: 13, color: "#8b95a1", marginTop: 3 }}>{f.note}</span>
+                  <span style={{ display: "block", fontSize: 13, color: "var(--hw-text-muted)", marginTop: 3 }}>{f.note}</span>
                 </span>
               </Link>
             ))}

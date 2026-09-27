@@ -65,7 +65,7 @@ export function LogServiceButton({ vehicles }: { vehicles: VehicleOption[] }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-deep"
+        className="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-hover"
       >
         + Log service
       </button>

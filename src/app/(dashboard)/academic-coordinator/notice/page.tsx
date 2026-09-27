@@ -36,7 +36,7 @@ export default async function NoticePage() {
               {n.canEdit && <span style={{ fontSize: 12, color: "var(--acc-accent)", fontWeight: 700 }}>Posted by you</span>}
             </div>
             <div style={{ fontSize: 19, fontWeight: 800, color: "var(--acc-navy)", lineHeight: 1.3 }}>{n.title}</div>
-            <div style={{ fontSize: 14.5, color: "#475569", marginTop: 7, lineHeight: 1.55 }}>{n.body}</div>
+            <div style={{ fontSize: 14.5, color: "var(--acc-body-muted)", marginTop: 7, lineHeight: 1.55 }}>{n.body}</div>
             <div style={{ fontSize: 13, color: "var(--acc-tertiary)", marginTop: 11 }}>
               Audience · {n.audiences.map((a) => (a.audienceType === "SCHOOL" ? "Whole school" : a.audienceType === "ROLE" ? "Academic Coordinators" : "Your section")).join(", ")}
             </div>

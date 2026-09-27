@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Shell, type ShellNavItem } from "@/components/dashboard/Shell";
+import type { ShellNavItem } from "@/components/dashboard/Shell";
+import { AppShell } from "@/components/shared-ui/AppShell";
+import { shellNavItemsToGroups } from "@/components/shared-ui/shell-nav";
+import { HeaderBell } from "@/components/shared-ui/HeaderBell";
 import { ACCESS_TOKEN_COOKIE, getCurrentActor } from "@/lib/api";
-import { logoutAction } from "@/app/(dashboard)/admin/actions";
 import { E2eeBootstrapMount } from "@/lib/e2ee/E2eeBootstrapMount";
 
 const API_BASE_URL =
@@ -56,17 +58,17 @@ export default async function SportsFacultyLayout({ children }: { children: Reac
   return (
     <>
       <E2eeBootstrapMount personId={actor.personId} />
-      <Shell
+      <AppShell
+        rootHref="/sports"
+        navGroups={shellNavItemsToGroups(NAV_ITEMS)}
         personName={personName}
-        roleLabel="Sports Faculty"
-        onSignOut={logoutAction}
-        pendingRequestsCount={0}
-        navItems={NAV_ITEMS}
-        requestsHref="/sports/od-requests"
-        showGlobalSearch={false}
+        personRoleLabel="Sports Faculty"
+        searchPlaceholder="Search sports pages…"
+        profileHref="/sports/profile"
+        headerExtra={<HeaderBell pendingRequestsCount={0} requestsHref="/sports/od-requests" />}
       >
         {children}
-      </Shell>
-    </>
+      </AppShell>
+          </>
   );
 }

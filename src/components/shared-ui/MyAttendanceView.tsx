@@ -65,7 +65,13 @@ export function MyAttendanceView({
             month={month}
             onMonthChange={(ny, nm) => router.push(`${basePath}${basePath.includes("?") ? "&" : "?"}month=${ny}-${String(nm + 1).padStart(2, "0")}`)}
             renderCell={(date) => {
-              const iso = date.toISOString().slice(0, 10);
+              // Local getters, not toISOString() -- this Date is built from
+              // local year/month/day by MonthGrid, and toISOString() (UTC)
+              // shifts it back a calendar day in any timezone ahead of UTC
+              // (e.g. IST), silently mapping each cell to the WRONG real
+              // attendance record (confirmed live: cell "25" showed the 24th's
+              // real PRESENT status).
+              const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
               const d = dayByDate.get(iso);
               const bg = d?.status === "PRESENT" ? "var(--eos-tint)" : d?.status === "ABSENT" ? "var(--eos-red-bg)" : d?.status ? "var(--eos-panel)" : "transparent";
               const fg = d?.status === "PRESENT" ? "var(--eos-primary)" : d?.status === "ABSENT" ? "var(--eos-red-text)" : "var(--eos-body)";
@@ -82,7 +88,7 @@ export function MyAttendanceView({
               { label: "Absent", bg: "var(--eos-red-bg)" },
               { label: "On duty / holiday", bg: "var(--eos-panel)" },
             ].map((l) => (
-              <div key={l.label} className="flex items-center gap-2" style={{ font: "400 13.5px/1 var(--eos-font-sans)", color: "#475569" }}>
+              <div key={l.label} className="flex items-center gap-2" style={{ font: "400 13.5px/1 var(--eos-font-sans)", color: "var(--eos-body-muted)" }}>
                 <span style={{ width: 16, height: 16, borderRadius: 5, border: "1px solid var(--eos-border)", background: l.bg }} />
                 {l.label}
               </div>

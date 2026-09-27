@@ -60,7 +60,18 @@ export default async function AcademicCoordinatorDashboardPage() {
           <KpiCard label="Grades under you" value={dashboard.gradeCount} hi={String(dashboard.sectionCount)} sub="sections" href="/academic-coordinator/students" />
           <KpiCard label="Students" value={dashboard.studentCount} sub="across all your sections" href="/academic-coordinator/students" />
           <KpiCard label="Teaching staff" value={dashboard.facultyCount} sub="reporting to you" href="/academic-coordinator/teachers" />
-          <KpiCard label="Subject offerings" value={dashboard.subjectOfferingCount} hi={dashboard.unassignedOfferings > 0 ? String(dashboard.unassignedOfferings) : undefined} sub={dashboard.unassignedOfferings > 0 ? "still unassigned" : "all assigned"} href="/academic-coordinator/exams" />
+          <KpiCard
+            label="Subject offerings"
+            value={dashboard.subjectOfferingCount}
+            hi={dashboard.unassignedOfferings > 0 ? String(dashboard.unassignedOfferings) : undefined}
+            sub={dashboard.unassignedOfferings > 0 ? "still unassigned" : "all assigned"}
+            barPct={
+              dashboard.subjectOfferingCount > 0
+                ? Math.round(((dashboard.subjectOfferingCount - dashboard.unassignedOfferings) / dashboard.subjectOfferingCount) * 100)
+                : undefined
+            }
+            href="/academic-coordinator/exams"
+          />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16, alignItems: "start" }}>

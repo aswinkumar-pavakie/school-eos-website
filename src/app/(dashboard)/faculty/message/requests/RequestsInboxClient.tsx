@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { friendlyMessagingError } from "@/lib/messaging-errors";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/components/faculty-ui/BackButton";
-import { resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { hasCachedName, resolveDisplayName } from "@/lib/e2ee/nameCache";
+import { subscribeDirectory } from "@/lib/e2ee/directoryWalk";
 import { acceptRequestAction, declineRequestAction, listRequestsAction, type RequestSummary } from "@/lib/messaging-actions";
 
 export function RequestsInboxClient() {
@@ -13,13 +15,23 @@ export function RequestsInboxClient() {
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // The messaging server never returns names: load the directory (shared,
+  // rate-limit-aware) in the background so unnamed requesters get their names.
+  const [, setNameTick] = useState(0);
+  const myPersonId = requests?.[0]?.recipientPersonId;
+  const hasUnnamed = requests?.some((r) => !hasCachedName(r.requesterPersonId)) ?? false;
+  useEffect(() => {
+    if (!hasUnnamed || !myPersonId) return;
+    return subscribeDirectory(myPersonId, () => setNameTick((t) => t + 1));
+  }, [hasUnnamed, myPersonId]);
+
   async function load() {
     try {
       const { data } = await listRequestsAction({ status: "PENDING", as: "recipient" });
       setRequests(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't load requests.");
+      setError(friendlyMessagingError(err, "Couldn't load requests."));
     }
   }
 

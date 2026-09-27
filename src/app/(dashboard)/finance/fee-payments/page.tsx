@@ -5,7 +5,7 @@ import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { KpiCard, KpiGrid } from "@/components/ui/KpiCard";
 import { PlainButton } from "@/components/ui/Button";
-import { formatDate, formatMoneySummary } from "@/lib/format";
+import { formatDate, formatMoneySummary, percentOf } from "@/lib/format";
 import { AuthExpiredError } from "@/lib/api";
 import { listGrades, listStudents } from "@/lib/finance-api";
 
@@ -38,7 +38,7 @@ export default async function FeePaymentsPage({
         <KpiGrid>
           <KpiCard eyebrow="Records in view" value={String(meta?.total ?? students.length)} />
           <KpiCard eyebrow="Total obligation" value={formatMoneySummary(totalDemand.toString())} />
-          <KpiCard eyebrow="Total collected" value={formatMoneySummary(totalCollected.toString())} />
+          <KpiCard eyebrow="Total collected" value={formatMoneySummary(totalCollected.toString())} bar={percentOf(Number(totalCollected), Number(totalDemand))} />
           <KpiCard eyebrow="Outstanding" value={formatMoneySummary(totalOutstanding.toString())} />
         </KpiGrid>
         <p className="-mt-3 text-sm text-text-muted">{withDues} students with dues in this view</p>

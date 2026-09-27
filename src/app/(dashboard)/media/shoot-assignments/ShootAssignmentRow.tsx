@@ -43,7 +43,7 @@ export function ShootAssignmentRow({ shoot, crew, gear, canModify }: { shoot: Sh
             type="button"
             onClick={() => setEditing((v) => !v)}
             className="media-btn-hover-ghost"
-            style={{ height: 36, padding: "0 14px", borderRadius: 8, border: "1px solid #d9dee7", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
+            style={{ height: 36, padding: "0 14px", borderRadius: 8, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}
           >
             {editing ? "Close" : "Edit"}
           </button>
@@ -53,7 +53,7 @@ export function ShootAssignmentRow({ shoot, crew, gear, canModify }: { shoot: Sh
               disabled={deleting}
               onClick={handleDelete}
               className="media-btn-hover-ghost"
-              style={{ height: 36, padding: "0 14px", borderRadius: 8, border: "1px solid #d9dee7", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}
+              style={{ height: 36, padding: "0 14px", borderRadius: 8, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12.5, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}
             >
               Delete
             </button>

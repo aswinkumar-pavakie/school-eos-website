@@ -43,7 +43,11 @@ export default async function CommunityPage() {
   const [communitiesRes, yearsRes, staffRes] = await Promise.all([
     apiFetch("/communities"),
     apiFetch("/academic-years"),
-    apiFetch("/staff?limit=500"),
+    // StaffQueryDto caps limit at 200 (@Max(200)); 500 got a 400 that this
+    // fetch's own .ok check silently turned into an empty staff list below --
+    // staffById resolved nothing, so every name using it fell back to
+    // whatever placeholder its caller uses instead of a real staff name.
+    apiFetch("/staff?limit=200"),
   ]);
 
   if (!communitiesRes.ok) {

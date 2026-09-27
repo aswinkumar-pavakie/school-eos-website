@@ -10,7 +10,7 @@ export function Card({ children, style, hover = false, onClick }: { children: Re
         background: "#fff",
         border: "1px solid var(--sport-border)",
         borderRadius: "var(--sport-radius-card)",
-        padding: "20px 24px",
+        padding: "18px 20px",
         cursor: onClick ? "pointer" : undefined,
         ...style,
       }}
@@ -46,23 +46,23 @@ export function toneOf(status: string): PillTone {
 export function StatusPill({ label, tone }: { label: string; tone: PillTone }) {
   const t = TONE[tone];
   return (
-    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--sport-radius-pill)", padding: "6px 13px", fontSize: 12.5, fontWeight: 700, whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-block", background: t.bg, color: t.fg, borderRadius: "var(--sport-radius-pill)", padding: "6px 12px", fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
       {label}
     </span>
   );
 }
 
-const btnBase: CSSProperties = { border: 0, borderRadius: "var(--sport-radius-btn)", height: 44, padding: "0 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" };
+const btnBase: CSSProperties = { border: 0, borderRadius: 10, padding: "11px 18px", fontSize: 14, fontWeight: 600, lineHeight: 1.2, cursor: "pointer", fontFamily: "inherit" };
 export function PrimaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`sport-btn-hover-primary${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--sport-primary)", color: "#fff", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "var(--sport-primary)", color: "#fff", ...style }}>
       {children}
     </button>
   );
 }
 export function SecondaryButton({ children, style, className, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`sport-btn-hover-ghost${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--sport-ink)", border: "1px solid var(--sport-input-border)", ...style }}>
+    <button {...rest} className={`ui-btn${className ? ` ${className}` : ""}`} style={{ ...btnBase, background: "#fff", color: "var(--sport-ink)", border: "1px solid var(--sport-input-border)", ...style }}>
       {children}
     </button>
   );
@@ -216,7 +216,7 @@ function valueFontSize(value: string | number): number {
   return 38;
 }
 
-export function StatTile({ label, value, sub, sub2 }: { label: string; value: string | number; sub?: string; sub2?: string }) {
+export function StatTile({ label, value, sub, sub2, bar }: { label: string; value: string | number; sub?: string; sub2?: string; /** Real 0-100 value driving a thin progress bar under the metric value -- same pattern as components/dashboard/KpiCard.tsx's own `bar` prop. Omit for cards with no ratio to visualize. */ bar?: number }) {
   return (
     <Card hover style={{ padding: "20px 22px", minWidth: 0, overflow: "hidden" }}>
       <div style={{ fontSize: 11, letterSpacing: "0.1em", fontWeight: 700, color: "var(--sport-tertiary-2)" }}>{label}</div>
@@ -233,6 +233,11 @@ export function StatTile({ label, value, sub, sub2 }: { label: string; value: st
       >
         {value}
       </div>
+      {bar !== undefined && (
+        <div style={{ marginTop: 10, height: 6, borderRadius: 4, overflow: "hidden", background: "var(--sport-border)" }}>
+          <div style={{ height: "100%", borderRadius: 4, width: `${Math.max(0, Math.min(100, bar))}%`, background: "var(--sport-primary)" }} />
+        </div>
+      )}
       {sub ? <div style={{ fontSize: 13.5, color: "var(--sport-body-muted)", marginTop: 4 }}>{sub}</div> : null}
       {sub2 ? <div style={{ fontSize: 12.5, color: "var(--sport-tertiary-3)", marginTop: 2 }}>{sub2}</div> : null}
     </Card>

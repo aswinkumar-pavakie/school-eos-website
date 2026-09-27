@@ -16,7 +16,7 @@ import { StatusPill } from "@/components/dashboard/StatusPill";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { AuthExpiredError, apiFetch } from "@/lib/api";
-import { formatDate, formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime, percentOf } from "@/lib/format";
 import { listApprovals } from "@/lib/finance-api";
 import { getPrincipalDashboardSummary } from "@/lib/principal-api";
 
@@ -81,7 +81,13 @@ export default async function PrincipalDashboardPage() {
       apiFetch("/auth/me"),
       listApprovals({ status: "PENDING" }),
       apiFetch("/audit-log?limit=4"),
-      apiFetch("/announcements?limit=2"),
+      // AnnouncementQueryDto has no `limit` field, and this backend's global
+      // ValidationPipe is forbidNonWhitelisted -- a `limit` query param got a
+      // real 400 here, which this fetch's own `.ok` check silently turned
+      // into an empty notices list ("No notices published yet") even when
+      // real published notices existed. The slice(0, 2) below already limits
+      // the display count, so the param was never actually needed.
+      apiFetch("/announcements"),
     ]);
   } catch (err) {
     if (err instanceof AuthExpiredError) redirect("/login");
@@ -100,11 +106,6 @@ export default async function PrincipalDashboardPage() {
     : [];
 
   const dueSoonCount = pendingApprovals.filter((r) => isRequestDueSoon(r.dueAt)).length;
-
-  const yearLabel = summary.currentAcademicYear ? summary.currentAcademicYear.name : "Not set";
-  const yearDetail = summary.currentAcademicYear
-    ? `${formatDate(summary.currentAcademicYear.startDate)} – ${formatDate(summary.currentAcademicYear.endDate)}`
-    : "Set by Admin in Academics";
 
   const hostelPct = summary.hostelOccupancy.totalBeds
     ? Math.round((summary.hostelOccupancy.occupiedBeds / summary.hostelOccupancy.totalBeds) * 100)
@@ -148,6 +149,7 @@ export default async function PrincipalDashboardPage() {
               `Across ${summary.activeSectionsCount} active sections`,
               `${summary.studentResidence.hostellers} hostellers · ${summary.studentResidence.dayScholars} day scholars`,
             ]}
+            bar={percentOf(summary.studentResidence.hostellers, summary.activeStudents)}
             href="/correspondent/students"
           />
           <KpiCard
@@ -157,19 +159,21 @@ export default async function PrincipalDashboardPage() {
               `${summary.staffSplit.teaching} teaching · ${summary.staffSplit.support} support`,
               "Active staff",
             ]}
+            bar={percentOf(summary.staffSplit.teaching, summary.activeStaff)}
             href="/correspondent/faculty"
           />
           <KpiCard
             eyebrow="Parent logins issued"
             value={String(summary.parentLoginsIssued.issued)}
             detail={`${summary.parentLoginsIssued.totalFamilies - summary.parentLoginsIssued.issued} yet to activate`}
+            bar={percentOf(summary.parentLoginsIssued.issued, summary.parentLoginsIssued.totalFamilies)}
             href="/correspondent/parents"
           />
-          <KpiCard eyebrow="Academic year" value={yearLabel} detail={yearDetail} href="/correspondent/academics" />
           <KpiCard
             eyebrow="Hostel occupancy"
             value={`${hostelPct}%`}
             detail={`${summary.hostelOccupancy.occupiedBeds} / ${summary.hostelOccupancy.totalBeds} beds occupied`}
+            bar={hostelPct}
             href="/correspondent/hostel"
           />
           <KpiCard eyebrow="Transport fleet" value={String(summary.vehiclesCount)} detail="Vehicles registered" href="/correspondent/transport" />
@@ -178,6 +182,7 @@ export default async function PrincipalDashboardPage() {
             eyebrow="Staff marked today"
             value={`${summary.staffMarkedToday.present} / ${summary.staffMarkedToday.total}`}
             detail={`${summary.staffMarkedToday.present} present · ${summary.staffMarkedToday.absent} absent · ${summary.staffMarkedToday.onLeave} on leave`}
+            bar={percentOf(summary.staffMarkedToday.present, summary.staffMarkedToday.total)}
             href="/correspondent/attendance"
           />
           {/* Phase 5 addition -- real counts from each module's own existing

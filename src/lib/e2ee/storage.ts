@@ -144,8 +144,28 @@ export async function addKeyPackagesToPool(
   await savePool(pool);
 }
 
+// Entries saved BEFORE their public half is sent to the server carry a
+// "pending-" id until the server confirms. They stay usable for joining a chat
+// (the join tries every entry) but never count toward "the pool is healthy".
+export const PENDING_POOL_PREFIX = "pending-";
+
 export async function getPoolSize(): Promise<number> {
-  return (await loadPool()).length;
+  return (await loadPool()).filter((entry) => !entry.serverId.startsWith(PENDING_POOL_PREFIX)).length;
+}
+
+export async function replacePoolServerIds(pairs: [string, string][]): Promise<void> {
+  const pool = await loadPool();
+  for (const [from, to] of pairs) {
+    const entry = pool.find((e) => e.serverId === from);
+    if (entry) entry.serverId = to;
+  }
+  await savePool(pool);
+}
+
+export async function removeManyFromPool(serverIds: string[]): Promise<void> {
+  const drop = new Set(serverIds);
+  const pool = await loadPool();
+  await savePool(pool.filter((entry) => !drop.has(entry.serverId)));
 }
 
 export interface DecodedPoolEntry {

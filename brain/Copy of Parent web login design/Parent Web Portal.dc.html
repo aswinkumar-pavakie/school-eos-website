@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#C9D0DC;border-radius:4px;}
+  a{color:#1D4ED8;text-decoration:none;}
+  a:hover{color:#1747B8;text-decoration:underline;}
+  button,input,select,textarea{font-family:inherit;}
+  input::placeholder{color:#7A879C;}
+</style>
+</helmet>
+
+<div style="font-family:'Outfit',system-ui,sans-serif;background:#fff;min-height:100vh;color:#0F1E3F;display:flex;">
+
+  <div style="width:300px;flex-shrink:0;background:#fff;border-right:1px solid #E8ECF3;display:flex;flex-direction:column;box-sizing:border-box;position:sticky;top:0;height:100vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:14px;padding:20px 22px;border-bottom:1px solid #EEF1F5;flex:none;">
+      <div style="width:46px;height:46px;border-radius:12px;background:#0F1E3F;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex:none;">PP</div>
+      <div style="min-width:0;">
+        <div style="font-weight:700;font-size:20px;line-height:1.15;color:#0F1E3F;">Pavakie</div>
+        <div style="font-size:15px;color:#33415C;">Public School</div>
+      </div>
+    </div>
+
+    <div style="padding:20px 18px 24px;display:flex;flex-direction:column;flex:1;">
+      <div style="background:#F5F7FB;border:1px solid #E3E8F0;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;flex:none;" onClick="{{ toggleChildSwitcher }}">
+        <div style="width:40px;height:40px;border-radius:50%;background:#EAF1FD;color:#1747B8;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex-shrink:0;">{{ activeChild.initial }}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ activeChild.name }}</div>
+          <div style="font-size:14px;color:#5A6780;">{{ activeChild.classLabel }}</div>
+        </div>
+        <div style="font-size:13px;color:#5A6780;">▾</div>
+      </div>
+
+      <sc-if value="{{ childSwitcherOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:0 0 8px;background:#fff;border:1px solid #E3E8F0;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(15,30,63,0.06);flex:none;">
+          <sc-for list="{{ children }}" as="child" hint-placeholder-count="3">
+            <div onClick="{{ child.select }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;{{ child.rowStyle }}">
+              <div style="width:36px;height:36px;border-radius:50%;background:#EAF1FD;color:#1747B8;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0;">{{ child.initial }}</div>
+              <div>
+                <div style="font-size:16px;font-weight:600;color:#0F1E3F;">{{ child.name }}</div>
+                <div style="font-size:13px;color:#5A6780;margin-top:1px;">{{ child.classLabel }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="font-size:12px;font-weight:600;color:#5A6780;letter-spacing:0.14em;text-transform:uppercase;padding:0 12px;margin:18px 0 8px;">Overview</div>
+      <sc-for list="{{ overviewNav }}" as="item" hint-placeholder-count="2">
+        <div onClick="{{ item.select }}" style="display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:10px;cursor:pointer;margin-bottom:2px;flex:none;{{ item.rowStyle }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex:none;{{ item.iconStyle }}"><path d="{{ item.iconPath }}"></path></svg>
+          <span style="font-size:17px;{{ item.textStyle }}">{{ item.label }}</span>
+        </div>
+      </sc-for>
+
+      <div style="font-size:12px;font-weight:600;color:#5A6780;letter-spacing:0.14em;text-transform:uppercase;padding:0 12px;margin:18px 0 8px;">Academics</div>
+      <sc-for list="{{ academicsNav }}" as="item" hint-placeholder-count="5">
+        <div onClick="{{ item.select }}" style="display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:10px;cursor:pointer;margin-bottom:2px;flex:none;{{ item.rowStyle }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex:none;{{ item.iconStyle }}"><path d="{{ item.iconPath }}"></path></svg>
+          <span style="font-size:17px;{{ item.textStyle }}">{{ item.label }}</span>
+        </div>
+      </sc-for>
+
+      <div style="font-size:12px;font-weight:600;color:#5A6780;letter-spacing:0.14em;text-transform:uppercase;padding:0 12px;margin:18px 0 8px;">My class</div>
+      <sc-for list="{{ childNav }}" as="item" hint-placeholder-count="8">
+        <div onClick="{{ item.select }}" style="display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:10px;cursor:pointer;margin-bottom:2px;flex:none;{{ item.rowStyle }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex:none;{{ item.iconStyle }}"><path d="{{ item.iconPath }}"></path></svg>
+          <span style="font-size:17px;{{ item.textStyle }}">{{ item.label }}</span>
+        </div>
+      </sc-for>
+
+      <div style="flex:1;"></div>
+      <div onClick="{{ openProfile }}" style="display:flex;align-items:center;gap:12px;padding:16px 12px 0;border-top:1px solid #EEF1F5;margin-top:16px;cursor:pointer;">
+        <div style="width:46px;height:46px;border-radius:50%;background:#0F1E3F;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;color:#fff;">SK</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:600;">Suresh Kumar S</div>
+          <div style="font-size:13px;color:#5A6780;">Parent</div>
+        </div>
+        <div style="font-size:16px;color:#7A879C;">›</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <div style="min-height:82px;flex-shrink:0;background:#fff;border-bottom:1px solid #E8ECF3;display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;padding:14px 32px;position:sticky;top:0;z-index:5;box-sizing:border-box;">
+      <div style="flex:0 1 460px;min-width:240px;position:relative;margin-right:auto;">
+        <input type="text" placeholder="Search notices, fees, subjects, teachers..." style="width:100%;height:48px;box-sizing:border-box;border:1px solid #E3E8F0;background:#F8FAFC;border-radius:10px;padding:0 80px 0 44px;font-size:17px;font-family:'Outfit',sans-serif;color:#0F1E3F;outline:none;">
+        <span style="position:absolute;left:19px;top:19px;width:8px;height:8px;border:1.5px solid #7A879C;border-radius:50%;"></span>
+        <span style="position:absolute;right:14px;top:12px;font-size:13px;color:#5A6780;background:#EEF1F6;border-radius:6px;padding:3px 8px;font-family:'JetBrains Mono',monospace;">Ctrl K</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex:0 1 auto;">
+        <div style="height:42px;display:flex;align-items:center;box-sizing:border-box;background:#F1F4F8;border:none;border-radius:10px;padding:0 18px;font-size:17px;font-weight:500;color:#0F1E3F;white-space:nowrap;">Parent · {{ activeChild.classLabel }}</div>
+        <div style="height:42px;display:flex;align-items:center;box-sizing:border-box;background:#fff;border:1px solid #E3E8F0;border-radius:10px;padding:0 18px;font-size:17px;font-weight:500;color:#0F1E3F;white-space:nowrap;">2026-27</div>
+        <div style="height:42px;display:flex;align-items:center;box-sizing:border-box;background:#0F1E3F;color:#fff;border-radius:10px;padding:0 18px;font-size:17px;font-weight:600;white-space:nowrap;">Term 2</div>
+        <button style="height:44px;background:#1D4ED8;color:#fff;border:none;border-radius:10px;padding:0 20px;font-size:17px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;white-space:nowrap;">Message teacher</button>
+      </div>
+    </div>
+
+    <div style="padding:36px 32px;flex:1;min-width:0;overflow-x:hidden;">
+      <dc-import name="ParentPortalPage" page="{{ activePage }}" active-child="{{ activeChild }}" on-navigate="{{ goToPage }}" hint-size="100%,600px"></dc-import>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { childSwitcherOpen: false, activePage: 'home', activeChildId: 'aarav' };
+
+  children = [
+    { id: 'aarav', name: 'Aarav S', initial: 'A', classLabel: 'Class 8-B' },
+    { id: 'ananya', name: 'Ananya S', initial: 'A', classLabel: 'Class 5-A' },
+    { id: 'vihaan', name: 'Vihaan S', initial: 'V', classLabel: 'Grade 2-C' }
+  ];
+
+  navDefs = {
+    overview: [
+      { id: 'home', iconPath: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z', label: 'Dashboard' },
+      { id: 'notices', iconPath: 'M4 10l13-5v11L4 14zM7 14v5', label: 'Notices' }
+    ],
+    academics: [
+      { id: 'dailytasks', iconPath: 'M6 4h12v17H6zM9 3h6v3H9zM9 11h6M9 15h4', label: 'Daily Tasks' },
+      { id: 'online', iconPath: 'M3 7h11v10H3zM14 11l6-3.5v9L14 13', label: 'Online class' },
+      { id: 'academics', iconPath: 'M4 5h7v14H4zM13 5h7v14h-7z', label: 'Current term' },
+      { id: 'timetable', iconPath: 'M4 6h16v15H4zM8 3v4M16 3v4M4 10h16', label: 'Timetable' },
+      { id: 'calendar', iconPath: 'M4 6h16v15H4zM8 3v4M16 3v4M4 10h16M8 14h3', label: 'Academic calendar' }
+    ],
+    child: [
+      { id: 'attendance', iconPath: 'M4 4h16v16H4zM8.5 12.5l2.5 2.5 4.5-5', label: 'Attendance' },
+      { id: 'performance', iconPath: 'M4 17l5-5 3 3 6-7M15 8h5v5', label: 'Performance' },
+      { id: 'fees', iconPath: 'M3 6h18v12H3zM3 10h18M6.5 14h3', label: 'Fees' },
+      { id: 'meetings', iconPath: 'M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 20.5c0-3.4 2.9-5.5 6.5-5.5s6.5 2.1 6.5 5.5M17 5.2a3.3 3.3 0 0 1 0 6.4M18.5 15.3c1.9.9 2.9 2.5 2.9 5.2', label: 'Meetings' },
+      { id: 'library', iconPath: 'M4 4h4v16H4zM10 4h4v16h-4zM16.5 5l3.5 14.5', label: 'Library' },
+      { id: 'messages', iconPath: 'M4 5h16v11H8.5L4 20.5z', label: 'Messages' },
+      { id: 'documents', iconPath: 'M6 3h8l4 4v14H6zM14 3v4h4M9 13h6M9 17h4', label: 'Documents' },
+      { id: 'feedback', iconPath: 'M12 3.5l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.9l6-.9z', label: 'Feedback' }
+    ]
+  };
+
+  selectChild(id) { this.setState({ activeChildId: id, childSwitcherOpen: false }); }
+  selectPage(id) { this.setState({ activePage: id }); }
+
+  renderVals() {
+    const activeChild = this.children.find(c => c.id === this.state.activeChildId) || this.children[0];
+    const buildNav = (defs) => defs.map(d => {
+      const on = d.id === this.state.activePage;
+      return {
+        ...d,
+        select: () => this.selectPage(d.id),
+        rowStyle: on ? 'background:#EAF1FD;' : '',
+        textStyle: on ? 'font-weight:600;color:#1747B8;' : 'font-weight:500;color:#0F1E3F;',
+        iconStyle: on ? 'color:#1747B8;' : 'color:#4B5872;'
+      };
+    });
+    return {
+      activeChild,
+      children: this.children.map((c, i) => ({
+        ...c,
+        select: () => this.selectChild(c.id),
+        rowStyle: (c.id === this.state.activeChildId ? 'background:#EFF4FD;' : 'background:#fff;') + (i < this.children.length - 1 ? 'border-bottom:1px solid #EEF1F5;' : '')
+      })),
+      childSwitcherOpen: this.state.childSwitcherOpen,
+      toggleChildSwitcher: () => this.setState(s => ({ childSwitcherOpen: !s.childSwitcherOpen })),
+      overviewNav: buildNav(this.navDefs.overview),
+      academicsNav: buildNav(this.navDefs.academics),
+      childNav: buildNav(this.navDefs.child),
+      activePage: this.state.activePage,
+      goToPage: (id) => this.selectPage(id),
+      openProfile: () => this.selectPage('profile')
+    };
+  }
+}
+
+</script>
+</body>
+</html>

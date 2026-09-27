@@ -68,8 +68,8 @@ export function MetricRow({ metric, canModify }: { metric: MediaReportMetric; ca
       </div>
       {canModify ? (
         <div style={{ display: "flex", gap: 6 }}>
-          <button type="button" onClick={() => setEditing(true)} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid #d9dee7", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}>Edit</button>
-          <button type="button" disabled={pending} onClick={handleDelete} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid #d9dee7", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}>Delete</button>
+          <button type="button" onClick={() => setEditing(true)} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-primary)", fontFamily: "inherit" }}>Edit</button>
+          <button type="button" disabled={pending} onClick={handleDelete} style={{ height: 30, padding: "0 10px", borderRadius: 7, border: "1px solid var(--med-border)", background: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", color: "var(--med-red)", fontFamily: "inherit" }}>Delete</button>
         </div>
       ) : <span />}
       {error && <div style={{ gridColumn: "1 / -1", fontSize: 12, color: "var(--med-red)", fontWeight: 600 }}>{error}</div>}

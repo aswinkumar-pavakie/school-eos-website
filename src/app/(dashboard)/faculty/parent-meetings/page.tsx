@@ -5,7 +5,7 @@ import { PlainButton } from "@/components/ui/Button";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { KpiGrid, KpiCard } from "@/components/ui/KpiCard";
 import { AuthExpiredError } from "@/lib/api";
-import { formatDate, orDash } from "@/lib/format";
+import { formatDate, orDash, percentOf } from "@/lib/format";
 import { listMeetingSlots } from "@/lib/faculty-staff-api";
 import { SlotModal } from "./SlotModal";
 import { decideBookingAction, deleteSlotAction } from "./actions";
@@ -35,7 +35,7 @@ export default async function ParentMeetingsPage() {
 
         <KpiGrid>
           <KpiCard eyebrow="Slots" value={String(slots.length)} />
-          <KpiCard eyebrow="Booked" value={String(booked)} />
+          <KpiCard eyebrow="Booked" value={String(booked)} bar={percentOf(booked, slots.length)} />
           <KpiCard eyebrow="Pending" value={String(pending)} />
         </KpiGrid>
 
@@ -79,7 +79,7 @@ export default async function ParentMeetingsPage() {
                     ) : slot.booking.state === "APPROVED" ? (
                       <Link
                         href={`/meeting-call/${slot.booking.id}`}
-                        className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-input)] bg-[color:var(--color-success,#1E8A4C)] px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                        className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-input)] bg-[color:var(--color-success,var(--fac-green-text))] px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
                       >
                         Join call
                       </Link>

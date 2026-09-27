@@ -70,12 +70,12 @@ export default async function ExamSubjectMarksPage({
                   style={{ gridTemplateColumns: "2fr 1fr 1.4fr", gap: 12, padding: "16px 0", borderBottom: "1px solid var(--fac-divider)" }}
                 >
                   <span style={{ font: "600 15px/1.3 var(--fac-font-sans)", color: "var(--fac-navy)" }}>{s.studentName}</span>
-                  <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "#475569" }}>{s.rollNo ?? "--"}</span>
+                  <span className="fac-font-mono" style={{ font: "400 14px/1 var(--fac-font-mono)", color: "var(--fac-body-muted)" }}>{s.rollNo ?? "--"}</span>
                   <span
                     style={{
                       textAlign: "right",
                       font: "700 14px/1 var(--fac-font-sans)",
-                      color: s.isAbsent ? "#dc2626" : s.marksObtained !== null ? "var(--fac-ink)" : "var(--fac-tertiary)",
+                      color: s.isAbsent ? "var(--fac-red)" : s.marksObtained !== null ? "var(--fac-ink)" : "var(--fac-tertiary)",
                     }}
                   >
                     {s.isAbsent ? "Absent" : s.marksObtained !== null ? `${s.marksObtained}/${s.maxMarks}${percent !== null ? ` (${percent}%)` : ""}` : "Not entered"}

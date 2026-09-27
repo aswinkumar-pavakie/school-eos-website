@@ -50,6 +50,7 @@ interface Driver {
 }
 interface Allocation {
   id: string;
+  studentId: string;
 }
 interface TripListRow {
   id: string;
@@ -300,10 +301,13 @@ export default async function TransportOverviewPage({
   const workshopCount = vehicles.filter((v) => v.operationalStatus === "MAINTENANCE" || v.operationalStatus === "GROUNDED").length;
   const onRouteCount = fleet.filter((b) => b.freshness === "LIVE" && b.trip && (b.trip.state === "STARTED" || b.trip.state === "IN_PROGRESS")).length;
   const atSchoolCount = Math.max(0, vehicles.length - workshopCount - onRouteCount);
-  const onRoadPct = vehicles.length > 0 ? Math.round(((vehicles.length - workshopCount) / vehicles.length) * 100) : 0;
+  // Buses actually out on a live trip -- previously "not in workshop", which
+  // said 100% on the road while the same card showed 0 outside on route.
+  const onRoadPct = vehicles.length > 0 ? Math.round((onRouteCount / vehicles.length) * 100) : 0;
 
   const totalSeats = vehicles.reduce((sum, v) => sum + v.capacity, 0);
-  const totalRiders = allocations.length;
+  // Each rider has two allocation rows (PICKUP + DROP) -- count distinct students.
+  const totalRiders = new Set(allocations.map((a) => a.studentId)).size;
   const freeSeats = totalSeats - totalRiders;
   const occPct = totalSeats > 0 ? Math.round((totalRiders / totalSeats) * 100) : 0;
 
@@ -331,10 +335,10 @@ export default async function TransportOverviewPage({
           </p>
         </div>
         <div className="flex gap-2.5">
-          <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-deep" />
+          <AddVehicleForm triggerClassName="rounded-[10px] bg-primary px-4 py-[11px] text-sm font-bold text-white hover:bg-primary-hover" />
           <ExportRegisterButton
             rows={vehicles}
-            className="rounded-[10px] border border-border bg-surface px-4 py-[11px] text-sm font-semibold text-[#334155] hover:border-primary/40"
+            className="rounded-[10px] border border-border bg-surface px-4 py-[11px] text-sm font-semibold text-[var(--color-text-secondary)] hover:border-primary/40"
           />
         </div>
       </div>
@@ -474,7 +478,7 @@ export default async function TransportOverviewPage({
         <section className="card-hover rounded-[16px] border border-border bg-surface p-[18px]">
           <div className="flex items-center justify-between">
             <h2 className="text-[17px] font-bold leading-[22px] text-text">Notices</h2>
-            <PostNoticeForm vehicles={vehicles} routes={routes} triggerClassName="rounded-[10px] bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-primary-deep" />
+            <PostNoticeForm vehicles={vehicles} routes={routes} triggerClassName="rounded-[10px] bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white hover:bg-primary-hover" />
           </div>
           {announcements.length === 0 ? (
             <p className="mt-3 text-sm text-text-muted">No notices for Transport right now.</p>

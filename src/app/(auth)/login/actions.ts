@@ -77,6 +77,9 @@ const WEB_ALLOWED_ROLES = [
   // view (see faculty/layout.tsx), and is what the Faculty <-> Class Teacher
   // account switcher swaps to.
   "CLASS_ADVISOR",
+  // The infirmary desk (school nurse). Its own console: src/app/(dashboard)/health-incharge/.
+  // Additive: no other role's sign-in or landing changes.
+  "HEALTH_INCHARGE",
 ];
 
 export interface LoginState {
@@ -206,6 +209,9 @@ export async function loginAction(
   // /faculty above regardless of any coordinator grant they also hold.
   if (roleCodes.includes("ACADEMIC_COORDINATOR")) {
     redirect("/academic-coordinator");
+  }
+  if (roleCodes.includes("HEALTH_INCHARGE")) {
+    redirect("/health-incharge");
   }
   redirect("/dashboard");
 }

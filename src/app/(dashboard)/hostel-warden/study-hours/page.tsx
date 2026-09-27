@@ -28,7 +28,7 @@ export default async function StudyHoursPage() {
               {sessions.map((s) => (
                 <tr key={s.id} className="hw-row-hover">
                   <Td style={{ fontWeight: 600 }}>{new Date(s.sessionDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</Td>
-                  <Td style={{ color: "var(--hw-text-muted)" }}>{s.startTime} – {s.endTime}</Td>
+                  <Td style={{ color: "var(--hw-text-muted)" }}>{s.startTime.slice(0, 5)} – {s.endTime.slice(0, 5)}</Td>
                   <Td>
                     <StatusPill label={s.isLocked ? "Locked" : "Open"} tone={s.isLocked ? "gray" : "blue"} />
                   </Td>

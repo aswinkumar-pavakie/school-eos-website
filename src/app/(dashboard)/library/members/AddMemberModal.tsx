@@ -24,7 +24,7 @@ export function AddMemberModal({ eligiblePeople }: { eligiblePeople: EligiblePer
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#101828]/45 px-4 py-10">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[var(--lib-ink)]/45 px-4 py-10">
           <div className="w-full max-w-[480px] rounded-[16px] bg-surface p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <h2 className="text-[15px] font-extrabold leading-[20px] text-text">Add Library member</h2>
